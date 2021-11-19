@@ -1,0 +1,98 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: TraderPoolFactory
+    network: rinkeby
+    source:
+      address: "0x79894E408CeA9e3139410fB4E2E5026C75346bDd"
+      abi: TraderPoolFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/TraderPoolFactory.ts
+      entities:
+        - TraderPoolFactory
+      abis:
+        - name: TraderPoolFactory
+          file: ./abis/TraderPoolFactory.json
+      eventHandlers:
+        - event: Deployed(address,string,address,(string,address,bool,bool,uint256,address,uint256,uint256,uint8,uint256))
+          handler: onDeployed
+
+templates:
+  - kind: ethereum/contract
+    name: BasicPool
+    network: rinkeby
+    source:
+      abi: BasicPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/BasicTraderPool.ts
+      entities:
+        - Pool
+        - Investor
+        - Investor_to_Pool
+        - Invests
+        - TraderPoolFactory
+        - BasicPool
+      abis:
+        - name: BasicPool
+          file: ./abis/BasicTraderPool.json
+      eventHandlers:
+        - event: Invest(address,uint256,address)
+          handler: onInvest
+
+  - kind: ethereum/contract
+    name: RiskyPool
+    network: rinkeby
+    source:
+      abi: RiskyPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/RiskyTraderPool.ts
+      entities:
+        - Pool
+        - Investor
+        - Investor_to_Pool
+        - Invests
+        - RiskyPool
+      abis:
+        - name: RiskyPool
+          file: ./abis/RiskyTraderPool.json
+        # - name: TraderPoolFactory
+        #   file: ./abis/TraderPoolFactory.json
+      eventHandlers:
+        - event: Invest(address,uint256,address)
+          handler: onInvest
+
+  - kind: ethereum/contract
+    name: InvestPool
+    network: rinkeby
+    source:
+      abi: InvestPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/InvestTraderPool.ts
+      entities:
+        - Pool
+        - Investor
+        - Investor_to_Pool
+        - Invests
+        - InvestPool
+      abis:
+        - name: InvestPool
+          file: ./abis/InvestTraderPool.json
+        # - name: TraderPoolFactory
+        #   file: ./abis/TraderPoolFactory.json
+      eventHandlers:
+        - event: Invest(address,uint256,address)
+          handler: onInvest

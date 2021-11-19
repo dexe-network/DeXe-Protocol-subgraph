@@ -1,0 +1,107 @@
+enum CommissionPeriod {
+  PERIOD_1
+  PERIOD_2
+  PERIOD_3
+}
+
+type PoolParameters @entity {
+  id: ID!
+  descriptionURL: String
+  trader: Bytes
+  activePortfolio: Boolean
+  privatePool: Boolean
+  totalLPEmission: BigInt
+  baseToken: Bytes            #Token type
+  baseTokenDecimals: BigInt   #May be useless
+  minimalInvestment: BigInt
+  commissionPeriod: CommissionPeriod    # check this 
+  commissionPercentage: BigInt
+}
+
+type Investor @entity {
+  id: ID!
+}
+
+type PairInvestorBasicPool @entity{
+  id: ID!
+  investor: Investor
+  pool: BasicTraderPool
+}
+
+type PairInvestorInvestPool @entity{
+  id: ID!
+  investor: Investor
+  pool: InvestTraderPool
+}
+
+type PairInvestorRiskyPool @entity{
+  id: ID!
+  investor: Investor
+  pool: RiskyTraderPool
+}
+
+type InvestsToRiskyPool @entity {
+  id: ID!
+  amount: BigInt
+  investoToPool: PairInvestorRiskyPool
+}
+
+type InvestsToBasicPool @entity {
+  id: ID!
+  amount: BigInt
+  investoToPool: PairInvestorBasicPool
+}
+
+type InvestsToInvestPool @entity {
+  id: ID!
+  amount: BigInt
+  investoToPool: PairInvestorInvestPool
+}
+
+type BasicTraderPool @entity {
+  id: ID!
+  
+  poolParameters: PoolParameters
+
+  investors: [PairInvestorBasicPool!]! @derivedFrom(field: "pool")
+
+}
+
+type RiskyTraderPool @entity {
+  id: ID!
+
+  poolParameters: PoolParameters
+
+  investors: [PairInvestorRiskyPool!]! @derivedFrom(field: "pool")
+
+}
+
+type InvestTraderPool @entity {
+  id: ID!
+  
+  poolParameters: PoolParameters
+
+  investors: [PairInvestorInvestPool!]! @derivedFrom(field: "pool")
+
+}
+
+# type Token @entity {
+#   id: ID!
+  
+#   name: String
+#   symbol: String
+#   decimals: BigInt
+
+# }
+
+# type trade @entity {
+#   sellToken: String
+#   buyToken: String
+#   buyAmount: BigInt
+#   priceInBaseToken: BigInt
+#   priceInUSDT: BigInt
+#   costInBaseToken:BigInt
+#   costInUSDT: BigInt
+#   dateTime: String
+# }
+
