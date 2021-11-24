@@ -2,6 +2,7 @@ import { InvestsToBasicPool, PairInvestorBasicPool } from '../../generated/schem
 import { Invest } from '../../generated/templates/BasicPool/BasicPool'
 import { getBasicPool } from '../entities/BasicTraderPool';
 import { getInvestor } from '../entities/Incestor'
+import { runTests } from "../../tests/BasicTraderPool.test"
 
 export function onInvest(event: Invest): void{
     let investor = getInvestor(event.params.investor);

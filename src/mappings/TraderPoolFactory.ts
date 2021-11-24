@@ -3,13 +3,13 @@ import { getBasicPool } from '../entities/BasicTraderPool';
 import { getInvestPool } from '../entities/InvestTraderPool';
 import { getPoolParameters } from '../entities/PoolParameters';
 import { getRiskyPool } from '../entities/RiskyTraderPool';
-
+import { runTests } from "../../tests/BasicTraderPool.test"
 const BASIC_POOL_NAME = "BASIC_POOL";
 const RISKY_POOL_NAME = "RISKY_POOL";
 const INVEST_POOL_NAME = "INVEST_POOL";
 
 export function onDeployed(event: Deployed): void {
-    let pool;
+    
     let params = event.params;
     let parameters = getPoolParameters(event.transaction.hash.toHex(), params.poolParameters);
     
@@ -17,25 +17,25 @@ export function onDeployed(event: Deployed): void {
         return
     }
 
-    switch (params.poolName) {
-        case BASIC_POOL_NAME:
-            pool = getBasicPool(params.at, parameters);
-            break;
-        
-        case RISKY_POOL_NAME:
-            pool = getRiskyPool(params.at, parameters);
-            break;
+    if (params.poolName == BASIC_POOL_NAME) {
+        let pool = getBasicPool(params.at, parameters);
+        pool.investors = new Array<string>();
 
-        case INVEST_POOL_NAME:
-            pool = getInvestPool(params.at, parameters);
-            break;
-        
-        default:
-            return
+        parameters.save();
+        pool.save();
+    }else if (params.poolName == RISKY_POOL_NAME){
+        let pool = getRiskyPool(params.at, parameters);
+        pool.investors = new Array<string>();
+
+        parameters.save();
+        pool.save();
+    }else if (params.poolName == INVEST_POOL_NAME){
+        let pool = getInvestPool(params.at, parameters);
+        pool.investors = new Array<string>();
+
+        parameters.save();
+        pool.save();
+    }else{
+        return;
     }
-
-    pool.investors = new Array<string>();
-
-    parameters.save()
-    pool.save();
 }
