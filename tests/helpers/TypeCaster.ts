@@ -1,6 +1,7 @@
 import { ethereum as eth, Bytes as Bytes_new } from "@graphprotocol/graph-ts/";
 import { ethereum, Address, BigInt, Bytes} from "matchstick-as/node_modules/@graphprotocol/graph-ts";
 import { Address as addr, BigInt as BI } from "@graphprotocol/graph-ts/common/numbers"
+import { ethereum as e } from "@graphprotocol/graph-ts/chain/ethereum"
 
 export function castEvent(old_event: ethereum.Event): eth.Event {
     return new eth.Event(castAddress(old_event.address), castBigInt(old_event.logIndex), castBigInt(old_event.transactionLogIndex), old_event.logType, castBlock(old_event.block), castTransaction(old_event.transaction), castEventParamArray(old_event.parameters));

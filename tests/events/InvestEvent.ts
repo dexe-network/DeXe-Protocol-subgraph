@@ -1,11 +1,13 @@
 import {newMockEvent} from "matchstick-as/assembly/defaults";
 import {Invest} from "../../generated/templates/BasicPool/BasicPool";
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import {} from "@graphprotocol/graph-ts/chain/ethereum";
+import {BigInt} from "@graphprotocol/graph-ts/common/numbers"
+import {} from "@graphprotocol/graph-ts/common/numbers"
 import { ethereum } from "@graphprotocol/graph-ts/chain/ethereum"
 import { castEvent } from "../helpers/TypeCaster";
 
 export function createNewInvestEvent(investor: string, amount: BigInt, pool: string): Invest{
-    let mockEvent = castEvent(newMockEvent());
+    let mockEvent = newMockEvent();
 
     let newEvent = new Invest(
         mockEvent.address,

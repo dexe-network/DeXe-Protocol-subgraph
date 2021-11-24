@@ -6,8 +6,9 @@ import { getBasicPool } from "../src/entities/BasicTraderPool";
 import { DeployedPoolParametersStruct } from "../generated/TraderPoolFactory/TraderPoolFactory";
 import { getPoolParameters} from "../src/entities/PoolParameters";
 import { castAddress, castBigInt, castBytes, castTuple, castValue } from './helpers/TypeCaster';
-
+import { createNewInvestEvent } from "./events/InvestEvent";
 import { Address as addr } from "@graphprotocol/graph-ts/common/numbers"
+import { onInvest } from '../src/mappings/BasicTraderPool';
 
 
 
@@ -25,6 +26,10 @@ export function runTests(): void {
         let poolParameters = getPoolParameters(address.toHexString(), baseParams);
 
         let pool = getBasicPool(castAddress(address), poolParameters);
+
+        let invest = createNewInvestEvent(owner.toHexString(),castBigInt(BigInt.fromI32(1000)),address.toHexString());
+
+        onInvest(invest);
 
         assert.assertTrue(false);
 
