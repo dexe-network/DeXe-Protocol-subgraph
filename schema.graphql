@@ -26,36 +26,42 @@ type PairInvestorBasicPool @entity{
   id: ID!
   investor: Investor
   pool: BasicTraderPool
+
+  exchanges: [ExchangeToBasicPool!]! @derivedFrom(field: "pair")
 }
 
 type PairInvestorInvestPool @entity{
   id: ID!
   investor: Investor
   pool: InvestTraderPool
+
+  exchanges: [ExchangeToInvestPool!]! @derivedFrom(field: "pair")
 }
 
 type PairInvestorRiskyPool @entity{
   id: ID!
   investor: Investor
   pool: RiskyTraderPool
+  
+  exchanges: [ExchangeToRiskyPool!]! @derivedFrom(field: "pair")
 }
 
 type InvestsToRiskyPool @entity {
   id: ID!
   amount: BigInt
-  investoToPool: PairInvestorRiskyPool
+  investorToPool: PairInvestorRiskyPool
 }
 
 type InvestsToBasicPool @entity {
   id: ID!
   amount: BigInt
-  investoToPool: PairInvestorBasicPool
+  investorToPool: PairInvestorBasicPool
 }
 
 type InvestsToInvestPool @entity {
   id: ID!
   amount: BigInt
-  investoToPool: PairInvestorInvestPool
+  investorToPool: PairInvestorInvestPool
 }
 
 type BasicTraderPool @entity {
@@ -64,7 +70,7 @@ type BasicTraderPool @entity {
   poolParameters: PoolParameters
 
   investors: [PairInvestorBasicPool!]! @derivedFrom(field: "pool")
-
+  positions: [PositionForBasicPool!]! @derivedFrom(field: "pool")
 }
 
 type RiskyTraderPool @entity {
@@ -73,7 +79,7 @@ type RiskyTraderPool @entity {
   poolParameters: PoolParameters
 
   investors: [PairInvestorRiskyPool!]! @derivedFrom(field: "pool")
-
+  positions: [PositionForRiskyPool!]! @derivedFrom(field: "pool")
 }
 
 type InvestTraderPool @entity {
@@ -82,26 +88,60 @@ type InvestTraderPool @entity {
   poolParameters: PoolParameters
 
   investors: [PairInvestorInvestPool!]! @derivedFrom(field: "pool")
-
+  positions: [PositionForInvestPool!]! @derivedFrom(field: "pool")
 }
 
-# type Token @entity {
-#   id: ID!
-  
-#   name: String
-#   symbol: String
-#   decimals: BigInt
+type PositionForBasicPool @entity {
+  id: ID!
+  pool: BasicTraderPool
 
-# }
+  token1: Bytes
+  token2: Bytes
 
-# type trade @entity {
-#   sellToken: String
-#   buyToken: String
-#   buyAmount: BigInt
-#   priceInBaseToken: BigInt
-#   priceInUSDT: BigInt
-#   costInBaseToken:BigInt
-#   costInUSDT: BigInt
-#   dateTime: String
-# }
+  exchanges: [ExchangeToBasicPool!]! @derivedFrom(field: "position")
+}
 
+type PositionForRiskyPool @entity {
+  id: ID!
+  pool: RiskyTraderPool
+
+  token1: Bytes
+  token2: Bytes
+
+  exchanges: [ExchangeToRiskyPool!]! @derivedFrom(field: "position")
+}
+
+type PositionForInvestPool @entity {
+  id: ID!
+  pool: InvestTraderPool
+
+  token1: Bytes
+  token2: Bytes
+
+  exchanges: [ExchangeToInvestPool!]! @derivedFrom(field: "position")
+}
+
+
+type ExchangeToBasicPool @entity {
+  id: ID!
+  pair: PairInvestorBasicPool
+  investor: Investor
+  amount: BigInt
+  position: PositionForBasicPool
+}
+
+type ExchangeToRiskyPool @entity {
+  id: ID!
+  pair: PairInvestorRiskyPool
+  investor: Investor
+  amount: BigInt
+  position: PositionForRiskyPool
+}
+
+type ExchangeToInvestPool @entity {
+  id: ID!
+  pair: PairInvestorInvestPool
+  investor: Investor
+  amount: BigInt
+  position: PositionForInvestPool
+}

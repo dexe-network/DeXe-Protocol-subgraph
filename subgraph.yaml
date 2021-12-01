@@ -42,12 +42,18 @@ templates:
         - TraderPoolFactory
         - BasicPool
         - PoolParameters
+        - PositionForBasicPool
+        - ExchangeToBasicPool
       abis:
         - name: BasicPool
           file: ./abis/BasicTraderPool.json
       eventHandlers:
         - event: Invest(address,uint256,address)
           handler: onInvest
+        - event: PositionOpen(address,uint256,address,address,address)
+          handler: onOpen
+        - event: PositionClose(address,uint256,address,address,address)
+          handler: onClose
 
   - kind: ethereum/contract
     name: RiskyPool
@@ -66,6 +72,8 @@ templates:
         - Invests
         - RiskyPool
         - PoolParameters
+        - PositionForRiskyPool
+        - ExchangeToRiskyPool
       abis:
         - name: RiskyPool
           file: ./abis/RiskyTraderPool.json
@@ -74,6 +82,10 @@ templates:
       eventHandlers:
         - event: Invest(address,uint256,address)
           handler: onInvest
+        - event: PositionOpen(address,uint256,address,address,address)
+          handler: onOpen
+        - event: PositionClose(address,uint256,address,address,address)
+          handler: onClose
 
   - kind: ethereum/contract
     name: InvestPool
@@ -92,6 +104,8 @@ templates:
         - Invests
         - InvestPool
         - PoolParameters
+        - PositionForInvestPool
+        - ExchangeToIvestPool
       abis:
         - name: InvestPool
           file: ./abis/InvestTraderPool.json
@@ -100,3 +114,7 @@ templates:
       eventHandlers:
         - event: Invest(address,uint256,address)
           handler: onInvest
+        - event: PositionOpen(address,uint256,address,address,address)
+          handler: onOpen
+        - event: PositionClose(address,uint256,address,address,address)
+          handler: onClose
