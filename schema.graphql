@@ -98,6 +98,7 @@ type PositionForBasicPool @entity {
   token1: Bytes
   token2: Bytes
 
+  positionNumber: BigInt!
   exchanges: [ExchangeToBasicPool!]! @derivedFrom(field: "position")
 }
 
@@ -108,6 +109,7 @@ type PositionForRiskyPool @entity {
   token1: Bytes
   token2: Bytes
 
+  positionNumber: BigInt!
   exchanges: [ExchangeToRiskyPool!]! @derivedFrom(field: "position")
 }
 
@@ -118,6 +120,7 @@ type PositionForInvestPool @entity {
   token1: Bytes
   token2: Bytes
 
+  positionNumber: BigInt!
   exchanges: [ExchangeToInvestPool!]! @derivedFrom(field: "position")
 }
 

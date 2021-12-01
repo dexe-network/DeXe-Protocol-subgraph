@@ -54,6 +54,8 @@ templates:
           handler: onOpen
         - event: PositionClose(address,uint256,address,address,address)
           handler: onClose
+        - event: PositionRemoved(address,address,address)
+          handler: onRemove
 
   - kind: ethereum/contract
     name: RiskyPool
@@ -86,6 +88,8 @@ templates:
           handler: onOpen
         - event: PositionClose(address,uint256,address,address,address)
           handler: onClose
+        - event: PositionRemoved(address,address,address)
+          handler: onRemove
 
   - kind: ethereum/contract
     name: InvestPool
@@ -118,3 +122,5 @@ templates:
           handler: onOpen
         - event: PositionClose(address,uint256,address,address,address)
           handler: onClose
+        - event: PositionRemoved(address,address,address)
+          handler: onRemove

@@ -1,10 +1,11 @@
 
+import { BigInt } from '@graphprotocol/graph-ts';
 import { InvestsToBasicPool, PairInvestorBasicPool } from '../../generated/schema';
-import { Invest, PositionOpen, PositionClose } from '../../generated/templates/BasicPool/BasicPool'
+import { Invest, PositionOpen, PositionClose, PositionRemoved } from '../../generated/templates/BasicPool/BasicPool'
 import { getBasicPool } from '../entities/BasicTraderPool';
 import { getExchangeToBasicPool } from '../entities/ExchangeToBasicPool';
 import { getInvestor } from '../entities/Investor'
-import { getPositionForBasicPool } from '../entities/Position';
+import { getPositionForBasicPool, getPositionForBasicPoolByIndex } from '../entities/Position';
 //import { runTests } from "../../tests/BasicTraderPool.test"
 
 export function onInvest(event: Invest): void{
@@ -26,7 +27,7 @@ export function onOpen(event: PositionOpen): void {
     let investor = getInvestor(event.params.sender);
     let pool = getBasicPool(event.params.pool);
     let pair = getPair(investor.id, pool.id);
-    let position = getPositionForBasicPool(event.transaction.hash.toHex(), pool.id, event.params.to, event.params.from);
+    let position = getPositionForBasicPool(pool.id, event.params.to, event.params.from);
     
     let exchange = getExchangeToBasicPool(event.transaction.hash.toHex(), investor, pair, event.params.amount, position);
 
@@ -35,6 +36,31 @@ export function onOpen(event: PositionOpen): void {
     pair.save();
     position.save();
     exchange.save();
+}
+
+export function onClose(event: PositionClose): void {
+    let investor = getInvestor(event.params.sender);
+    let pool = getBasicPool(event.params.pool);
+    let pair = getPair(investor.id, pool.id);
+    let position = getPositionForBasicPool(pool.id, event.params.from, event.params.to);
+    
+    let exchange = getExchangeToBasicPool(event.transaction.hash.toHex(), investor, pair, event.params.amount.neg(), position);
+
+    investor.save();
+    pool.save();
+    pair.save();
+    position.save();
+    exchange.save();
+}
+
+export function onRemove(event: PositionRemoved): void {
+    let pool = getBasicPool(event.params.pool);
+    let position = getPositionForBasicPoolByIndex(pool.id, event.params.from, event.params.to, BigInt.fromI32(0));
+    
+    position.positionNumber = position.positionNumber.plus(BigInt.fromI32(1));
+    
+    pool.save();
+    position.save();
 }
 
 function getPair(investor: string, pool: string): PairInvestorBasicPool {
@@ -48,4 +74,4 @@ function getPair(investor: string, pool: string): PairInvestorBasicPool {
     }
 
     return pair;
-};
+}
