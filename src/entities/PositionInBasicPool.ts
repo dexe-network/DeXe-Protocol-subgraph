@@ -12,8 +12,8 @@ export function getPositionInBasicPool(
     position = new PositionInBasicPool(id);
 
     position.positionToken = positionToken;
-    position.totalVolumeFrom = BigInt.fromI32(0);
-    position.totalVolumeTo = BigInt.fromI32(0);
+    position.totalOpenVolume = BigInt.fromI32(0);
+    position.totalCloseVolume = BigInt.fromI32(0);
     position.averagePositionPriceInBase = BigInt.fromI32(0);
     position.basicPoolId = basicPoolId;
   }

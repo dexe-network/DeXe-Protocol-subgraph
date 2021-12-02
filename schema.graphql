@@ -15,8 +15,8 @@ type PositionInBasicPool @entity {
   id: ID! # trader pool address + position token address + position offset
   positionToken: Bytes!
 
-  totalVolumeFrom: BigInt!
-  totalVolumeTo: BigInt!
+  totalOpenVolume: BigInt!
+  totalCloseVolume: BigInt!
   averagePositionPriceInBase: BigInt!
 
   basicPool: BasicPool!

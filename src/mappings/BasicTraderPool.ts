@@ -25,16 +25,18 @@ export function onExchange(event: Exchanged): void {
     position.id
   );
 
-  if (trade.toToken != position.baseToken) {    
+  if (trade.toToken != position.baseToken) {
+    // adding funds to the position
     let fullOldPrice = position.averagePositionPriceInBase.times(position.totalPositionVolume);
     let fullNewPrice = trade.volume.times(trade.priceInBase);
-    let fullVolume = position.totalVolumeFrom.plus(trade.volume);    
+    let fullVolume = position.totalOpenVolume.plus(trade.volume);    
     let newAveragePrice = fullOldPrice.plus(fullNewPrice).div(fullVolume);
 
     position.averagePositionPriceInBase = newAveragePrice;
-    position.totalVolumeFrom = fullVolume;
-  } else {
-    position.totalVolumeTo = position.totalVolumeTo.plus(trade.volume);
+    position.totalOpenVolume = fullVolume;
+  } else if (trade.fromToken != position.baseToken) {
+    // withdrawing funds from the position
+    position.totalCloseVolume = position.totalCloseVolume.plus(trade.volume);
   }
 
   positionOffset.save();

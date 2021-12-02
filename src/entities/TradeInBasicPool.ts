@@ -1,5 +1,5 @@
 import { BigInt, Address } from "@graphprotocol/graph-ts";
-import { TradeInBasicPool, PositionInBasicPool } from "../../generated/schema";
+import { TradeInBasicPool } from "../../generated/schema";
 
 export function getTradeInBasicPool(
   txHash: String,
