@@ -20,7 +20,7 @@ dataSources:
         - name: TraderPoolFactory
           file: ./abis/TraderPoolFactory.json
       eventHandlers:
-        - event: Deployed(address,string,address,(string,address,bool,bool,uint256,address,uint256,uint256,uint8,uint256))
+        - event: Deployed(...)
           handler: onDeployed
 
 templates:
@@ -36,91 +36,15 @@ templates:
       file: ./src/mappings/BasicTraderPool.ts
       entities:
         - Pool
-        - Investor
-        - Investor_to_Pool
-        - Invests
         - TraderPoolFactory
-        - BasicPool
-        - PoolParameters
-        - PositionForBasicPool
-        - ExchangeToBasicPool
+        - BasicTraderPool
+        - PositionInBasicPool
+        - TradeInBasicPool
       abis:
         - name: BasicPool
           file: ./abis/BasicTraderPool.json
       eventHandlers:
-        - event: Invest(address,uint256,address)
-          handler: onInvest
-        - event: PositionOpen(address,uint256,address,address,address)
-          handler: onOpen
-        - event: PositionClose(address,uint256,address,address,address)
+        - event: Echanged(...)
+          handler: onExchange
+        - event: PositionClosed(...)
           handler: onClose
-        - event: PositionRemoved(address,address,address)
-          handler: onRemove
-
-  - kind: ethereum/contract
-    name: RiskyPool
-    network: rinkeby
-    source:
-      abi: RiskyPool
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      file: ./src/mappings/RiskyTraderPool.ts
-      entities:
-        - Pool
-        - Investor
-        - Investor_to_Pool
-        - Invests
-        - RiskyPool
-        - PoolParameters
-        - PositionForRiskyPool
-        - ExchangeToRiskyPool
-      abis:
-        - name: RiskyPool
-          file: ./abis/RiskyTraderPool.json
-        # - name: TraderPoolFactory
-        #   file: ./abis/TraderPoolFactory.json
-      eventHandlers:
-        - event: Invest(address,uint256,address)
-          handler: onInvest
-        - event: PositionOpen(address,uint256,address,address,address)
-          handler: onOpen
-        - event: PositionClose(address,uint256,address,address,address)
-          handler: onClose
-        - event: PositionRemoved(address,address,address)
-          handler: onRemove
-
-  - kind: ethereum/contract
-    name: InvestPool
-    network: rinkeby
-    source:
-      abi: InvestPool
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      file: ./src/mappings/InvestTraderPool.ts
-      entities:
-        - Pool
-        - Investor
-        - Investor_to_Pool
-        - Invests
-        - InvestPool
-        - PoolParameters
-        - PositionForInvestPool
-        - ExchangeToIvestPool
-      abis:
-        - name: InvestPool
-          file: ./abis/InvestTraderPool.json
-        # - name: TraderPoolFactory
-        #   file: ./abis/TraderPoolFactory.json
-      eventHandlers:
-        - event: Invest(address,uint256,address)
-          handler: onInvest
-        - event: PositionOpen(address,uint256,address,address,address)
-          handler: onOpen
-        - event: PositionClose(address,uint256,address,address,address)
-          handler: onClose
-        - event: PositionRemoved(address,address,address)
-          handler: onRemove

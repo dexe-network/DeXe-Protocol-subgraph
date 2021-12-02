@@ -1,77 +1,52 @@
+import { BigInt } from "@graphprotocol/graph-ts";
+import { BasicTraderPool, PositionOffsetInBasicPool, PositionInBasicPool, TradeInBasicPool } from "../../generated/schema";
 
-import { BigInt } from '@graphprotocol/graph-ts';
-import { InvestsToBasicPool, PairInvestorBasicPool } from '../../generated/schema';
-import { Invest, PositionOpen, PositionClose, PositionRemoved } from '../../generated/templates/BasicPool/BasicPool'
-import { getBasicPool } from '../entities/BasicTraderPool';
-import { getExchangeToBasicPool } from '../entities/ExchangeToBasicPool';
-import { getInvestor } from '../entities/Investor'
-import { getPositionForBasicPool, getPositionForBasicPoolByIndex } from '../entities/Position';
-//import { runTests } from "../../tests/BasicTraderPool.test"
+import { getBasicTraderPool } from "../entities/BasicTraderPool";
+import { getPositionOffsetInBasicPool } from "../entities/PositionOffsetInBasicPool";
+import { getPositionInBasicPool } from "../entities/PositionInBasicPool";
+import { getTradeInBasicPool } from "../entities/TradeInBasicPool";
 
-export function onInvest(event: Invest): void{
-    let investor = getInvestor(event.params.investor);
-    let pool = getBasicPool(event.params.pool);
-    let pair = getPair(investor.id, pool.id);
-    
-    let investToBasicPool = new InvestsToBasicPool(event.transaction.hash.toHex());
-    investToBasicPool.investorToPool = pair.id;
-    investToBasicPool.amount = event.params.amount;
+export function onExchange(event: Exchanged): void {
+  let basicPool = getBasicTraderPool(event.params.pool);
 
-    investor.save();
-    pool.save();
-    pair.save();
-    investToBasicPool.save();
+  let positionOffsetId = event.params.pool.toString() + event.params.position.toString();
+  let positionOffset = getPositionOffsetInBasicPool(positionOffsetId);
+
+  let positionId = positionOffsetId + positionOffset.offset.toString();
+  let position = getPositionInBasicPool(positionId, event.params.position, basicPool.id);
+
+  let trade = getTradeInBasicPool(
+    event.transaction.hash.toHex(),
+    event.params.fromToken,
+    event.params.toToken,
+    event.params.volume,
+    event.params.priceInBase,
+    event.block.timestamp,
+    position.id
+  );
+
+  if (trade.toToken != position.baseToken) {    
+    let fullOldPrice = position.averagePositionPriceInBase.times(position.totalPositionVolume);
+    let fullNewPrice = trade.volume.times(trade.priceInBase);
+    let fullVolume = position.totalVolumeFrom.plus(trade.volume);    
+    let newAveragePrice = fullOldPrice.plus(fullNewPrice).div(fullVolume);
+
+    position.averagePositionPriceInBase = newAveragePrice;
+    position.totalVolumeFrom = fullVolume;
+  } else {
+    position.totalVolumeTo = position.totalVolumeTo.plus(trade.volume);
+  }
+
+  positionOffset.save();
+  position.save();
+  trade.save();
 }
 
-export function onOpen(event: PositionOpen): void {
-    let investor = getInvestor(event.params.sender);
-    let pool = getBasicPool(event.params.pool);
-    let pair = getPair(investor.id, pool.id);
-    let position = getPositionForBasicPool(pool.id, event.params.to, event.params.from);
-    
-    let exchange = getExchangeToBasicPool(event.transaction.hash.toHex(), investor, pair, event.params.amount, position);
+export function onClose(event: PositionClosed): void {
+  let positionOffsetId = event.params.pool.toString() + event.params.position.toString();
+  let positionOffset = getPositionOffsetInBasicPool(positionOffsetId);
 
-    investor.save();
-    pool.save();
-    pair.save();
-    position.save();
-    exchange.save();
-}
+  positionOffset.offset = positionOffset.offset.plus(1);
 
-export function onClose(event: PositionClose): void {
-    let investor = getInvestor(event.params.sender);
-    let pool = getBasicPool(event.params.pool);
-    let pair = getPair(investor.id, pool.id);
-    let position = getPositionForBasicPool(pool.id, event.params.from, event.params.to);
-    
-    let exchange = getExchangeToBasicPool(event.transaction.hash.toHex(), investor, pair, event.params.amount.neg(), position);
-
-    investor.save();
-    pool.save();
-    pair.save();
-    position.save();
-    exchange.save();
-}
-
-export function onRemove(event: PositionRemoved): void {
-    let pool = getBasicPool(event.params.pool);
-    let position = getPositionForBasicPoolByIndex(pool.id, event.params.from, event.params.to, BigInt.fromI32(0));
-    
-    position.positionNumber = position.positionNumber.plus(BigInt.fromI32(1));
-    
-    pool.save();
-    position.save();
-}
-
-function getPair(investor: string, pool: string): PairInvestorBasicPool {
-    let id = investor+pool;
-    let pair = PairInvestorBasicPool.load(id);
-
-    if(pair == null){
-        pair = new PairInvestorBasicPool(id);
-        pair.pool = pool;
-        pair.investor = investor;
-    }
-
-    return pair;
+  positionOffset.save();
 }
