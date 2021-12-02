@@ -1,10 +1,9 @@
-import { BigInt } from "@graphprotocol/graph-ts";
-import { BasicTraderPool, PositionOffsetInBasicPool, PositionInBasicPool, TradeInBasicPool } from "../../generated/schema";
-
+import { Exchanged, PositionClosed } from "../../generated/templates/BasicPool/BasicPool"
 import { getBasicTraderPool } from "../entities/BasicTraderPool";
 import { getPositionOffsetInBasicPool } from "../entities/PositionOffsetInBasicPool";
 import { getPositionInBasicPool } from "../entities/PositionInBasicPool";
 import { getTradeInBasicPool } from "../entities/TradeInBasicPool";
+import { BigInt } from "@graphprotocol/graph-ts";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.params.pool);
@@ -25,16 +24,16 @@ export function onExchange(event: Exchanged): void {
     position.id
   );
 
-  if (trade.toToken != position.baseToken) {
+  if (trade.toToken != basicPool.baseToken) { 
     // adding funds to the position
-    let fullOldPrice = position.averagePositionPriceInBase.times(position.totalPositionVolume);
+    let fullOldPrice = position.averagePositionPriceInBase.times(position.totalOpenVolume);
     let fullNewPrice = trade.volume.times(trade.priceInBase);
     let fullVolume = position.totalOpenVolume.plus(trade.volume);    
     let newAveragePrice = fullOldPrice.plus(fullNewPrice).div(fullVolume);
 
     position.averagePositionPriceInBase = newAveragePrice;
     position.totalOpenVolume = fullVolume;
-  } else if (trade.fromToken != position.baseToken) {
+  } else if (trade.fromToken != basicPool.baseToken) {
     // withdrawing funds from the position
     position.totalCloseVolume = position.totalCloseVolume.plus(trade.volume);
   }
@@ -48,7 +47,7 @@ export function onClose(event: PositionClosed): void {
   let positionOffsetId = event.params.pool.toString() + event.params.position.toString();
   let positionOffset = getPositionOffsetInBasicPool(positionOffsetId);
 
-  positionOffset.offset = positionOffset.offset.plus(1);
+  positionOffset.offset = positionOffset.offset.plus(BigInt.fromI32(1));
 
   positionOffset.save();
 }

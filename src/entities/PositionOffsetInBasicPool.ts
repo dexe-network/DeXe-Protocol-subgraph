@@ -1,7 +1,7 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import { PositionOffsetInBasicPool } from "../../generated/schema";
 
-export function getPositionOffsetInBasicPool(id: String): PositionOffsetInBasicPool {
+export function getPositionOffsetInBasicPool(id: string): PositionOffsetInBasicPool {
   let positionOffset = PositionOffsetInBasicPool.load(id);
 
   if (positionOffset == null) {

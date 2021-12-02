@@ -2,13 +2,13 @@ import { BigInt, Address } from "@graphprotocol/graph-ts";
 import { TradeInBasicPool } from "../../generated/schema";
 
 export function getTradeInBasicPool(
-  txHash: String,
+  txHash: string,
   fromToken: Address,
   toToken: Address,
   volume: BigInt,
   priceInBase: BigInt,
   timestamp: BigInt,
-  positionId: String
+  positionId: string
 ): TradeInBasicPool {
   let trade = TradeInBasicPool.load(txHash);
 

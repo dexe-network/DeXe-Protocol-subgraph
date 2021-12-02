@@ -20,7 +20,7 @@ dataSources:
         - name: TraderPoolFactory
           file: ./abis/TraderPoolFactory.json
       eventHandlers:
-        - event: Deployed(...)
+        - event: Deployed(address,string,address,address)
           handler: onDeployed
 
 templates:
@@ -44,7 +44,7 @@ templates:
         - name: BasicPool
           file: ./abis/BasicTraderPool.json
       eventHandlers:
-        - event: Echanged(...)
+        - event: Exchanged(address,address,address,address,uint256,uint256)
           handler: onExchange
-        - event: PositionClosed(...)
+        - event: PositionClosed(address,address)
           handler: onClose
