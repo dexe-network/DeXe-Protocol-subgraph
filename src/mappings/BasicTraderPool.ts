@@ -1,18 +1,15 @@
 import { Exchanged, PositionClosed } from "../../generated/templates/BasicPool/BasicPool"
 import { getBasicTraderPool } from "../entities/BasicTraderPool";
-import { getPositionOffsetInBasicPool } from "../entities/PositionOffset";
+import { getPositionOffset } from "../entities/PositionOffset";
 import { getPositionInBasicPool } from "../entities/PositionInBasicPool";
 import { getTradeInBasicPool } from "../entities/TradeInBasicPool";
 import { BigInt } from "@graphprotocol/graph-ts";
+import { getPositionId } from "../helpers/Position";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.params.pool);
 
-  let positionOffsetId = event.params.pool.toString() + event.params.position.toString();
-  let positionOffset = getPositionOffsetInBasicPool(positionOffsetId);
-
-  let positionId = positionOffsetId + positionOffset.offset.toString();
-  let position = getPositionInBasicPool(positionId, event.params.position, basicPool.id);
+  let position = getPositionInBasicPool(getPositionId(event.params.pool, event.params.position), event.params.position, basicPool.id);
 
   let trade = getTradeInBasicPool(
     event.transaction.hash.toHex(),
@@ -38,14 +35,13 @@ export function onExchange(event: Exchanged): void {
     position.totalCloseVolume = position.totalCloseVolume.plus(trade.volume);
   }
 
-  positionOffset.save();
   position.save();
   trade.save();
 }
 
 export function onClose(event: PositionClosed): void {
   let positionOffsetId = event.params.pool.toString() + event.params.position.toString();
-  let positionOffset = getPositionOffsetInBasicPool(positionOffsetId);
+  let positionOffset = getPositionOffset(positionOffsetId);
 
   positionOffset.offset = positionOffset.offset.plus(BigInt.fromI32(1));
 

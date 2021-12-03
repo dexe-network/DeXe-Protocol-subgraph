@@ -16,6 +16,7 @@ export function getPositionInBasicPool(
     position.totalCloseVolume = BigInt.fromI32(0);
     position.averagePositionPriceInBase = BigInt.fromI32(0);
     position.basicPool = basicPoolId;
+    position.closed = false;
   }
 
   return position;
