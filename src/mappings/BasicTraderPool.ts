@@ -1,6 +1,6 @@
 import { Exchanged, PositionClosed } from "../../generated/templates/BasicPool/BasicPool"
 import { getBasicTraderPool } from "../entities/BasicTraderPool";
-import { getPositionOffsetInBasicPool } from "../entities/PositionOffsetInBasicPool";
+import { getPositionOffsetInBasicPool } from "../entities/PositionOffset";
 import { getPositionInBasicPool } from "../entities/PositionInBasicPool";
 import { getTradeInBasicPool } from "../entities/TradeInBasicPool";
 import { BigInt } from "@graphprotocol/graph-ts";

@@ -6,7 +6,7 @@ type BasicPool @entity {
   positions: [PositionInBasicPool!]! @derivedFrom(field: "basicPool")
 }
 
-type PositionOffsetInBasicPool @entity {
+type PositionOffset @entity {
   id: ID! # trader pool address + position token address
   offset: BigInt!
 }
