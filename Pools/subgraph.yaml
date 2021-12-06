@@ -1,0 +1,54 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: TraderPoolFactory
+    network: rinkeby
+    source:
+      address: "0xA7B0aE940Ac6f8d4e136EDd9b2459F713752e29c"
+      abi: TraderPoolFactory
+      startBlock: 9721930
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/TraderPoolFactory.ts
+      entities:
+        - TraderPoolFactory
+      abis:
+        - name: TraderPoolFactory
+          file: ./abis/TraderPoolFactory.json
+      eventHandlers:
+        - event: Deployed(address,string,address,address)
+          handler: onDeployed
+
+templates:
+  - kind: ethereum/contract
+    name: BasicPool
+    network: rinkeby
+    source:
+      abi: BasicPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/BasicTraderPool.ts
+      entities:
+        - Pool
+        - TraderPoolFactory
+        - BasicTraderPool
+        - PositionInBasicPool
+        - TradeInBasicPool
+      abis:
+        - name: BasicPool
+          file: ./abis/BasicTraderPool.json
+      eventHandlers:
+        - event: Exchanged(address,address,address,address,uint256,uint256)
+          handler: onExchange
+        - event: PositionClosed(address,address)
+          handler: onClose
+        - event: InvestorAdded(address,address)
+          handler: onInvestorAdded
+        - event: Invest(address,address,uint256,uint256)
+          handler: onInvest

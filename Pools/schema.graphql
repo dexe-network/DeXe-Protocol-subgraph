@@ -1,0 +1,53 @@
+type BasicPool @entity {
+  id: ID! # pool address
+
+  baseToken: Bytes!
+
+  positions: [PositionInBasicPool!]! @derivedFrom(field: "basicPool")
+}
+
+type PositionOffset @entity {
+  id: ID! # trader pool address + position token address
+  offset: BigInt!
+}
+
+type PositionInBasicPool @entity {
+  id: ID! # trader pool address + position token address + position offset
+  positionToken: Bytes!
+  closed: Boolean!
+
+  totalOpenVolume: BigInt!
+  totalCloseVolume: BigInt!
+  averagePositionPriceInBase: BigInt!
+
+  basicPool: BasicPool!
+  trades: [TradeInBasicPool!]! @derivedFrom(field: "position")
+}
+
+type TradeInBasicPool @entity {
+  id: ID! # tx hash
+  fromToken: Bytes!
+  toToken: Bytes!
+
+  volume: BigInt!
+  priceInBase: BigInt!
+  timestamp: BigInt!
+
+  position: PositionInBasicPool!
+}
+
+type Investment @entity {
+  id: ID!
+  investor: Bytes!
+  volume: BigInt!
+  lpPurchasePrice: BigInt!
+}
+
+type InvestHistory @entity {
+  id: ID!
+  count: BigInt!
+  totalInvestVolume: BigInt!
+  newInvestors: BigInt!
+
+  investments: [Investment!]!
+}
