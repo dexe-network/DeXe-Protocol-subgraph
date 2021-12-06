@@ -35,3 +35,19 @@ type TradeInBasicPool @entity {
 
   position: PositionInBasicPool!
 }
+
+type Investment @entity {
+  id: ID!
+  investor: Bytes!
+  volume: BigInt!
+  lpPurchasePrice: BigInt!
+}
+
+type InvestHistory @entity {
+  id: ID!
+  count: BigInt!
+  totalInvestVolume: BigInt!
+  newInvestors: BigInt!
+
+  investments: [Investment!]!
+}

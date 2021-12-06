@@ -1,10 +1,12 @@
-import { Exchanged, PositionClosed } from "../../generated/templates/BasicPool/BasicPool"
+import { Exchanged, PositionClosed, InvestorAdded } from "../../generated/templates/BasicPool/BasicPool"
 import { getBasicTraderPool } from "../entities/BasicTraderPool";
 import { getPositionOffset } from "../entities/PositionOffset";
 import { getPositionInBasicPool } from "../entities/PositionInBasicPool";
 import { getTradeInBasicPool } from "../entities/TradeInBasicPool";
+import { getInvestment } from "../entities/Investment";
 import { BigInt } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
+import { getInvestHistory } from "../entities/InvestHistory";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.params.pool);
@@ -46,4 +48,14 @@ export function onClose(event: PositionClosed): void {
   positionOffset.offset = positionOffset.offset.plus(BigInt.fromI32(1));
 
   positionOffset.save();
+}
+
+export function onInvestorAdded(event: InvestorAdded): void {
+  let invest = getInvestment(event.transaction.hash.toHexString(), event.params.investor, event.params.amount, event.params.lpPurchasePrice);
+  let history = getInvestHistory(event.block.timestamp);
+
+  history.count = history.count.plus(BigInt.fromI32(1));
+  history.totalInvestVolume = history.totalInvestVolume.plus(event.params.amount);
+  history.newInvestors = history.newInvestors.plus(BigInt.fromI32(1));
+  history.investments.push(invest.id);
 }
