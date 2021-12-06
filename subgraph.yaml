@@ -48,5 +48,7 @@ templates:
           handler: onExchange
         - event: PositionClosed(address,address)
           handler: onClose
-        - event: InvestorAdded(address,address,uint256,uint256)
+        - event: InvestorAdded(address,address)
           handler: onInvestorAdded
+        - event: Invest(address,address,uint256,uint256)
+          handler: onInvest
