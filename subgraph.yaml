@@ -52,3 +52,5 @@ templates:
           handler: onInvestorAdded
         - event: Invest(address,address,uint256,uint256)
           handler: onInvest
+        - event: InvestorRemoved(address,address)
+          handler: onInvestorRemoved

@@ -48,6 +48,7 @@ type InvestHistory @entity {
   count: BigInt!
   totalInvestVolume: BigInt!
   newInvestors: BigInt!
+  removedInvestors: BigInt!
 
   investments: [Investment!]!
 }

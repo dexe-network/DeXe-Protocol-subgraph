@@ -1,4 +1,4 @@
-import { Exchanged, PositionClosed, InvestorAdded, Invest } from "../../generated/templates/BasicPool/BasicPool"
+import { Exchanged, PositionClosed, InvestorAdded, Invest, InvestorRemoved } from "../../generated/templates/BasicPool/BasicPool"
 import { getBasicTraderPool } from "../entities/BasicTraderPool";
 import { getPositionOffset } from "../entities/PositionOffset";
 import { getPositionInBasicPool } from "../entities/PositionInBasicPool";
@@ -64,5 +64,11 @@ export function onInvest(event: Invest): void {
   history.count = history.count.plus(BigInt.fromI32(1));
   history.investments.push(invest.id);
   invest.save();
+  history.save();
+}
+
+export function onInvestorRemoved(event: InvestorRemoved): void {
+  let history = getInvestHistory(event.block.timestamp);
+  history.removedInvestors = history.removedInvestors.plus(BigInt.fromI32(1));
   history.save();
 }

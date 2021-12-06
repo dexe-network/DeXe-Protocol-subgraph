@@ -129,6 +129,25 @@
         {
           "indexed": false,
           "internalType": "address",
+          "name": "investor",
+          "type": "address"
+        }
+      ],
+      "name": "InvestorRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
           "name": "position",
           "type": "address"
         }
