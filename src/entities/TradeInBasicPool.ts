@@ -21,6 +21,7 @@ export function getTradeInBasicPool(
     trade.priceInBase = priceInBase;
     trade.timestamp = timestamp;
     trade.position = positionId;
+    trade.day = timestamp.div(BigInt.fromU32(84600)).toString();
   }
 
   return trade;

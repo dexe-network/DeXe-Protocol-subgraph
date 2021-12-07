@@ -10,7 +10,6 @@ export function getInvestHistory(timestamp: BigInt): InvestHistory {
         history.count = BigInt.fromI32(0);
         history.totalInvestVolume = BigInt.fromI32(0);
         history.newInvestors = BigInt.fromI32(0);
-        history.investments = new Array<string>();
     }
 
     return history;

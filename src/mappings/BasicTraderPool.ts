@@ -40,7 +40,6 @@ export function onExchange(event: Exchanged): void {
 
   let history = getExchangeBasicPoolHistory(event.block.timestamp);
   history.exchangesCount = history.exchangesCount.plus(BigInt.fromI32(1));
-  history.exchanges.push(trade.id);
 
   basicPool.totalTrades = basicPool.totalTrades.plus(BigInt.fromI32(1));
 
@@ -71,7 +70,6 @@ export function onInvest(event: Invest): void {
 
   history.totalInvestVolume = history.totalInvestVolume.plus(BigInt.fromI32(1));
   history.count = history.count.plus(BigInt.fromI32(1));
-  history.investments.push(invest.id);
   invest.save();
   history.save();
 }

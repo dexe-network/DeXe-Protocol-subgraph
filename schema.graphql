@@ -34,6 +34,8 @@ type TradeInBasicPool @entity {
   timestamp: BigInt!
 
   position: PositionInBasicPool!
+
+  day: ExchangeBasicPoolHistory!
 }
 
 type Investment @entity {
@@ -41,6 +43,8 @@ type Investment @entity {
   investor: Bytes!
   volume: BigInt!
   lpPurchasePrice: BigInt!
+
+  day: InvestHistory!
 }
 
 type InvestHistory @entity {
@@ -50,11 +54,12 @@ type InvestHistory @entity {
   newInvestors: BigInt!
   removedInvestors: BigInt!
 
-  investments: [Investment!]!
+  investments: [Investment!]! @derivedFrom(field: "day")
 }
 
 type ExchangeBasicPoolHistory @entity {
   id: ID!
   exchangesCount: BigInt!
-  exchanges: [TradeInBasicPool!]!
+  
+  trades: [TradeInBasicPool!]! @derivedFrom(field: "day")
 }
