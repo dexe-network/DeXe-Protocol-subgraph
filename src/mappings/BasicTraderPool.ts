@@ -62,6 +62,10 @@ export function onInvestorAdded(event: InvestorAdded): void {
   let history = getInvestHistory(event.block.timestamp);
   history.newInvestors = history.newInvestors.plus(BigInt.fromI32(1));
   history.save();
+
+  let pool = getBasicTraderPool(event.params.pool);
+  pool.investors.push(event.params.investor);
+  pool.save();
 }
 
 export function onInvest(event: Invest): void {

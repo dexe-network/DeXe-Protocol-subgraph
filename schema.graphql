@@ -4,6 +4,7 @@ type BasicPool @entity {
   baseToken: Bytes!
   totalTrades: BigInt!
   positions: [PositionInBasicPool!]! @derivedFrom(field: "basicPool")
+  investors: [Bytes!]!
 }
 
 type PositionOffset @entity {
