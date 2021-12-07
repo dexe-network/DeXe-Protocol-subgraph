@@ -12,7 +12,7 @@ import { getExchangeBasicPoolHistory } from "../entities/ExchangeBasicPoolHistor
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.params.pool);
 
-  let position = getPositionInBasicPool(getPositionId(event.params.pool, event.params.position), event.params.position, basicPool.id);
+  let position = getPositionInBasicPool(getPositionId(event.params.pool, event.params.toToken), event.params.toToken, basicPool.id);
 
   let trade = getTradeInBasicPool(
     event.transaction.hash.toHex(),

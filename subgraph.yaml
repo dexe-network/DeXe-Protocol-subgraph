@@ -44,7 +44,7 @@ templates:
         - name: BasicPool
           file: ./abis/BasicTraderPool.json
       eventHandlers:
-        - event: Exchanged(address,address,address,address,uint256,uint256)
+        - event: Exchanged(address,address,address,uint256,uint256)
           handler: onExchange
         - event: PositionClosed(address,address)
           handler: onClose
