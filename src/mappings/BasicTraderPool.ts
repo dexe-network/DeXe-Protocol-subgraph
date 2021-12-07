@@ -7,6 +7,7 @@ import { getInvestment } from "../entities/Investment";
 import { BigInt } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
 import { getInvestHistory } from "../entities/InvestHistory";
+import { getExchangeBasicPoolHistory } from "../entities/ExchangeBasicPoolHistory";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.params.pool);
@@ -37,8 +38,15 @@ export function onExchange(event: Exchanged): void {
     position.totalCloseVolume = position.totalCloseVolume.plus(trade.volume);
   }
 
+  let history = getExchangeBasicPoolHistory(event.block.timestamp);
+  history.exchangesCount = history.exchangesCount.plus(BigInt.fromI32(1));
+  history.exchanges.push(trade.id);
+
+  basicPool.totalTrades = basicPool.totalTrades.plus(BigInt.fromI32(1));
+
   position.save();
   trade.save();
+  history.save();
 }
 
 export function onClose(event: PositionClosed): void {

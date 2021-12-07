@@ -2,7 +2,7 @@ type BasicPool @entity {
   id: ID! # pool address
 
   baseToken: Bytes!
-
+  totalTrades: BigInt!
   positions: [PositionInBasicPool!]! @derivedFrom(field: "basicPool")
 }
 
@@ -51,4 +51,10 @@ type InvestHistory @entity {
   removedInvestors: BigInt!
 
   investments: [Investment!]!
+}
+
+type ExchangeBasicPoolHistory @entity {
+  id: ID!
+  exchangesCount: BigInt!
+  exchanges: [TradeInBasicPool!]!
 }
