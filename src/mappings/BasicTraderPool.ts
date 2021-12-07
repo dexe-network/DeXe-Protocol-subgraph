@@ -44,6 +44,7 @@ export function onExchange(event: Exchanged): void {
 
   basicPool.totalTrades = basicPool.totalTrades.plus(BigInt.fromI32(1));
 
+  basicPool.save();
   position.save();
   trade.save();
   history.save();
