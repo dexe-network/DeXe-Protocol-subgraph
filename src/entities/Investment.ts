@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { Investment } from "../../generated/schema";
 
 
@@ -7,7 +7,7 @@ export function getInvestment(id: string, investor: Address = Address.zero(), vo
     
     if (invest == null) {
         invest = new Investment(id);
-        invest.investor = investor;
+        invest.investor = investor.toHex();
         invest.volume = volume;
         invest.lpPurchasePrice = lpPurchasePrice;
         invest.day = timestamp.div(BigInt.fromU32(84600)).toString();

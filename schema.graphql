@@ -41,7 +41,7 @@ type TradeInBasicPool @entity {
 
 type Investment @entity {
   id: ID!
-  investor: Bytes!
+  investor: Investor!
   volume: BigInt!
   lpPurchasePrice: BigInt!
 
@@ -58,9 +58,79 @@ type InvestHistory @entity {
   investments: [Investment!]! @derivedFrom(field: "day")
 }
 
+type Divestment @entity {
+  id: ID!
+  investor: Investor!
+  volume: BigInt!
+
+  day: DivestHistory!
+}
+
+type DivestHistory @entity {
+  id: ID!
+  count: BigInt!
+  totalDivestVolume: BigInt!
+
+  divestments: [Divestment!]! @derivedFrom(field: "day")
+}
+
 type ExchangeBasicPoolHistory @entity {
   id: ID!
   exchangesCount: BigInt!
   
   trades: [TradeInBasicPool!]! @derivedFrom(field: "day")
+}
+
+type Investor @entity {
+  id: ID!
+  totalInvest: BigInt!
+  totalDivest: BigInt!
+
+  invests: [Investment!]! @derivedFrom(field: "investor")
+}
+
+
+#################### Invest POOL #########################
+type InvestPool @entity {
+  id: ID! # pool address
+
+  baseToken: Bytes!
+  totalTrades: BigInt!
+  positions: [PositionInInvestPool!]! @derivedFrom(field: "investPool")
+  investors: [Bytes!]!
+}
+
+type PositionInInvestPool @entity {
+  id: ID! # trader pool address + position token address + position offset
+  positionToken: Bytes!
+  closed: Boolean!
+
+  totalOpenVolume: BigInt!
+  totalCloseVolume: BigInt!
+  averagePositionPriceInBase: BigInt!
+
+  investPool: InvestPool!
+  trades: [TradeInInvestPool!]! @derivedFrom(field: "position")
+}
+
+type TradeInInvestPool @entity {
+  id: ID! # tx hash
+  fromToken: Bytes!
+  toToken: Bytes!
+
+  volume: BigInt!
+  priceInBase: BigInt!
+  timestamp: BigInt!
+
+  position: PositionInInvestPool!
+
+  day: ExchangeInvestPoolHistory!
+}
+
+
+type ExchangeInvestPoolHistory @entity {
+  id: ID!
+  exchangesCount: BigInt!
+  
+  trades: [TradeInInvestPool!]! @derivedFrom(field: "day")
 }

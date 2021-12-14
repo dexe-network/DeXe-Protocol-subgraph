@@ -1,23 +1,24 @@
-import { Exchanged, PositionClosed, InvestorAdded, Invest, InvestorRemoved, Divest } from "../../generated/templates/BasicPool/BasicPool"
-import { getBasicTraderPool } from "../entities/BasicTraderPool";
+import { Exchanged, PositionClosed, InvestorAdded, Invest, InvestorRemoved, Divest } from "../../generated/templates/InvestPool/InvestPool"
+import { getInvestTraderPool } from "../entities/InvestTraderPool";
 import { getPositionOffset } from "../entities/PositionOffset";
-import { getPositionInBasicPool } from "../entities/PositionInBasicPool";
-import { getTradeInBasicPool } from "../entities/TradeInBasicPool";
+import { getPositionInInvestPool } from "../entities/PositionInInvestPool";
+import { getTradeInInvestPool } from "../entities/TradeInInvestPool";
 import { getInvestment } from "../entities/Investment";
-import { BigInt } from "@graphprotocol/graph-ts";
+import { BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
 import { getInvestHistory } from "../entities/InvestHistory";
-import { getExchangeBasicPoolHistory } from "../entities/ExchangeBasicPoolHistory";
+import { getExchangeInvestPoolHistory } from "../entities/ExchangeInvestPoolHistory";
 import { getInvestor } from "../entities/Investor";
 import { getDivestment } from "../entities/Divestment";
 import { getDivestHistory } from "../entities/DivestHistory";
 
+
 export function onExchange(event: Exchanged): void {
-  let basicPool = getBasicTraderPool(event.params.pool);
+  let basicPool = getInvestTraderPool(event.params.pool);
 
-  let position = getPositionInBasicPool(getPositionId(event.params.pool, event.params.toToken), event.params.toToken, basicPool.id);
+  let position = getPositionInInvestPool(getPositionId(event.params.pool, event.params.toToken), event.params.toToken, basicPool.id);
 
-  let trade = getTradeInBasicPool(
+  let trade = getTradeInInvestPool(
     event.transaction.hash.toHex(),
     event.params.fromToken,
     event.params.toToken,
@@ -41,7 +42,7 @@ export function onExchange(event: Exchanged): void {
     position.totalCloseVolume = position.totalCloseVolume.plus(trade.volume);
   }
 
-  let history = getExchangeBasicPoolHistory(event.block.timestamp);
+  let history = getExchangeInvestPoolHistory(event.block.timestamp);
   history.exchangesCount = history.exchangesCount.plus(BigInt.fromI32(1));
 
   basicPool.totalTrades = basicPool.totalTrades.plus(BigInt.fromI32(1));
@@ -66,7 +67,7 @@ export function onInvestorAdded(event: InvestorAdded): void {
   history.newInvestors = history.newInvestors.plus(BigInt.fromI32(1));
   history.save();
 
-  let pool = getBasicTraderPool(event.params.pool);
+  let pool = getInvestTraderPool(event.params.pool);
   pool.investors.push(event.params.investor);
   pool.save();
 }

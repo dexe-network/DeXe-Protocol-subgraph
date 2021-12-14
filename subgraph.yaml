@@ -54,3 +54,38 @@ templates:
           handler: onInvest
         - event: InvestorRemoved(address,address)
           handler: onInvestorRemoved
+        - event: Divest(address,address,uint256)
+          handler: onDivest
+
+  - kind: ethereum/contract
+    name: InvestPool
+    network: rinkeby
+    source:
+      abi: InvestPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/InvestTraderPool.ts
+      entities:
+        - Pool
+        - TraderPoolFactory
+        - InvestTraderPool
+        - PositionInInvestPool
+        - TradeInInvestPool
+      abis:
+        - name: InvestPool
+          file: ./abis/InvestTraderPool.json
+      eventHandlers:
+        - event: Exchanged(address,address,address,uint256,uint256)
+          handler: onExchange
+        - event: PositionClosed(address,address)
+          handler: onClose
+        - event: InvestorAdded(address,address)
+          handler: onInvestorAdded
+        - event: Invest(address,address,uint256,uint256)
+          handler: onInvest
+        - event: InvestorRemoved(address,address)
+          handler: onInvestorRemoved
+        - event: Divest(address,address,uint256)
+          handler: onDivest

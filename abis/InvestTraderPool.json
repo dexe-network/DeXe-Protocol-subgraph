@@ -36,7 +36,26 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "position",
+        "name": "investor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "Divest",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pool",
         "type": "address"
       },
       {
@@ -73,6 +92,12 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "investor",
         "type": "address"
       },
@@ -84,12 +109,50 @@
       },
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "pool",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "lpPurchasePrice",
+        "type": "uint256"
       }
     ],
     "name": "Invest",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "investor",
+        "type": "address"
+      }
+    ],
+    "name": "InvestorAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "investor",
+        "type": "address"
+      }
+    ],
+    "name": "InvestorRemoved",
     "type": "event"
   },
   {
@@ -162,11 +225,6 @@
           },
           {
             "internalType": "bool",
-            "name": "activePortfolio",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
             "name": "privatePool",
             "type": "bool"
           },
@@ -204,6 +262,11 @@
         "internalType": "struct ITraderPool.PoolParameters",
         "name": "_poolParameters",
         "type": "tuple"
+      },
+      {
+        "internalType": "address",
+        "name": "traderPoolProposal",
+        "type": "address"
       }
     ],
     "name": "__InvestTraderPool_init",
@@ -234,86 +297,6 @@
             "internalType": "address",
             "name": "trader",
             "type": "address"
-          },
-          {
-            "internalType": "bool",
-            "name": "activePortfolio",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
-            "name": "privatePool",
-            "type": "bool"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalLPEmission",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "baseToken",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "baseTokenDecimals",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "minimalInvestment",
-            "type": "uint256"
-          },
-          {
-            "internalType": "enum ICoreProperties.CommissionPeriod",
-            "name": "commissionPeriod",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint256",
-            "name": "commissionPercentage",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ITraderPool.PoolParameters",
-        "name": "_poolParameters",
-        "type": "tuple"
-      }
-    ],
-    "name": "__RiskyTraderPool_init",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "symbol",
-        "type": "string"
-      },
-      {
-        "components": [
-          {
-            "internalType": "string",
-            "name": "descriptionURL",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "trader",
-            "type": "address"
-          },
-          {
-            "internalType": "bool",
-            "name": "activePortfolio",
-            "type": "bool"
           },
           {
             "internalType": "bool",
@@ -475,6 +458,85 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "timestampLimit",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "investLPLimit",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeProposalRestrictions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "claimAllProposals",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      }
+    ],
+    "name": "claimProposal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      }
+    ],
+    "name": "convertToDividendsProposal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "lpAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "timestampLimit",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "investBaseLimit",
+        "type": "uint256"
+      }
+    ],
+    "name": "createProposal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "decimals",
     "outputs": [
@@ -525,6 +587,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "divestAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -545,6 +614,19 @@
     "name": "exchange",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getInjector",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "_injector",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -572,19 +654,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "injector",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "_injector",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -593,6 +662,24 @@
       }
     ],
     "name": "invest",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lpAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "investProposal",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -707,11 +794,6 @@
       },
       {
         "internalType": "bool",
-        "name": "activePortfolio",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
         "name": "privatePool",
         "type": "bool"
       },
@@ -750,6 +832,26 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "proposalPoolAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "reinvestAllProposals",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -763,6 +865,19 @@
       }
     ],
     "name": "reinvestCommission",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      }
+    ],
+    "name": "reinvestProposal",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -794,6 +909,24 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "supplyProposal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "symbol",
     "outputs": [
@@ -801,6 +934,19 @@
         "internalType": "string",
         "name": "",
         "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalEmission",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -888,6 +1034,24 @@
         "type": "bool"
       }
     ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "withdrawProposal",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   }
