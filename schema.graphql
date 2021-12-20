@@ -65,7 +65,7 @@ type Divestment @entity {
   id: ID!
   investor: Investor!
   volume: BigInt!
-
+  comission: BigInt!
   day: DivestHistory!
 }
 
@@ -142,7 +142,7 @@ type ExchangeInvestPoolHistory @entity {
 }
 
 #################### ProposalBasicPool #########################
-type ProposalBasicPool @entity{
+type ProposaProposalBasicPoollBasicPool @entity{
   id:ID! # pool addr + index
   pool: BasicPool!
   investors: BigInt!
@@ -153,30 +153,32 @@ type ProposalBasicPool @entity{
   limit2:BigInt! # from struct
   limit3:BigInt!
 
-  #exchanges: [ProposalBasicPool!]! @derivedFrom(field: "proposal")
+  exchanges: [ExchangeInProposalBasicPool!]! @derivedFrom(field: "proposal")
 }
 
 type ProposalBasicPoolInvestHistory @entity{
-  id:ID! # timestamp / 84600
+  id:ID! # timestamp / 84600 + position
   count: BigInt! #?
   invests: [ProposalBasicPoolInvest!]! @derivedFrom(field: "day")
 }
 
 type ProposalBasicPoolInvest @entity{
   id:ID!
+  proposal: ProposalBasicPool!
   investor: Investor!
   day: ProposalBasicPoolInvestHistory!
   amount: BigInt!
 }
 
 type ProposalBasicPoolDivestHistory @entity{
-  id:ID!
+  id:ID! # timestamp / 84600 + position
   count:BigInt! #?
   divests: [ProposalBasicPoolDivest!]! @derivedFrom(field: "day")
 }
 
 type ProposalBasicPoolDivest @entity{
   id:ID!
+  proposal: ProposalBasicPool!
   investor:Investor!
   day: ProposalBasicPoolDivestHistory!
   amount: BigInt!
@@ -187,47 +189,52 @@ type ExchangeInProposalBasicPool @entity{
   from: Bytes!
   to: Bytes!
   amount: BigInt!
+  proposal: ProposalBasicPool!
   day: ExchangeInProposalBasicPoolHistory!
 }
 
 type ExchangeInProposalBasicPoolHistory @entity{
-  id:ID!
+  id:ID!  # timestamp / 84600 + position
   exchanges: [ExchangeInProposalBasicPool!]! @derivedFrom(field: "day")
-  proposal: ProposalBasicPool!
 }
 
 ########################## ProposalInvestPool #########################
 type ProposalInvestPool @entity{
   id:ID! # pool addr + index
   pool: InvestPool!
+  investors: BigInt!
+
+  token: Bytes!
 
   limit1:BigInt!
   limit2:BigInt! #from struct
 
-  investors: BigInt!
+  exchanges: [ExchangeInProposalBasicPool!]! @derivedFrom(field: "proposal")
 }
 
 type ProposalInvestPoolInvestHistory @entity{
-  id:ID! # timestamp / 84600
+  id:ID! # timestamp / 84600 + position
   count: BigInt! #?
   invests: [ProposalInvestPoolInvest!]! @derivedFrom(field: "day")
 }
 
 type ProposalInvestPoolInvest @entity{
   id:ID!
+  proposal: ProposalInvestPool!
   investor: Investor!
   day: ProposalInvestPoolInvestHistory!
   amount: BigInt!
 }
 
 type ProposalInvestPoolDivestHistory @entity{
-  id:ID!
+  id:ID! # timestamp / 84600 + position
   count:BigInt! #?
   divests: [ProposalInvestPoolDivest!]! @derivedFrom(field: "day")
 }
 
 type ProposalInvestPoolDivest @entity{
   id:ID!
+  proposal: ProposalInvestPool!
   investor: Investor!
   day: ProposalInvestPoolDivestHistory!
   amount: BigInt!
@@ -240,6 +247,6 @@ type Distribution @entity{
 }
 
 type DistributionHistory @entity{
-  id: ID! #UTS / 84600
+  id: ID! #UTS / 84600 + position
   distributions: [Distribution!]! @derivedFrom(field: "day")
 }
