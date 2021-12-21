@@ -1,5 +1,5 @@
 import { Deployed } from "../../generated/TraderPoolFactory/TraderPoolFactory";
-import { getBasicTraderPool } from "../entities/BasicTraderPool";
+import { getBasicTraderPool } from "../entities/basic-pool/BasicTraderPool";
 
 const BASIC_POOL_NAME = "BASIC_POOL";
 

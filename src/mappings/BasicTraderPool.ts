@@ -1,16 +1,16 @@
 import { Exchanged, PositionClosed, InvestorAdded, Invest, InvestorRemoved, Divest } from "../../generated/templates/BasicPool/BasicPool"
-import { getBasicTraderPool } from "../entities/BasicTraderPool";
+import { getBasicTraderPool } from "../entities/basic-pool/BasicTraderPool";
 import { getPositionOffset } from "../entities/PositionOffset";
 import { getPositionInBasicPool } from "../entities/PositionInBasicPool";
 import { getTradeInBasicPool } from "../entities/TradeInBasicPool";
-import { getInvestment } from "../entities/Investment";
+import { getInvestment } from "../entities/basic-pool/InvestInBasicPool";
 import { BigInt } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
-import { getInvestHistory } from "../entities/InvestHistory";
-import { getExchangeBasicPoolHistory } from "../entities/ExchangeBasicPoolHistory";
-import { getInvestor } from "../entities/Investor";
-import { getDivestment } from "../entities/Divestment";
-import { getDivestHistory } from "../entities/DivestHistory";
+import { getInvestHistory } from "../entities/basic-pool/history/InvestHistoryInBasicPool";
+import { getExchangeBasicPoolHistory } from "../entities/basic-pool/history/ExchangeHistoryInBasicPool";
+import { getInvestor } from "../entities/InvestorBasicPool";
+import { getDivestment } from "../entities/basic-pool/DivestInBasicPool";
+import { getDivestHistory } from "../entities/basic-pool/history/DivestHistoryInBasicPool";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.params.pool);

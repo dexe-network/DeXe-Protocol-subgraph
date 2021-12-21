@@ -1,5 +1,5 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { getPositionOffset } from "../entities/PositionOffset";
+import { getPositionOffset } from "../entities/global/PositionOffset";
 
 export function getPositionId(pool: Address, position: Address): string {
   let positionOffsetId = pool.toString() + position.toString();

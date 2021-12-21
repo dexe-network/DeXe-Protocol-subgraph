@@ -22,8 +22,7 @@ dataSources:
       eventHandlers:
         - event: Deployed(address,string,address,address)
           handler: onDeployed
-
-
+          
   - kind: ethereum/contract
     name: BSCValidatorSet
     network: rinkeby
@@ -46,7 +45,6 @@ dataSources:
         - event: deprecatedDeposit(indexed address,uint256)
           handler: onNewBlock
  
-
 templates:
   - kind: ethereum/contract
     name: BasicPool
@@ -66,38 +64,6 @@ templates:
       abis:
         - name: BasicPool
           file: ./abis/BasicTraderPool.json
-      eventHandlers:
-        - event: Exchanged(address,address,address,uint256,uint256)
-          handler: onExchange
-        - event: PositionClosed(address,address)
-          handler: onClose
-        - event: InvestorAdded(address,address)
-          handler: onInvestorAdded
-        - event: Invest(address,address,uint256,uint256)
-          handler: onInvest
-        - event: InvestorRemoved(address,address)
-          handler: onInvestorRemoved
-        - event: Divest(address,address,uint256)
-          handler: onDivest
-
-  - kind: ethereum/contract
-    name: InvestPool
-    network: rinkeby
-    source:
-      abi: InvestPool
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      file: ./src/mappings/InvestTraderPool.ts
-      entities:
-        - TraderPoolFactory
-        - InvestTraderPool
-        - PositionInInvestPool
-        - TradeInInvestPool
-      abis:
-        - name: InvestPool
-          file: ./abis/InvestTraderPool.json
       eventHandlers:
         - event: Exchanged(address,address,address,uint256,uint256)
           handler: onExchange
@@ -137,27 +103,3 @@ templates:
         - event: Exchange(uint256,address,address,uint256,address)
           handler: onExchange
   
-  - kind: ethereum/contract
-    name: InvestProposal
-    network: rinkeby
-    source:
-      abi: InvestProposal
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      file: ./src/mappings/InvestProposal.ts
-      entities:
-        - ProposalBasicPool
-      abis:
-        - name: InvestProposal
-          file: ./abis/InvestProposal.json
-      eventHandlers:
-        - event: ProposalCreated(address,address,(uint256,uint256,uint256,uint256,uint256,uint256))
-          handler: onProposeCreated
-        - event: Invest(uint256,address,uint256,address)
-          handler: onInvest
-        - event: Divest(uint256,address,uint256,address)
-          handler: onDivest
-        - event: Distributed(uint256,uint256,address,address)
-          handler: onDistributed
