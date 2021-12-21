@@ -142,7 +142,7 @@ type ExchangeInvestPoolHistory @entity {
 }
 
 #################### ProposalBasicPool #########################
-type ProposaProposalBasicPoollBasicPool @entity{
+type ProposalBasicPool @entity{
   id:ID! # pool addr + index
   pool: BasicPool!
   investors: BigInt!
@@ -190,6 +190,7 @@ type ExchangeInProposalBasicPool @entity{
   to: Bytes!
   amount: BigInt!
   proposal: ProposalBasicPool!
+  investor: Investor!
   day: ExchangeInProposalBasicPoolHistory!
 }
 
@@ -209,7 +210,7 @@ type ProposalInvestPool @entity{
   limit1:BigInt!
   limit2:BigInt! #from struct
 
-  exchanges: [ExchangeInProposalBasicPool!]! @derivedFrom(field: "proposal")
+  distributions: [Distribution!]! @derivedFrom(field: "proposal")
 }
 
 type ProposalInvestPoolInvestHistory @entity{
@@ -242,6 +243,7 @@ type ProposalInvestPoolDivest @entity{
 
 type Distribution @entity{
   id:ID!
+  proposal: ProposalInvestPool!
   amount:BigInt!
   day: DistributionHistory!
 }
