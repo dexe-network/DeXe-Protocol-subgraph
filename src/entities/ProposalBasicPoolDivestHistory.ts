@@ -1,10 +1,10 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { ProposalInvestPoolDivestHistory } from "../../generated/schema";
+import { ProposalBasicPoolDivestHistory } from "../../generated/schema";
 
-export function getProposalBasicPoolDivestHistory(id:string): ProposalInvestPoolDivestHistory{
-    let history = ProposalInvestPoolDivestHistory.load(id);
+export function getProposalBasicPoolDivestHistory(id:string): ProposalBasicPoolDivestHistory{
+    let history = ProposalBasicPoolDivestHistory.load(id);
     if (history == null){
-        history = new ProposalInvestPoolDivestHistory(id);
+        history = new ProposalBasicPoolDivestHistory(id);
         history.count = BigInt.zero();
     }
     return history;
