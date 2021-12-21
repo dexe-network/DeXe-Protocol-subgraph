@@ -1,5 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { PositionOffset } from "../../generated/schema";
+import { PositionOffset } from "../../../generated/schema";
 
 export function getPositionOffset(id: string): PositionOffset {
   let positionOffset = PositionOffset.load(id);

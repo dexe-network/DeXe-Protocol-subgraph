@@ -1,10 +1,11 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { PositionInBasicPool } from "../../generated/schema";
+import { PositionInBasicPool } from "../../../generated/schema";
+import { getBasicTraderPool } from "./BasicTraderPool";
 
 export function getPositionInBasicPool(
   id: string,
-  positionToken: Address,
-  basicPoolId: string
+  basicPool: Address = Address.zero(),
+  positionToken: Address = Address.zero(),
 ): PositionInBasicPool {
   let position = PositionInBasicPool.load(id);
 
@@ -14,8 +15,7 @@ export function getPositionInBasicPool(
     position.positionToken = positionToken;
     position.totalOpenVolume = BigInt.fromI32(0);
     position.totalCloseVolume = BigInt.fromI32(0);
-    position.averagePositionPriceInBase = BigInt.fromI32(0);
-    position.basicPool = basicPoolId;
+    position.basicPool = getBasicTraderPool(basicPool).id;
     position.closed = false;
   }
 

@@ -3,14 +3,14 @@ import { getInvestTraderPool } from "../entities/InvestTraderPool";
 import { getPositionOffset } from "../entities/PositionOffset";
 import { getPositionInInvestPool } from "../entities/PositionInInvestPool";
 import { getTradeInInvestPool } from "../entities/TradeInInvestPool";
-import { getInvestment } from "../entities/Investment";
+import { getInvestment } from "../entities/basic-pool/InvestInBasicPool";
 import { BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
-import { getInvestHistory } from "../entities/InvestHistory";
+import { getInvestHistory } from "../entities/basic-pool/history/InvestHistoryInBasicPool";
 import { getExchangeInvestPoolHistory } from "../entities/ExchangeInvestPoolHistory";
-import { getInvestor } from "../entities/Investor";
-import { getDivestment } from "../entities/Divestment";
-import { getDivestHistory } from "../entities/DivestHistory";
+import { getInvestor } from "../entities/InvestorBasicPool";
+import { getDivestment } from "../entities/basic-pool/DivestInBasicPool";
+import { getDivestHistory } from "../entities/basic-pool/history/DivestHistoryInBasicPool";
 
 
 export function onExchange(event: Exchanged): void {

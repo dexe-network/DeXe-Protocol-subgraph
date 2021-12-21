@@ -1,5 +1,5 @@
 import { Address} from "@graphprotocol/graph-ts";
-import { BasicPool } from "../../generated/schema"; 
+import { BasicPool } from "../../../generated/schema"; 
 
 export function getBasicTraderPool(
   poolAddress: Address,
