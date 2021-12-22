@@ -13,8 +13,8 @@ export function getPositionInBasicPool(
     position = new PositionInBasicPool(id);
 
     position.positionToken = positionToken;
-    position.totalOpenVolume = BigInt.fromI32(0);
-    position.totalCloseVolume = BigInt.fromI32(0);
+    position.totalOpenVolume = BigInt.zero();
+    position.totalCloseVolume = BigInt.zero();
     position.basicPool = getBasicTraderPool(basicPool).id;
     position.closed = false;
   }

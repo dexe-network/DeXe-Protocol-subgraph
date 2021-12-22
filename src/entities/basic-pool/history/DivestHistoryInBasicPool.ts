@@ -4,7 +4,7 @@ import { getBasicTraderPool } from "../BasicTraderPool";
 
 export function getDivestHistoryInBasicPool(
   timestamp: BigInt,
-  basicPool: Address = Address.zero()
+  basicPool: Address
 ): DivestHistoryInBasicPool {
   let id = timestamp.div(BigInt.fromU32(86400));
   let history = DivestHistoryInBasicPool.load(id.toString());
