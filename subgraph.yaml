@@ -65,41 +65,24 @@ templates:
         - name: BasicPool
           file: ./abis/BasicTraderPool.json
       eventHandlers:
-        - event: Exchanged(address,address,address,uint256,uint256)
+        - event: Exchanged(address,address,uint256,uint256)
           handler: onExchange
-        - event: PositionClosed(address,address)
+        - event: PositionClosed(address)
           handler: onClose
-        - event: InvestorAdded(address,address)
+        - event: InvestorAdded(address)
           handler: onInvestorAdded
-        - event: Invest(address,address,uint256,uint256)
+        - event: Invest(address,uint256,uint256)
           handler: onInvest
-        - event: InvestorRemoved(address,address)
+        - event: InvestorRemoved(address)
           handler: onInvestorRemoved
-        - event: Divest(address,address,uint256)
+        - event: Divest(address,uint256,uint256)
           handler: onDivest
 
-  - kind: ethereum/contract
-    name: BasicProposal
-    network: rinkeby
-    source:
-      abi: BasicProposal
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      file: ./src/mappings/BasicProposal.ts
-      entities:
-        - ProposalBasicPool
-      abis:
-        - name: BasicProposal
-          file: ./abis/RiskyProposal.json
-      eventHandlers:
-        - event: ProposalCreated(address,address,(address,uint256,uint256,uint256,uint256,uint256,uint256,uint256))
-          handler: onProposeCreated
-        - event: Invest(uint256,address,uint256)
-          handler: onInvest
-        - event: Divest(uint256,address,uint256)
-          handler: onDivest
-        - event: Exchange(uint256,address,address,uint256,address)
-          handler: onExchange
-  
+        - event: ProposalCreated(uint256,address,(uint256,uint256,uint256))
+          handler: onProposalCreated
+        - event: ProposalInvest(uint256,address,uint256,uint256)
+          handler: onProposalInvest
+        - event: ProposalDivest(uint256,address,uint256,uint256)
+          handler: onProposalDivest
+        - event: ProposalExchange(uint256,address,address,uint256,uint256)
+          handler: onProposalExchange

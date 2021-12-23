@@ -3,13 +3,14 @@ import { ProposalBasicPool } from "../../../../generated/schema";
 import { getBasicTraderPool } from "../BasicTraderPool";
 
 export function getProposalBasicPool(
-  id: string,
-  basicPool: Address = Address.zero(),
+  index: BigInt,
+  basicPool: Address,
   token: Address = Address.zero(),
   limits1: BigInt = BigInt.zero(),
   limits2: BigInt = BigInt.zero(),
   limits3: BigInt = BigInt.zero()
 ): ProposalBasicPool {
+  let id = getBasicTraderPool(basicPool).id.toString() + index.toString();
   let proposal = ProposalBasicPool.load(id);
 
   if (proposal == null) {

@@ -1,15 +1,15 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { ProposalInvestInBasicPool } from "../../../../generated/schema";
 import { getProposalDivestHistoryInBasicPool } from "./history/ProposalDivestHistoryInBasicPool";
 import { getInvestorBasicPool } from "../InvestorBasicPool";
 
 export function getProposalInvestInBasicPool(
-  id: string,
+  hash: Bytes,
   amountLP: BigInt = BigInt.zero(),
   amountBase: BigInt = BigInt.zero(),
-  investor: Address = Address.zero(),
-  timestamp: BigInt = BigInt.zero()
+  investor: Address = Address.zero()
 ): ProposalInvestInBasicPool {
+  let id = hash.toHex();
   let invest = ProposalInvestInBasicPool.load(id);
 
   if (invest == null) {
@@ -18,7 +18,7 @@ export function getProposalInvestInBasicPool(
     invest.amountLP = amountLP;
     invest.amountBase = amountBase;
     invest.investor = getInvestorBasicPool(investor).id;
-    invest.day = getProposalDivestHistoryInBasicPool(timestamp).id;
+    invest.day = "";
   }
 
   return invest;

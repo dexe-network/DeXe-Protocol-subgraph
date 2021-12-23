@@ -1,4 +1,4 @@
-import { Exchanged, PositionClosed, InvestorAdded, Invest, InvestorRemoved, Divest } from "../../generated/templates/BasicPool/BasicPool"
+import { Exchanged, PositionClosed, InvestorAdded, Invest, InvestorRemoved, Divest, ProposalCreated, ProposalInvest, ProposalDivest, ProposalExchange } from "../../generated/templates/BasicPool/BasicPool"
 import { getBasicTraderPool } from "../entities/basic-pool/BasicTraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPositionInBasicPool } from "../entities/basic-pool/PositionInBasicPool";
@@ -11,6 +11,12 @@ import { getExchangeHistoryInBasicPool } from "../entities/basic-pool/history/Ex
 import { getInvestorBasicPool } from "../entities/basic-pool/InvestorBasicPool";
 import { getDivestInBasicPool } from "../entities/basic-pool/DivestInBasicPool";
 import { getDivestHistoryInBasicPool } from "../entities/basic-pool/history/DivestHistoryInBasicPool";
+import { getProposalBasicPool } from "../entities/basic-pool/proposal/ProposalBasicPool";
+import { getProposalInvestInBasicPool } from "../entities/basic-pool/proposal/ProposalInvestInBasicPool";
+import { getProposalInvestHistoryInBasicPool } from "../entities/basic-pool/proposal/history/ProposalInvestHistoryInBasicPool";
+import { getProposalDivestHistoryInBasicPool } from "../entities/basic-pool/proposal/history/ProposalDivestHistoryInBasicPool";
+import { getProposalExchangeHistoryInBasicPool } from "../entities/basic-pool/proposal/history/ProposalExchangeHistoryInBasicPool";
+import { getProposalExchangeInBasicPool } from "../entities/basic-pool/proposal/ProposalExchangeInBasicPool";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.address);
@@ -19,11 +25,11 @@ export function onExchange(event: Exchanged): void {
 
   let trade = getExchangeInBasicPool(
     event.transaction.hash,
+    position.id,
     event.params.fromToken,
     event.params.toToken,
-    event.params.volume,
-    event.params.priceInBase,
-    position.id
+    event.params.fromVolume,
+    event.params.toVolume,
   );
 
   if (trade.toToken != basicPool.baseToken) { 
@@ -101,5 +107,46 @@ export function onDivest(event: Divest): void {
 
   investor.save();
   divest.save();
+  history.save();
+}
+
+export function onProposalCreated(event:ProposalCreated):void{
+  let proposal = getProposalBasicPool(event.params.index,event.address,event.params.token,event.params.proposalLimits[0].toBigInt(),event.params.proposalLimits[1].toBigInt(),event.params.proposalLimits[2].toBigInt());
+  proposal.save();
+}
+
+export function onProposalInvest(event: ProposalInvest):void{
+  let proposal = getProposalBasicPool(event.params.index, event.address);
+  let invest = getProposalInvestInBasicPool(event.transaction.hash,event.params.amountLP,event.params.amountBase,event.params.investor);
+  let history = getProposalInvestHistoryInBasicPool(event.block.timestamp,proposal.id);
+  
+  invest.day = history.id;
+
+  proposal.save();
+  invest.save();
+  history.save();
+}
+
+export function onProposalDivest(event: ProposalDivest):void{
+  let proposal = getProposalBasicPool(event.params.index,event.address);
+  let divest = getDivestInBasicPool(event.transaction.hash,event.params.investor,event.params.amount,event.params.commission);
+  let history = getProposalDivestHistoryInBasicPool(event.block.timestamp, proposal.id);
+
+  divest.day = history.id;
+
+  proposal.save();
+  divest.save();
+  history.save();
+}
+
+export function onProposalExchange(event:ProposalExchange): void {
+  let proposal = getProposalBasicPool(event.params.index, event.address);
+  let exchange = getProposalExchangeInBasicPool(event.transaction.hash,event.params.fromToken,event.params.toToken,event.params.fromVolume,event.params.toVolume);
+  let history = getProposalExchangeHistoryInBasicPool(event.block.timestamp,proposal.id);
+
+  exchange.day = history.id;
+
+  proposal.save();
+  exchange.save();
   history.save();
 }

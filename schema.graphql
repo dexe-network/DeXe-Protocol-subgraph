@@ -100,7 +100,7 @@ type ExchangeHistoryInBasicPool @entity {
 ####################################### ProposalBasicPool #######################################
 
 type ProposalBasicPool @entity {
-  id: ID! # proposal index
+  id: ID! # pool address + proposal index
   token: Bytes!
   investorsCount: BigInt!
 

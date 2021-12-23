@@ -4,7 +4,7 @@ import { getProposalBasicPool } from "../ProposalBasicPool";
 
 export function getProposalInvestHistoryInBasicPool(
   timestamp: BigInt,
-  proposal: string = ""
+  proposal: string
 ): ProposalInvestHistoryInBasicPool {
   let id = timestamp.div(BigInt.fromU32(86400));
   let history = ProposalInvestHistoryInBasicPool.load(id.toString());
@@ -14,7 +14,7 @@ export function getProposalInvestHistoryInBasicPool(
 
     history.totalInvestVolumeLP = BigInt.zero();
     history.totalInvestVolumeBase = BigInt.zero();
-    history.proposal = getProposalBasicPool(proposal).id;
+    history.proposal = proposal;
   }
 
   return history;
