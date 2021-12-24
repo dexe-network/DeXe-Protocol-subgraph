@@ -15,11 +15,16 @@ type BasicPool @entity {
   divests: [DivestHistoryInBasicPool!]! @derivedFrom(field: "basicPool")
   exchanges: [ExchangeHistoryInBasicPool!]! @derivedFrom(field: "basicPool")
 
-  investors: [InvestorBasicPool!]! @derivedFrom(field: "basicPool")
+  investorInfos: [InvestorInfo!]! @derivedFrom(field: "basicPool")
 }
 
-type InvestorBasicPool @entity {
-  id: ID! # investor address
+type InvestorInBasicPool @entity {
+  id:ID! # investor address
+  basicPools: [BasicPool!]!
+}
+
+type InvestorInfo @entity {
+  id: ID! # investor address + pool address
   totalInvestVolume: BigInt!
   totalDivestVolume: BigInt!
 
@@ -57,7 +62,7 @@ type ExchangeInBasicPool @entity {
 
 type InvestInBasicPool @entity {
   id: ID! # tx hash
-  investor: InvestorBasicPool!
+  investor: InvestorInfo!
   volumeBase: BigInt!
   lpPurchasePrice: BigInt!
 
@@ -66,7 +71,7 @@ type InvestInBasicPool @entity {
 
 type DivestInBasicPool @entity {
   id: ID! # tx hash
-  investor: InvestorBasicPool!
+  investor: InvestorInfo!
   volumeBase: BigInt!
   commission: BigInt!
 
@@ -119,7 +124,7 @@ type ProposalInvestInBasicPool @entity {
   amountLP: BigInt!
   amountBase: BigInt!
 
-  investor: InvestorBasicPool!
+  investor: InvestorInfo!
   day: ProposalInvestHistoryInBasicPool!
 }
 
@@ -128,7 +133,7 @@ type ProposalDivestInBasicPool @entity {
   amountLP: BigInt!
   amountBase: BigInt!
 
-  investor: InvestorBasicPool!
+  investor: InvestorInfo!
   day: ProposalDivestHistoryInBasicPool!
 }
 

@@ -1,7 +1,7 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { ProposalDivestInBasicPool } from "../../../../generated/schema";
 import { getProposalDivestHistoryInBasicPool } from "./history/ProposalDivestHistoryInBasicPool";
-import { getInvestorBasicPool } from "../InvestorBasicPool";
+import { getInvestorBasicPool } from "../InvestorInfo";
 
 export function getProposalDivestInBasicPool(
   id: string,

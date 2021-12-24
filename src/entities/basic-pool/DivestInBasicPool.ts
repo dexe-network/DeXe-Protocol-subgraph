@@ -1,10 +1,10 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { DivestInBasicPool } from "../../../generated/schema";
-import { getInvestorBasicPool } from "./InvestorBasicPool";
+import { getInvestorInfo } from "./InvestorInfo";
 
 export function getDivestInBasicPool(
   hash: Bytes,
-  investor: Address = Address.zero(),
+  investorInfoId: string = "",
   volumeBase: BigInt = BigInt.fromI32(0),
   commission: BigInt = BigInt.fromI32(0)
 ): DivestInBasicPool {
@@ -14,7 +14,7 @@ export function getDivestInBasicPool(
   if (divest == null) {
     divest = new DivestInBasicPool(id);
 
-    divest.investor = getInvestorBasicPool(investor).id;
+    divest.investor = investorInfoId;
     divest.volumeBase = volumeBase;
     divest.commission = commission;
     divest.day = "";

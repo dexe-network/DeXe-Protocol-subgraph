@@ -8,7 +8,7 @@ import { BigInt } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
 import { getInvestHistoryInBasicPool } from "../entities/basic-pool/history/InvestHistoryInBasicPool";
 import { getExchangeHistoryInBasicPool } from "../entities/basic-pool/history/ExchangeHistoryInBasicPool";
-import { getInvestorBasicPool } from "../entities/basic-pool/InvestorBasicPool";
+import { getInvestorInBasicPool } from "../entities/basic-pool/InvestorInBasicPool";
 import { getDivestInBasicPool } from "../entities/basic-pool/DivestInBasicPool";
 import { getDivestHistoryInBasicPool } from "../entities/basic-pool/history/DivestHistoryInBasicPool";
 import { getProposalBasicPool } from "../entities/basic-pool/proposal/ProposalBasicPool";
@@ -17,6 +17,7 @@ import { getProposalInvestHistoryInBasicPool } from "../entities/basic-pool/prop
 import { getProposalDivestHistoryInBasicPool } from "../entities/basic-pool/proposal/history/ProposalDivestHistoryInBasicPool";
 import { getProposalExchangeHistoryInBasicPool } from "../entities/basic-pool/proposal/history/ProposalExchangeHistoryInBasicPool";
 import { getProposalExchangeInBasicPool } from "../entities/basic-pool/proposal/ProposalExchangeInBasicPool";
+import { getInvestorInfo } from "../entities/basic-pool/InvestorInfo";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.address);
@@ -34,12 +35,7 @@ export function onExchange(event: Exchanged): void {
 
   if (trade.toToken != basicPool.baseToken) { 
     // adding funds to the position
-    // let fullOldPrice = position.averagePositionPriceInBase.times(position.totalOpenVolume);
-    // let fullNewPrice = trade.volume.times(trade.priceInBase);
-     let fullVolume = position.totalOpenVolume.plus(trade.toVolume);    
-    // let newAveragePrice = fullOldPrice.plus(fullNewPrice).div(fullVolume);
-
-    //position.averagePositionPriceInBase = newAveragePrice;
+    let fullVolume = position.totalOpenVolume.plus(trade.toVolume);    
     position.totalOpenVolume = fullVolume;
   } else if (trade.fromToken != basicPool.baseToken) {
     // withdrawing funds from the position
@@ -71,21 +67,21 @@ export function onInvestorAdded(event: InvestorAdded): void {
   history.newInvestors = history.newInvestors.plus(BigInt.fromI32(1));
   history.save();
 
-  let investor = getInvestorBasicPool(event.params.investor,event.address);
+  let investor = getInvestorInBasicPool(event.params.investor,event.address);
   investor.save();
 }
 
 export function onInvest(event: Invest): void {
-  let invest = getInvestInBasicPool(event.transaction.hash, event.params.investor, event.params.amount, event.params.lpPurchasePrice);
+  let investorInfo = getInvestorInfo(event.params.investor,event.address);
+  let invest = getInvestInBasicPool(event.transaction.hash, investorInfo.id, event.params.amount, event.params.lpPurchasePrice);
   let history = getInvestHistoryInBasicPool(event.block.timestamp,event.address);
-  let investor = getInvestorBasicPool(event.params.investor,event.address);
   
   history.totalInvestVolume = history.totalInvestVolume.plus(event.params.amount);
-  investor.totalInvestVolume = investor.totalInvestVolume.plus(event.params.amount);
+  investorInfo.totalInvestVolume = investorInfo.totalInvestVolume.plus(event.params.amount);
   
   invest.day = history.id;
 
-  investor.save();
+  investorInfo.save();
   invest.save();
   history.save();
 }
@@ -97,15 +93,16 @@ export function onInvestorRemoved(event: InvestorRemoved): void {
 }
 
 export function onDivest(event: Divest): void {
-  let divest = getDivestInBasicPool(event.transaction.hash, event.params.investor, event.params.amount);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
+  let divest = getDivestInBasicPool(event.transaction.hash, investorInfo.id, event.params.amount);
   let history = getDivestHistoryInBasicPool(event.block.timestamp, event.address);
-  let investor = getInvestorBasicPool(event.params.investor);
   
-  investor.totalDivestVolume = investor.totalDivestVolume.plus(event.params.amount);
+  
+  investorInfo.totalDivestVolume = investorInfo.totalDivestVolume.plus(event.params.amount);
   history.totalDivestVolume = history.totalDivestVolume.plus(event.params.amount);
   divest.day = history.id;
 
-  investor.save();
+  investorInfo.save();
   divest.save();
   history.save();
 }
@@ -116,8 +113,9 @@ export function onProposalCreated(event:ProposalCreated):void{
 }
 
 export function onProposalInvest(event: ProposalInvest):void{
+  let investorInfo = getInvestorInfo(event.params.investor,event.address);
   let proposal = getProposalBasicPool(event.params.index, event.address);
-  let invest = getProposalInvestInBasicPool(event.transaction.hash,event.params.amountLP,event.params.amountBase,event.params.investor);
+  let invest = getProposalInvestInBasicPool(event.transaction.hash,event.params.amountLP,event.params.amountBase,investorInfo.id);
   let history = getProposalInvestHistoryInBasicPool(event.block.timestamp,proposal.id);
   
   invest.day = history.id;
@@ -128,8 +126,9 @@ export function onProposalInvest(event: ProposalInvest):void{
 }
 
 export function onProposalDivest(event: ProposalDivest):void{
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let proposal = getProposalBasicPool(event.params.index,event.address);
-  let divest = getDivestInBasicPool(event.transaction.hash,event.params.investor,event.params.amount,event.params.commission);
+  let divest = getDivestInBasicPool(event.transaction.hash,investorInfo.id,event.params.amount,event.params.commission);
   let history = getProposalDivestHistoryInBasicPool(event.block.timestamp, proposal.id);
 
   divest.day = history.id;
