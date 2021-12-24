@@ -20,7 +20,9 @@ type BasicPool @entity {
 
 type InvestorInBasicPool @entity {
   id:ID! # investor address
-  basicPools: [BasicPool!]!
+
+  activePools: [BasicPool!]!
+  allPools: [BasicPool!]!
 }
 
 type InvestorInfo @entity {

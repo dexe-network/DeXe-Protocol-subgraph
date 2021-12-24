@@ -6,7 +6,9 @@ export function getInvestorInBasicPool(id: Address, basicPool: Address = Address
 
   if (investor == null) {
     investor = new InvestorInBasicPool(id.toString());
-    investor.basicPools = new Array();
+    investor.activePools = new Array();
+    investor.allPools = new Array();
   }
+  
   return investor;
 }
