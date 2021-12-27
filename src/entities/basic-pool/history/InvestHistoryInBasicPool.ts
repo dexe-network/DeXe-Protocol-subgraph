@@ -13,7 +13,6 @@ export function getInvestHistoryInBasicPool(
     history = new InvestHistoryInBasicPool(id.toString());
 
     history.totalInvestVolume = BigInt.fromI32(0);
-    history.newInvestors = BigInt.fromI32(0);
     history.basicPool = getBasicTraderPool(basicPool).id;
   }
 

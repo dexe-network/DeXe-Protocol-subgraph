@@ -65,10 +65,7 @@ export function onClose(event: PositionClosed): void {
 }
 
 export function onInvestorAdded(event: InvestorAdded): void {
-  let history = getInvestHistoryInBasicPool(event.block.timestamp,event.address);
-  history.newInvestors = history.newInvestors.plus(BigInt.fromI32(1));
-  history.save();
-
+  
   let investor = getInvestorInBasicPool(event.params.investor,event.address);
   let basicPool = getBasicTraderPool(event.address);
   investor.activePools.push(basicPool.id);
@@ -96,10 +93,7 @@ export function onInvest(event: Invest): void {
 }
 
 export function onInvestorRemoved(event: InvestorRemoved): void {
-  let history = getDivestHistoryInBasicPool(event.block.timestamp, event.address);
-  history.quitInvestors = history.quitInvestors.plus(BigInt.fromI32(1));
-  history.save();
-
+  
   let investor = getInvestorInBasicPool(event.params.investor,event.address);
   let basicPool = getBasicTraderPool(event.address);
   investor.activePools = removeByIndex(investor.activePools,investor.activePools.indexOf(basicPool.id));

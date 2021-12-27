@@ -13,7 +13,6 @@ export function getDivestHistoryInBasicPool(
     history = new DivestHistoryInBasicPool(id.toString());
 
     history.totalDivestVolume = BigInt.fromI32(0);
-    history.quitInvestors = BigInt.fromI32(0);
     history.basicPool = getBasicTraderPool(basicPool).id;
   }
 

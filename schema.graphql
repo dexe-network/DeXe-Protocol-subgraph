@@ -101,8 +101,7 @@ type DivestInBasicPool @entity {
 type InvestHistoryInBasicPool @entity {
   id: ID! # timestamp / 86400
   totalInvestVolume: BigInt!
-  newInvestors: BigInt!
-
+  
   basicPool: BasicPool!
   investments: [InvestInBasicPool!]! @derivedFrom(field: "day")
 }
@@ -110,8 +109,7 @@ type InvestHistoryInBasicPool @entity {
 type DivestHistoryInBasicPool @entity {
   id: ID! # timestamp / 86400
   totalDivestVolume: BigInt!
-  quitInvestors: BigInt!
-
+  
   basicPool: BasicPool!
   divestments: [DivestInBasicPool!]! @derivedFrom(field: "day")
 }
