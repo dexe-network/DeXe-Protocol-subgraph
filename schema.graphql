@@ -18,6 +18,24 @@ type BasicPool @entity {
   investorInfos: [InvestorInfo!]! @derivedFrom(field: "basicPool")
 }
 
+type BasicPoolRegistry @entity {
+  id:ID! # BigInt.zero().toString()
+  pools: [BasicPool!]!
+}
+
+type BasicPoolPriceHistory @entity{
+  id: ID! # timestamp / 1000
+  price: BigInt!
+  supply: BigInt!
+  pool: BasicPool!
+}
+
+type BasicPoolHistory @entity{
+  id:ID! # timestamp / 86400
+  investorsCount: BigInt!
+  pool: BasicPool!
+} 
+
 type InvestorInBasicPool @entity {
   id:ID! # investor address
 

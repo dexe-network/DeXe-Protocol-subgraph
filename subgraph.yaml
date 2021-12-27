@@ -39,11 +39,10 @@ dataSources:
       abis:
         - name: BSCValidatorSet
           file: ./abis/BSCValidatorSet.json
-      eventHandlers:
-        - event: validatorDeposit(indexed address,uint256)
-          handler: onNewBlock
-        - event: deprecatedDeposit(indexed address,uint256)
-          handler: onNewBlock
+      
+      callHandlers:
+        - function: deposit(address)
+          handler: depositHandler
  
 templates:
   - kind: ethereum/contract

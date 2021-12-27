@@ -19,6 +19,7 @@ import { getProposalExchangeHistoryInBasicPool } from "../entities/basic-pool/pr
 import { getProposalExchangeInBasicPool } from "../entities/basic-pool/proposal/ProposalExchangeInBasicPool";
 import { getInvestorInfo } from "../entities/basic-pool/InvestorInfo";
 import { removeByIndex } from "../helpers/ArrayHelper";
+import { getBasicPoolHistory } from "../entities/basic-pool/BasicPoolHistory";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.address);
@@ -73,6 +74,10 @@ export function onInvestorAdded(event: InvestorAdded): void {
   investor.activePools.push(basicPool.id);
   investor.allPools.push(basicPool.id);
   investor.save();
+
+  let basicPoolHistory = getBasicPoolHistory(event.block.timestamp, event.address);
+  basicPoolHistory.investorsCount = basicPoolHistory.investorsCount.plus(BigInt.fromI32(1));
+  basicPoolHistory.save();
 }
 
 export function onInvest(event: Invest): void {
@@ -98,8 +103,11 @@ export function onInvestorRemoved(event: InvestorRemoved): void {
   let investor = getInvestorInBasicPool(event.params.investor,event.address);
   let basicPool = getBasicTraderPool(event.address);
   investor.activePools = removeByIndex(investor.activePools,investor.activePools.indexOf(basicPool.id));
-
   investor.save();
+
+  let basicPoolHistory = getBasicPoolHistory(event.block.timestamp, event.address);
+  basicPoolHistory.investorsCount = basicPoolHistory.investorsCount.minus(BigInt.fromI32(1));
+  basicPoolHistory.save();
 }
 
 export function onDivest(event: Divest): void {
