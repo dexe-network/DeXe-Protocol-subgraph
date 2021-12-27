@@ -6,9 +6,9 @@ export function getProposalBasicPool(
   index: BigInt,
   basicPool: Address,
   token: Address = Address.zero(),
-  limits1: BigInt = BigInt.zero(),
-  limits2: BigInt = BigInt.zero(),
-  limits3: BigInt = BigInt.zero()
+  timestampLimit: BigInt = BigInt.zero(),
+  investLPLimit: BigInt = BigInt.zero(),
+  maxTokenPriceLimit: BigInt = BigInt.zero()
 ): ProposalBasicPool {
   let id = getBasicTraderPool(basicPool).id.toString() + index.toString();
   let proposal = ProposalBasicPool.load(id);
@@ -18,9 +18,9 @@ export function getProposalBasicPool(
 
     proposal.token = token;
     proposal.investorsCount = BigInt.zero();
-    proposal.limit1 = limits1;
-    proposal.limit2 = limits2;
-    proposal.limit3 = limits3;
+    proposal.timestampLimit = timestampLimit;
+    proposal.investLPLimit = investLPLimit;
+    proposal.maxTokenPriceLimit = maxTokenPriceLimit;
     proposal.basicPool = getBasicTraderPool(basicPool).id;
   }
 

@@ -1,6 +1,5 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { DivestInBasicPool } from "../../../generated/schema";
-import { getInvestorInfo } from "./InvestorInfo";
 
 export function getDivestInBasicPool(
   hash: Bytes,

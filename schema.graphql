@@ -127,9 +127,9 @@ type ProposalBasicPool @entity {
   token: Bytes!
   investorsCount: BigInt!
 
-  limit1: BigInt!
-  limit2: BigInt! # from struct
-  limit3: BigInt!
+  timestampLimit: BigInt!
+  investLPLimit: BigInt! # from struct
+  maxTokenPriceLimit: BigInt!
 
   basicPool: BasicPool!
   proposalInvests: [ProposalInvestHistoryInBasicPool!]! @derivedFrom(field: "proposal")

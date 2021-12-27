@@ -1,6 +1,6 @@
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts"
 import { getBasicPoolRegistry } from "../entities/basic-pool/BasicPoolRegistry"
-import { getBasicTraderPool, getBasicTraderPoolById } from "../entities/basic-pool/BasicTraderPool";
+import { getBasicTraderPoolById } from "../entities/basic-pool/BasicTraderPool";
 import { BasicPool } from "../../generated/templates/BasicPool/BasicPool";
 import { getBasicPoolPriceHistory } from "../entities/basic-pool/BasicPoolPriceHistory";
 

@@ -1,6 +1,5 @@
 import { BigInt, Address, Bytes } from "@graphprotocol/graph-ts";
 import { ExchangeInBasicPool } from "../../../generated/schema";
-import { getPositionInBasicPool } from "./PositionInBasicPool";
 
 export function getExchangeInBasicPool(
   txHash: Bytes,

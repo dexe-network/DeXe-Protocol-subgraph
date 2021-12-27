@@ -1,6 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import { ProposalDivestHistoryInBasicPool } from "../../../../../generated/schema";
-import { getProposalBasicPool } from "../ProposalBasicPool";
 
 export function getProposalDivestHistoryInBasicPool(
   timestamp: BigInt,
