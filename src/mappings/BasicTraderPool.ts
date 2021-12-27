@@ -20,6 +20,7 @@ import { getProposalExchangeInBasicPool } from "../entities/basic-pool/proposal/
 import { getInvestorInfo } from "../entities/basic-pool/InvestorInfo";
 import { removeByIndex } from "../helpers/ArrayHelper";
 import { getBasicPoolHistory } from "../entities/basic-pool/BasicPoolHistory";
+import { getProposalDivestInBasicPool } from "../entities/basic-pool/proposal/ProposalDivestInBasicPool";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.address);
@@ -140,7 +141,7 @@ export function onProposalInvest(event: ProposalInvest):void{
 export function onProposalDivest(event: ProposalDivest):void{
   let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let proposal = getProposalBasicPool(event.params.index,event.address);
-  let divest = getDivestInBasicPool(event.transaction.hash,investorInfo.id,event.params.amount,event.params.commission);
+  let divest = getProposalDivestInBasicPool(event.transaction.hash,event.params.amount,event.params.commission,investorInfo.id);
   let history = getProposalDivestHistoryInBasicPool(event.block.timestamp, proposal.id);
 
   divest.day = history.id;
