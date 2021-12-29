@@ -9,13 +9,15 @@ type BasicPool @entity {
   id: ID! # pool address
   baseToken: Bytes!
 
+  investors: [InvestorInBasicPool!]!
+
   proposals: [ProposalBasicPool!]! @derivedFrom(field: "basicPool")
   positions: [PositionInBasicPool!]! @derivedFrom(field: "basicPool")
   invests: [InvestHistoryInBasicPool!]! @derivedFrom(field: "basicPool")
   divests: [DivestHistoryInBasicPool!]! @derivedFrom(field: "basicPool")
   exchanges: [ExchangeHistoryInBasicPool!]! @derivedFrom(field: "basicPool")
 
-  investorInfos: [InvestorInfo!]! @derivedFrom(field: "basicPool")
+  #investorInfos: [InvestorInfo!]! @derivedFrom(field: "basicPool")
 }
 
 type BasicPoolRegistry @entity {

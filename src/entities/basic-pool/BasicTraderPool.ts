@@ -11,6 +11,7 @@ export function getBasicTraderPool(
   if (basicPool == null) {
     basicPool = new BasicPool(poolAddress.toHex());
     basicPool.baseToken = basicTokenAddress;
+    basicPool.investors = new Array<string>();
 
     let bpr = getBasicPoolRegistry();
     bpr.pools.push(basicPool.id);
@@ -25,6 +26,7 @@ export function getBasicTraderPoolById(id: string): BasicPool{
   if(basicPool == null){
     basicPool = new BasicPool(Address.zero().toString());
     basicPool.baseToken = Address.zero();
+    basicPool.investors = new Array<string>();
   }
   return basicPool;
 }

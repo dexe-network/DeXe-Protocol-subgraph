@@ -76,6 +76,9 @@ export function onInvestorAdded(event: InvestorAdded): void {
   let basicPoolHistory = getBasicPoolHistory(event.block.timestamp, event.address);
   basicPoolHistory.investorsCount = basicPoolHistory.investorsCount.plus(BigInt.fromI32(1));
   basicPoolHistory.save();
+
+  basicPool.investors.push(investor.id);
+  basicPool.save();
 }
 
 export function onInvest(event: Invest): void {
@@ -103,6 +106,9 @@ export function onInvestorRemoved(event: InvestorRemoved): void {
   let basicPoolHistory = getBasicPoolHistory(event.block.timestamp, event.address);
   basicPoolHistory.investorsCount = basicPoolHistory.investorsCount.minus(BigInt.fromI32(1));
   basicPoolHistory.save();
+
+  basicPool.investors = removeByIndex(basicPool.investors, basicPool.investors.indexOf(investor.id));
+  basicPool.save();
 }
 
 export function onDivest(event: Divest): void {
