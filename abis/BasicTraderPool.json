@@ -458,19 +458,6 @@
   {
     "inputs": [
       {
-        "internalType": "address[]",
-        "name": "admins",
-        "type": "address[]"
-      }
-    ],
-    "name": "addAdmins",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "owner",
         "type": "address"
@@ -566,17 +553,25 @@
   {
     "inputs": [
       {
-        "internalType": "bool",
-        "name": "remove",
-        "type": "bool"
-      },
-      {
-        "internalType": "address[]",
-        "name": "privateInvestors",
-        "type": "address[]"
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
       }
     ],
-    "name": "changePrivateInvestors",
+    "name": "checkNewInvestor",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "checkRemoveInvestor",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -717,17 +712,32 @@
   {
     "inputs": [
       {
-        "internalType": "uint256[]",
-        "name": "minPositionsOut",
-        "type": "uint256[]"
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "minDexeCommissionOut",
+        "name": "amountIn",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minAmountOut",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "optionalPath",
+        "type": "address[]"
       }
     ],
-    "name": "divestAll",
+    "name": "exchangeFromExact",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -746,12 +756,12 @@
       },
       {
         "internalType": "uint256",
-        "name": "amount",
+        "name": "amountOut",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "minAmountOut",
+        "name": "maxAmountIn",
         "type": "uint256"
       },
       {
@@ -760,7 +770,7 @@
         "type": "address[]"
       }
     ],
-    "name": "exchange",
+    "name": "exchangeToExact",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -791,6 +801,11 @@
             "internalType": "address[]",
             "name": "positions",
             "type": "address[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "givenAmounts",
+            "type": "uint256[]"
           },
           {
             "internalType": "uint256[]",
@@ -842,7 +857,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "amount",
+        "name": "amountIn",
         "type": "uint256"
       },
       {
@@ -851,11 +866,45 @@
         "type": "address[]"
       }
     ],
-    "name": "getExchangeAmount",
+    "name": "getExchangeFromExactAmount",
     "outputs": [
       {
         "internalType": "uint256",
         "name": "minAmountOut",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountOut",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "optionalPath",
+        "type": "address[]"
+      }
+    ],
+    "name": "getExchangeToExactAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "maxAmountIn",
         "type": "uint256"
       }
     ],
@@ -896,6 +945,11 @@
             "internalType": "address[]",
             "name": "positions",
             "type": "address[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "givenAmounts",
+            "type": "uint256[]"
           },
           {
             "internalType": "uint256[]",
@@ -1085,6 +1139,42 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "admins",
+        "type": "address[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "add",
+        "type": "bool"
+      }
+    ],
+    "name": "modifyAdmins",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "privateInvestors",
+        "type": "address[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "add",
+        "type": "bool"
+      }
+    ],
+    "name": "modifyPrivateInvestors",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "name",
     "outputs": [
@@ -1248,19 +1338,6 @@
   {
     "inputs": [
       {
-        "internalType": "address[]",
-        "name": "admins",
-        "type": "address[]"
-      }
-    ],
-    "name": "removeAdmins",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "contract IContractsRegistry",
         "name": "contractsRegistry",
         "type": "address"
@@ -1300,6 +1377,32 @@
   {
     "inputs": [],
     "name": "totalEmission",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalInvestors",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalOpenPositions",
     "outputs": [
       {
         "internalType": "uint256",

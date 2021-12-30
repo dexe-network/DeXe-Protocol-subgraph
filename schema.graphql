@@ -52,7 +52,7 @@ type InvestorInfo @entity {
   totalInvestVolume: BigInt!
   totalDivestVolume: BigInt!
 
-  basicPool: BasicPool!
+  #basicPool: BasicPool!
 
   invests: [InvestInBasicPool!]! @derivedFrom(field: "investor")
   divests: [DivestInBasicPool!]! @derivedFrom(field: "investor")
