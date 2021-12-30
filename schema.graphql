@@ -16,8 +16,6 @@ type BasicPool @entity {
   invests: [InvestHistoryInBasicPool!]! @derivedFrom(field: "basicPool")
   divests: [DivestHistoryInBasicPool!]! @derivedFrom(field: "basicPool")
   exchanges: [ExchangeHistoryInBasicPool!]! @derivedFrom(field: "basicPool")
-
-  #investorInfos: [InvestorInfo!]! @derivedFrom(field: "basicPool")
 }
 
 type BasicPoolRegistry @entity {
@@ -26,7 +24,7 @@ type BasicPoolRegistry @entity {
 }
 
 type BasicPoolPriceHistory @entity{
-  id: ID! # timestamp / 1000
+  id: ID! 
   price: BigInt!
   supply: BigInt!
   pool: BasicPool!
@@ -51,8 +49,6 @@ type InvestorInfo @entity {
   id: ID! # investor address + pool address
   totalInvestVolume: BigInt!
   totalDivestVolume: BigInt!
-
-  #basicPool: BasicPool!
 
   invests: [InvestInBasicPool!]! @derivedFrom(field: "investor")
   divests: [DivestInBasicPool!]! @derivedFrom(field: "investor")
@@ -132,7 +128,7 @@ type ProposalBasicPool @entity {
   investorsCount: BigInt!
 
   timestampLimit: BigInt!
-  investLPLimit: BigInt! # from struct
+  investLPLimit: BigInt!
   maxTokenPriceLimit: BigInt!
 
   basicPool: BasicPool!

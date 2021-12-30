@@ -14,7 +14,6 @@ export function getInvestorInfo(invesorAddress: Address, basicPool: Address): In
 
     investorInfo.totalDivestVolume = BigInt.fromI32(0);
     investorInfo.totalInvestVolume = BigInt.fromI32(0);
-    //investorInfo.basicPool = getBasicTraderPool(basicPool).id;
   }
   return investorInfo;
 }
