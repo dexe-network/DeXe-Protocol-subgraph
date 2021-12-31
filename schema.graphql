@@ -16,6 +16,8 @@ type BasicPool @entity {
   invests: [InvestHistoryInBasicPool!]! @derivedFrom(field: "basicPool")
   divests: [DivestHistoryInBasicPool!]! @derivedFrom(field: "basicPool")
   exchanges: [ExchangeHistoryInBasicPool!]! @derivedFrom(field: "basicPool")
+  history: [BasicPoolHistory!]! @derivedFrom(field: "pool")
+  priceHistory: [BasicPoolPriceHistory!]! @derivedFrom(field: "pool")
 }
 
 type BasicPoolRegistry @entity {

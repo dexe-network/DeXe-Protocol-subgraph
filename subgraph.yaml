@@ -68,7 +68,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: BasicPool
-    network: rinkeby
+    network: chapel
     source:
       abi: BasicPool
     mapping:
