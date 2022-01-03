@@ -5,7 +5,7 @@ export function getInvestInBasicPool(
   hash: Bytes,
   investorInfoId: string = "",
   volumeBase: BigInt = BigInt.fromI32(0),
-  lpPurchasePrice: BigInt = BigInt.fromI32(0),
+  toMintLP: BigInt = BigInt.fromI32(0),
 ): InvestInBasicPool {
   let id = hash.toHex();
   let invest = InvestInBasicPool.load(id);
@@ -15,7 +15,7 @@ export function getInvestInBasicPool(
 
     invest.investor = investorInfoId;
     invest.volumeBase = volumeBase;
-    invest.lpPurchasePrice = lpPurchasePrice;
+    invest.lpPurchasePrice = volumeBase.div(toMintLP);
     invest.day = "";
   }
 

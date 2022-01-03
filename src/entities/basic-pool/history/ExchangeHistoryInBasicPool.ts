@@ -1,13 +1,13 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { ExchangeHistoryInBasicPool } from "../../../../generated/schema";
-import { UNIX_DAY } from "../../global/globals";
+import { DAY } from "../../global/globals";
 import { getBasicTraderPool } from "../BasicTraderPool";
 
 export function getExchangeHistoryInBasicPool(
   timestamp: BigInt,
   basicPool: Address
 ): ExchangeHistoryInBasicPool {
-  let id = timestamp.div(BigInt.fromU32(UNIX_DAY));
+  let id = timestamp.div(BigInt.fromU32(DAY));
   let history = ExchangeHistoryInBasicPool.load(id.toString());
 
   if (history == null) {

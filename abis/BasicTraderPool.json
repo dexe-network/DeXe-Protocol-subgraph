@@ -98,7 +98,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "lpPurchasePrice",
+        "name": "toMintLP",
         "type": "uint256"
       }
     ],

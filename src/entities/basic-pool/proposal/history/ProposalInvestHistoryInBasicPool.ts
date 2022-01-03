@@ -1,12 +1,12 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import { ProposalInvestHistoryInBasicPool } from "../../../../../generated/schema";
-import { UNIX_DAY } from "../../../global/globals";
+import { DAY } from "../../../global/globals";
 
 export function getProposalInvestHistoryInBasicPool(
   timestamp: BigInt,
   proposal: string
 ): ProposalInvestHistoryInBasicPool {
-  let id = timestamp.div(BigInt.fromU32(UNIX_DAY));
+  let id = timestamp.div(BigInt.fromU32(DAY));
   let history = ProposalInvestHistoryInBasicPool.load(id.toString());
 
   if (history == null) {

@@ -21,6 +21,7 @@ import { getInvestorInfo } from "../entities/basic-pool/InvestorInfo";
 import { removeByIndex } from "../helpers/ArrayHelper";
 import { getBasicPoolHistory } from "../entities/basic-pool/BasicPoolHistory";
 import { getProposalDivestInBasicPool } from "../entities/basic-pool/proposal/ProposalDivestInBasicPool";
+import { getInvestorLPHistory } from "../entities/basic-pool/history/InvestorLPHistory";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.address);
@@ -73,8 +74,8 @@ export function onInvestorAdded(event: InvestorAdded): void {
   investor.allPools.push(basicPool.id);
   investor.save();
 
-  let basicPoolHistory = getBasicPoolHistory(event.block.timestamp, event.address);
-  basicPoolHistory.investorsCount = basicPoolHistory.investorsCount.plus(BigInt.fromI32(1));
+  let basicPoolHistory = getBasicPoolHistory(event.block.timestamp, event.address, basicPool.investors);
+  basicPoolHistory.investors.push(investor.id);
   basicPoolHistory.save();
 
   basicPool.investors.push(investor.id);
@@ -83,17 +84,21 @@ export function onInvestorAdded(event: InvestorAdded): void {
 
 export function onInvest(event: Invest): void {
   let investorInfo = getInvestorInfo(event.params.investor,event.address);
-  let invest = getInvestInBasicPool(event.transaction.hash, investorInfo.id, event.params.amount, event.params.lpPurchasePrice);
+  let invest = getInvestInBasicPool(event.transaction.hash, investorInfo.id, event.params.amount, event.params.toMintLP);
   let history = getInvestHistoryInBasicPool(event.block.timestamp,event.address);
-  
+  let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
+
   history.totalInvestVolume = history.totalInvestVolume.plus(event.params.amount);
   investorInfo.totalInvestVolume = investorInfo.totalInvestVolume.plus(event.params.amount);
   
   invest.day = history.id;
 
+  lpHistory.lpBalance.plus(event.params.toMintLP);
+
   investorInfo.save();
   invest.save();
   history.save();
+  lpHistory.save();
 }
 
 export function onInvestorRemoved(event: InvestorRemoved): void {
@@ -103,8 +108,8 @@ export function onInvestorRemoved(event: InvestorRemoved): void {
   investor.activePools = removeByIndex(investor.activePools,investor.activePools.indexOf(basicPool.id));
   investor.save();
 
-  let basicPoolHistory = getBasicPoolHistory(event.block.timestamp, event.address);
-  basicPoolHistory.investorsCount = basicPoolHistory.investorsCount.minus(BigInt.fromI32(1));
+  let basicPoolHistory = getBasicPoolHistory(event.block.timestamp, event.address, basicPool.investors);
+  basicPoolHistory.investors.push(investor.id);
   basicPoolHistory.save();
 
   basicPool.investors = removeByIndex(basicPool.investors, basicPool.investors.indexOf(investor.id));
@@ -115,11 +120,13 @@ export function onDivest(event: Divest): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let divest = getDivestInBasicPool(event.transaction.hash, investorInfo.id, event.params.amount);
   let history = getDivestHistoryInBasicPool(event.block.timestamp, event.address);
-  
+  let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
   
   investorInfo.totalDivestVolume = investorInfo.totalDivestVolume.plus(event.params.amount);
   history.totalDivestVolume = history.totalDivestVolume.plus(event.params.amount);
   divest.day = history.id;
+
+  lpHistory.lpBalance.minus(event.params.amount);
 
   investorInfo.save();
   divest.save();

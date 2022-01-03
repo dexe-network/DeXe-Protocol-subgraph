@@ -34,7 +34,7 @@ type BasicPoolPriceHistory @entity{
 
 type BasicPoolHistory @entity{
   id:ID! # timestamp / 86400
-  investorsCount: BigInt!
+  investors: [InvestorInBasicPool!]!
   pool: BasicPool!
 } 
 
@@ -56,6 +56,13 @@ type InvestorInfo @entity {
   divests: [DivestInBasicPool!]! @derivedFrom(field: "investor")
   proposalInvests: [ProposalInvestInBasicPool!]! @derivedFrom(field: "investor")
   proposalDivests: [ProposalDivestInBasicPool!]! @derivedFrom(field: "investor")
+  investLPHistory: [InvestorLPHistory!]! @derivedFrom(field: "investorInfo")
+}
+
+type InvestorLPHistory @entity {
+  id: ID! # timestamp / 3600
+  lpBalance: BigInt!
+  investorInfo: InvestorInfo!
 }
 
 type PositionInBasicPool @entity {
