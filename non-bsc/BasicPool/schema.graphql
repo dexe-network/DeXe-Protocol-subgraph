@@ -8,6 +8,7 @@ type PositionOffset @entity {
 type BasicPool @entity {
   id: ID! # pool address
   baseToken: Bytes!
+  ticker: String!
 
   investors: [InvestorInBasicPool!]!
 

@@ -4,7 +4,8 @@ import { getBasicPoolRegistry } from "./BasicPoolRegistry";
 
 export function getBasicTraderPool(
   poolAddress: Address,
-  basicTokenAddress: Address = Address.zero()
+  basicTokenAddress: Address = Address.zero(),
+  ticker: string = ""
 ): BasicPool {
   let basicPool = BasicPool.load(poolAddress.toHex());
 
@@ -12,6 +13,7 @@ export function getBasicTraderPool(
     basicPool = new BasicPool(poolAddress.toHex());
     basicPool.baseToken = basicTokenAddress;
     basicPool.investors = new Array<string>();
+    basicPool.ticker = ticker;
 
     let bpr = getBasicPoolRegistry();
     bpr.pools.push(basicPool.id);
@@ -27,6 +29,7 @@ export function getBasicTraderPoolById(id: string): BasicPool{
     basicPool = new BasicPool(Address.zero().toString());
     basicPool.baseToken = Address.zero();
     basicPool.investors = new Array<string>();
+    basicPool.ticker = "";
   }
   return basicPool;
 }

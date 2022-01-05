@@ -20,7 +20,7 @@ dataSources:
         - name: TraderPoolFactory
           file: ./abis/TraderPoolFactory.json
       eventHandlers:
-        - event: Deployed(address,string,address,address)
+        - event: Deployed(address,string,address,string,address)
           handler: onDeployed
           
   - kind: ethereum/contract

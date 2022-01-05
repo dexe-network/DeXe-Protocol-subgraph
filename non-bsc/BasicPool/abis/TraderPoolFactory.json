@@ -22,6 +22,12 @@
       },
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "symbol",
+        "type": "string"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "basicToken",
         "type": "address"
@@ -82,11 +88,6 @@
           },
           {
             "internalType": "bool",
-            "name": "activePortfolio",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
             "name": "privatePool",
             "type": "bool"
           },
@@ -99,11 +100,6 @@
             "internalType": "address",
             "name": "baseToken",
             "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "baseTokenDecimals",
-            "type": "uint256"
           },
           {
             "internalType": "uint256",
@@ -121,8 +117,8 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct ITraderPool.PoolParameters",
-        "name": "_poolParameters",
+        "internalType": "struct ITraderPoolFactory.PoolDeployParameters",
+        "name": "poolDeployParameters",
         "type": "tuple"
       }
     ],
@@ -157,11 +153,6 @@
           },
           {
             "internalType": "bool",
-            "name": "activePortfolio",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
             "name": "privatePool",
             "type": "bool"
           },
@@ -174,11 +165,6 @@
             "internalType": "address",
             "name": "baseToken",
             "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "baseTokenDecimals",
-            "type": "uint256"
           },
           {
             "internalType": "uint256",
@@ -196,8 +182,8 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct ITraderPool.PoolParameters",
-        "name": "_poolParameters",
+        "internalType": "struct ITraderPoolFactory.PoolDeployParameters",
+        "name": "poolDeployParameters",
         "type": "tuple"
       }
     ],
@@ -207,83 +193,8 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "symbol",
-        "type": "string"
-      },
-      {
-        "components": [
-          {
-            "internalType": "string",
-            "name": "descriptionURL",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "trader",
-            "type": "address"
-          },
-          {
-            "internalType": "bool",
-            "name": "activePortfolio",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
-            "name": "privatePool",
-            "type": "bool"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalLPEmission",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "baseToken",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "baseTokenDecimals",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "minimalInvestment",
-            "type": "uint256"
-          },
-          {
-            "internalType": "enum ICoreProperties.CommissionPeriod",
-            "name": "commissionPeriod",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint256",
-            "name": "commissionPercentage",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ITraderPool.PoolParameters",
-        "name": "_poolParameters",
-        "type": "tuple"
-      }
-    ],
-    "name": "deployRiskyPool",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
-    "name": "injector",
+    "name": "getInjector",
     "outputs": [
       {
         "internalType": "address",
