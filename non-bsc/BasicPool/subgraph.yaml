@@ -20,7 +20,7 @@ dataSources:
         - name: TraderPoolFactory
           file: ./abis/TraderPoolFactory.json
       eventHandlers:
-        - event: Deployed(address,string,address,string,address)
+        - event: Deployed(address,string,address,string,address,address)
           handler: onDeployed
           
   - kind: ethereum/contract
@@ -98,15 +98,6 @@ templates:
         - event: Divest(address,uint256,uint256)
           handler: onDivest
 
-        - event: ProposalCreated(uint256,address,(uint256,uint256,uint256))
-          handler: onProposalCreated
-        - event: ProposalInvest(uint256,address,uint256,uint256)
-          handler: onProposalInvest
-        - event: ProposalDivest(uint256,address,uint256,uint256)
-          handler: onProposalDivest
-        - event: ProposalExchange(uint256,address,address,uint256,uint256)
-          handler: onProposalExchange
-
   - kind: ethereum/contract
     name: Pair
     network: rinkeby
@@ -128,3 +119,29 @@ templates:
       eventHandlers:
         - event: Swap(indexed address,uint256,uint256,uint256,uint256,indexed address)
           handler: handleSwap
+
+  - kind: ethereum/contract
+    name: RiskyProposal
+    network: rinkeby
+    source:
+      abi: RiskyProposal
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/TraderPoolRiskyProposal.ts
+      entities:
+        - TraderPoolFactory
+        - ProposalContract
+      abis:
+        - name: RiskyProposal
+          file: ./abis/TraderPoolRiskyProposal.json
+      eventHandlers:
+        - event: ProposalCreated(uint256,address,(uint256,uint256,uint256))
+          handler: onProposalCreated
+        - event: ProposalInvest(uint256,address,uint256,uint256)
+          handler: onProposalInvest
+        - event: ProposalDivest(uint256,address,uint256,uint256)
+          handler: onProposalDivest
+        - event: ProposalExchange(uint256,address,address,uint256,uint256)
+          handler: onProposalExchange

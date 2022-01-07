@@ -31,6 +31,12 @@
         "internalType": "address",
         "name": "basicToken",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "proposalContract",
+        "type": "address"
       }
     ],
     "name": "Deployed",

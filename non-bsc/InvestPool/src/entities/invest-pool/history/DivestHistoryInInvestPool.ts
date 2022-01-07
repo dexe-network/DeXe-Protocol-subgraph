@@ -1,7 +1,7 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { DivestHistoryInInvestPool } from "../../../../generated/schema";
 import { DAY } from "../../global/globals";
-import { getBasicTraderPool } from "../InvestTraderPool";
+import { getInvestTraderPool } from "../InvestTraderPool";
 
 export function getDivestHistoryInInvestPool(
   timestamp: BigInt,
@@ -14,7 +14,7 @@ export function getDivestHistoryInInvestPool(
     history = new DivestHistoryInInvestPool(id.toString());
 
     history.totalDivestVolume = BigInt.fromI32(0);
-    history.InvestPool = getBasicTraderPool(InvestPool).id;
+    history.InvestPool = getInvestTraderPool(InvestPool).id;
   }
 
   return history;

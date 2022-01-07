@@ -132,6 +132,10 @@ type ExchangeHistoryInBasicPool @entity {
 
 ####################################### ProposalBasicPool #######################################
 
+type ProposalContract @entity {
+  id:ID!
+}
+
 type ProposalBasicPool @entity {
   id: ID! # pool address + proposal index
   token: Bytes!

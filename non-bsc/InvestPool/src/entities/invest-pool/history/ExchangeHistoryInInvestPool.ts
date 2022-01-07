@@ -1,7 +1,7 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { ExchangeHistoryInInvestPool } from "../../../../generated/schema";
 import { DAY } from "../../global/globals";
-import { getBasicTraderPool } from "../InvestTraderPool";
+import { getInvestTraderPool } from "../InvestTraderPool";
 
 export function getExchangeHistoryInInvestPool(
   timestamp: BigInt,
@@ -13,7 +13,7 @@ export function getExchangeHistoryInInvestPool(
   if (history == null) {
     history = new ExchangeHistoryInInvestPool(id.toString());
 
-    history.InvestPool = getBasicTraderPool(InvestPool).id;
+    history.InvestPool = getInvestTraderPool(InvestPool).id;
   }
 
   return history;

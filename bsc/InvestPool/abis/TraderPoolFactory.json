@@ -31,6 +31,12 @@
         "internalType": "address",
         "name": "basicToken",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "proposalContract",
+        "type": "address"
       }
     ],
     "name": "Deployed",
@@ -122,7 +128,7 @@
         "type": "tuple"
       }
     ],
-    "name": "deployInvestPool",
+    "name": "deployBasicPool",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

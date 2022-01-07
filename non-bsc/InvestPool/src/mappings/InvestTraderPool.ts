@@ -1,5 +1,5 @@
 import { Exchanged, PositionClosed, InvestorAdded, Invest, InvestorRemoved, Divest, ProposalCreated, ProposalInvest, ProposalDivest, ProposalExchange } from "../../generated/templates/InvestPool/InvestPool"
-import { getBasicTraderPool } from "../entities/invest-pool/InvestTraderPool";
+import { getInvestTraderPool } from "../entities/invest-pool/InvestTraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPositionInInvestPool } from "../entities/invest-pool/PositionInInvestPool";
 import { getExchangeInInvestPool } from "../entities/invest-pool/ExchangeInInvestPool";
@@ -24,9 +24,9 @@ import { getProposalDivestInInvestPool } from "../entities/invest-pool/proposal/
 import { getInvestorLPHistory } from "../entities/invest-pool/history/InvestorLPHistory";
 
 export function onExchange(event: Exchanged): void {
-  let InvestPool = getBasicTraderPool(event.address);
+  let InvestPool = getInvestTraderPool(event.address);
 
-  let position = getPositionInInvestPool(getPositionId(getBasicTraderPool(event.address).id, event.params.toToken), event.address, event.params.toToken);
+  let position = getPositionInInvestPool(getPositionId(getInvestTraderPool(event.address).id, event.params.toToken), event.address, event.params.toToken);
 
   let trade = getExchangeInInvestPool(
     event.transaction.hash,
@@ -56,8 +56,8 @@ export function onExchange(event: Exchanged): void {
 }
 
 export function onClose(event: PositionClosed): void {
-  let positionOffset = getPositionOffset(getBasicTraderPool(event.address).id, event.params.position);
-  let position = getPositionInInvestPool(getPositionId(getBasicTraderPool(event.address).id, event.params.position), event.address, event.params.position);
+  let positionOffset = getPositionOffset(getInvestTraderPool(event.address).id, event.params.position);
+  let position = getPositionInInvestPool(getPositionId(getInvestTraderPool(event.address).id, event.params.position), event.address, event.params.position);
   
   position.closed = true;
   positionOffset.offset = positionOffset.offset.plus(BigInt.fromI32(1));
@@ -69,7 +69,7 @@ export function onClose(event: PositionClosed): void {
 export function onInvestorAdded(event: InvestorAdded): void {
   
   let investor = getInvestorInInvestPool(event.params.investor,event.address);
-  let InvestPool = getBasicTraderPool(event.address);
+  let InvestPool = getInvestTraderPool(event.address);
   investor.activePools.push(InvestPool.id);
   investor.allPools.push(InvestPool.id);
   investor.save();
@@ -104,7 +104,7 @@ export function onInvest(event: Invest): void {
 export function onInvestorRemoved(event: InvestorRemoved): void {
   
   let investor = getInvestorInInvestPool(event.params.investor,event.address);
-  let InvestPool = getBasicTraderPool(event.address);
+  let InvestPool = getInvestTraderPool(event.address);
   investor.activePools = removeByIndex(investor.activePools,investor.activePools.indexOf(InvestPool.id));
   investor.save();
 
@@ -130,48 +130,5 @@ export function onDivest(event: Divest): void {
 
   investorInfo.save();
   divest.save();
-  history.save();
-}
-
-export function onProposalCreated(event:ProposalCreated):void{
-  let proposal = getProposalInvestPool(event.params.index,event.address,event.params.token,event.params.proposalLimits[0].toBigInt(),event.params.proposalLimits[1].toBigInt(),event.params.proposalLimits[2].toBigInt());
-  proposal.save();
-}
-
-export function onProposalInvest(event: ProposalInvest):void{
-  let investorInfo = getInvestorInfo(event.params.investor,event.address);
-  let proposal = getProposalInvestPool(event.params.index, event.address);
-  let invest = getProposalInvestInInvestPool(event.transaction.hash,event.params.amountLP,event.params.amountBase,investorInfo.id);
-  let history = getProposalInvestHistoryInInvestPool(event.block.timestamp,proposal.id);
-  
-  invest.day = history.id;
-
-  proposal.save();
-  invest.save();
-  history.save();
-}
-
-export function onProposalDivest(event: ProposalDivest):void{
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
-  let proposal = getProposalInvestPool(event.params.index,event.address);
-  let divest = getProposalDivestInInvestPool(event.transaction.hash,event.params.amount,event.params.commission,investorInfo.id);
-  let history = getProposalDivestHistoryInInvestPool(event.block.timestamp, proposal.id);
-
-  divest.day = history.id;
-
-  proposal.save();
-  divest.save();
-  history.save();
-}
-
-export function onProposalExchange(event:ProposalExchange): void {
-  let proposal = getProposalInvestPool(event.params.index, event.address);
-  let exchange = getProposalExchangeInInvestPool(event.transaction.hash,event.params.fromToken,event.params.toToken,event.params.fromVolume,event.params.toVolume);
-  let history = getProposalExchangeHistoryInInvestPool(event.block.timestamp,proposal.id);
-
-  exchange.day = history.id;
-
-  proposal.save();
-  exchange.save();
   history.save();
 }
