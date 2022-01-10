@@ -1,4 +1,4 @@
-import { Exchanged, PositionClosed, InvestorAdded, Invest, InvestorRemoved, Divest, ProposalCreated, ProposalInvest, ProposalDivest, ProposalExchange } from "../../generated/templates/BasicPool/BasicPool"
+import { Exchanged, PositionClosed, InvestorAdded, Invest, InvestorRemoved, Divest } from "../../generated/templates/BasicPool/BasicPool"
 import { getBasicTraderPool } from "../entities/basic-pool/BasicTraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPositionInBasicPool } from "../entities/basic-pool/PositionInBasicPool";

@@ -1,4 +1,4 @@
-import { Exchanged, PositionClosed, InvestorAdded, Invest, InvestorRemoved, Divest, ProposalCreated, ProposalInvest, ProposalDivest, ProposalExchange } from "../../generated/templates/BasicPool/BasicPool"
+import { Exchanged, PositionClosed, InvestorAdded, Invest, InvestorRemoved, Divest } from "../../generated/templates/BasicPool/BasicPool"
 import { getBasicTraderPool } from "../entities/basic-pool/BasicTraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPositionInBasicPool } from "../entities/basic-pool/PositionInBasicPool";
@@ -11,16 +11,9 @@ import { getExchangeHistoryInBasicPool } from "../entities/basic-pool/history/Ex
 import { getInvestorInBasicPool } from "../entities/basic-pool/InvestorInBasicPool";
 import { getDivestInBasicPool } from "../entities/basic-pool/DivestInBasicPool";
 import { getDivestHistoryInBasicPool } from "../entities/basic-pool/history/DivestHistoryInBasicPool";
-import { getProposalBasicPool } from "../entities/basic-pool/proposal/ProposalBasicPool";
-import { getProposalInvestInBasicPool } from "../entities/basic-pool/proposal/ProposalInvestInBasicPool";
-import { getProposalInvestHistoryInBasicPool } from "../entities/basic-pool/proposal/history/ProposalInvestHistoryInBasicPool";
-import { getProposalDivestHistoryInBasicPool } from "../entities/basic-pool/proposal/history/ProposalDivestHistoryInBasicPool";
-import { getProposalExchangeHistoryInBasicPool } from "../entities/basic-pool/proposal/history/ProposalExchangeHistoryInBasicPool";
-import { getProposalExchangeInBasicPool } from "../entities/basic-pool/proposal/ProposalExchangeInBasicPool";
 import { getInvestorInfo } from "../entities/basic-pool/InvestorInfo";
 import { removeByIndex } from "../helpers/ArrayHelper";
 import { getBasicPoolHistory } from "../entities/basic-pool/BasicPoolHistory";
-import { getProposalDivestInBasicPool } from "../entities/basic-pool/proposal/ProposalDivestInBasicPool";
 import { getInvestorLPHistory } from "../entities/basic-pool/history/InvestorLPHistory";
 
 export function onExchange(event: Exchanged): void {

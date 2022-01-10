@@ -1,4 +1,4 @@
-import { ProposalCreated, ProposalDivest, ProposalExchange, ProposalInvest } from "../../generated/templates/BasicPool/BasicPool";
+import { ProposalCreated, ProposalDivest, ProposalExchange, ProposalInvest } from "../../generated/templates/RiskyProposal/RiskyProposal";
 import { getInvestorInfo } from "../entities/basic-pool/InvestorInfo";
 import { getProposalDivestHistoryInBasicPool } from "../entities/basic-pool/proposal/history/ProposalDivestHistoryInBasicPool";
 import { getProposalExchangeHistoryInBasicPool } from "../entities/basic-pool/proposal/history/ProposalExchangeHistoryInBasicPool";
@@ -8,8 +8,9 @@ import { getProposalDivestInBasicPool } from "../entities/basic-pool/proposal/Pr
 import { getProposalExchangeInBasicPool } from "../entities/basic-pool/proposal/ProposalExchangeInBasicPool";
 import { getProposalInvestInBasicPool } from "../entities/basic-pool/proposal/ProposalInvestInBasicPool";
 
+
 export function onProposalCreated(event:ProposalCreated):void{
-    let proposal = getProposalBasicPool(event.params.index,event.address,event.params.token,event.params.proposalLimits[0].toBigInt(),event.params.proposalLimits[1].toBigInt(),event.params.proposalLimits[2].toBigInt());
+    let proposal = getProposalBasicPool(event.params.index, event.address,event.params.token,event.params.proposalLimits[0].toBigInt(),event.params.proposalLimits[1].toBigInt(),event.params.proposalLimits[2].toBigInt());
     proposal.save();
   }
   
@@ -29,7 +30,7 @@ export function onProposalCreated(event:ProposalCreated):void{
   export function onProposalDivest(event: ProposalDivest):void{
     let investorInfo = getInvestorInfo(event.params.investor, event.address);
     let proposal = getProposalBasicPool(event.params.index,event.address);
-    let divest = getProposalDivestInBasicPool(event.transaction.hash,event.params.amount,event.params.commission,investorInfo.id);
+    let divest = getProposalDivestInBasicPool(event.transaction.hash,event.params.amountLP,event.params.amountBase,investorInfo.id);
     let history = getProposalDivestHistoryInBasicPool(event.block.timestamp, proposal.id);
   
     divest.day = history.id;
