@@ -109,7 +109,7 @@ export function onInvestorRemoved(event: InvestorRemoved): void {
   investor.save();
 
   let investPoolHistory = getInvestPoolHistory(event.block.timestamp, event.address, investPool.investors);
-  investPoolHistory.investors.push(investor.id);
+  investPoolHistory.investors = removeByIndex(investPoolHistory.investors, investPoolHistory.investors.indexOf(investPool.id));
   investPoolHistory.save();
 
   investPool.investors = removeByIndex(investPool.investors, investPool.investors.indexOf(investor.id));

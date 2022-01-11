@@ -7,6 +7,7 @@ export function getInvestorInInvestPool(id: Address, investPool: Address = Addre
   if (investor == null) {
     investor = new InvestorInInvestPool(id.toString());
     investor.insurance = BigInt.zero();
+    investor.insurancePayout = BigInt.zero();
     investor.activePools = new Array();
     investor.allPools = new Array();
   }

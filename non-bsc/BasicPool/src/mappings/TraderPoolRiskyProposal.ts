@@ -22,6 +22,9 @@ export function onProposalCreated(event:ProposalCreated):void{
     
     invest.day = history.id;
   
+    history.totalInvestVolumeBase = history.totalInvestVolumeBase.plus(event.params.amountBase);
+    history.totalInvestVolumeLP = history.totalInvestVolumeLP.plus(event.params.amountLP);
+    
     proposal.save();
     invest.save();
     history.save();
@@ -34,6 +37,9 @@ export function onProposalCreated(event:ProposalCreated):void{
     let history = getProposalDivestHistoryInBasicPool(event.block.timestamp, proposal.id);
   
     divest.day = history.id;
+
+    history.totalDivestVolumeBase = history.totalDivestVolumeBase.plus(event.params.amountBase);
+    history.totalDivestVolumeLP = history.totalDivestVolumeLP.plus(event.params.amountLP);
   
     proposal.save();
     divest.save();

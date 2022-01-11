@@ -43,6 +43,7 @@ type InvestorInInvestPool @entity {
   id:ID! # investor address
 
   insurance: BigInt!
+  insurancePayout: BigInt!
   
   activePools: [InvestPool!]!
   allPools: [InvestPool!]!

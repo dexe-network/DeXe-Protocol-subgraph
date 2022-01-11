@@ -38,6 +38,44 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "investor",
+        "type": "address"
+      }
+    ],
+    "name": "Payout",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "investor",
+        "type": "address"
+      }
+    ],
+    "name": "Withdraw",
+    "type": "event"
+  },
+  {
     "inputs": [],
     "name": "__Insurance_init",
     "outputs": [],

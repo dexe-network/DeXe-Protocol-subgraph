@@ -20,6 +20,9 @@ export function onProposalCreated(event:ProposalCreated):void{
     let history = getProposalInvestHistoryInInvestPool(event.block.timestamp,proposal.id);
     
     invest.day = history.id;
+
+    history.totalInvestVolumeBase = history.totalInvestVolumeBase.plus(event.params.amountBase);
+    history.totalInvestVolumeLP = history.totalInvestVolumeLP.plus(event.params.amountLP);    
   
     proposal.save();
     invest.save();

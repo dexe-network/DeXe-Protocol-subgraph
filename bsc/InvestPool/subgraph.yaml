@@ -22,7 +22,7 @@ dataSources:
       eventHandlers:
         - event: Deployed(address,string,address,string,address,address)
           handler: onDeployed
-          
+
   - kind: ethereum/contract
     name: BSCValidatorSet
     network: chapel
@@ -33,7 +33,7 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
-      file: ./src/mappings/BlockTraker.ts
+      file: ./src/mappings/BlockTracker.ts
       entities:
         - Block
       abis:
@@ -64,6 +64,11 @@ dataSources:
       eventHandlers:
         - event: Deposit(uint256,address)
           handler: onDeposit
+        - event: Withdraw(uint256,address)
+          handler: onWithdraw
+        - event: Payout(uint256,address)
+          handler: onPayout
+  
 
 templates:
   - kind: ethereum/contract

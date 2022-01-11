@@ -42,6 +42,10 @@ dataSources:
       eventHandlers:
         - event: Deposit(uint256,address)
           handler: onDeposit
+        - event: Withdraw(uint256,address)
+          handler: onWithdraw
+        - event: Payout(uint256,address)
+          handler: onPayout
 
   - kind: ethereum/contract
     name: Factory
