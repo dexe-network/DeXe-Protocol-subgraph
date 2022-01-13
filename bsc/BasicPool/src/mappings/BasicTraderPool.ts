@@ -1,4 +1,4 @@
-import { Exchanged, PositionClosed, InvestorAdded, Invest, InvestorRemoved, Divest } from "../../generated/templates/BasicPool/BasicPool"
+import { Exchanged, PositionClosed, InvestorAdded, Invest, InvestorRemoved, Divest, MintLP, BurnLP } from "../../generated/templates/BasicPool/BasicPool"
 import { getBasicTraderPool } from "../entities/basic-pool/BasicTraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPositionInBasicPool } from "../entities/basic-pool/PositionInBasicPool";
@@ -11,22 +11,15 @@ import { getExchangeHistoryInBasicPool } from "../entities/basic-pool/history/Ex
 import { getInvestorInBasicPool } from "../entities/basic-pool/InvestorInBasicPool";
 import { getDivestInBasicPool } from "../entities/basic-pool/DivestInBasicPool";
 import { getDivestHistoryInBasicPool } from "../entities/basic-pool/history/DivestHistoryInBasicPool";
-import { getProposalBasicPool } from "../entities/basic-pool/proposal/ProposalBasicPool";
-import { getProposalInvestInBasicPool } from "../entities/basic-pool/proposal/ProposalInvestInBasicPool";
-import { getProposalInvestHistoryInBasicPool } from "../entities/basic-pool/proposal/history/ProposalInvestHistoryInBasicPool";
-import { getProposalDivestHistoryInBasicPool } from "../entities/basic-pool/proposal/history/ProposalDivestHistoryInBasicPool";
-import { getProposalExchangeHistoryInBasicPool } from "../entities/basic-pool/proposal/history/ProposalExchangeHistoryInBasicPool";
-import { getProposalExchangeInBasicPool } from "../entities/basic-pool/proposal/ProposalExchangeInBasicPool";
 import { getInvestorInfo } from "../entities/basic-pool/InvestorInfo";
 import { removeByIndex } from "../helpers/ArrayHelper";
-import { getBasicPoolHistory } from "../entities/basic-pool/BasicPoolHistory";
-import { getProposalDivestInBasicPool } from "../entities/basic-pool/proposal/ProposalDivestInBasicPool";
+import { getBasicPoolHistory } from "../entities/basic-pool/history/BasicPoolHistory";
 import { getInvestorLPHistory } from "../entities/basic-pool/history/InvestorLPHistory";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.address);
 
-  let position = getPositionInBasicPool(getPositionId(getBasicTraderPool(event.address).id, event.params.toToken), event.address, event.params.toToken);
+  let position = getPositionInBasicPool(getPositionId(basicPool.id, event.params.toToken), event.address, event.params.toToken);
 
   let trade = getExchangeInBasicPool(
     event.transaction.hash,
@@ -131,4 +124,24 @@ export function onDivest(event: Divest): void {
   investorInfo.save();
   divest.save();
   history.save();
+}
+
+export function onMintLP(event:MintLP):void {
+  let investorInfo = getInvestorInfo(event.params.trader,event.address);
+  let lpHistory = getInvestorLPHistory(event.block.timestamp,investorInfo.id);
+
+  lpHistory.lpBalance.plus(event.params.amount);
+
+  lpHistory.save();
+  investorInfo.save();
+}
+
+export function onBurnLP(event:BurnLP):void {
+  let investorInfo = getInvestorInfo(event.params.trader,event.address);
+  let lpHistory = getInvestorLPHistory(event.block.timestamp,investorInfo.id);
+
+  lpHistory.lpBalance.minus(event.params.amount);
+
+  lpHistory.save();
+  investorInfo.save();
 }

@@ -1,11 +1,12 @@
-import { Address} from "@graphprotocol/graph-ts";
-import { BasicPool } from "../../../generated/schema"; 
-import { getBasicPoolRegistry } from "./BasicPoolRegistry";
+import { Address, BigInt} from "@graphprotocol/graph-ts";
+import { BasicPool } from "../../../generated/schema";
 
 export function getBasicTraderPool(
   poolAddress: Address,
   basicTokenAddress: Address = Address.zero(),
-  ticker: string = ""
+  ticker: string = "",
+  name: string = "",
+  creatingTime: BigInt = BigInt.zero()
 ): BasicPool {
   let basicPool = BasicPool.load(poolAddress.toHex());
 
@@ -14,22 +15,9 @@ export function getBasicTraderPool(
     basicPool.baseToken = basicTokenAddress;
     basicPool.investors = new Array<string>();
     basicPool.ticker = ticker;
-
-    let bpr = getBasicPoolRegistry();
-    bpr.pools.push(basicPool.id);
-    bpr.save();
+    basicPool.name = name;
+    basicPool.creatingTime = creatingTime;
   }
 
-  return basicPool;
-}
-
-export function getBasicTraderPoolById(id: string): BasicPool{
-  let basicPool = BasicPool.load(id);
-  if(basicPool == null){
-    basicPool = new BasicPool(Address.zero().toString());
-    basicPool.baseToken = Address.zero();
-    basicPool.investors = new Array<string>();
-    basicPool.ticker = "";
-  }
   return basicPool;
 }

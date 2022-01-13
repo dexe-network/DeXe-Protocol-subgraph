@@ -6,13 +6,15 @@ export function getProposalExchangeHistoryInBasicPool(
   timestamp: BigInt,
   proposal: string
 ): ProposalExchangeHistoryInBasicPool {
-  let id = timestamp.div(BigInt.fromU32(DAY));
-  let history = ProposalExchangeHistoryInBasicPool.load(id.toString());
+  let day = timestamp.div(BigInt.fromU32(DAY)); 
+  let id = proposal + day.toString();
+  let history = ProposalExchangeHistoryInBasicPool.load(id);
 
   if (history == null) {
-    history = new ProposalExchangeHistoryInBasicPool(id.toString());
+    history = new ProposalExchangeHistoryInBasicPool(id);
 
     history.proposal = proposal;
+    history.day = day;
   }
 
   return history;

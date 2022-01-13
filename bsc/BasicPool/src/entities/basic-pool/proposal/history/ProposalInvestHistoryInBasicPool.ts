@@ -6,15 +6,17 @@ export function getProposalInvestHistoryInBasicPool(
   timestamp: BigInt,
   proposal: string
 ): ProposalInvestHistoryInBasicPool {
-  let id = timestamp.div(BigInt.fromU32(DAY));
-  let history = ProposalInvestHistoryInBasicPool.load(id.toString());
+  let day = timestamp.div(BigInt.fromU32(DAY)); 
+  let id = proposal + day.toString();
+  let history = ProposalInvestHistoryInBasicPool.load(id);
 
   if (history == null) {
-    history = new ProposalInvestHistoryInBasicPool(id.toString());
+    history = new ProposalInvestHistoryInBasicPool(id);
 
     history.totalInvestVolumeLP = BigInt.zero();
     history.totalInvestVolumeBase = BigInt.zero();
     history.proposal = proposal;
+    history.day = day;
   }
 
   return history;

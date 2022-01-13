@@ -30,6 +30,25 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "trader",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "BurnLP",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "investor",
         "type": "address"
       },
@@ -129,6 +148,25 @@
       }
     ],
     "name": "InvestorRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "trader",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "MintLP",
     "type": "event"
   },
   {
@@ -825,6 +863,148 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getLeverageInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalPoolUSD",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "traderLeverageUSDTokens",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "freeLeverageUSD",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "freeLeverageBase",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ITraderPool.LeverageInfo",
+        "name": "leverageInfo",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getPoolInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "ticker",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "descriptionURL",
+                "type": "string"
+              },
+              {
+                "internalType": "address",
+                "name": "trader",
+                "type": "address"
+              },
+              {
+                "internalType": "bool",
+                "name": "privatePool",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalLPEmission",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "baseToken",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "baseTokenDecimals",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "minimalInvestment",
+                "type": "uint256"
+              },
+              {
+                "internalType": "enum ICoreProperties.CommissionPeriod",
+                "name": "commissionPeriod",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint256",
+                "name": "commissionPercentage",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct ITraderPool.PoolParameters",
+            "name": "parameters",
+            "type": "tuple"
+          },
+          {
+            "internalType": "address[]",
+            "name": "openPositions",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "baseAndPositionBalances",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalInvestors",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalPoolUSD",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalPoolBase",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lpEmission",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ITraderPool.PoolInfo",
+        "name": "poolInfo",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -860,6 +1040,52 @@
         "internalType": "struct ITraderPool.Commissions",
         "name": "commissions",
         "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "offset",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "limit",
+        "type": "uint256"
+      }
+    ],
+    "name": "getUsersInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "poolLPBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "investedBase",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "poolUSDShare",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "poolBaseShare",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ITraderPool.UserInfo[]",
+        "name": "usersInfo",
+        "type": "tuple[]"
       }
     ],
     "stateMutability": "view",
@@ -954,6 +1180,25 @@
         "internalType": "uint256",
         "name": "commissionUnlockEpoch",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      }
+    ],
+    "name": "isPrivateInvestor",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",

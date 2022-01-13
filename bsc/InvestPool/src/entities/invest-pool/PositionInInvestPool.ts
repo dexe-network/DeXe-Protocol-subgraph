@@ -1,6 +1,6 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { PositionInInvestPool } from "../../../generated/schema";
-import { getBasicTraderPool } from "./InvestTraderPool";
+import { getInvestTraderPool } from "./InvestTraderPool";
 
 export function getPositionInInvestPool(
   id: string,
@@ -15,7 +15,7 @@ export function getPositionInInvestPool(
     position.positionToken = positionToken;
     position.totalOpenVolume = BigInt.zero();
     position.totalCloseVolume = BigInt.zero();
-    position.investPool = getBasicTraderPool(investPool).id;
+    position.investPool = getInvestTraderPool(investPool).id;
     position.closed = false;
   }
 

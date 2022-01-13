@@ -37,6 +37,12 @@
         "internalType": "address",
         "name": "proposalContract",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
       }
     ],
     "name": "Deployed",

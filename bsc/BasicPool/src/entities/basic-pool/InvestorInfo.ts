@@ -3,8 +3,8 @@ import { InvestorInfo } from "../../../generated/schema";
 import { getBasicTraderPool } from "./BasicTraderPool";
 import { getInvestorInBasicPool } from "./InvestorInBasicPool";
 
-export function getInvestorInfo(invesorAddress: Address, basicPool: Address): InvestorInfo {
-  let investor = getInvestorInBasicPool(invesorAddress);
+export function getInvestorInfo(investorAddress: Address, basicPool: Address): InvestorInfo {
+  let investor = getInvestorInBasicPool(investorAddress);
   let pool = getBasicTraderPool(basicPool);
   let id = investor.id+pool.id;
   let investorInfo = InvestorInfo.load(id);

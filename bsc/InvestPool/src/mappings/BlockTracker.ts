@@ -1,21 +1,23 @@
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts"
-import { getInvestPoolRegistry } from "../entities/invest-pool/InvestPoolRegistry"
-import { getBasicTraderPoolById } from "../entities/invest-pool/InvestTraderPool";
-import { InvestPool } from "../../generated/templates/InvestPool/InvestPool";
+import { getInvestTraderPool } from "../entities/invest-pool/InvestTraderPool";
+import { TraderPoolRegistry } from "../../generated/TraderPoolRegistry/TraderPoolRegistry";
 import { getInvestPoolPriceHistory } from "../entities/invest-pool/InvestPoolPriceHistory";
+import { POOL_OFFSET, POOL_REGISTRY_ADDRESS } from "../entities/global/globals";
 
 export function depositHandler(call: ethereum.Call): void {
     if (call.block.number.mod(BigInt.fromU64(100)).equals(BigInt.fromI32(0))){
-        let pools = getInvestPoolRegistry().pools;
-    
-        for(let i =0; i<pools.length;i++) {
-            let pool = getBasicTraderPoolById(pools[i]);
-            if(pool.id == pools[i]){
-                let contract = InvestPool.bind(Address.fromString(pool.id));
-                let price = BigInt.zero(); // TODO price
-                let totalSupply = contract.totalSupply();
-                let priceHistory = getInvestPoolPriceHistory(call.block.timestamp,pool.id,price,totalSupply);
-                priceHistory.save();
+        
+        let tprPrototype = TraderPoolRegistry.bind(Address.fromString(POOL_REGISTRY_ADDRESS));
+        let poolCount = tprPrototype.countPools(tprPrototype.BASIC_POOL_NAME());
+        let iters = Math.ceil(F64.parseFloat(poolCount.toI64().toString()) / POOL_OFFSET);
+
+        for(let i = 0; i < iters; i++){
+            let poolInfo = tprPrototype.listPoolsWithInfo(tprPrototype.BASIC_POOL_NAME(), BigInt.fromI32(POOL_OFFSET*i), BigInt.fromI32((i+1)*POOL_OFFSET));
+            
+            for(let pool = 0; pool < poolInfo.value0.length; pool++){
+                let basicPool = getInvestTraderPool(poolInfo.value0[pool]);
+                let history = getInvestPoolPriceHistory(call.block.timestamp, basicPool.id, poolInfo.value1[pool].totalPoolUSD, poolInfo.value1[pool].lpEmission);
+                history.save();
             }
         }
     }
