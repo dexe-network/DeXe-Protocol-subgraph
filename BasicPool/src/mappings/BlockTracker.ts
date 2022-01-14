@@ -23,7 +23,8 @@ export function depositHandler(call: ethereum.Call): void {
           call.block.timestamp,
           basicPool.id,
           poolInfo.value1[pool].totalPoolUSD,
-          poolInfo.value1[pool].lpEmission
+          poolInfo.value1[pool].lpEmission,
+          poolInfo.value1[pool].totalPoolBase
         );
         history.save();
       }

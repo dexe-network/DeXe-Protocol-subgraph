@@ -6,7 +6,8 @@ export function getBasicPoolPriceHistory(
   timestamp: BigInt,
   pool: string,
   price: BigInt,
-  supply: BigInt
+  supply: BigInt,
+  poolBase: BigInt
 ): BasicPoolPriceHistory {
   let ts = timestamp.div(BigInt.fromI32(MILLIS));
   let id = pool.toString() + ts.toString();
@@ -17,6 +18,7 @@ export function getBasicPoolPriceHistory(
     history.price = price;
     history.supply = supply;
     history.seconds = ts;
+    history.poolBase = poolBase;
   }
   return history;
 }

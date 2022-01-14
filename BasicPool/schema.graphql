@@ -28,6 +28,7 @@ type BasicPoolPriceHistory @entity {
   price: BigInt!
   supply: BigInt!
   pool: BasicPool!
+  poolBase: BigInt!
   seconds: BigInt!
 }
 
