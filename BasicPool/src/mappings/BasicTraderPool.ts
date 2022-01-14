@@ -30,7 +30,7 @@ export function onExchange(event: Exchanged): void {
 
   let position = getPositionInBasicPool(
     getPositionId(basicPool.id, event.params.toToken),
-    event.address,
+    basicPool.id,
     event.params.toToken
   );
 
@@ -52,7 +52,7 @@ export function onExchange(event: Exchanged): void {
     position.totalCloseVolume = position.totalCloseVolume.plus(trade.toVolume);
   }
 
-  let history = getExchangeHistoryInBasicPool(event.block.timestamp, event.address);
+  let history = getExchangeHistoryInBasicPool(event.block.timestamp, basicPool.id);
   trade.day = history.id;
 
   basicPool.save();
@@ -62,10 +62,11 @@ export function onExchange(event: Exchanged): void {
 }
 
 export function onClose(event: PositionClosed): void {
-  let positionOffset = getPositionOffset(getBasicTraderPool(event.address).id, event.params.position);
+  let basicPool = getBasicTraderPool(event.address);
+  let positionOffset = getPositionOffset(basicPool.id, event.params.position);
   let position = getPositionInBasicPool(
-    getPositionId(getBasicTraderPool(event.address).id, event.params.position),
-    event.address,
+    getPositionId(basicPool.id, event.params.position),
+    basicPool.id,
     event.params.position
   );
 
@@ -77,13 +78,13 @@ export function onClose(event: PositionClosed): void {
 }
 
 export function onInvestorAdded(event: InvestorAdded): void {
-  let investor = getInvestorInBasicPool(event.params.investor, event.address);
+  let investor = getInvestorInBasicPool(event.params.investor);
   let basicPool = getBasicTraderPool(event.address);
   investor.activePools.push(basicPool.id);
   investor.allPools.push(basicPool.id);
   investor.save();
 
-  let basicPoolHistory = getBasicPoolHistory(event.block.timestamp, event.address, basicPool.investors);
+  let basicPoolHistory = getBasicPoolHistory(event.block.timestamp, basicPool.id, basicPool.investors);
   basicPoolHistory.investors.push(investor.id);
   basicPoolHistory.save();
 
@@ -116,12 +117,12 @@ export function onInvest(event: Invest): void {
 }
 
 export function onInvestorRemoved(event: InvestorRemoved): void {
-  let investor = getInvestorInBasicPool(event.params.investor, event.address);
+  let investor = getInvestorInBasicPool(event.params.investor);
   let basicPool = getBasicTraderPool(event.address);
   investor.activePools = removeByIndex(investor.activePools, investor.activePools.indexOf(basicPool.id));
   investor.save();
 
-  let basicPoolHistory = getBasicPoolHistory(event.block.timestamp, event.address, basicPool.investors);
+  let basicPoolHistory = getBasicPoolHistory(event.block.timestamp, basicPool.id, basicPool.investors);
   basicPoolHistory.investors = removeByIndex(
     basicPoolHistory.investors,
     basicPoolHistory.investors.indexOf(basicPool.id)

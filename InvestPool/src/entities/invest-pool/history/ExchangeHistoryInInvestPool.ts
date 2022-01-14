@@ -3,7 +3,7 @@ import { ExchangeHistoryInInvestPool } from "../../../../generated/schema";
 import { DAY } from "../../global/globals";
 import { getInvestTraderPool } from "../InvestTraderPool";
 
-export function getExchangeHistoryInInvestPool(timestamp: BigInt, investPool: Address): ExchangeHistoryInInvestPool {
+export function getExchangeHistoryInInvestPool(timestamp: BigInt, investPool: string): ExchangeHistoryInInvestPool {
   let day = timestamp.div(BigInt.fromU32(DAY));
   let id = investPool.toString() + day.toString();
   let history = ExchangeHistoryInInvestPool.load(id);
@@ -11,7 +11,7 @@ export function getExchangeHistoryInInvestPool(timestamp: BigInt, investPool: Ad
   if (history == null) {
     history = new ExchangeHistoryInInvestPool(id);
 
-    history.investPool = getInvestTraderPool(investPool).id;
+    history.investPool = investPool;
     history.day = day;
   }
 

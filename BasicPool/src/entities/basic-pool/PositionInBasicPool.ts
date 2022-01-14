@@ -4,7 +4,7 @@ import { getBasicTraderPool } from "./BasicTraderPool";
 
 export function getPositionInBasicPool(
   id: string,
-  basicPool: Address = Address.zero(),
+  basicPool: string = "",
   positionToken: Address = Address.zero()
 ): PositionInBasicPool {
   let position = PositionInBasicPool.load(id);
@@ -15,7 +15,7 @@ export function getPositionInBasicPool(
     position.positionToken = positionToken;
     position.totalOpenVolume = BigInt.zero();
     position.totalCloseVolume = BigInt.zero();
-    position.basicPool = getBasicTraderPool(basicPool).id;
+    position.basicPool = basicPool;
     position.closed = false;
   }
 

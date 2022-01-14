@@ -1,7 +1,7 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { InvestorInInvestPool } from "../../../generated/schema";
 
-export function getInvestorInInvestPool(id: Address, investPool: Address = Address.zero()): InvestorInInvestPool {
+export function getInvestorInInvestPool(id: Address): InvestorInInvestPool {
   let investor = InvestorInInvestPool.load(id.toString());
 
   if (investor == null) {

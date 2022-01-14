@@ -4,7 +4,7 @@ import { getInvestTraderPool } from "./InvestTraderPool";
 
 export function getPositionInInvestPool(
   id: string,
-  investPool: Address = Address.zero(),
+  investPool: string = "",
   positionToken: Address = Address.zero()
 ): PositionInInvestPool {
   let position = PositionInInvestPool.load(id);
@@ -15,7 +15,7 @@ export function getPositionInInvestPool(
     position.positionToken = positionToken;
     position.totalOpenVolume = BigInt.zero();
     position.totalCloseVolume = BigInt.zero();
-    position.investPool = getInvestTraderPool(investPool).id;
+    position.investPool = investPool;
     position.closed = false;
   }
 

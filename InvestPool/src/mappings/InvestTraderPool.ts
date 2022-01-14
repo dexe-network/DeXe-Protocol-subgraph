@@ -30,7 +30,7 @@ export function onExchange(event: Exchanged): void {
 
   let position = getPositionInInvestPool(
     getPositionId(getInvestTraderPool(event.address).id, event.params.toToken),
-    event.address,
+    investPool.id,
     event.params.toToken
   );
 
@@ -52,7 +52,7 @@ export function onExchange(event: Exchanged): void {
     position.totalCloseVolume = position.totalCloseVolume.plus(trade.toVolume);
   }
 
-  let history = getExchangeHistoryInInvestPool(event.block.timestamp, event.address);
+  let history = getExchangeHistoryInInvestPool(event.block.timestamp, investPool.id);
   trade.day = history.id;
 
   investPool.save();
@@ -62,10 +62,11 @@ export function onExchange(event: Exchanged): void {
 }
 
 export function onClose(event: PositionClosed): void {
-  let positionOffset = getPositionOffset(getInvestTraderPool(event.address).id, event.params.position);
+  let investPool = getInvestTraderPool(event.address);
+  let positionOffset = getPositionOffset(investPool.id, event.params.position);
   let position = getPositionInInvestPool(
-    getPositionId(getInvestTraderPool(event.address).id, event.params.position),
-    event.address,
+    getPositionId(investPool.id, event.params.position),
+    investPool.id,
     event.params.position
   );
 
@@ -77,7 +78,7 @@ export function onClose(event: PositionClosed): void {
 }
 
 export function onInvestorAdded(event: InvestorAdded): void {
-  let investor = getInvestorInInvestPool(event.params.investor, event.address);
+  let investor = getInvestorInInvestPool(event.params.investor);
   let investPool = getInvestTraderPool(event.address);
   investor.activePools.push(investPool.id);
   investor.allPools.push(investPool.id);
@@ -116,7 +117,7 @@ export function onInvest(event: Invest): void {
 }
 
 export function onInvestorRemoved(event: InvestorRemoved): void {
-  let investor = getInvestorInInvestPool(event.params.investor, event.address);
+  let investor = getInvestorInInvestPool(event.params.investor);
   let investPool = getInvestTraderPool(event.address);
   investor.activePools = removeByIndex(investor.activePools, investor.activePools.indexOf(investPool.id));
   investor.save();
