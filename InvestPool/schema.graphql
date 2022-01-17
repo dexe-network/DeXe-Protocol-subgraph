@@ -186,7 +186,7 @@ type ProposalExchangeInInvestPool @entity {
 }
 
 type ProposalInvestHistoryInInvestPool @entity {
-  id: ID! # ProposalBasicPool.id + timestamp / 86400
+  id: ID! # ProposalInvestPool.id + timestamp / 86400
   totalInvestVolumeLP: BigInt!
   totalInvestVolumeBase: BigInt!
   day: BigInt!
@@ -196,7 +196,7 @@ type ProposalInvestHistoryInInvestPool @entity {
 }
 
 type ProposalDivestHistoryInInvestPool @entity {
-  id: ID! # ProposalBasicPool.id + timestamp / 86400
+  id: ID! # ProposalInvestPool.id + timestamp / 86400
   totalDivestVolumeLP: BigInt!
   totalDivestVolumeBase: BigInt!
   day: BigInt!
@@ -206,7 +206,7 @@ type ProposalDivestHistoryInInvestPool @entity {
 }
 
 type ProposalExchangeHistoryInInvestPool @entity {
-  id: ID! # ProposalBasicPool.id + timestamp / 86400
+  id: ID! # ProposalInvestPool.id + timestamp / 86400
   proposal: ProposalInvestPool!
   day: BigInt!
 

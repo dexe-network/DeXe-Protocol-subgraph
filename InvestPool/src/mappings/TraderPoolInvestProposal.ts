@@ -19,8 +19,7 @@ export function onProposalCreated(event: ProposalCreated): void {
     event.address,
     event.params.token,
     event.params.proposalLimits[0].toBigInt(),
-    event.params.proposalLimits[1].toBigInt(),
-    event.params.proposalLimits[2].toBigInt()
+    event.params.proposalLimits[1].toBigInt()
   );
   proposal.save();
 }

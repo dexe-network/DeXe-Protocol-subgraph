@@ -10,7 +10,7 @@ export function getInvestPoolPriceHistory(
   poolBase: BigInt
 ): InvestPoolPriceHistory {
   let ts = timestamp.div(BigInt.fromI32(MILLIS));
-  let id = pool.toString() + ts.toString();
+  let id = pool + ts.toString();
   let history = InvestPoolPriceHistory.load(id);
   if (history == null) {
     history = new InvestPoolPriceHistory(id);

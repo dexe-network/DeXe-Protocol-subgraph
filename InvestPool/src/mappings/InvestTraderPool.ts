@@ -29,7 +29,7 @@ export function onExchange(event: Exchanged): void {
   let investPool = getInvestTraderPool(event.address);
 
   let position = getPositionInInvestPool(
-    getPositionId(getInvestTraderPool(event.address).id, event.params.toToken),
+    getPositionId(investPool.id, event.params.toToken),
     investPool.id,
     event.params.toToken
   );
