@@ -30,25 +30,6 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "trader",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "BurnLP",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
         "name": "investor",
         "type": "address"
       },
@@ -65,7 +46,7 @@
         "type": "uint256"
       }
     ],
-    "name": "Divest",
+    "name": "Divested",
     "type": "event"
   },
   {
@@ -132,6 +113,31 @@
         "internalType": "address",
         "name": "investor",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "toMintLP",
+        "type": "uint256"
+      }
+    ],
+    "name": "Invested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "investor",
+        "type": "address"
       }
     ],
     "name": "InvestorAdded",
@@ -156,6 +162,19 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "position",
+        "type": "address"
+      }
+    ],
+    "name": "PositionClosed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "trader",
         "type": "address"
       },
@@ -166,7 +185,7 @@
         "type": "uint256"
       }
     ],
-    "name": "MintLP",
+    "name": "TraderCommissionMinted",
     "type": "event"
   },
   {
@@ -175,11 +194,17 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "position",
+        "name": "investor",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
       }
     ],
-    "name": "PositionClosed",
+    "name": "TraderCommissionPaid",
     "type": "event"
   },
   {
@@ -343,7 +368,7 @@
           }
         ],
         "internalType": "struct ITraderPool.PoolParameters",
-        "name": "_poolParameters",
+        "name": "poolParameters",
         "type": "tuple"
       }
     ],
@@ -1293,59 +1318,6 @@
   },
   {
     "inputs": [],
-    "name": "poolParameters",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "descriptionURL",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "trader",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "privatePool",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint256",
-        "name": "totalLPEmission",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "baseToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "baseTokenDecimals",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "minimalInvestment",
-        "type": "uint256"
-      },
-      {
-        "internalType": "enum ICoreProperties.CommissionPeriod",
-        "name": "commissionPeriod",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "commissionPercentage",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "priceFeed",
     "outputs": [
       {
@@ -1525,25 +1497,6 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "traderAdmins",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",

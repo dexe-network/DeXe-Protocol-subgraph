@@ -13,8 +13,7 @@ export function getProposalDivestHistoryInInvestPool(
   if (history == null) {
     history = new ProposalDivestHistoryInInvestPool(id);
 
-    history.totalDivestVolumeLP = BigInt.zero();
-    history.totalDivestVolumeBase = BigInt.zero();
+    history.totalDivestVolume = BigInt.zero();
     history.proposal = proposal;
     history.day = day;
   }

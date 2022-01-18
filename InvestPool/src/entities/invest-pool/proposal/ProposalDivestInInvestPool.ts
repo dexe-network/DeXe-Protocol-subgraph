@@ -6,7 +6,6 @@ import { getInvestorInfo } from "../InvestorInfo";
 export function getProposalDivestInInvestPool(
   hash: Bytes,
   amountLP: BigInt = BigInt.zero(),
-  amountBase: BigInt = BigInt.zero(),
   investorInfoId: string = ""
 ): ProposalDivestInInvestPool {
   let id = hash.toHex();
@@ -15,8 +14,7 @@ export function getProposalDivestInInvestPool(
   if (divest == null) {
     divest = new ProposalDivestInInvestPool(id);
 
-    divest.amountLP = amountLP;
-    divest.amountBase = amountBase;
+    divest.amount = amountLP;
     divest.investor = investorInfoId;
     divest.day = "";
   }

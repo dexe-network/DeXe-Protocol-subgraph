@@ -61,11 +61,11 @@ dataSources:
         - name: Insurance
           file: ./abis/Insurance.json
       eventHandlers:
-        - event: Deposit(uint256,address)
+        - event: Deposited(uint256,address)
           handler: onDeposit
-        - event: Withdraw(uint256,address)
+        - event: Withdrawn(uint256,address)
           handler: onWithdraw
-        - event: Payout(uint256,address)
+        - event: Paidout(uint256,address)
           handler: onPayout
 
   - kind: ethereum/contract
@@ -114,16 +114,16 @@ templates:
           handler: onClose
         - event: InvestorAdded(address)
           handler: onInvestorAdded
-        - event: Invest(address,uint256,uint256)
+        - event: Invested(address,uint256,uint256)
           handler: onInvest
         - event: InvestorRemoved(address)
           handler: onInvestorRemoved
-        - event: Divest(address,uint256,uint256)
+        - event: Divested(address,uint256,uint256)
           handler: onDivest
-        - event: MintLP(address,uint256)
-          handler: onMintLP
-        - event: BurnLP(address,uint256)
-          handler: onBurnLP
+        - event: TraderCommissionMinted(address,uint256)
+          handler: onTraderCommissionMinted
+        - event: TraderCommissionPaid(address,uint256)
+          handler: onTraderCommissionPaid
 
   - kind: ethereum/contract
     name: InvestProposal
@@ -144,9 +144,11 @@ templates:
       eventHandlers:
         - event: ProposalCreated(uint256,(uint256,uint256))
           handler: onProposalCreated
-        - event: ProposalInvest(uint256,address,uint256,uint256)
-          handler: onProposalInvest
-        - event: ProposalDivest(uint256,address,uint256)
-          handler: onProposalDivest
-        - event: ProposalExchange(uint256,address,uint256)
-          handler: onProposalExchange
+        - event: ProposalInvested(uint256,address,uint256,uint256)
+          handler: onProposalInvested
+        - event: ProposalDivested(uint256,address,uint256)
+          handler: onProposalDivested
+        - event: ProposalWithdrawn(uint256,uint256,address)
+          handler: onProposalWithdrawn
+        - event: ProposalSupplied(uint256,uint256,address)
+          handler: onProposalSupplied

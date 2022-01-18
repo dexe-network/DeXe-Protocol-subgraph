@@ -2,11 +2,11 @@ import {
   Exchanged,
   PositionClosed,
   InvestorAdded,
-  Invest,
+  Invested,
   InvestorRemoved,
-  Divest,
-  MintLP,
-  BurnLP,
+  Divested,
+  TraderCommissionMinted,
+  TraderCommissionPaid,
 } from "../../generated/templates/InvestPool/InvestPool";
 import { getInvestTraderPool } from "../entities/invest-pool/InvestTraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
@@ -92,7 +92,7 @@ export function onInvestorAdded(event: InvestorAdded): void {
   investPool.save();
 }
 
-export function onInvest(event: Invest): void {
+export function onInvest(event: Invested): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let invest = getInvestInInvestPool(
     event.transaction.hash,
@@ -133,7 +133,7 @@ export function onInvestorRemoved(event: InvestorRemoved): void {
   investPool.save();
 }
 
-export function onDivest(event: Divest): void {
+export function onDivest(event: Divested): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let divest = getDivestInInvestPool(event.transaction.hash, investorInfo.id, event.params.amount);
   let history = getDivestHistoryInInvestPool(event.block.timestamp, event.address);
@@ -150,7 +150,7 @@ export function onDivest(event: Divest): void {
   history.save();
 }
 
-export function onMintLP(event: MintLP): void {
+export function onMintLP(event: TraderCommissionMinted): void {
   let investorInfo = getInvestorInfo(event.params.trader, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
 
@@ -160,8 +160,8 @@ export function onMintLP(event: MintLP): void {
   investorInfo.save();
 }
 
-export function onBurnLP(event: BurnLP): void {
-  let investorInfo = getInvestorInfo(event.params.trader, event.address);
+export function onBurnLP(event: TraderCommissionPaid): void {
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
 
   lpHistory.lpBalance.minus(event.params.amount);

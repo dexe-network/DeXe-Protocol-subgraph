@@ -104,7 +104,7 @@ type DivestInBasicPool @entity {
   id: ID! # tx hash
   investor: InvestorInfo!
   volumeBase: BigInt!
-  commission: BigInt!
+  baseCommission: BigInt!
 
   day: DivestHistoryInBasicPool!
 }

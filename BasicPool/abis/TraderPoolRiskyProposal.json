@@ -94,7 +94,7 @@
         "type": "uint256"
       }
     ],
-    "name": "ProposalDivest",
+    "name": "ProposalDivested",
     "type": "event"
   },
   {
@@ -131,7 +131,7 @@
         "type": "uint256"
       }
     ],
-    "name": "ProposalExchange",
+    "name": "ProposalExchanged",
     "type": "event"
   },
   {
@@ -162,7 +162,7 @@
         "type": "uint256"
       }
     ],
-    "name": "ProposalInvest",
+    "name": "ProposalInvested",
     "type": "event"
   },
   {
@@ -467,7 +467,13 @@
       }
     ],
     "name": "create",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },

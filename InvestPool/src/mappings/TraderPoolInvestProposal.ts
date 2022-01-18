@@ -1,30 +1,32 @@
 import {
   ProposalCreated,
-  ProposalDivest,
-  ProposalExchange,
-  ProposalInvest,
-} from "../../generated/templates/InvestPool/InvestPool";
+  ProposalDivested,
+  ProposalInvested,
+  ProposalWithdrawn,
+  ProposalSupplied,
+} from "../../generated/templates/InvestProposal/InvestProposal";
 import { getInvestorInfo } from "../entities/invest-pool/InvestorInfo";
 import { getProposalDivestHistoryInInvestPool } from "../entities/invest-pool/proposal/history/ProposalDivestHistoryInInvestPool";
-import { getProposalExchangeHistoryInInvestPool } from "../entities/invest-pool/proposal/history/ProposalExchangeHistoryInInvestPool";
 import { getProposalInvestHistoryInInvestPool } from "../entities/invest-pool/proposal/history/ProposalInvestHistoryInInvestPool";
+import { getProposalSupplyHistory } from "../entities/invest-pool/proposal/history/ProposalSupplyHistory";
+import { getProposalWithdrawHistory } from "../entities/invest-pool/proposal/history/ProposalWithdrawHistory";
 import { getProposalDivestInInvestPool } from "../entities/invest-pool/proposal/ProposalDivestInInvestPool";
-import { getProposalExchangeInInvestPool } from "../entities/invest-pool/proposal/ProposalExchangeInInvestPool";
 import { getProposalInvestInInvestPool } from "../entities/invest-pool/proposal/ProposalInvestInInvestPool";
 import { getProposalInvestPool } from "../entities/invest-pool/proposal/ProposalInvestPool";
+import { getProposalSupply } from "../entities/invest-pool/proposal/ProposalSupply";
+import { getProposalWithdraw } from "../entities/invest-pool/proposal/ProposalWithdraw";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let proposal = getProposalInvestPool(
     event.params.index,
     event.address,
-    event.params.token,
     event.params.proposalLimits[0].toBigInt(),
     event.params.proposalLimits[1].toBigInt()
   );
   proposal.save();
 }
 
-export function onProposalInvest(event: ProposalInvest): void {
+export function onProposalInvest(event: ProposalInvested): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let proposal = getProposalInvestPool(event.params.index, event.address);
   let invest = getProposalInvestInInvestPool(
@@ -45,38 +47,44 @@ export function onProposalInvest(event: ProposalInvest): void {
   history.save();
 }
 
-export function onProposalDivest(event: ProposalDivest): void {
+export function onProposalDivest(event: ProposalDivested): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let proposal = getProposalInvestPool(event.params.index, event.address);
-  let divest = getProposalDivestInInvestPool(
-    event.transaction.hash,
-    event.params.amount,
-    event.params.commission,
-    investorInfo.id
-  );
+  let divest = getProposalDivestInInvestPool(event.transaction.hash, event.params.amount, investorInfo.id);
   let history = getProposalDivestHistoryInInvestPool(event.block.timestamp, proposal.id);
 
   divest.day = history.id;
+  history.totalDivestVolume = history.totalDivestVolume.plus(event.params.amount);
 
   proposal.save();
   divest.save();
   history.save();
 }
 
-export function onProposalExchange(event: ProposalExchange): void {
+export function onWithdrawn(event: ProposalWithdrawn): void {
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
+  let withdraw = getProposalWithdraw(event.transaction.hash, event.params.amount, investorInfo.id);
   let proposal = getProposalInvestPool(event.params.index, event.address);
-  let exchange = getProposalExchangeInInvestPool(
-    event.transaction.hash,
-    event.params.fromToken,
-    event.params.toToken,
-    event.params.fromVolume,
-    event.params.toVolume
-  );
-  let history = getProposalExchangeHistoryInInvestPool(event.block.timestamp, proposal.id);
+  let history = getProposalWithdrawHistory(event.block.timestamp, proposal.id);
 
-  exchange.day = history.id;
+  withdraw.day = history.id;
+  history.totalWithdraw = history.totalWithdraw.plus(event.params.amount);
 
   proposal.save();
-  exchange.save();
+  withdraw.save();
+  history.save();
+}
+
+export function onSupplied(event: ProposalSupplied): void {
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
+  let supply = getProposalSupply(event.transaction.hash, event.params.amount, investorInfo.id);
+  let proposal = getProposalInvestPool(event.params.index, event.address);
+  let history = getProposalSupplyHistory(event.block.timestamp, proposal.id);
+
+  supply.day = history.id;
+  history.totalSupply = history.totalSupply.plus(event.params.amount);
+
+  proposal.save();
+  supply.save();
   history.save();
 }

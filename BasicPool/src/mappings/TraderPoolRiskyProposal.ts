@@ -8,10 +8,11 @@ import { getProposalExchangeInBasicPool } from "../entities/basic-pool/proposal/
 import { getProposalInvestInBasicPool } from "../entities/basic-pool/proposal/ProposalInvestInBasicPool";
 import {
   ProposalCreated,
-  ProposalDivest,
-  ProposalExchange,
-  ProposalInvest,
+  ProposalDivested,
+  ProposalExchanged,
+  ProposalInvested,
 } from "../../generated/templates/RiskyProposal/RiskyProposal";
+import { getBasicTraderPool } from "../entities/basic-pool/BasicTraderPool";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let proposal = getProposalBasicPool(
@@ -25,7 +26,7 @@ export function onProposalCreated(event: ProposalCreated): void {
   proposal.save();
 }
 
-export function onProposalInvest(event: ProposalInvest): void {
+export function onProposalInvest(event: ProposalInvested): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let proposal = getProposalBasicPool(event.params.index, event.address);
   let invest = getProposalInvestInBasicPool(
@@ -41,12 +42,14 @@ export function onProposalInvest(event: ProposalInvest): void {
   history.totalInvestVolumeBase = history.totalInvestVolumeBase.plus(event.params.amountBase);
   history.totalInvestVolumeLP = history.totalInvestVolumeLP.plus(event.params.amountLP);
 
+  let pool = getBasicTraderPool(event.address);
+
   proposal.save();
   invest.save();
   history.save();
 }
 
-export function onProposalDivest(event: ProposalDivest): void {
+export function onProposalDivest(event: ProposalDivested): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let proposal = getProposalBasicPool(event.params.index, event.address);
   let divest = getProposalDivestInBasicPool(
@@ -67,7 +70,7 @@ export function onProposalDivest(event: ProposalDivest): void {
   history.save();
 }
 
-export function onProposalExchange(event: ProposalExchange): void {
+export function onProposalExchange(event: ProposalExchanged): void {
   let proposal = getProposalBasicPool(event.params.index, event.address);
   let exchange = getProposalExchangeInBasicPool(
     event.transaction.hash,
