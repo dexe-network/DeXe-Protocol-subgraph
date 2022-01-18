@@ -42,8 +42,6 @@ export function onProposalInvest(event: ProposalInvested): void {
   history.totalInvestVolumeBase = history.totalInvestVolumeBase.plus(event.params.amountBase);
   history.totalInvestVolumeLP = history.totalInvestVolumeLP.plus(event.params.amountLP);
 
-  let pool = getBasicTraderPool(event.address);
-
   proposal.save();
   invest.save();
   history.save();
