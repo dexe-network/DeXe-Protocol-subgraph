@@ -1,18 +1,18 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { ProposalDivestInInvestPool } from "../../../../generated/schema";
-import { getProposalDivestHistoryInInvestPool } from "./history/ProposalDivestHistoryInInvestPool";
+import { ProposalDivest } from "../../../../generated/schema";
+import { getProposalDivestHistory } from "./history/ProposalDivestHistory";
 import { getInvestorInfo } from "../InvestorInfo";
 
-export function getProposalDivestInInvestPool(
+export function getProposalDivest(
   hash: Bytes,
   amountLP: BigInt = BigInt.zero(),
   investorInfoId: string = ""
-): ProposalDivestInInvestPool {
+): ProposalDivest {
   let id = hash.toHex();
-  let divest = ProposalDivestInInvestPool.load(id);
+  let divest = ProposalDivest.load(id);
 
   if (divest == null) {
-    divest = new ProposalDivestInInvestPool(id);
+    divest = new ProposalDivest(id);
 
     divest.amount = amountLP;
     divest.investor = investorInfoId;

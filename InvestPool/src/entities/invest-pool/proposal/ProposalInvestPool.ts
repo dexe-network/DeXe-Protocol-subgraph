@@ -1,5 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { ExchangeInInvestPool, ProposalInvestPool } from "../../../../generated/schema";
+import { Exchange, ProposalInvestPool } from "../../../../generated/schema";
 import { getInvestTraderPool } from "../InvestTraderPool";
 
 export function getProposalInvestPool(

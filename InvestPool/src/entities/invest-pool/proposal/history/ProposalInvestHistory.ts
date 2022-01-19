@@ -1,17 +1,14 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { ProposalInvestHistoryInInvestPool } from "../../../../../generated/schema";
+import { ProposalInvestHistory } from "../../../../../generated/schema";
 import { DAY } from "../../../global/globals";
 
-export function getProposalInvestHistoryInInvestPool(
-  timestamp: BigInt,
-  proposal: string
-): ProposalInvestHistoryInInvestPool {
+export function getProposalInvestHistory(timestamp: BigInt, proposal: string): ProposalInvestHistory {
   let day = timestamp.div(BigInt.fromU32(DAY));
   let id = proposal + day.toString();
-  let history = ProposalInvestHistoryInInvestPool.load(id);
+  let history = ProposalInvestHistory.load(id);
 
   if (history == null) {
-    history = new ProposalInvestHistoryInInvestPool(id);
+    history = new ProposalInvestHistory(id);
 
     history.totalInvestVolumeLP = BigInt.zero();
     history.totalInvestVolumeBase = BigInt.zero();

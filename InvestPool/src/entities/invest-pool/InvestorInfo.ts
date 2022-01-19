@@ -1,10 +1,10 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { InvestorInfo } from "../../../generated/schema";
 import { getInvestTraderPool } from "./InvestTraderPool";
-import { getInvestorInInvestPool } from "./InvestorInInvestPool";
+import { getInvestor } from "./Investor";
 
 export function getInvestorInfo(investorAddress: Address, investPool: Address): InvestorInfo {
-  let investor = getInvestorInInvestPool(investorAddress);
+  let investor = getInvestor(investorAddress);
   let pool = getInvestTraderPool(investPool);
   let id = investor.id + pool.id;
   let investorInfo = InvestorInfo.load(id);
