@@ -2,7 +2,7 @@ import {
   ProposalCreated,
   ProposalDivested,
   ProposalInvested,
-  ProposalWithdrawaln,
+  ProposalWithdrawn,
   ProposalSupplied,
 } from "../../generated/templates/InvestProposal/InvestProposal";
 import { getInvestorInfo } from "../entities/invest-pool/InvestorInfo";
@@ -61,7 +61,7 @@ export function onProposalDivest(event: ProposalDivested): void {
   history.save();
 }
 
-export function onWithdrawaln(event: ProposalWithdrawaln): void {
+export function onWithdrawn(event: ProposalWithdrawn): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let withdraw = getProposalWithdrawal(event.transaction.hash, event.params.amount, investorInfo.id);
   let proposal = getProposal(event.params.index, event.address);

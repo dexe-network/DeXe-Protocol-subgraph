@@ -72,7 +72,7 @@
         "type": "address"
       }
     ],
-    "name": "Withdrawaln",
+    "name": "Withdrawn",
     "type": "event"
   },
   {
