@@ -1,16 +1,16 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { ProposalWithdraw } from "../../../../generated/schema";
+import { ProposalWithdrawal } from "../../../../generated/schema";
 
-export function getProposalWithdraw(
+export function getProposalWithdrawal(
   hash: Bytes,
   amount: BigInt = BigInt.zero(),
   investorInfoId: string = ""
-): ProposalWithdraw {
+): ProposalWithdrawal {
   let id = hash.toHex();
-  let withdraw = ProposalWithdraw.load(id);
+  let withdraw = ProposalWithdrawal.load(id);
 
   if (withdraw == null) {
-    withdraw = new ProposalWithdraw(id);
+    withdraw = new ProposalWithdrawal(id);
     withdraw.investor = investorInfoId;
     withdraw.amount = amount;
     withdraw.day = "";

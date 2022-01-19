@@ -72,7 +72,7 @@
         "type": "address"
       }
     ],
-    "name": "Withdrawn",
+    "name": "Withdrawaln",
     "type": "event"
   },
   {
@@ -423,7 +423,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "amountToWithdraw",
+        "name": "amountToWithdrawal",
         "type": "uint256"
       }
     ],

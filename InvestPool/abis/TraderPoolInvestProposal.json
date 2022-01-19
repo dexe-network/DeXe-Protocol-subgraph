@@ -158,7 +158,7 @@
         "type": "address"
       }
     ],
-    "name": "ProposalWithdrawn",
+    "name": "ProposalWithdrawaln",
     "type": "event"
   },
   {

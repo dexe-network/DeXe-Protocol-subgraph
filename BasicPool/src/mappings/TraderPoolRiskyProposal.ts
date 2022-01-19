@@ -2,7 +2,7 @@ import { getInvestorInfo } from "../entities/basic-pool/InvestorInfo";
 import { getProposalDivestHistory } from "../entities/basic-pool/proposal/history/ProposalDivestHistory";
 import { getProposalExchangeHistory } from "../entities/basic-pool/proposal/history/ProposalExchangeHistory";
 import { getProposalInvestHistory } from "../entities/basic-pool/proposal/history/ProposalInvestHistory";
-import { getProposalBasicPool } from "../entities/basic-pool/proposal/ProposalBasicPool";
+import { getProposal } from "../entities/basic-pool/proposal/Proposal";
 import { getProposalDivest } from "../entities/basic-pool/proposal/ProposalDivest";
 import { getProposalExchange } from "../entities/basic-pool/proposal/ProposalExchange";
 import { getProposalInvest } from "../entities/basic-pool/proposal/ProposalInvest";
@@ -15,7 +15,7 @@ import {
 import { getBasicTraderPool } from "../entities/basic-pool/BasicTraderPool";
 
 export function onProposalCreated(event: ProposalCreated): void {
-  let proposal = getProposalBasicPool(
+  let proposal = getProposal(
     event.params.index,
     event.address,
     event.params.token,
@@ -28,7 +28,7 @@ export function onProposalCreated(event: ProposalCreated): void {
 
 export function onProposalInvest(event: ProposalInvested): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address);
-  let proposal = getProposalBasicPool(event.params.index, event.address);
+  let proposal = getProposal(event.params.index, event.address);
   let invest = getProposalInvest(
     event.transaction.hash,
     event.params.amountLP,
@@ -49,7 +49,7 @@ export function onProposalInvest(event: ProposalInvested): void {
 
 export function onProposalDivest(event: ProposalDivested): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address);
-  let proposal = getProposalBasicPool(event.params.index, event.address);
+  let proposal = getProposal(event.params.index, event.address);
   let divest = getProposalDivest(
     event.transaction.hash,
     event.params.amountLP,
@@ -69,7 +69,7 @@ export function onProposalDivest(event: ProposalDivested): void {
 }
 
 export function onProposalExchange(event: ProposalExchanged): void {
-  let proposal = getProposalBasicPool(event.params.index, event.address);
+  let proposal = getProposal(event.params.index, event.address);
   let exchange = getProposalExchange(
     event.transaction.hash,
     event.params.fromToken,

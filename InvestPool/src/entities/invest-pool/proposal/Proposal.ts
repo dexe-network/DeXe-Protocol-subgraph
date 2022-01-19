@@ -1,18 +1,18 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Exchange, ProposalInvestPool } from "../../../../generated/schema";
+import { Exchange, Proposal } from "../../../../generated/schema";
 import { getInvestTraderPool } from "../InvestTraderPool";
 
-export function getProposalInvestPool(
+export function getProposal(
   index: BigInt,
   investPool: Address,
   timestampLimit: BigInt = BigInt.zero(),
   investLPLimit: BigInt = BigInt.zero()
-): ProposalInvestPool {
+): Proposal {
   let id = getInvestTraderPool(investPool).id.toString() + index.toString();
-  let proposal = ProposalInvestPool.load(id);
+  let proposal = Proposal.load(id);
 
   if (proposal == null) {
-    proposal = new ProposalInvestPool(id);
+    proposal = new Proposal(id);
 
     proposal.investorsCount = BigInt.zero();
     proposal.timestampLimit = timestampLimit;

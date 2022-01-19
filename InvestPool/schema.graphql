@@ -14,7 +14,7 @@ type InvestPool @entity {
 
   investors: [Investor!]!
 
-  proposals: [ProposalInvestPool!]! @derivedFrom(field: "investPool")
+  proposals: [Proposal!]! @derivedFrom(field: "investPool")
   positions: [Position!]! @derivedFrom(field: "investPool")
   invests: [InvestHistory!]! @derivedFrom(field: "investPool")
   divests: [DivestHistory!]! @derivedFrom(field: "investPool")
@@ -135,26 +135,25 @@ type ExchangeHistory @entity {
   exchanges: [Exchange!]! @derivedFrom(field: "day")
 }
 
-####################################### ProposalInvestPool #######################################
+####################################### Proposal #######################################
 
 type ProposalContract @entity {
   id: ID!
 }
 
-type ProposalInvestPool @entity {
+type Proposal @entity {
   id: ID! # pool address + proposal index
   token: Bytes!
   investorsCount: BigInt!
 
   timestampLimit: BigInt!
   investLPLimit: BigInt!
-  maxTokenPriceLimit: BigInt!
 
   investPool: InvestPool!
   proposalInvests: [ProposalInvestHistory!]! @derivedFrom(field: "proposal")
   proposalDivests: [ProposalDivestHistory!]! @derivedFrom(field: "proposal")
   proposalSupplies: [ProposalSupplyHistory!]! @derivedFrom(field: "proposal")
-  proposalWithdraws: [ProposalWithdrawHistory!]! @derivedFrom(field: "proposal")
+  proposalWithdrawals: [ProposalWithdrawalHistory!]! @derivedFrom(field: "proposal")
 }
 
 type ProposalInvest @entity {
@@ -182,47 +181,47 @@ type ProposalSupply @entity {
   day: ProposalSupplyHistory!
 }
 
-type ProposalWithdraw @entity {
+type ProposalWithdrawal @entity {
   id: ID! # tx hash
   amount: BigInt!
 
   investor: InvestorInfo!
-  day: ProposalWithdrawHistory!
+  day: ProposalWithdrawalHistory!
 }
 
 type ProposalSupplyHistory @entity {
-  id: ID! # proposal id + timestamp / 86400
+  id: ID! # Proposal.id + timestamp / 86400
   totalSupply: BigInt!
 
   day: BigInt!
-  proposal: ProposalInvestPool!
+  proposal: Proposal!
   supplies: [ProposalSupply!]! @derivedFrom(field: "day")
 }
 
-type ProposalWithdrawHistory @entity {
-  id: ID! # proposal id + timestamp / 86400
-  totalWithdraw: BigInt!
+type ProposalWithdrawalHistory @entity {
+  id: ID! # Proposal.id + timestamp / 86400
+  totalWithdrawal: BigInt!
 
   day: BigInt!
-  proposal: ProposalInvestPool!
-  supplies: [ProposalWithdraw!]! @derivedFrom(field: "day")
+  proposal: Proposal!
+  supplies: [ProposalWithdrawal!]! @derivedFrom(field: "day")
 }
 
 type ProposalInvestHistory @entity {
-  id: ID! # ProposalInvestPool.id + timestamp / 86400
+  id: ID! # Proposal.id + timestamp / 86400
   totalInvestVolumeLP: BigInt!
   totalInvestVolumeBase: BigInt!
   day: BigInt!
 
-  proposal: ProposalInvestPool!
+  proposal: Proposal!
   invests: [ProposalInvest!]! @derivedFrom(field: "day")
 }
 
 type ProposalDivestHistory @entity {
-  id: ID! # ProposalInvestPool.id + timestamp / 86400
+  id: ID! # Proposal.id + timestamp / 86400
   totalDivestVolume: BigInt!
   day: BigInt!
 
-  proposal: ProposalInvestPool!
+  proposal: Proposal!
   divests: [ProposalDivest!]! @derivedFrom(field: "day")
 }
