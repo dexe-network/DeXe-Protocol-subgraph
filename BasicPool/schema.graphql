@@ -1,0 +1,214 @@
+type PositionOffset @entity {
+  id: ID! # trader pool address + position token address
+  offset: BigInt!
+}
+
+####################################### BasicPool #######################################
+
+type BasicPool @entity {
+  id: ID! # pool address
+  baseToken: Bytes!
+  ticker: String!
+  name: String!
+  creatingTime: BigInt!
+
+  investors: [Investor!]!
+
+  proposals: [Proposal!]! @derivedFrom(field: "basicPool")
+  positions: [Position!]! @derivedFrom(field: "basicPool")
+  invests: [InvestHistory!]! @derivedFrom(field: "basicPool")
+  divests: [DivestHistory!]! @derivedFrom(field: "basicPool")
+  exchanges: [ExchangeHistory!]! @derivedFrom(field: "basicPool")
+  history: [BasicPoolHistory!]! @derivedFrom(field: "pool")
+  priceHistory: [BasicPoolPriceHistory!]! @derivedFrom(field: "pool")
+}
+
+type BasicPoolPriceHistory @entity {
+  id: ID!
+  price: BigInt!
+  supply: BigInt!
+  pool: BasicPool!
+  poolBase: BigInt!
+  seconds: BigInt!
+}
+
+type BasicPoolHistory @entity {
+  id: ID! # pool address + timestamp / 86400
+  investors: [Investor!]!
+  pool: BasicPool!
+  day: BigInt!
+}
+
+type Investor @entity {
+  id: ID! # investor address
+  insurance: BigInt!
+  insurancePayout: BigInt!
+
+  activePools: [BasicPool!]!
+  allPools: [BasicPool!]!
+}
+
+type InvestorInfo @entity {
+  id: ID! # investor address + pool address
+  totalInvestVolume: BigInt!
+  totalDivestVolume: BigInt!
+
+  invests: [Invest!]! @derivedFrom(field: "investor")
+  divests: [Divest!]! @derivedFrom(field: "investor")
+  proposalInvests: [ProposalInvest!]! @derivedFrom(field: "investor")
+  proposalDivests: [ProposalDivest!]! @derivedFrom(field: "investor")
+  investLPHistory: [InvestorLPHistory!]! @derivedFrom(field: "investorInfo")
+}
+
+type InvestorLPHistory @entity {
+  id: ID! # investorInfo + day
+  lpBalance: BigInt!
+  investorInfo: InvestorInfo!
+  day: BigInt!
+}
+
+type Position @entity {
+  id: ID! # trader pool address + position token address + position offset
+  positionToken: Bytes!
+  closed: Boolean!
+
+  totalOpenVolume: BigInt!
+  totalCloseVolume: BigInt!
+
+  basicPool: BasicPool!
+  exchanges: [Exchange!]! @derivedFrom(field: "position")
+}
+
+type Exchange @entity {
+  id: ID! # tx hash
+  fromToken: Bytes!
+  toToken: Bytes!
+
+  fromVolume: BigInt!
+  toVolume: BigInt!
+  position: Position!
+
+  day: ExchangeHistory!
+}
+
+type Invest @entity {
+  id: ID! # tx hash
+  investor: InvestorInfo!
+  volumeBase: BigInt!
+  lpPurchasePrice: BigInt!
+
+  day: InvestHistory!
+}
+
+type Divest @entity {
+  id: ID! # tx hash
+  investor: InvestorInfo!
+  volumeBase: BigInt!
+  baseCommission: BigInt!
+
+  day: DivestHistory!
+}
+
+type InvestHistory @entity {
+  id: ID! # pool address + timestamp / 86400
+  totalInvestVolume: BigInt!
+  day: BigInt!
+  basicPool: BasicPool!
+
+  investments: [Invest!]! @derivedFrom(field: "day")
+}
+
+type DivestHistory @entity {
+  id: ID! # pool address + timestamp / 86400
+  totalDivestVolume: BigInt!
+  day: BigInt!
+  basicPool: BasicPool!
+
+  divestments: [Divest!]! @derivedFrom(field: "day")
+}
+
+type ExchangeHistory @entity {
+  id: ID! # pool address + timestamp / 86400
+  basicPool: BasicPool!
+  day: BigInt!
+
+  exchanges: [Exchange!]! @derivedFrom(field: "day")
+}
+
+####################################### Proposal #######################################
+
+type ProposalContract @entity {
+  id: ID!
+}
+
+type Proposal @entity {
+  id: ID! # pool address + proposal index
+  token: Bytes!
+  investorsCount: BigInt!
+
+  timestampLimit: BigInt!
+  investLPLimit: BigInt!
+  maxTokenPriceLimit: BigInt!
+
+  basicPool: BasicPool!
+  proposalInvests: [ProposalInvestHistory!]! @derivedFrom(field: "proposal")
+  proposalDivests: [ProposalDivestHistory!]! @derivedFrom(field: "proposal")
+  exchanges: [ProposalExchangeHistory!]! @derivedFrom(field: "proposal")
+}
+
+type ProposalInvest @entity {
+  id: ID! # tx hash
+  amountLP: BigInt!
+  amountBase: BigInt!
+
+  investor: InvestorInfo!
+  day: ProposalInvestHistory!
+}
+
+type ProposalDivest @entity {
+  id: ID! # tx hash
+  amountLP: BigInt!
+  amountBase: BigInt!
+
+  investor: InvestorInfo!
+  day: ProposalDivestHistory!
+}
+
+type ProposalExchange @entity {
+  id: ID! # tx hash
+  fromToken: Bytes!
+  toToken: Bytes!
+
+  fromVolume: BigInt!
+  toVolume: BigInt!
+
+  day: ProposalExchangeHistory!
+}
+
+type ProposalInvestHistory @entity {
+  id: ID! # Proposal.id + timestamp / 86400
+  totalInvestVolumeLP: BigInt!
+  totalInvestVolumeBase: BigInt!
+  day: BigInt!
+
+  proposal: Proposal!
+  invests: [ProposalInvest!]! @derivedFrom(field: "day")
+}
+
+type ProposalDivestHistory @entity {
+  id: ID! # Proposal.id + timestamp / 86400
+  totalDivestVolumeLP: BigInt!
+  totalDivestVolumeBase: BigInt!
+  day: BigInt!
+
+  proposal: Proposal!
+  divests: [ProposalDivest!]! @derivedFrom(field: "day")
+}
+
+type ProposalExchangeHistory @entity {
+  id: ID! # Proposal.id + timestamp / 86400
+  proposal: Proposal!
+  day: BigInt!
+
+  exchanges: [ProposalExchange!]! @derivedFrom(field: "day")
+}
