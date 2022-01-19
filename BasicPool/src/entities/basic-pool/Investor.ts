@@ -1,11 +1,11 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { InvestorInBasicPool } from "../../../generated/schema";
+import { Investor } from "../../../generated/schema";
 
-export function getInvestorInBasicPool(id: Address): InvestorInBasicPool {
-  let investor = InvestorInBasicPool.load(id.toString());
+export function getInvestor(id: Address): Investor {
+  let investor = Investor.load(id.toString());
 
   if (investor == null) {
-    investor = new InvestorInBasicPool(id.toString());
+    investor = new Investor(id.toString());
     investor.insurance = BigInt.zero();
     investor.insurancePayout = BigInt.zero();
     investor.activePools = new Array();

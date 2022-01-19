@@ -1,19 +1,19 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { ProposalExchangeInBasicPool } from "../../../../generated/schema";
-import { getProposalExchangeHistoryInBasicPool } from "./history/ProposalExchangeHistoryInBasicPool";
+import { ProposalExchange } from "../../../../generated/schema";
+import { getProposalExchangeHistory } from "./history/ProposalExchangeHistory";
 
-export function getProposalExchangeInBasicPool(
+export function getProposalExchange(
   hash: Bytes,
   fromToken: Address = Address.zero(),
   toToken: Address = Address.zero(),
   fromVolume: BigInt = BigInt.zero(),
   toVolume: BigInt = BigInt.zero()
-): ProposalExchangeInBasicPool {
+): ProposalExchange {
   let id = hash.toHex();
-  let exchange = ProposalExchangeInBasicPool.load(id);
+  let exchange = ProposalExchange.load(id);
 
   if (exchange == null) {
-    exchange = new ProposalExchangeInBasicPool(id);
+    exchange = new ProposalExchange(id);
 
     exchange.fromToken = fromToken;
     exchange.toToken = toToken;

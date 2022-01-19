@@ -1,17 +1,17 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { ProposalInvestInBasicPool } from "../../../../generated/schema";
+import { ProposalInvest } from "../../../../generated/schema";
 
-export function getProposalInvestInBasicPool(
+export function getProposalInvest(
   hash: Bytes,
   amountLP: BigInt = BigInt.zero(),
   amountBase: BigInt = BigInt.zero(),
   investorInfoId: string = ""
-): ProposalInvestInBasicPool {
+): ProposalInvest {
   let id = hash.toHex();
-  let invest = ProposalInvestInBasicPool.load(id);
+  let invest = ProposalInvest.load(id);
 
   if (invest == null) {
-    invest = new ProposalInvestInBasicPool(id);
+    invest = new ProposalInvest(id);
 
     invest.amountLP = amountLP;
     invest.amountBase = amountBase;

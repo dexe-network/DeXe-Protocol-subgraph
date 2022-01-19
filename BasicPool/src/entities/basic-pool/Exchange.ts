@@ -1,19 +1,19 @@
 import { BigInt, Address, Bytes } from "@graphprotocol/graph-ts";
-import { ExchangeInBasicPool } from "../../../generated/schema";
+import { Exchange } from "../../../generated/schema";
 
-export function getExchangeInBasicPool(
+export function getExchange(
   txHash: Bytes,
   positionId: string,
   fromToken: Address = Address.zero(),
   toToken: Address = Address.zero(),
   fromVolume: BigInt = BigInt.zero(),
   toVolume: BigInt = BigInt.zero()
-): ExchangeInBasicPool {
+): Exchange {
   let id = txHash.toHex();
-  let trade = ExchangeInBasicPool.load(id);
+  let trade = Exchange.load(id);
 
   if (trade == null) {
-    trade = new ExchangeInBasicPool(id);
+    trade = new Exchange(id);
 
     trade.fromToken = fromToken;
     trade.toToken = toToken;

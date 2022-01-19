@@ -1,15 +1,15 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { DivestHistoryInBasicPool } from "../../../../generated/schema";
+import { DivestHistory } from "../../../../generated/schema";
 import { DAY } from "../../global/globals";
 import { getBasicTraderPool } from "../BasicTraderPool";
 
-export function getDivestHistoryInBasicPool(timestamp: BigInt, basicPool: Address): DivestHistoryInBasicPool {
+export function getDivestHistory(timestamp: BigInt, basicPool: Address): DivestHistory {
   let day = timestamp.div(BigInt.fromU32(DAY));
   let id = basicPool.toString() + day.toString();
-  let history = DivestHistoryInBasicPool.load(id);
+  let history = DivestHistory.load(id);
 
   if (history == null) {
-    history = new DivestHistoryInBasicPool(id);
+    history = new DivestHistory(id);
 
     history.totalDivestVolume = BigInt.fromI32(0);
     history.basicPool = getBasicTraderPool(basicPool).id;

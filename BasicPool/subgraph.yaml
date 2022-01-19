@@ -55,7 +55,7 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/Insurance.ts
       entities:
-        - InvestorInBasicPool
+        - Investor
       abis:
         - name: Insurance
           file: ./abis/Insurance.json
@@ -79,7 +79,7 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/TraderPoolRegistry.ts
       entities:
-        - InvestorInBasicPool
+        - Investor
       abis:
         - name: TraderPoolRegistry
           file: ./abis/TraderPoolRegistry.json
@@ -101,8 +101,8 @@ templates:
       entities:
         - TraderPoolFactory
         - BasicTraderPool
-        - PositionInBasicPool
-        - TradeInBasicPool
+        - Position
+        - Trade
       abis:
         - name: BasicPool
           file: ./abis/BasicTraderPool.json

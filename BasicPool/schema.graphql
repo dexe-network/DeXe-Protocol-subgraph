@@ -12,13 +12,13 @@ type BasicPool @entity {
   name: String!
   creatingTime: BigInt!
 
-  investors: [InvestorInBasicPool!]!
+  investors: [Investor!]!
 
   proposals: [ProposalBasicPool!]! @derivedFrom(field: "basicPool")
-  positions: [PositionInBasicPool!]! @derivedFrom(field: "basicPool")
-  invests: [InvestHistoryInBasicPool!]! @derivedFrom(field: "basicPool")
-  divests: [DivestHistoryInBasicPool!]! @derivedFrom(field: "basicPool")
-  exchanges: [ExchangeHistoryInBasicPool!]! @derivedFrom(field: "basicPool")
+  positions: [Position!]! @derivedFrom(field: "basicPool")
+  invests: [InvestHistory!]! @derivedFrom(field: "basicPool")
+  divests: [DivestHistory!]! @derivedFrom(field: "basicPool")
+  exchanges: [ExchangeHistory!]! @derivedFrom(field: "basicPool")
   history: [BasicPoolHistory!]! @derivedFrom(field: "pool")
   priceHistory: [BasicPoolPriceHistory!]! @derivedFrom(field: "pool")
 }
@@ -34,12 +34,12 @@ type BasicPoolPriceHistory @entity {
 
 type BasicPoolHistory @entity {
   id: ID! # pool address + timestamp / 86400
-  investors: [InvestorInBasicPool!]!
+  investors: [Investor!]!
   pool: BasicPool!
   day: BigInt!
 }
 
-type InvestorInBasicPool @entity {
+type Investor @entity {
   id: ID! # investor address
   insurance: BigInt!
   insurancePayout: BigInt!
@@ -53,10 +53,10 @@ type InvestorInfo @entity {
   totalInvestVolume: BigInt!
   totalDivestVolume: BigInt!
 
-  invests: [InvestInBasicPool!]! @derivedFrom(field: "investor")
-  divests: [DivestInBasicPool!]! @derivedFrom(field: "investor")
-  proposalInvests: [ProposalInvestInBasicPool!]! @derivedFrom(field: "investor")
-  proposalDivests: [ProposalDivestInBasicPool!]! @derivedFrom(field: "investor")
+  invests: [Invest!]! @derivedFrom(field: "investor")
+  divests: [Divest!]! @derivedFrom(field: "investor")
+  proposalInvests: [ProposalInvest!]! @derivedFrom(field: "investor")
+  proposalDivests: [ProposalDivest!]! @derivedFrom(field: "investor")
   investLPHistory: [InvestorLPHistory!]! @derivedFrom(field: "investorInfo")
 }
 
@@ -67,7 +67,7 @@ type InvestorLPHistory @entity {
   day: BigInt!
 }
 
-type PositionInBasicPool @entity {
+type Position @entity {
   id: ID! # trader pool address + position token address + position offset
   positionToken: Bytes!
   closed: Boolean!
@@ -76,63 +76,63 @@ type PositionInBasicPool @entity {
   totalCloseVolume: BigInt!
 
   basicPool: BasicPool!
-  exchanges: [ExchangeInBasicPool!]! @derivedFrom(field: "position")
+  exchanges: [Exchange!]! @derivedFrom(field: "position")
 }
 
-type ExchangeInBasicPool @entity {
+type Exchange @entity {
   id: ID! # tx hash
   fromToken: Bytes!
   toToken: Bytes!
 
   fromVolume: BigInt!
   toVolume: BigInt!
-  position: PositionInBasicPool!
+  position: Position!
 
-  day: ExchangeHistoryInBasicPool!
+  day: ExchangeHistory!
 }
 
-type InvestInBasicPool @entity {
+type Invest @entity {
   id: ID! # tx hash
   investor: InvestorInfo!
   volumeBase: BigInt!
   lpPurchasePrice: BigInt!
 
-  day: InvestHistoryInBasicPool!
+  day: InvestHistory!
 }
 
-type DivestInBasicPool @entity {
+type Divest @entity {
   id: ID! # tx hash
   investor: InvestorInfo!
   volumeBase: BigInt!
   baseCommission: BigInt!
 
-  day: DivestHistoryInBasicPool!
+  day: DivestHistory!
 }
 
-type InvestHistoryInBasicPool @entity {
+type InvestHistory @entity {
   id: ID! # pool address + timestamp / 86400
   totalInvestVolume: BigInt!
   day: BigInt!
   basicPool: BasicPool!
 
-  investments: [InvestInBasicPool!]! @derivedFrom(field: "day")
+  investments: [Invest!]! @derivedFrom(field: "day")
 }
 
-type DivestHistoryInBasicPool @entity {
+type DivestHistory @entity {
   id: ID! # pool address + timestamp / 86400
   totalDivestVolume: BigInt!
   day: BigInt!
   basicPool: BasicPool!
 
-  divestments: [DivestInBasicPool!]! @derivedFrom(field: "day")
+  divestments: [Divest!]! @derivedFrom(field: "day")
 }
 
-type ExchangeHistoryInBasicPool @entity {
+type ExchangeHistory @entity {
   id: ID! # pool address + timestamp / 86400
   basicPool: BasicPool!
   day: BigInt!
 
-  exchanges: [ExchangeInBasicPool!]! @derivedFrom(field: "day")
+  exchanges: [Exchange!]! @derivedFrom(field: "day")
 }
 
 ####################################### ProposalBasicPool #######################################
@@ -151,30 +151,30 @@ type ProposalBasicPool @entity {
   maxTokenPriceLimit: BigInt!
 
   basicPool: BasicPool!
-  proposalInvests: [ProposalInvestHistoryInBasicPool!]! @derivedFrom(field: "proposal")
-  proposalDivests: [ProposalDivestHistoryInBasicPool!]! @derivedFrom(field: "proposal")
-  exchanges: [ProposalExchangeHistoryInBasicPool!]! @derivedFrom(field: "proposal")
+  proposalInvests: [ProposalInvestHistory!]! @derivedFrom(field: "proposal")
+  proposalDivests: [ProposalDivestHistory!]! @derivedFrom(field: "proposal")
+  exchanges: [ProposalExchangeHistory!]! @derivedFrom(field: "proposal")
 }
 
-type ProposalInvestInBasicPool @entity {
+type ProposalInvest @entity {
   id: ID! # tx hash
   amountLP: BigInt!
   amountBase: BigInt!
 
   investor: InvestorInfo!
-  day: ProposalInvestHistoryInBasicPool!
+  day: ProposalInvestHistory!
 }
 
-type ProposalDivestInBasicPool @entity {
+type ProposalDivest @entity {
   id: ID! # tx hash
   amountLP: BigInt!
   amountBase: BigInt!
 
   investor: InvestorInfo!
-  day: ProposalDivestHistoryInBasicPool!
+  day: ProposalDivestHistory!
 }
 
-type ProposalExchangeInBasicPool @entity {
+type ProposalExchange @entity {
   id: ID! # tx hash
   fromToken: Bytes!
   toToken: Bytes!
@@ -182,33 +182,33 @@ type ProposalExchangeInBasicPool @entity {
   fromVolume: BigInt!
   toVolume: BigInt!
 
-  day: ProposalExchangeHistoryInBasicPool!
+  day: ProposalExchangeHistory!
 }
 
-type ProposalInvestHistoryInBasicPool @entity {
+type ProposalInvestHistory @entity {
   id: ID! # ProposalBasicPool.id + timestamp / 86400
   totalInvestVolumeLP: BigInt!
   totalInvestVolumeBase: BigInt!
   day: BigInt!
 
   proposal: ProposalBasicPool!
-  invests: [ProposalInvestInBasicPool!]! @derivedFrom(field: "day")
+  invests: [ProposalInvest!]! @derivedFrom(field: "day")
 }
 
-type ProposalDivestHistoryInBasicPool @entity {
+type ProposalDivestHistory @entity {
   id: ID! # ProposalBasicPool.id + timestamp / 86400
   totalDivestVolumeLP: BigInt!
   totalDivestVolumeBase: BigInt!
   day: BigInt!
 
   proposal: ProposalBasicPool!
-  divests: [ProposalDivestInBasicPool!]! @derivedFrom(field: "day")
+  divests: [ProposalDivest!]! @derivedFrom(field: "day")
 }
 
-type ProposalExchangeHistoryInBasicPool @entity {
+type ProposalExchangeHistory @entity {
   id: ID! # ProposalBasicPool.id + timestamp / 86400
   proposal: ProposalBasicPool!
   day: BigInt!
 
-  exchanges: [ProposalExchangeInBasicPool!]! @derivedFrom(field: "day")
+  exchanges: [ProposalExchange!]! @derivedFrom(field: "day")
 }
