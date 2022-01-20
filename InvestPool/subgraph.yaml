@@ -8,7 +8,7 @@ dataSources:
     source:
       address: "0x64fc08356d9ADbb50983c09cccAe66e640b29282"
       abi: TraderPoolFactory
-      startBlock: 15971195
+      startBlock: 15971208
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -29,6 +29,7 @@ dataSources:
     source:
       address: "0x0000000000000000000000000000000000001000"
       abi: BSCValidatorSet
+      startBlock: 15971208
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -39,10 +40,13 @@ dataSources:
       abis:
         - name: BSCValidatorSet
           file: ./abis/BSCValidatorSet.json
-
-      callHandlers:
-        - function: deposit(address)
-          handler: depositHandler
+        - name: TraderPoolRegistry
+          file: ./abis/TraderPoolRegistry.json
+      eventHandlers:
+        - event: deprecatedDeposit(indexed address,uint256)
+          handler: onBlock
+        - event: validatorDeposit(indexed address,uint256)
+          handler: onBlock
 
   - kind: ethereum/contract
     name: Insurance
@@ -50,6 +54,7 @@ dataSources:
     source:
       address: "0xf5B49C4e4Dcc71b11E4E342ff286e0B0850119da"
       abi: Insurance
+      startBlock: 15971208
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -74,6 +79,7 @@ dataSources:
     source:
       address: "0xf1c8D80b44368Ffd6b0BEe45d705CB5306c06028"
       abi: TraderPoolRegistry
+      startBlock: 15971208
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -84,9 +90,9 @@ dataSources:
       abis:
         - name: TraderPoolRegistry
           file: ./abis/TraderPoolRegistry.json
-      callHandlers:
-        - function: __TraderPoolRegistry_init()
-          handler: onCall
+      eventHandlers:
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handl
 
 templates:
   - kind: ethereum/contract
