@@ -13,6 +13,7 @@ export function getPosition(id: string, basicPool: string = "", positionToken: A
     position.totalCloseVolume = BigInt.zero();
     position.basicPool = basicPool;
     position.closed = false;
+    position.liveTime = BigInt.zero();
   }
 
   return position;

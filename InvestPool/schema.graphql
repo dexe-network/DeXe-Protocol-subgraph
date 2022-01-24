@@ -74,6 +74,7 @@ type Position @entity {
 
   totalOpenVolume: BigInt!
   totalCloseVolume: BigInt!
+  liveTime: BigInt!
 
   investPool: InvestPool!
   exchanges: [Exchange!]! @derivedFrom(field: "position")

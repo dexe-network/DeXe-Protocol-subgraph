@@ -51,6 +51,8 @@ export function onExchange(event: Exchanged): void {
   let history = getExchangeHistory(event.block.timestamp, basicPool.id);
   trade.day = history.id;
 
+  position.liveTime = event.block.timestamp;
+
   basicPool.save();
   position.save();
   trade.save();
@@ -64,6 +66,8 @@ export function onClose(event: PositionClosed): void {
 
   position.closed = true;
   positionOffset.offset = positionOffset.offset.plus(BigInt.fromI32(1));
+
+  position.liveTime = event.block.timestamp.minus(position.liveTime);
 
   position.save();
   positionOffset.save();
