@@ -30,6 +30,7 @@ type InvestPoolPriceHistory @entity {
   pool: InvestPool!
   poolBase: BigInt!
   seconds: BigInt!
+  loss: BigInt!
 }
 
 type InvestPoolHistory @entity {
