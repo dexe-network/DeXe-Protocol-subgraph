@@ -146,7 +146,6 @@ type ProposalContract @entity {
 type Proposal @entity {
   id: ID! # pool address + proposal index
   token: Bytes!
-  investorsCount: BigInt!
 
   timestampLimit: BigInt!
   investLPLimit: BigInt!
