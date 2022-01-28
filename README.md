@@ -3,7 +3,20 @@
 
     graph init
 
-Далее необходиомо выполнить
+Далее необходимо заменить:
+* адреса в файле subgraph.yaml в строках 
+
+        dataSoures > kind > source > address
+
+* номер блока, с которого будет начинаться идексация
+
+        dataSoures > kind > source > startBlock
+
+* название сети в строках
+        
+        dataSoures > kind > network
+
+Для начала деплоинга необходимо выполнить
 
     graph deploy <USER_NAME>/<SUBGRAPH_NAME>
 
