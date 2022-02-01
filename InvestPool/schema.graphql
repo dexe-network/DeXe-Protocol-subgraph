@@ -40,7 +40,7 @@ type InvestPool @entity {
 # @param pool the id of pool, type is string for reverse lookup
 # @param poolBase the total pool base from contract
 # @param seconds the timestamp / 86400
-# @param loss
+# @param loss the difference between current previos price
 type InvestPoolPriceHistory @entity {
   id: ID!
   price: BigInt!

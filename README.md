@@ -81,7 +81,7 @@
             baseToken
             ticker
             name
-            creatingTime
+            creationTime
             investors
         }
       }
@@ -94,7 +94,7 @@
             baseToken
             ticker
             name
-            creatingTime
+            creationTime
             investors
         }
       }
@@ -126,7 +126,7 @@
 
     {
         basicPool(id:<string>){
-            creatingTime
+            creationTime
         }
     }
 
