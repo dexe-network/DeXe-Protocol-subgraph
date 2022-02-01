@@ -15,6 +15,6 @@ export function onWithdrawal(event: Withdrawn): void {
 
 export function onPayout(event: Paidout): void {
   let investor = getInvestor(event.params.investor);
-  investor.insurancePayout = investor.insurancePayout.plus(event.params.amount);
+  investor.claimedAmount = investor.claimedAmount.plus(event.params.amount);
   investor.save();
 }

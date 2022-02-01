@@ -15,7 +15,7 @@ export function getDivest(
 
     divest.investor = investorInfoId;
     divest.volumeBase = volumeBase;
-    divest.baseCommission = commission;
+    divest.commission = commission;
     divest.day = "";
   }
 

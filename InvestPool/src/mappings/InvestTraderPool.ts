@@ -28,7 +28,7 @@ import { getInvestorLPHistory } from "../entities/invest-pool/history/InvestorLP
 export function onExchange(event: Exchanged): void {
   let investPool = getInvestTraderPool(event.address);
 
-  let position = getPosition(getPositionId(investPool.id, event.params.toToken), investPool.id, event.params.toToken);
+  let position = getPosition(getPositionId(investPool.id, event.params.toToken), investPool.id);
 
   let trade = getExchange(
     event.transaction.hash,
@@ -62,7 +62,7 @@ export function onExchange(event: Exchanged): void {
 export function onClose(event: PositionClosed): void {
   let investPool = getInvestTraderPool(event.address);
   let positionOffset = getPositionOffset(investPool.id, event.params.position);
-  let position = getPosition(getPositionId(investPool.id, event.params.position), investPool.id, event.params.position);
+  let position = getPosition(getPositionId(investPool.id, event.params.position), investPool.id);
 
   position.closed = true;
   positionOffset.offset = positionOffset.offset.plus(BigInt.fromI32(1));
