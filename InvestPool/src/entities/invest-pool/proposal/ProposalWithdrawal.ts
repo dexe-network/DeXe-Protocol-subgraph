@@ -6,7 +6,7 @@ export function getProposalWithdrawal(
   amount: BigInt = BigInt.zero(),
   investorInfoId: string = ""
 ): ProposalWithdrawal {
-  let id = hash.toHex();
+  let id = hash.toHexString();
   let withdraw = ProposalWithdrawal.load(id);
 
   if (withdraw == null) {

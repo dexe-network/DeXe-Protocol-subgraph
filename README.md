@@ -107,7 +107,7 @@
             baseToken
             ticker
             name
-            creatingTime
+            creationTime
             investors
         }
     }

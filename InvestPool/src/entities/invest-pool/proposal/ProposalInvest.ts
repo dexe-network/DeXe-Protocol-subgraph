@@ -7,7 +7,7 @@ export function getProposalInvest(
   amountBase: BigInt = BigInt.zero(),
   investorInfoId: string = ""
 ): ProposalInvest {
-  let id = hash.toHex();
+  let id = hash.toHexString();
   let invest = ProposalInvest.load(id);
 
   if (invest == null) {

@@ -5,7 +5,7 @@ import { getBasicTraderPool } from "../BasicTraderPool";
 
 export function getBasicPoolHistory(timestamp: BigInt, pool: string, investors: Array<string>): BasicPoolHistory {
   let day = timestamp.div(BigInt.fromI32(DAY));
-  let id = pool.toString() + day.toString();
+  let id = pool + day.toString();
   let history = BasicPoolHistory.load(id);
   if (history == null) {
     history = new BasicPoolHistory(id);

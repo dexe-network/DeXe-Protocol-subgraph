@@ -1,5 +1,5 @@
-import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { Invest } from "../../../generated/schema";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Invest, Investor } from "../../../generated/schema";
 
 export function getInvest(
   hash: Bytes,
@@ -7,7 +7,7 @@ export function getInvest(
   volumeBase: BigInt = BigInt.fromI32(0),
   toMintLP: BigInt = BigInt.fromI32(0)
 ): Invest {
-  let id = hash.toHex();
+  let id = hash.toHexString();
   let invest = Invest.load(id);
 
   if (invest == null) {

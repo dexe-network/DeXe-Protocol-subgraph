@@ -22,7 +22,7 @@ import { getDivest } from "../entities/invest-pool/Divest";
 import { getDivestHistory } from "../entities/invest-pool/history/DivestHistory";
 import { getInvestorInfo } from "../entities/invest-pool/InvestorInfo";
 import { removeByIndex } from "../helpers/ArrayHelper";
-import { getInvestPoolHistory } from "../entities/invest-pool/InvestPoolHistory";
+import { getInvestPoolHistory } from "../entities/invest-pool/history/InvestPoolHistory";
 import { getInvestorLPHistory } from "../entities/invest-pool/history/InvestorLPHistory";
 
 export function onExchange(event: Exchanged): void {
@@ -73,22 +73,12 @@ export function onClose(event: PositionClosed): void {
 }
 
 export function onInvestorAdded(event: InvestorAdded): void {
-  let investor = getInvestor(event.params.investor);
-  let investPool = getInvestTraderPool(event.address);
-  investor.activePools.push(investPool.id);
-  investor.allPools.push(investPool.id);
+  let investor = getInvestor(event.params.investor, event.address, event.block.timestamp);
   investor.save();
-
-  let investPoolHistory = getInvestPoolHistory(event.block.timestamp, event.address, investPool.investors);
-  investPoolHistory.investors.push(investor.id);
-  investPoolHistory.save();
-
-  investPool.investors.push(investor.id);
-  investPool.save();
 }
 
 export function onInvest(event: Invested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
   let invest = getInvest(event.transaction.hash, investorInfo.id, event.params.amount, event.params.toMintLP);
   let history = getInvestHistory(event.block.timestamp, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
@@ -107,12 +97,12 @@ export function onInvest(event: Invested): void {
 }
 
 export function onInvestorRemoved(event: InvestorRemoved): void {
-  let investor = getInvestor(event.params.investor);
+  let investor = getInvestor(event.params.investor, event.address, event.block.timestamp);
   let investPool = getInvestTraderPool(event.address);
   investor.activePools = removeByIndex(investor.activePools, investor.activePools.indexOf(investPool.id));
   investor.save();
 
-  let investPoolHistory = getInvestPoolHistory(event.block.timestamp, event.address, investPool.investors);
+  let investPoolHistory = getInvestPoolHistory(event.block.timestamp, investPool.id, investPool.investors);
   investPoolHistory.investors = removeByIndex(
     investPoolHistory.investors,
     investPoolHistory.investors.indexOf(investPool.id)
@@ -124,7 +114,7 @@ export function onInvestorRemoved(event: InvestorRemoved): void {
 }
 
 export function onDivest(event: Divested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
   let divest = getDivest(event.transaction.hash, investorInfo.id, event.params.amount);
   let history = getDivestHistory(event.block.timestamp, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
@@ -141,7 +131,7 @@ export function onDivest(event: Divested): void {
 }
 
 export function onMintLP(event: TraderCommissionMinted): void {
-  let investorInfo = getInvestorInfo(event.params.trader, event.address);
+  let investorInfo = getInvestorInfo(event.params.trader, event.address, event.block.timestamp);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
 
   lpHistory.lpBalance.plus(event.params.amount);
@@ -151,7 +141,7 @@ export function onMintLP(event: TraderCommissionMinted): void {
 }
 
 export function onBurnLP(event: TraderCommissionPaid): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
 
   lpHistory.lpBalance.minus(event.params.amount);

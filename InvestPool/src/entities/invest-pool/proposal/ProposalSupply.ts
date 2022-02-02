@@ -6,7 +6,7 @@ export function getProposalSupply(
   amount: BigInt = BigInt.zero(),
   InvestorInfoId: string = ""
 ): ProposalSupply {
-  let id = hash.toHex();
+  let id = hash.toHexString();
   let supply = ProposalSupply.load(id);
 
   if (supply == null) {

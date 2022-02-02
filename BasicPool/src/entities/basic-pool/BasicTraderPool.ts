@@ -8,10 +8,10 @@ export function getBasicTraderPool(
   name: string = "",
   creationTime: BigInt = BigInt.zero()
 ): BasicPool {
-  let basicPool = BasicPool.load(poolAddress.toHex());
+  let basicPool = BasicPool.load(poolAddress.toHexString());
 
   if (basicPool == null) {
-    basicPool = new BasicPool(poolAddress.toHex());
+    basicPool = new BasicPool(poolAddress.toHexString());
     basicPool.baseToken = basicTokenAddress;
     basicPool.investors = new Array<string>();
     basicPool.ticker = ticker;

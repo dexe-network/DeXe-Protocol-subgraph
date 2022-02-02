@@ -12,7 +12,6 @@ import {
   ProposalExchanged,
   ProposalInvested,
 } from "../../generated/templates/RiskyProposal/RiskyProposal";
-import { getBasicTraderPool } from "../entities/basic-pool/BasicTraderPool";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let proposal = getProposal(
@@ -27,7 +26,7 @@ export function onProposalCreated(event: ProposalCreated): void {
 }
 
 export function onProposalInvest(event: ProposalInvested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
   let proposal = getProposal(event.params.index, event.address);
   let invest = getProposalInvest(
     event.transaction.hash,
@@ -48,7 +47,7 @@ export function onProposalInvest(event: ProposalInvested): void {
 }
 
 export function onProposalDivest(event: ProposalDivested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
   let proposal = getProposal(event.params.index, event.address);
   let divest = getProposalDivest(
     event.transaction.hash,

@@ -9,7 +9,7 @@ export function getExchange(
   fromVolume: BigInt = BigInt.zero(),
   toVolume: BigInt = BigInt.zero()
 ): Exchange {
-  let id = txHash.toHex();
+  let id = txHash.toHexString();
   let trade = Exchange.load(id);
 
   if (trade == null) {
