@@ -88,7 +88,7 @@ export function onInvest(event: Invested): void {
 
   invest.day = history.id;
 
-  lpHistory.lpBalance.plus(event.params.toMintLP);
+  lpHistory.lpBalance = lpHistory.lpBalance.plus(event.params.toMintLP);
 
   investorInfo.save();
   invest.save();
@@ -123,7 +123,7 @@ export function onDivest(event: Divested): void {
   history.totalDivestVolume = history.totalDivestVolume.plus(event.params.amount);
   divest.day = history.id;
 
-  lpHistory.lpBalance.minus(event.params.amount);
+  lpHistory.lpBalance = lpHistory.lpBalance.minus(event.params.amount);
 
   investorInfo.save();
   divest.save();
@@ -134,7 +134,7 @@ export function onMintLP(event: TraderCommissionMinted): void {
   let investorInfo = getInvestorInfo(event.params.trader, event.address, event.block.timestamp);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
 
-  lpHistory.lpBalance.plus(event.params.amount);
+  lpHistory.lpBalance = lpHistory.lpBalance.plus(event.params.amount);
 
   lpHistory.save();
   investorInfo.save();
@@ -144,7 +144,7 @@ export function onBurnLP(event: TraderCommissionPaid): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
 
-  lpHistory.lpBalance.minus(event.params.amount);
+  lpHistory.lpBalance = lpHistory.lpBalance.minus(event.params.amount);
 
   lpHistory.save();
   investorInfo.save();
