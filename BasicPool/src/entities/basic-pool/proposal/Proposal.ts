@@ -17,7 +17,6 @@ export function getProposal(
     proposal = new Proposal(id);
 
     proposal.token = token;
-    proposal.investorsCount = BigInt.zero();
     proposal.timestampLimit = timestampLimit;
     proposal.investLPLimit = investLPLimit;
     proposal.maxTokenPriceLimit = maxTokenPriceLimit;

@@ -30,6 +30,7 @@ type InvestPoolPriceHistory @entity {
   pool: InvestPool!
   poolBase: BigInt!
   seconds: BigInt!
+  loss: BigInt!
 }
 
 type InvestPoolHistory @entity {
@@ -74,6 +75,7 @@ type Position @entity {
 
   totalOpenVolume: BigInt!
   totalCloseVolume: BigInt!
+  liveTime: BigInt!
 
   investPool: InvestPool!
   exchanges: [Exchange!]! @derivedFrom(field: "position")
@@ -144,7 +146,6 @@ type ProposalContract @entity {
 type Proposal @entity {
   id: ID! # pool address + proposal index
   token: Bytes!
-  investorsCount: BigInt!
 
   timestampLimit: BigInt!
   investLPLimit: BigInt!

@@ -3,14 +3,15 @@ import { InvestPoolPriceHistory } from "../../../generated/schema";
 import { MILLIS } from "../global/globals";
 
 export function getInvestPoolPriceHistory(
-  timestamp: BigInt,
   pool: string,
   price: BigInt,
-  supply: BigInt,
-  poolBase: BigInt
+  blockNumber: BigInt,
+  timestamp: BigInt = BigInt.zero(),
+  supply: BigInt = BigInt.zero(),
+  poolBase: BigInt = BigInt.zero()
 ): InvestPoolPriceHistory {
   let ts = timestamp.div(BigInt.fromI32(MILLIS));
-  let id = pool + ts.toString();
+  let id = pool + blockNumber.toString();
   let history = InvestPoolPriceHistory.load(id);
   if (history == null) {
     history = new InvestPoolPriceHistory(id);
@@ -19,6 +20,7 @@ export function getInvestPoolPriceHistory(
     history.supply = supply;
     history.poolBase = poolBase;
     history.seconds = ts;
+    history.loss = BigInt.zero();
   }
   return history;
 }

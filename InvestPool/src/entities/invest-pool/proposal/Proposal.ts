@@ -14,7 +14,6 @@ export function getProposal(
   if (proposal == null) {
     proposal = new Proposal(id);
 
-    proposal.investorsCount = BigInt.zero();
     proposal.timestampLimit = timestampLimit;
     proposal.investLPLimit = investLPLimit;
     proposal.investPool = getInvestTraderPool(investPool).id;
