@@ -7,7 +7,7 @@ export function getInvest(
   volumeBase: BigInt = BigInt.fromI32(0),
   toMintLP: BigInt = BigInt.fromI32(0)
 ): Invest {
-  let id = hash.toHex();
+  let id = hash.toHexString();
   let invest = Invest.load(id);
 
   if (invest == null) {

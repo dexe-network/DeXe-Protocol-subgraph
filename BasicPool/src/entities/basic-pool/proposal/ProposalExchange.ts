@@ -9,7 +9,7 @@ export function getProposalExchange(
   fromVolume: BigInt = BigInt.zero(),
   toVolume: BigInt = BigInt.zero()
 ): ProposalExchange {
-  let id = hash.toHex();
+  let id = hash.toHexString();
   let exchange = ProposalExchange.load(id);
 
   if (exchange == null) {

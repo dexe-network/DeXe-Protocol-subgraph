@@ -9,7 +9,7 @@ export function getProposalDivest(
   amountBase: BigInt = BigInt.zero(),
   investorInfoId: string = ""
 ): ProposalDivest {
-  let id = hash.toHex();
+  let id = hash.toHexString();
   let divest = ProposalDivest.load(id);
 
   if (divest == null) {

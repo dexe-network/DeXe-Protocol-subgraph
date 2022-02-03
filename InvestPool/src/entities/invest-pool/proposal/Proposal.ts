@@ -8,7 +8,7 @@ export function getProposal(
   timestampLimit: BigInt = BigInt.zero(),
   investLPLimit: BigInt = BigInt.zero()
 ): Proposal {
-  let id = getInvestTraderPool(investPool).id.toString() + index.toString();
+  let id = getInvestTraderPool(investPool).id + index.toString();
   let proposal = Proposal.load(id);
 
   if (proposal == null) {

@@ -24,18 +24,3 @@ export function getBasicPoolPriceHistory(
   }
   return history;
 }
-
-// export function getBasicPoolPriceHistoryByBlock(block: BigInt, pool: string, price: BigInt): BasicPoolPriceHistory {
-//   let id = pool + block.toString();
-//   let history = BasicPoolPriceHistory.load(id);
-
-//   if(history == null){
-//     history = new BasicPoolPriceHistory(id);
-//     history.pool = "";
-//     history.price = BigInt.zero();
-//     history.supply = BigInt.zero();
-//     history.seconds = BigInt.zero();
-//     history.poolBase = BigInt.zero();
-//     history.loss =
-//   }
-// }

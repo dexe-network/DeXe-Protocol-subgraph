@@ -27,7 +27,7 @@ export function onProposalCreated(event: ProposalCreated): void {
 }
 
 export function onProposalInvest(event: ProposalInvested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
   let proposal = getProposal(event.params.index, event.address);
   let invest = getProposalInvest(
     event.transaction.hash,
@@ -48,7 +48,7 @@ export function onProposalInvest(event: ProposalInvested): void {
 }
 
 export function onProposalDivest(event: ProposalDivested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
   let proposal = getProposal(event.params.index, event.address);
   let divest = getProposalDivest(event.transaction.hash, event.params.amount, investorInfo.id);
   let history = getProposalDivestHistory(event.block.timestamp, proposal.id);
@@ -62,7 +62,7 @@ export function onProposalDivest(event: ProposalDivested): void {
 }
 
 export function onWithdrawn(event: ProposalWithdrawn): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
   let withdraw = getProposalWithdrawal(event.transaction.hash, event.params.amount, investorInfo.id);
   let proposal = getProposal(event.params.index, event.address);
   let history = getProposalWithdrawalHistory(event.block.timestamp, proposal.id);
@@ -76,7 +76,7 @@ export function onWithdrawn(event: ProposalWithdrawn): void {
 }
 
 export function onSupplied(event: ProposalSupplied): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
   let supply = getProposalSupply(event.transaction.hash, event.params.amount, investorInfo.id);
   let proposal = getProposal(event.params.index, event.address);
   let history = getProposalSupplyHistory(event.block.timestamp, proposal.id);

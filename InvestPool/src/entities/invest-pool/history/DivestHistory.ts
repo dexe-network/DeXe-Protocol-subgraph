@@ -5,14 +5,15 @@ import { getInvestTraderPool } from "../InvestTraderPool";
 
 export function getDivestHistory(timestamp: BigInt, investPool: Address): DivestHistory {
   let day = timestamp.div(BigInt.fromU32(DAY));
-  let id = investPool.toString() + day.toString();
-  let history = DivestHistory.load(id.toString());
+  let poolId = getInvestTraderPool(investPool).id;
+  let id = poolId + day.toString();
+  let history = DivestHistory.load(id);
 
   if (history == null) {
-    history = new DivestHistory(id.toString());
+    history = new DivestHistory(id);
 
     history.totalDivestVolume = BigInt.fromI32(0);
-    history.investPool = getInvestTraderPool(investPool).id;
+    history.investPool = poolId;
     history.day = day;
   }
 

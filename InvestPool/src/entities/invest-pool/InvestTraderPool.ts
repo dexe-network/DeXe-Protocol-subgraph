@@ -6,17 +6,17 @@ export function getInvestTraderPool(
   basicTokenAddress: Address = Address.zero(),
   ticker: string = "",
   name: string = "",
-  creatingTime: BigInt = BigInt.zero()
+  creationTime: BigInt = BigInt.zero()
 ): InvestPool {
-  let investPool = InvestPool.load(poolAddress.toHex());
+  let investPool = InvestPool.load(poolAddress.toHexString());
 
   if (investPool == null) {
-    investPool = new InvestPool(poolAddress.toHex());
+    investPool = new InvestPool(poolAddress.toHexString());
     investPool.baseToken = basicTokenAddress;
     investPool.investors = new Array<string>();
     investPool.ticker = ticker;
     investPool.name = name;
-    investPool.creatingTime = creatingTime;
+    investPool.creationTime = creationTime;
   }
 
   return investPool;

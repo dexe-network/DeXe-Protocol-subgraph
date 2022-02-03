@@ -7,7 +7,7 @@ export function getDivest(
   volumeBase: BigInt = BigInt.fromI32(0),
   commission: BigInt = BigInt.fromI32(0)
 ): Divest {
-  let id = hash.toHex();
+  let id = hash.toHexString();
   let divest = Divest.load(id);
 
   if (divest == null) {
@@ -15,7 +15,7 @@ export function getDivest(
 
     divest.investor = investorInfoId;
     divest.volumeBase = volumeBase;
-    divest.baseCommission = commission;
+    divest.commission = commission;
     divest.day = "";
   }
 

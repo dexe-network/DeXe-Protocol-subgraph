@@ -2,7 +2,7 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { PositionOffset } from "../../../generated/schema";
 
 export function getPositionOffset(poolId: string, token: Address): PositionOffset {
-  let id = poolId + token.toHex();
+  let id = poolId + token.toHexString();
   let positionOffset = PositionOffset.load(id);
 
   if (positionOffset == null) {
