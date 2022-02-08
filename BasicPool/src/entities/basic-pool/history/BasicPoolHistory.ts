@@ -1,5 +1,6 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { BasicPoolHistory } from "../../../../generated/schema";
+import { push } from "../../../helpers/ArrayHelper";
 import { DAY } from "../../global/globals";
 import { getBasicTraderPool } from "../BasicTraderPool";
 
@@ -14,7 +15,7 @@ export function getBasicPoolHistory(timestamp: BigInt, pool: string, investors: 
     history.day = day;
 
     for (let i = 0; i < investors.length; i++) {
-      history.investors.push(investors[i]);
+      history.investors = push(history.investors, investors[i]);
     }
   }
   return history;

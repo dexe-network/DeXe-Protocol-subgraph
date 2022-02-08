@@ -1,5 +1,6 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { Investor } from "../../../generated/schema";
+import { push } from "../../helpers/ArrayHelper";
 import { getInvestPoolHistory } from "./history/InvestPoolHistory";
 import { getInvestTraderPool } from "./InvestTraderPool";
 
@@ -21,14 +22,14 @@ export function getInvestor(id: Address, pool: Address, timestamp: BigInt): Inve
 
 export function _onInvestorAdded(investor: Investor, poolAddress: Address, timestamp: BigInt): void {
   let investPool = getInvestTraderPool(poolAddress);
-  investor.activePools.push(investPool.id);
-  investor.allPools.push(investPool.id);
+  investor.activePools = push(investor.activePools, investPool.id);
+  investor.allPools = push(investor.allPools, investPool.id);
   investor.save();
 
   let investPoolHistory = getInvestPoolHistory(timestamp, investPool.id, investPool.investors);
-  investPoolHistory.investors.push(investor.id);
+  investPoolHistory.investors = push(investPoolHistory.investors, investor.id);
   investPoolHistory.save();
 
-  investPool.investors.push(investor.id);
+  investPool.investors = push(investPool.investors, investor.id);
   investPool.save();
 }
