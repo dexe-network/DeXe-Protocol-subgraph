@@ -16,9 +16,9 @@ export function getInvestPoolPriceHistory(
   if (history == null) {
     history = new InvestPoolPriceHistory(id);
     history.pool = pool;
-    history.price = price;
+    history.usdTVL = price;
     history.supply = supply;
-    history.poolBase = poolBase;
+    history.baseTVL = poolBase;
     history.seconds = ts;
     history.loss = BigInt.zero();
   }

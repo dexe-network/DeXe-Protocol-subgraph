@@ -7,6 +7,7 @@ import {
   Divested,
   TraderCommissionMinted,
   TraderCommissionPaid,
+  DescriptionURLChanged,
 } from "../../generated/templates/BasicPool/BasicPool";
 import { getBasicTraderPool } from "../entities/basic-pool/BasicTraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
@@ -150,4 +151,10 @@ export function onTraderCommissionPaid(event: TraderCommissionPaid): void {
 
   lpHistory.save();
   investorInfo.save();
+}
+
+export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
+  let pool = getBasicTraderPool(event.address);
+  pool.descriptionURL = event.params.descriptionURL;
+  pool.save();
 }

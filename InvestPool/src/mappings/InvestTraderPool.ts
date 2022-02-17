@@ -7,6 +7,7 @@ import {
   Divested,
   TraderCommissionMinted,
   TraderCommissionPaid,
+  DescriptionURLChanged,
 } from "../../generated/templates/InvestPool/InvestPool";
 import { getInvestTraderPool } from "../entities/invest-pool/InvestTraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
@@ -148,4 +149,10 @@ export function onBurnLP(event: TraderCommissionPaid): void {
 
   lpHistory.save();
   investorInfo.save();
+}
+
+export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
+  let pool = getInvestTraderPool(event.address);
+  pool.descriptionURL = event.params.descriptionURL;
+  pool.save();
 }
