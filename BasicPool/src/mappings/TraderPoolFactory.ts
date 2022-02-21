@@ -11,6 +11,7 @@ export function onDeployed(event: Deployed): void {
       event.params.basicToken,
       event.params.symbol,
       event.params.name,
+      event.params.descriptionURL,
       event.block.timestamp
     );
     pool.save();

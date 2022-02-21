@@ -20,6 +20,7 @@ type BasicPool @entity {
   baseToken: Bytes!
   ticker: String!
   name: String!
+  descriptionURL: String!
   creationTime: BigInt!
 
   investors: [Investor!]!
@@ -43,10 +44,10 @@ type BasicPool @entity {
 # @param loss the difference between current previos price
 type BasicPoolPriceHistory @entity {
   id: ID!
-  price: BigInt!
+  usdTVL: BigInt!
   supply: BigInt!
   pool: BasicPool!
-  poolBase: BigInt!
+  baseTVL: BigInt!
   seconds: BigInt!
   loss: BigInt!
 }

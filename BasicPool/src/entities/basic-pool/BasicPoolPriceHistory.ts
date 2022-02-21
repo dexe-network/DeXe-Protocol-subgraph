@@ -16,10 +16,10 @@ export function getBasicPoolPriceHistory(
   if (history == null) {
     history = new BasicPoolPriceHistory(id);
     history.pool = pool;
-    history.price = price;
+    history.usdTVL = price;
     history.supply = supply;
     history.seconds = ts;
-    history.poolBase = poolBase;
+    history.baseTVL = poolBase;
     history.loss = BigInt.zero();
   }
   return history;

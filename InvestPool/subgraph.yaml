@@ -20,7 +20,7 @@ dataSources:
         - name: TraderPoolFactory
           file: ./abis/TraderPoolFactory.json
       eventHandlers:
-        - event: Deployed(address,string,address,string,address,address,string)
+        - event: Deployed(address,string,address,string,address,address,string,string)
           handler: onDeployed
 
   - kind: ethereum/contract
@@ -104,6 +104,8 @@ templates:
           handler: onTraderCommissionMinted
         - event: TraderCommissionPaid(address,uint256)
           handler: onTraderCommissionPaid
+        - event: DescriptionURLChanged(string)
+          handler: onDescriptionURLChanged
 
   - kind: ethereum/contract
     name: InvestProposal

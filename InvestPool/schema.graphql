@@ -21,6 +21,7 @@ type InvestPool @entity {
   ticker: String!
   name: String!
   creationTime: BigInt!
+  descriptionURL: String!
 
   investors: [Investor!]!
 
@@ -43,10 +44,10 @@ type InvestPool @entity {
 # @param loss the difference between current previos price
 type InvestPoolPriceHistory @entity {
   id: ID!
-  price: BigInt!
+  usdTVL: BigInt!
   supply: BigInt!
   pool: InvestPool!
-  poolBase: BigInt!
+  baseTVL: BigInt!
   seconds: BigInt!
   loss: BigInt!
 }

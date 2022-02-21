@@ -29,6 +29,19 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "descriptionURL",
+        "type": "string"
+      }
+    ],
+    "name": "DescriptionURLChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "investor",
         "type": "address"

@@ -6,6 +6,7 @@ export function getBasicTraderPool(
   basicTokenAddress: Address = Address.zero(),
   ticker: string = "",
   name: string = "",
+  descriptionURL: string = "",
   creationTime: BigInt = BigInt.zero()
 ): BasicPool {
   let basicPool = BasicPool.load(poolAddress.toHexString());
@@ -17,6 +18,7 @@ export function getBasicTraderPool(
     basicPool.ticker = ticker;
     basicPool.name = name;
     basicPool.creationTime = creationTime;
+    basicPool.descriptionURL = descriptionURL;
   }
 
   return basicPool;

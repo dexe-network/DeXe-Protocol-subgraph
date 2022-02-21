@@ -29,6 +29,19 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "descriptionURL",
+        "type": "string"
+      }
+    ],
+    "name": "DescriptionURLChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "investor",
         "type": "address"
@@ -78,31 +91,6 @@
       }
     ],
     "name": "Exchanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "investor",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "toMintLP",
-        "type": "uint256"
-      }
-    ],
-    "name": "Invest",
     "type": "event"
   },
   {

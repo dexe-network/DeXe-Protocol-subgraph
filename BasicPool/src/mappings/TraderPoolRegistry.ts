@@ -38,7 +38,7 @@ export function handl(block: ethereum.Block): void {
             block.number.minus(BigInt.fromI32(CHECK_PER_BLOCK))
           );
 
-          history.loss = prevHistory.price.minus(history.price);
+          history.loss = prevHistory.usdTVL.minus(history.usdTVL);
 
           history.save();
         }
