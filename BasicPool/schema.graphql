@@ -22,6 +22,14 @@ type BasicPool @entity {
   name: String!
   descriptionURL: String!
   creationTime: BigInt!
+  maxLoss: BigInt!
+  lastUpdate: BigInt!
+
+  totalTrades: BigInt!
+  totalPositionTime: BigInt!
+
+  averageTrades: BigInt!
+  averagePositionTime: BigInt!
 
   investors: [Investor!]!
 
@@ -41,7 +49,6 @@ type BasicPool @entity {
 # @param pool the id of pool, type is string for reverse lookup
 # @param poolBase the total pool base from contract
 # @param seconds the timestamp / 86400
-# @param loss the difference between current previos price
 type BasicPoolPriceHistory @entity {
   id: ID!
   usdTVL: BigInt!
@@ -49,7 +56,8 @@ type BasicPoolPriceHistory @entity {
   pool: BasicPool!
   baseTVL: BigInt!
   seconds: BigInt!
-  loss: BigInt!
+  absPNL: BigInt!
+  percPNL: BigInt!
 }
 
 # @notice The entity holds historical information about pool state.
@@ -238,6 +246,9 @@ type Proposal @entity {
   timestampLimit: BigInt!
   investLPLimit: BigInt!
   maxTokenPriceLimit: BigInt!
+
+  totalOpenVolume: BigInt!
+  totalCloseVolume: BigInt!
 
   basicPool: BasicPool!
   proposalInvests: [ProposalInvestHistory!]! @derivedFrom(field: "proposal")

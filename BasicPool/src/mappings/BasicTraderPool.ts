@@ -25,7 +25,7 @@ import { getInvestorInfo } from "../entities/basic-pool/InvestorInfo";
 import { removeByIndex } from "../helpers/ArrayHelper";
 import { getBasicPoolHistory } from "../entities/basic-pool/history/BasicPoolHistory";
 import { getInvestorLPHistory } from "../entities/basic-pool/history/InvestorLPHistory";
-import { Investor } from "../../generated/schema";
+import { DAY } from "../entities/global/globals";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.address);
@@ -55,6 +55,19 @@ export function onExchange(event: Exchanged): void {
 
   position.liveTime = event.block.timestamp;
 
+  let day = event.block.timestamp.div(BigInt.fromI32(DAY));
+  if (day > basicPool.lastUpdate) {
+    basicPool.averagePositionTime = basicPool.totalPositionTime.div(
+      basicPool.creationTime.minus(event.block.timestamp).div(BigInt.fromI32(DAY))
+    );
+    basicPool.lastUpdate = day;
+  }
+
+  basicPool.totalTrades = basicPool.totalTrades.plus(BigInt.fromI32(1));
+  basicPool.averageTrades = basicPool.averageTrades.div(
+    basicPool.creationTime.minus(event.block.timestamp).div(BigInt.fromI32(DAY))
+  );
+
   basicPool.save();
   position.save();
   trade.save();
@@ -71,6 +84,25 @@ export function onClose(event: PositionClosed): void {
 
   position.liveTime = event.block.timestamp.minus(position.liveTime);
 
+  let day = event.block.timestamp.div(BigInt.fromI32(DAY));
+  if (day > basicPool.lastUpdate) {
+    basicPool.averageTrades = basicPool.averageTrades.div(
+      basicPool.creationTime.minus(event.block.timestamp).div(BigInt.fromI32(DAY))
+    );
+    basicPool.lastUpdate = day;
+  }
+
+  basicPool.totalPositionTime = basicPool.totalPositionTime.plus(event.block.timestamp.minus(position.liveTime));
+  basicPool.averagePositionTime = basicPool.totalPositionTime.div(
+    basicPool.creationTime.minus(event.block.timestamp).div(BigInt.fromI32(DAY))
+  );
+
+  let loss = position.totalOpenVolume.minus(position.totalCloseVolume);
+  if (loss > basicPool.maxLoss) {
+    basicPool.maxLoss = loss;
+  }
+
+  basicPool.save();
   position.save();
   positionOffset.save();
 }
@@ -78,6 +110,19 @@ export function onClose(event: PositionClosed): void {
 export function onInvestorAdded(event: InvestorAdded): void {
   let investor = getInvestor(event.params.investor, event.address, event.block.timestamp);
   investor.save();
+
+  let day = event.block.timestamp.div(BigInt.fromI32(DAY));
+  let basicPool = getBasicTraderPool(event.address);
+  if (day > basicPool.lastUpdate) {
+    basicPool.averagePositionTime = basicPool.totalPositionTime.div(
+      basicPool.creationTime.minus(event.block.timestamp).div(BigInt.fromI32(DAY))
+    );
+    basicPool.averageTrades = basicPool.averageTrades.div(
+      basicPool.creationTime.minus(event.block.timestamp).div(BigInt.fromI32(DAY))
+    );
+    basicPool.lastUpdate = day;
+  }
+  basicPool.save();
 }
 
 export function onInvest(event: Invested): void {
@@ -93,6 +138,19 @@ export function onInvest(event: Invested): void {
 
   lpHistory.lpBalance = lpHistory.lpBalance.plus(event.params.toMintLP);
 
+  let day = event.block.timestamp.div(BigInt.fromI32(DAY));
+  let basicPool = getBasicTraderPool(event.address);
+  if (day > basicPool.lastUpdate) {
+    basicPool.averagePositionTime = basicPool.totalPositionTime.div(
+      basicPool.creationTime.minus(event.block.timestamp).div(BigInt.fromI32(DAY))
+    );
+    basicPool.averageTrades = basicPool.averageTrades.div(
+      basicPool.creationTime.minus(event.block.timestamp).div(BigInt.fromI32(DAY))
+    );
+    basicPool.lastUpdate = day;
+  }
+
+  basicPool.save();
   investorInfo.save();
   invest.save();
   history.save();
@@ -110,6 +168,18 @@ export function onInvestorRemoved(event: InvestorRemoved): void {
     basicPoolHistory.investors,
     basicPoolHistory.investors.indexOf(basicPool.id)
   );
+
+  let day = event.block.timestamp.div(BigInt.fromI32(DAY));
+  if (day > basicPool.lastUpdate) {
+    basicPool.averagePositionTime = basicPool.totalPositionTime.div(
+      basicPool.creationTime.minus(event.block.timestamp).div(BigInt.fromI32(DAY))
+    );
+    basicPool.averageTrades = basicPool.averageTrades.div(
+      basicPool.creationTime.minus(event.block.timestamp).div(BigInt.fromI32(DAY))
+    );
+    basicPool.lastUpdate = day;
+  }
+
   basicPoolHistory.save();
 
   basicPool.investors = removeByIndex(basicPool.investors, basicPool.investors.indexOf(investor.id));
@@ -127,6 +197,19 @@ export function onDivest(event: Divested): void {
   divest.day = history.id;
 
   lpHistory.lpBalance = lpHistory.lpBalance.minus(event.params.amount);
+
+  let day = event.block.timestamp.div(BigInt.fromI32(DAY));
+  let basicPool = getBasicTraderPool(event.address);
+  if (day > basicPool.lastUpdate) {
+    basicPool.averagePositionTime = basicPool.totalPositionTime.div(
+      basicPool.creationTime.minus(event.block.timestamp).div(BigInt.fromI32(DAY))
+    );
+    basicPool.averageTrades = basicPool.averageTrades.div(
+      basicPool.creationTime.minus(event.block.timestamp).div(BigInt.fromI32(DAY))
+    );
+    basicPool.lastUpdate = day;
+  }
+  basicPool.save();
 
   investorInfo.save();
   divest.save();
