@@ -23,7 +23,7 @@ export function getBasicTraderPool(
     basicPool.maxLoss = BigInt.zero();
 
     basicPool.totalTrades = BigInt.zero();
-    basicPool.totalPositionTime = BigInt.zero();
+    basicPool.totalClosedPositions = BigInt.zero();
 
     basicPool.averageTrades = BigInt.zero();
     basicPool.averagePositionTime = BigInt.zero();
