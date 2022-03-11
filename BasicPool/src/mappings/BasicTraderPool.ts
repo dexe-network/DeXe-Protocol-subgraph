@@ -52,7 +52,9 @@ export function onExchange(event: Exchanged): void {
   let history = getExchangeHistory(event.block.timestamp, basicPool.id);
   trade.day = history.id;
 
-  position.liveTime = event.block.timestamp; // bug?
+  if (position.startTimestamp.equals(BigInt.zero())) {
+    position.startTimestamp = event.block.timestamp;
+  }
 
   basicPool.totalTrades = basicPool.totalTrades.plus(BigInt.fromI32(1));
   let days = event.block.timestamp.minus(basicPool.creationTime).div(BigInt.fromI32(DAY));
@@ -72,10 +74,11 @@ export function onClose(event: PositionClosed): void {
   position.closed = true;
   positionOffset.offset = positionOffset.offset.plus(BigInt.fromI32(1));
 
-  position.liveTime = event.block.timestamp.minus(position.liveTime);
+  position.liveTime = event.block.timestamp.minus(position.startTimestamp);
 
   basicPool.averagePositionTime = basicPool.averagePositionTime
-    .times(basicPool.totalClosedPositions.plus(position.liveTime))
+    .times(basicPool.totalClosedPositions)
+    .plus(position.liveTime)
     .div(basicPool.totalClosedPositions.plus(BigInt.fromI32(1)));
   basicPool.totalClosedPositions = basicPool.totalClosedPositions.plus(BigInt.fromI32(1));
 

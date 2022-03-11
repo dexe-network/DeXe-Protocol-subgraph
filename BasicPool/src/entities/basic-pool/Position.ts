@@ -14,6 +14,7 @@ export function getPosition(id: string, basicPool: string = "", positionToken: A
     position.basicPool = basicPool;
     position.closed = false;
     position.liveTime = BigInt.zero();
+    position.startTimestamp = BigInt.zero();
   }
 
   return position;
