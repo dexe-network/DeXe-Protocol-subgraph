@@ -19,6 +19,14 @@ export function getInvestTraderPool(
     investPool.name = name;
     investPool.creationTime = creationTime;
     investPool.descriptionURL = descriptionURL;
+
+    investPool.maxLoss = BigInt.zero();
+
+    investPool.totalTrades = BigInt.zero();
+    investPool.totalClosedPositions = BigInt.zero();
+
+    investPool.averageTrades = BigInt.zero();
+    investPool.averagePositionTime = BigInt.zero();
   }
 
   return investPool;

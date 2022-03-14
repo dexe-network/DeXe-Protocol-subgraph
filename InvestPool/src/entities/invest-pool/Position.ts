@@ -12,6 +12,7 @@ export function getPosition(id: string, investPool: string = ""): Position {
     position.investPool = investPool;
     position.closed = false;
     position.liveTime = BigInt.zero();
+    position.startTimestamp = BigInt.zero();
   }
 
   return position;
