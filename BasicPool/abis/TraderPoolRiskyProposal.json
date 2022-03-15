@@ -654,7 +654,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "lpInvested",
+            "name": "lpLocked",
             "type": "uint256"
           },
           {
@@ -671,6 +671,19 @@
         "internalType": "struct ITraderPoolRiskyProposal.ActiveInvestmentInfo[]",
         "name": "investments",
         "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getBaseToken",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -897,54 +910,71 @@
       {
         "components": [
           {
-            "internalType": "address",
-            "name": "token",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokenDecimals",
-            "type": "uint256"
-          },
-          {
             "components": [
               {
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+              },
+              {
                 "internalType": "uint256",
-                "name": "timestampLimit",
+                "name": "tokenDecimals",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "uint256",
+                    "name": "timestampLimit",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "investLPLimit",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "maxTokenPriceLimit",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct ITraderPoolRiskyProposal.ProposalLimits",
+                "name": "proposalLimits",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "lpLocked",
                 "type": "uint256"
               },
               {
                 "internalType": "uint256",
-                "name": "investLPLimit",
+                "name": "balanceBase",
                 "type": "uint256"
               },
               {
                 "internalType": "uint256",
-                "name": "maxTokenPriceLimit",
+                "name": "balancePosition",
                 "type": "uint256"
               }
             ],
-            "internalType": "struct ITraderPoolRiskyProposal.ProposalLimits",
-            "name": "proposalLimits",
+            "internalType": "struct ITraderPoolRiskyProposal.ProposalInfo",
+            "name": "proposalInfo",
             "type": "tuple"
           },
           {
             "internalType": "uint256",
-            "name": "investedLP",
+            "name": "totalProposalUSD",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "balanceBase",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "balancePosition",
+            "name": "totalProposalBase",
             "type": "uint256"
           }
         ],
-        "internalType": "struct ITraderPoolRiskyProposal.ProposalInfo[]",
+        "internalType": "struct ITraderPoolRiskyProposal.ProposalInfoExtended[]",
         "name": "proposals",
         "type": "tuple[]"
       }
@@ -1098,7 +1128,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "investedLP",
+        "name": "lpLocked",
         "type": "uint256"
       },
       {

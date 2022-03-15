@@ -4,11 +4,11 @@ import { DECIMAL, PERCENTAGE } from "../global/globals";
 
 export function getBasicPoolPriceHistory(
   pool: string,
-  usdTVL: BigInt,
   blockNumber: BigInt,
   timestamp: BigInt = BigInt.zero(),
-  supply: BigInt = BigInt.zero(),
-  poolBase: BigInt = BigInt.zero()
+  usdTVL: BigInt = BigInt.zero(),
+  poolBase: BigInt = BigInt.zero(),
+  supply: BigInt = BigInt.zero()
 ): BasicPoolPriceHistory {
   let id = pool + blockNumber.toString();
   let history = BasicPoolPriceHistory.load(id);

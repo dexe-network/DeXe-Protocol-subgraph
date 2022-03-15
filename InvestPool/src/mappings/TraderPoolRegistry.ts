@@ -24,11 +24,11 @@ export function handl(block: ethereum.Block): void {
           let investPool = getInvestTraderPool(poolInfo.value.value0[pool]);
           let history = getInvestPoolPriceHistory(
             investPool.id,
-            poolInfo.value.value1[pool].totalPoolUSD,
             block.number,
             block.timestamp,
-            poolInfo.value.value1[pool].lpEmission,
-            poolInfo.value.value1[pool].totalPoolBase
+            poolInfo.value.value1[pool].totalPoolUSD,
+            poolInfo.value.value1[pool].totalPoolBase,
+            poolInfo.value.value1[pool].lpSupply
           );
 
           history.save();
