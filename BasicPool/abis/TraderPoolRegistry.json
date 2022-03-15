@@ -419,7 +419,12 @@
           },
           {
             "internalType": "uint256",
-            "name": "lpEmission",
+            "name": "lpSupply",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lpLockedInProposals",
             "type": "uint256"
           }
         ],
@@ -431,7 +436,7 @@
         "components": [
           {
             "internalType": "uint256",
-            "name": "totalPoolUSD",
+            "name": "totalPoolUSDWithProposals",
             "type": "uint256"
           },
           {

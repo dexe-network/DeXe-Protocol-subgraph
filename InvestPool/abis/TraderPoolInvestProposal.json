@@ -577,7 +577,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "lpInvested",
+            "name": "lpLocked",
             "type": "uint256"
           },
           {
@@ -589,6 +589,19 @@
         "internalType": "struct ITraderPoolInvestProposal.ActiveInvestmentInfo[]",
         "name": "investments",
         "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getBaseToken",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -666,7 +679,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "investedLP",
+            "name": "lpLocked",
             "type": "uint256"
           },
           {
@@ -860,7 +873,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "investedLP",
+        "name": "lpLocked",
         "type": "uint256"
       },
       {
