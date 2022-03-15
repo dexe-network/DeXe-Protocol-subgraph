@@ -1,26 +1,26 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { BigInt } from "@graphprotocol/graph-ts";
 import { BasicPoolPriceHistory } from "../../../generated/schema";
-import { MILLIS } from "../global/globals";
+import { DECIMAL, PERCENTAGE } from "../global/globals";
 
 export function getBasicPoolPriceHistory(
   pool: string,
-  price: BigInt,
+  usdTVL: BigInt,
   blockNumber: BigInt,
   timestamp: BigInt = BigInt.zero(),
   supply: BigInt = BigInt.zero(),
   poolBase: BigInt = BigInt.zero()
 ): BasicPoolPriceHistory {
-  let ts = timestamp.div(BigInt.fromI32(MILLIS));
   let id = pool + blockNumber.toString();
   let history = BasicPoolPriceHistory.load(id);
   if (history == null) {
     history = new BasicPoolPriceHistory(id);
     history.pool = pool;
-    history.usdTVL = price;
+    history.usdTVL = usdTVL;
     history.supply = supply;
-    history.seconds = ts;
+    history.seconds = timestamp;
     history.baseTVL = poolBase;
-    history.loss = BigInt.zero();
+    history.absPNL = usdTVL.minus(BigInt.fromU64(DECIMAL));
+    history.percPNL = usdTVL.minus(BigInt.fromU64(DECIMAL)).div(BigInt.fromU64(PERCENTAGE));
   }
   return history;
 }

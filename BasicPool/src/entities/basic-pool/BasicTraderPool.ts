@@ -19,6 +19,14 @@ export function getBasicTraderPool(
     basicPool.name = name;
     basicPool.creationTime = creationTime;
     basicPool.descriptionURL = descriptionURL;
+
+    basicPool.maxLoss = BigInt.zero();
+
+    basicPool.totalTrades = BigInt.zero();
+    basicPool.totalClosedPositions = BigInt.zero();
+
+    basicPool.averageTrades = BigInt.zero();
+    basicPool.averagePositionTime = BigInt.zero();
   }
 
   return basicPool;

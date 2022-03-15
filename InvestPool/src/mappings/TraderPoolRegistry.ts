@@ -31,14 +31,6 @@ export function handl(block: ethereum.Block): void {
             poolInfo.value.value1[pool].totalPoolBase
           );
 
-          let prevHistory = getInvestPoolPriceHistory(
-            investPool.id,
-            poolInfo.value.value1[pool].totalPoolUSD,
-            block.number.minus(BigInt.fromI32(CHECK_PER_BLOCK))
-          );
-
-          history.loss = prevHistory.usdTVL.minus(history.usdTVL);
-
           history.save();
         }
       }

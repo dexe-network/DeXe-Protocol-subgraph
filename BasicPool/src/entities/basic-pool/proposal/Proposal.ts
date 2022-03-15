@@ -21,6 +21,8 @@ export function getProposal(
     proposal.investLPLimit = investLPLimit;
     proposal.maxTokenPriceLimit = maxTokenPriceLimit;
     proposal.basicPool = getBasicTraderPool(basicPool).id;
+    proposal.totalOpenVolume = BigInt.zero();
+    proposal.totalCloseVolume = BigInt.zero();
   }
 
   return proposal;

@@ -13,7 +13,13 @@ type PositionOffset @entity {
 # @param baseToken the address of base token
 # @param ticker the symbol of pool's token
 # @param name the name of pool's token
+# @param descriptionURL the description url address from contract
 # @param creationTime the timestamp of creating pool
+# @param maxLoss the maximum loss among all positions
+# @param totalTrades the total number of trades
+# @param totalClosedPositions the total number of closed positions
+# @param averageTrades the average trades per day
+# @param averagePositionTime the average live time of all positions
 # @param investors the array with Investor entities
 type BasicPool @entity {
   id: ID! # pool address
@@ -22,6 +28,13 @@ type BasicPool @entity {
   name: String!
   descriptionURL: String!
   creationTime: BigInt!
+  maxLoss: BigInt!
+
+  totalTrades: BigInt!
+  totalClosedPositions: BigInt!
+
+  averageTrades: BigInt!
+  averagePositionTime: BigInt!
 
   investors: [Investor!]!
 
@@ -41,7 +54,8 @@ type BasicPool @entity {
 # @param pool the id of pool, type is string for reverse lookup
 # @param poolBase the total pool base from contract
 # @param seconds the timestamp / 86400
-# @param loss the difference between current previos price
+# @param absPNL the absolute PNL for all time
+# @param percPNL the PNL at percents with 0.01% error margin
 type BasicPoolPriceHistory @entity {
   id: ID!
   usdTVL: BigInt!
@@ -49,7 +63,8 @@ type BasicPoolPriceHistory @entity {
   pool: BasicPool!
   baseTVL: BigInt!
   seconds: BigInt!
-  loss: BigInt!
+  absPNL: BigInt!
+  percPNL: BigInt!
 }
 
 # @notice The entity holds historical information about pool state.
@@ -113,7 +128,8 @@ type InvestorLPHistory @entity {
 # @param closed the state of position, true when closed
 # @param totalOpenVolume the total open volume of position
 # @param totalCloseVolume the total close volume of position
-# @param liveTime the time in millis the position was open for if the position is closed, and timestamp of position's creation time if it is still open
+# @param startTimestamp the timestamp of position's creation time
+# @param liveTime the time in millis the position was open for if the position is closed.
 # @param basicPool the id of basicPool (address) for reverse lookup
 type Position @entity {
   id: ID! # trader pool address + position token address + position offset
@@ -122,6 +138,7 @@ type Position @entity {
 
   totalOpenVolume: BigInt!
   totalCloseVolume: BigInt!
+  startTimestamp: BigInt!
   liveTime: BigInt!
 
   basicPool: BasicPool!
@@ -230,6 +247,8 @@ type ProposalContract @entity {
 # @param timestampLimit the timestamp from contract after which the investment into proposal closes
 # @param investLPLimit the maximal number of invested LP tokens from contract after which the investment into the proposal closes
 # @param maxTokenPriceLimit the maximal price of the proposal token from contract after which the investment into the proposal closes
+# @param totalOpenVolume the total open volume of proposal
+# @param totalCloseVolume the total close volume of proposal
 # @param basicPool the basicPool id (address), for reverse lookup
 type Proposal @entity {
   id: ID! # pool address + proposal index
@@ -238,6 +257,9 @@ type Proposal @entity {
   timestampLimit: BigInt!
   investLPLimit: BigInt!
   maxTokenPriceLimit: BigInt!
+
+  totalOpenVolume: BigInt!
+  totalCloseVolume: BigInt!
 
   basicPool: BasicPool!
   proposalInvests: [ProposalInvestHistory!]! @derivedFrom(field: "proposal")

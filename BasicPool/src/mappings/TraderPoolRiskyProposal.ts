@@ -79,6 +79,13 @@ export function onProposalExchange(event: ProposalExchanged): void {
   let history = getProposalExchangeHistory(event.block.timestamp, proposal.id);
 
   exchange.day = history.id;
+  if (event.params.toToken != proposal.token) {
+    // adding funds to the position
+    proposal.totalOpenVolume = proposal.totalOpenVolume.plus(event.params.toVolume);
+  } else if (event.params.fromToken != proposal.token) {
+    // withdrawing funds from the position
+    proposal.totalCloseVolume = proposal.totalCloseVolume.plus(event.params.toVolume);
+  }
 
   proposal.save();
   exchange.save();
