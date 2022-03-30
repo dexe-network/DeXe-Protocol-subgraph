@@ -1,0 +1,87 @@
+# @notice The etity holds information about current position offset. Uses to avoid collisions in position id
+# @param id forms from pool address + position token address
+# @param offset the current position index offset
+type PositionOffset @entity {
+  id: ID! # trader pool address + position token address
+  offset: BigInt!
+}
+
+####################################### TraderPool #######################################
+
+# @notice The entity that holds informations about pool
+# @param id the pool address
+# @param baseToken the address of base token
+# @param ticker the symbol of pool's token
+# @param name the name of pool's token
+# @param descriptionURL the description url address from contract
+# @param creationTime the timestamp of creating pool
+# @param maxLoss the maximum loss among all positions
+# @param totalTrades the total number of trades
+# @param totalClosedPositions the total number of closed positions
+# @param averageTrades the average trades per day
+# @param averagePositionTime the average live time of all positions
+# @param investors the array with Investor entities
+type TraderPool @entity {
+  id: ID! # pool address
+  type: String!
+  baseToken: Bytes!
+  ticker: String!
+  name: String!
+  descriptionURL: String!
+  creationTime: BigInt!
+  maxLoss: BigInt!
+
+  totalTrades: BigInt!
+  totalClosedPositions: BigInt!
+
+  averageTrades: BigInt!
+  averagePositionTime: BigInt!
+
+  investorsCount: BigInt!
+
+  positions: [Position!]! @derivedFrom(field: "traderPool")
+  priceHistory: [TraderPoolPriceHistory!]! @derivedFrom(field: "pool")
+}
+
+# @notice The entity holds historical information about price of pool. Uses for store info every 100 blocks.
+# @param id forms from pool address + timestamp / 1000
+# @param price the total pool usd price from contract
+# @param supply the total lp emission of pool from contract
+# @param pool the id of pool, type is string for reverse lookup
+# @param poolBase the total pool base from contract
+# @param seconds the timestamp / 86400
+# @param absPNL the absolute PNL for all time
+# @param percPNL the PNL at percents with 0.01% error margin
+type TraderPoolPriceHistory @entity {
+  id: ID!
+  usdTVL: BigInt!
+  supply: BigInt!
+  pool: TraderPool!
+  baseTVL: BigInt!
+  seconds: BigInt!
+  absPNL: BigInt!
+  percPNL: BigInt!
+  isLast: Boolean!
+}
+
+# @notice The entity holds information about position in pool
+# @param id forms from pool address + position token address + position offset from PositionOffset entity
+# @param positionToken the address of position token
+# @param closed the state of position, true when closed
+# @param totalOpenVolume the total open volume of position
+# @param totalCloseVolume the total close volume of position
+# @param startTimestamp the timestamp of position's creation time
+# @param liveTime the time in millis the position was open for if the position is closed.
+# @param basicPool the id of basicPool (address) for reverse lookup
+type Position @entity {
+  id: ID! # trader pool address + position token address + position offset
+  positionToken: Bytes!
+  closed: Boolean!
+
+  totalOpenVolume: BigInt!
+  totalCloseVolume: BigInt!
+  startTimestamp: BigInt!
+  liveTime: BigInt!
+
+  traderPool: TraderPool!
+}
