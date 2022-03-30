@@ -6,7 +6,7 @@ type PositionOffset @entity {
   offset: BigInt!
 }
 
-####################################### BasicPool #######################################
+####################################### TraderPool #######################################
 
 # @notice The entity that holds informations about pool
 # @param id the pool address

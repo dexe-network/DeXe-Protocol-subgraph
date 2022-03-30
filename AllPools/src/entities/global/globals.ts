@@ -1,5 +1,4 @@
 export const DAY = 86400;
-export const HOUR = 3600;
 export const CHECK_PER_BLOCK = 100;
 export const BASIC_POOL_NAME = "BASIC_POOL";
 export const INVEST_POOL_NAME = "INVEST_POOL";
