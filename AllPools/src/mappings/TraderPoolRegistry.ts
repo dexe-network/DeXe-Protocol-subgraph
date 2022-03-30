@@ -39,11 +39,17 @@ export function handl(block: ethereum.Block): void {
           );
 
           history.save();
+
+          let prevHistory = getTraderPoolPriceHistory(
+            basicPool.id,
+            block.number.minus(BigInt.fromI32(CHECK_PER_BLOCK))
+          );
+          prevHistory.isLast = false;
+          prevHistory.save();
         }
       }
     }
 
-    tprPrototype = TraderPoolRegistry.bind(Address.fromString(POOL_REGISTRY_ADDRESS));
     poolCount = tprPrototype.try_countPools(INVEST_POOL_NAME);
 
     if (poolCount.reverted) return;
@@ -69,6 +75,13 @@ export function handl(block: ethereum.Block): void {
           );
 
           history.save();
+
+          let prevHistory = getTraderPoolPriceHistory(
+            investPool.id,
+            block.number.minus(BigInt.fromI32(CHECK_PER_BLOCK))
+          );
+          prevHistory.isLast = false;
+          prevHistory.save();
         }
       }
     }

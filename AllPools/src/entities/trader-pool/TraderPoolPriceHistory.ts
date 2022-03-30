@@ -21,6 +21,7 @@ export function getTraderPoolPriceHistory(
     history.baseTVL = poolBase;
     history.absPNL = usdTVL.minus(BigInt.fromU64(DECIMAL));
     history.percPNL = usdTVL.minus(BigInt.fromU64(DECIMAL)).div(BigInt.fromU64(PERCENTAGE));
+    history.isLast = true;
   }
   return history;
 }

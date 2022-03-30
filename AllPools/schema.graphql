@@ -23,6 +23,7 @@ type PositionOffset @entity {
 # @param investors the array with Investor entities
 type TraderPool @entity {
   id: ID! # pool address
+  type: String!
   baseToken: Bytes!
   ticker: String!
   name: String!
@@ -60,6 +61,7 @@ type TraderPoolPriceHistory @entity {
   seconds: BigInt!
   absPNL: BigInt!
   percPNL: BigInt!
+  isLast: Boolean!
 }
 
 # @notice The entity holds information about position in pool

@@ -3,6 +3,7 @@ import { TraderPool } from "../../../generated/schema";
 
 export function getTraderPool(
   poolAddress: Address,
+  type: string = "",
   basicTokenAddress: Address = Address.zero(),
   ticker: string = "",
   name: string = "",
@@ -13,6 +14,7 @@ export function getTraderPool(
 
   if (traderPool == null) {
     traderPool = new TraderPool(poolAddress.toHexString());
+    traderPool.type = type;
     traderPool.baseToken = basicTokenAddress;
     traderPool.ticker = ticker;
     traderPool.name = name;
