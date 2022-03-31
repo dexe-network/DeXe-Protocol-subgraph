@@ -25,7 +25,6 @@ import { getInvestorInfo } from "../entities/invest-pool/InvestorInfo";
 import { removeByIndex } from "../helpers/ArrayHelper";
 import { getInvestPoolHistory } from "../entities/invest-pool/history/InvestPoolHistory";
 import { getInvestorLPHistory } from "../entities/invest-pool/history/InvestorLPHistory";
-import { DAY } from "../entities/global/globals";
 
 export function onExchange(event: Exchanged): void {
   let investPool = getInvestTraderPool(event.address);
@@ -41,24 +40,8 @@ export function onExchange(event: Exchanged): void {
     event.params.toVolume
   );
 
-  if (trade.toToken != investPool.baseToken) {
-    // adding funds to the position
-    position.totalOpenVolume = position.totalOpenVolume.plus(trade.toVolume);
-  } else if (trade.fromToken != investPool.baseToken) {
-    // withdrawing funds from the position
-    position.totalCloseVolume = position.totalCloseVolume.plus(trade.toVolume);
-  }
-
   let history = getExchangeHistory(event.block.timestamp, investPool.id);
   trade.day = history.id;
-
-  if (position.startTimestamp.equals(BigInt.zero())) {
-    position.startTimestamp = event.block.timestamp;
-  }
-
-  investPool.totalTrades = investPool.totalTrades.plus(BigInt.fromI32(1));
-  let days = event.block.timestamp.minus(investPool.creationTime).div(BigInt.fromI32(DAY));
-  investPool.averageTrades = investPool.totalTrades.div(days.equals(BigInt.zero()) ? BigInt.fromI32(1) : days);
 
   investPool.save();
   position.save();
@@ -73,18 +56,6 @@ export function onClose(event: PositionClosed): void {
 
   position.closed = true;
   positionOffset.offset = positionOffset.offset.plus(BigInt.fromI32(1));
-  position.liveTime = event.block.timestamp.minus(position.startTimestamp);
-
-  investPool.averagePositionTime = investPool.averagePositionTime
-    .times(investPool.totalClosedPositions)
-    .plus(position.liveTime)
-    .div(investPool.totalClosedPositions.plus(BigInt.fromI32(1)));
-  investPool.totalClosedPositions = investPool.totalClosedPositions.plus(BigInt.fromI32(1));
-
-  let loss = position.totalOpenVolume.minus(position.totalCloseVolume);
-  if (loss > investPool.maxLoss) {
-    investPool.maxLoss = loss;
-  }
 
   investPool.save();
 

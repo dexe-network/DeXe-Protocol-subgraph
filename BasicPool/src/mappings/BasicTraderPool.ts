@@ -14,7 +14,7 @@ import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPosition } from "../entities/basic-pool/Position";
 import { getExchange } from "../entities/basic-pool/Exchange";
 import { getInvest } from "../entities/basic-pool/Invest";
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { BigInt } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
 import { getInvestHistory } from "../entities/basic-pool/history/InvestHistory";
 import { getExchangeHistory } from "../entities/basic-pool/history/ExchangeHistory";
@@ -25,7 +25,6 @@ import { getInvestorInfo } from "../entities/basic-pool/InvestorInfo";
 import { removeByIndex } from "../helpers/ArrayHelper";
 import { getBasicPoolHistory } from "../entities/basic-pool/history/BasicPoolHistory";
 import { getInvestorLPHistory } from "../entities/basic-pool/history/InvestorLPHistory";
-import { DAY } from "../entities/global/globals";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.address);
@@ -41,24 +40,8 @@ export function onExchange(event: Exchanged): void {
     event.params.toVolume
   );
 
-  if (trade.toToken != basicPool.baseToken) {
-    // adding funds to the position
-    position.totalOpenVolume = position.totalOpenVolume.plus(trade.toVolume);
-  } else if (trade.fromToken != basicPool.baseToken) {
-    // withdrawing funds from the position
-    position.totalCloseVolume = position.totalCloseVolume.plus(trade.toVolume);
-  }
-
   let history = getExchangeHistory(event.block.timestamp, basicPool.id);
   trade.day = history.id;
-
-  if (position.startTimestamp.equals(BigInt.zero())) {
-    position.startTimestamp = event.block.timestamp;
-  }
-
-  basicPool.totalTrades = basicPool.totalTrades.plus(BigInt.fromI32(1));
-  let days = event.block.timestamp.minus(basicPool.creationTime).div(BigInt.fromI32(DAY));
-  basicPool.averageTrades = basicPool.totalTrades.div(days.equals(BigInt.zero()) ? BigInt.fromI32(1) : days);
 
   basicPool.save();
   position.save();
@@ -73,19 +56,6 @@ export function onClose(event: PositionClosed): void {
 
   position.closed = true;
   positionOffset.offset = positionOffset.offset.plus(BigInt.fromI32(1));
-
-  position.liveTime = event.block.timestamp.minus(position.startTimestamp);
-
-  basicPool.averagePositionTime = basicPool.averagePositionTime
-    .times(basicPool.totalClosedPositions)
-    .plus(position.liveTime)
-    .div(basicPool.totalClosedPositions.plus(BigInt.fromI32(1)));
-  basicPool.totalClosedPositions = basicPool.totalClosedPositions.plus(BigInt.fromI32(1));
-
-  let loss = position.totalOpenVolume.minus(position.totalCloseVolume);
-  if (loss > basicPool.maxLoss) {
-    basicPool.maxLoss = loss;
-  }
 
   basicPool.save();
   position.save();

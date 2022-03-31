@@ -28,13 +28,6 @@ type BasicPool @entity {
   name: String!
   descriptionURL: String!
   creationTime: BigInt!
-  maxLoss: BigInt!
-
-  totalTrades: BigInt!
-  totalClosedPositions: BigInt!
-
-  averageTrades: BigInt!
-  averagePositionTime: BigInt!
 
   investors: [Investor!]!
 
@@ -44,27 +37,6 @@ type BasicPool @entity {
   divests: [DivestHistory!]! @derivedFrom(field: "basicPool")
   exchanges: [ExchangeHistory!]! @derivedFrom(field: "basicPool")
   history: [BasicPoolHistory!]! @derivedFrom(field: "pool")
-  priceHistory: [BasicPoolPriceHistory!]! @derivedFrom(field: "pool")
-}
-
-# @notice The entity holds historical information about price of pool. Uses for store info every 100 blocks.
-# @param id forms from pool address + timestamp / 1000
-# @param price the total pool usd price from contract
-# @param supply the total lp emission of pool from contract
-# @param pool the id of pool, type is string for reverse lookup
-# @param poolBase the total pool base from contract
-# @param seconds the timestamp / 86400
-# @param absPNL the absolute PNL for all time
-# @param percPNL the PNL at percents with 0.01% error margin
-type BasicPoolPriceHistory @entity {
-  id: ID!
-  usdTVL: BigInt!
-  supply: BigInt!
-  pool: BasicPool!
-  baseTVL: BigInt!
-  seconds: BigInt!
-  absPNL: BigInt!
-  percPNL: BigInt!
 }
 
 # @notice The entity holds historical information about pool state.
@@ -135,11 +107,6 @@ type Position @entity {
   id: ID! # trader pool address + position token address + position offset
   positionToken: Bytes!
   closed: Boolean!
-
-  totalOpenVolume: BigInt!
-  totalCloseVolume: BigInt!
-  startTimestamp: BigInt!
-  liveTime: BigInt!
 
   basicPool: BasicPool!
   exchanges: [Exchange!]! @derivedFrom(field: "position")
