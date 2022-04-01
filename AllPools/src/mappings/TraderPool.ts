@@ -17,6 +17,14 @@ export function onExchange(event: Exchanged): void {
 
   let position = getPosition(getPositionId(basicPool.id, event.params.toToken), basicPool.id, event.params.toToken);
 
+  if (event.params.toToken != basicPool.baseToken) {
+    // adding funds to the position
+    position.totalOpenVolume = position.totalOpenVolume.plus(event.params.toVolume);
+  } else if (event.params.fromToken != basicPool.baseToken) {
+    // withdrawing funds from the position
+    position.totalCloseVolume = position.totalCloseVolume.plus(event.params.toVolume);
+  }
+
   if (position.startTimestamp.equals(BigInt.zero())) {
     position.startTimestamp = event.block.timestamp;
   }

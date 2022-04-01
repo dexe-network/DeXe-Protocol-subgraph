@@ -3,7 +3,7 @@ import { Exchange } from "../../../generated/schema";
 
 export function getExchange(
   txHash: Bytes,
-  positionId: string,
+  position: string,
   fromToken: Address = Address.zero(),
   toToken: Address = Address.zero(),
   fromVolume: BigInt = BigInt.zero(),
@@ -14,12 +14,11 @@ export function getExchange(
 
   if (trade == null) {
     trade = new Exchange(id);
-
+    trade.position = position;
     trade.fromToken = fromToken;
     trade.toToken = toToken;
     trade.fromVolume = fromVolume;
     trade.toVolume = toVolume;
-    trade.position = positionId;
     trade.day = "";
   }
 
