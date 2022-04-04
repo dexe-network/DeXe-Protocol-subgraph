@@ -4,7 +4,7 @@ import {
   InvestorAdded,
   InvestorRemoved,
   DescriptionURLChanged,
-} from "../../generated/templates/BasicPool/BasicPool";
+} from "../../generated/templates/TraderPool/TraderPool";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPosition } from "../entities/trader-pool/Position";
