@@ -2,6 +2,7 @@
   "name": "dexe",
   "license": "UNLICENSED",
   "scripts": {
+    "compile": "graph codegen && graph build",
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ volodymyrzolotukhin/dexe",
