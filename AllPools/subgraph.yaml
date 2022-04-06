@@ -61,6 +61,8 @@ templates:
       abis:
         - name: TraderPool
           file: ./abis/TraderPool.json
+        - name: PriceFeed
+          file: ./abis/PriceFeed.json
       eventHandlers:
         - event: Exchanged(address,address,uint256,uint256)
           handler: onExchange

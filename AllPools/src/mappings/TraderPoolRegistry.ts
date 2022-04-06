@@ -42,6 +42,9 @@ function updatePools(block: ethereum.Block, type: string): void {
         let prevHistory = getTraderPoolPriceHistory(basicPool.id, block.number.minus(BigInt.fromI32(CHECK_PER_BLOCK)));
         prevHistory.isLast = false;
         prevHistory.save();
+
+        basicPool.priceHistoryCount = basicPool.priceHistoryCount.plus(BigInt.fromI32(1));
+        basicPool.save();
       }
     }
   }

@@ -38,6 +38,7 @@ type TraderPool @entity {
   averagePositionTime: BigInt!
 
   investorsCount: BigInt!
+  priceHistoryCount: BigInt!
 
   positions: [Position!]! @derivedFrom(field: "traderPool")
   priceHistory: [TraderPoolPriceHistory!]! @derivedFrom(field: "pool")
