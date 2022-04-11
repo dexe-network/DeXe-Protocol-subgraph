@@ -27,15 +27,15 @@ export function onExchange(event: Exchanged): void {
 
     if (event.params.fromToken != basicPool.baseToken) {
       let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-      let poolCount = pfPrototype.try_getNormalizedPriceOut(
+      let baseVolume = pfPrototype.try_getNormalizedPriceOut(
         event.params.fromToken,
         Address.fromString(basicPool.baseToken.toHexString()),
         event.params.fromVolume
       );
 
-      if (poolCount.reverted) return;
+      if (baseVolume.reverted) return;
 
-      fromVolume = poolCount.value;
+      fromVolume = baseVolume.value;
     }
 
     position.totalOpenVolume = position.totalOpenVolume.plus(fromVolume);
@@ -49,15 +49,15 @@ export function onExchange(event: Exchanged): void {
 
     if (event.params.toToken != basicPool.baseToken) {
       let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-      let poolCount = pfPrototype.try_getNormalizedPriceOut(
+      let baseVolume = pfPrototype.try_getNormalizedPriceOut(
         event.params.toToken,
         Address.fromString(basicPool.baseToken.toHexString()),
         event.params.toVolume
       );
 
-      if (poolCount.reverted) return;
+      if (baseVolume.reverted) return;
 
-      toVolume = poolCount.value;
+      toVolume = baseVolume.value;
     }
 
     position.totalCloseVolume = position.totalCloseVolume.plus(toVolume);
