@@ -51,8 +51,8 @@ type TraderPool @entity {
 # @param pool the id of pool, type is string for reverse lookup
 # @param poolBase the total pool base from contract
 # @param seconds the timestamp / 86400
-# @param absPNL the absolute PNL for all time
-# @param percPNL the PNL at percents with 0.01% error margin
+# @param absPNL the absolute PNL for all time, decimals = 10**18
+# @param percPNL the PNL at percents with 0.01% error margin, precision = 10**4
 type TraderPoolPriceHistory @entity {
   id: ID!
   usdTVL: BigInt!
