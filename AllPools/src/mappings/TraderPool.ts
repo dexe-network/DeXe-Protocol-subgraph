@@ -8,21 +8,63 @@ import {
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPosition } from "../entities/trader-pool/Position";
-import { BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ByteArray, Bytes } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
-import { DAY } from "../entities/global/globals";
+import { DAY, PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
+import { Position } from "../../generated/schema";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getTraderPool(event.address);
 
-  let position = getPosition(getPositionId(basicPool.id, event.params.toToken), basicPool.id, event.params.toToken);
+  let position: Position;
 
   if (event.params.toToken != basicPool.baseToken) {
     // adding funds to the position
-    position.totalOpenVolume = position.totalOpenVolume.plus(event.params.toVolume);
-  } else if (event.params.fromToken != basicPool.baseToken) {
+
+    let fromVolume = event.params.fromVolume;
+    position = getPosition(getPositionId(basicPool.id, event.params.toToken), basicPool.id, event.params.toToken);
+
+    if (event.params.fromToken != basicPool.baseToken) {
+      let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
+      let baseVolume = pfPrototype.try_getNormalizedPriceOut(
+        event.params.fromToken,
+        Address.fromString(basicPool.baseToken.toHexString()),
+        event.params.fromVolume
+      );
+
+      if (baseVolume.reverted) return;
+
+      fromVolume = baseVolume.value;
+    }
+
+    position.totalOpenVolume = position.totalOpenVolume.plus(fromVolume);
+  }
+
+  if (event.params.fromToken != basicPool.baseToken) {
     // withdrawing funds from the position
-    position.totalCloseVolume = position.totalCloseVolume.plus(event.params.toVolume);
+
+    let toVolume = event.params.toVolume;
+    position = getPosition(getPositionId(basicPool.id, event.params.fromToken), basicPool.id, event.params.fromToken);
+
+    if (event.params.toToken != basicPool.baseToken) {
+      let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
+      let baseVolume = pfPrototype.try_getNormalizedPriceOut(
+        event.params.toToken,
+        Address.fromString(basicPool.baseToken.toHexString()),
+        event.params.toVolume
+      );
+
+      if (baseVolume.reverted) return;
+
+      toVolume = baseVolume.value;
+    }
+
+    position.totalCloseVolume = position.totalCloseVolume.plus(toVolume);
+  }
+
+  if (position == null) {
+    return;
   }
 
   if (position.startTimestamp.equals(BigInt.zero())) {
@@ -33,8 +75,8 @@ export function onExchange(event: Exchanged): void {
   let days = event.block.timestamp.minus(basicPool.creationTime).div(BigInt.fromI32(DAY));
   basicPool.averageTrades = basicPool.totalTrades.div(days.equals(BigInt.zero()) ? BigInt.fromI32(1) : days);
 
-  basicPool.save();
   position.save();
+  basicPool.save();
 }
 
 export function onClose(event: PositionClosed): void {

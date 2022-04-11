@@ -13,14 +13,16 @@ export function getTraderPoolPriceHistory(
   let id = pool + blockNumber.toString();
   let history = TraderPoolPriceHistory.load(id);
   if (history == null) {
+    let currentPrice = supply.equals(BigInt.zero()) ? BigInt.fromU64(DECIMAL) : usdTVL.div(supply);
+
     history = new TraderPoolPriceHistory(id);
     history.pool = pool;
     history.usdTVL = usdTVL;
     history.supply = supply;
     history.seconds = timestamp;
     history.baseTVL = poolBase;
-    history.absPNL = usdTVL.minus(BigInt.fromU64(DECIMAL));
-    history.percPNL = usdTVL.minus(BigInt.fromU64(DECIMAL)).div(BigInt.fromU64(PERCENTAGE));
+    history.absPNL = currentPrice.minus(BigInt.fromU64(DECIMAL)).times(supply);
+    history.percPNL = currentPrice.minus(BigInt.fromU64(DECIMAL)).div(BigInt.fromU64(PERCENTAGE));
     history.isLast = true;
   }
   return history;

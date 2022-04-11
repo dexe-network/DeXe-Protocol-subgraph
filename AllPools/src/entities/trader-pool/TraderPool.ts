@@ -28,6 +28,8 @@ export function getTraderPool(
 
     traderPool.averageTrades = BigInt.zero();
     traderPool.averagePositionTime = BigInt.zero();
+
+    traderPool.priceHistoryCount = BigInt.zero();
   }
 
   return traderPool;
