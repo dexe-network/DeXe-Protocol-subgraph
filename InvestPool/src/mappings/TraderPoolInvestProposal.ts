@@ -77,12 +77,27 @@ export function onWithdrawn(event: ProposalWithdrawn): void {
 
 export function onSupplied(event: ProposalSupplied): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
-  let supply = getProposalSupply(event.transaction.hash, event.params.amount, investorInfo.id);
+  let supply = getProposalSupply(event.transaction.hash, event.params.amount, event.params.token, investorInfo.id);
   let proposal = getProposal(event.params.index, event.address);
   let history = getProposalSupplyHistory(event.block.timestamp, proposal.id);
 
   supply.day = history.id;
-  history.totalSupply = history.totalSupply.plus(event.params.amount);
+
+  let tokenArr = history.tokens;
+  let index = tokenArr.indexOf(event.params.token);
+
+  if (index == -1) {
+    tokenArr.push(event.params.token);
+    history.tokens = tokenArr;
+
+    let amountsArr = history.totalAmounts;
+    amountsArr.push(event.params.amount);
+    history.totalAmounts = amountsArr;
+  } else {
+    let amountsArr = history.totalAmounts;
+    amountsArr[index].plus(event.params.amount);
+    history.totalAmounts = amountsArr;
+  }
 
   proposal.save();
   supply.save();

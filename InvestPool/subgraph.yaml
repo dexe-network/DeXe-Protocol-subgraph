@@ -112,5 +112,5 @@ templates:
           handler: onProposalDivested
         - event: ProposalWithdrawn(uint256,uint256,address)
           handler: onProposalWithdrawn
-        - event: ProposalSupplied(uint256,uint256,address)
+        - event: ProposalSupplied(uint256,uint256,address,address)
           handler: onProposalSupplied

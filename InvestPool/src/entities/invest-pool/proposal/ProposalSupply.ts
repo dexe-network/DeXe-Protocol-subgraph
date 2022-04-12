@@ -1,9 +1,10 @@
-import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { ProposalSupply } from "../../../../generated/schema";
 
 export function getProposalSupply(
   hash: Bytes,
   amount: BigInt = BigInt.zero(),
+  token: Address = Address.zero(),
   InvestorInfoId: string = ""
 ): ProposalSupply {
   let id = hash.toHexString();
