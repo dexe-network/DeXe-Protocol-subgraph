@@ -85,19 +85,17 @@ export function onSupplied(event: ProposalSupplied): void {
 
   let tokenArr = history.tokens;
   let index = tokenArr.indexOf(event.params.token);
+  let amountsArr = history.totalAmounts;
 
   if (index == -1) {
     tokenArr.push(event.params.token);
     history.tokens = tokenArr;
-
-    let amountsArr = history.totalAmounts;
     amountsArr.push(event.params.amount);
-    history.totalAmounts = amountsArr;
   } else {
-    let amountsArr = history.totalAmounts;
     amountsArr[index].plus(event.params.amount);
-    history.totalAmounts = amountsArr;
   }
+
+  history.totalAmounts = amountsArr;
 
   proposal.save();
   supply.save();

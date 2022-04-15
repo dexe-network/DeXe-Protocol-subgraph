@@ -14,6 +14,7 @@ export function getProposalSupply(
     supply = new ProposalSupply(id);
     supply.investor = InvestorInfoId;
     supply.amount = amount;
+    supply.token = token;
     supply.day = "";
   }
 
