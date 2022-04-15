@@ -9,7 +9,6 @@ export function getProposalSupplyHistory(timestamp: BigInt, proposal: string): P
 
   if (history == null) {
     history = new ProposalSupplyHistory(id);
-    history.totalSupply = BigInt.zero();
     history.proposal = proposal;
     history.day = day;
   }

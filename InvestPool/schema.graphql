@@ -263,6 +263,7 @@ type ProposalDivest @entity {
 type ProposalSupply @entity {
   id: ID! #tx hash
   amount: BigInt!
+  token: Bytes!
 
   investor: InvestorInfo!
   day: ProposalSupplyHistory!
@@ -288,7 +289,8 @@ type ProposalWithdrawal @entity {
 # @param proposal the proposal entity id for reverse lookup
 type ProposalSupplyHistory @entity {
   id: ID! # Proposal.id + timestamp / 86400
-  totalSupply: BigInt!
+  totalAmounts: [BigInt!]!
+  tokens: [Bytes!]!
 
   day: BigInt!
   proposal: Proposal!
