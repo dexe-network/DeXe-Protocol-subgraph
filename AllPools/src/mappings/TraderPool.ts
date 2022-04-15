@@ -35,7 +35,7 @@ export function onExchange(event: Exchanged): void {
 
       if (baseVolume.reverted) return;
 
-      fromVolume = baseVolume.value;
+      fromVolume = baseVolume.value.value0;
     }
 
     position.totalOpenVolume = position.totalOpenVolume.plus(fromVolume);
@@ -57,7 +57,7 @@ export function onExchange(event: Exchanged): void {
 
       if (baseVolume.reverted) return;
 
-      toVolume = baseVolume.value;
+      toVolume = baseVolume.value.value0;
     }
 
     position.totalCloseVolume = position.totalCloseVolume.plus(toVolume);
