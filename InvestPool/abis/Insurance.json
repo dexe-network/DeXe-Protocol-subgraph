@@ -351,7 +351,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract IContractsRegistry",
+        "internalType": "address",
         "name": "contractsRegistry",
         "type": "address"
       }
@@ -423,7 +423,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "amountToWithdrawal",
+        "name": "amountToWithdraw",
         "type": "uint256"
       }
     ],

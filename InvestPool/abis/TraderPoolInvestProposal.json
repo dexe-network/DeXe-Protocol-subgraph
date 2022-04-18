@@ -627,7 +627,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "investedBaseUSD",
         "type": "uint256"
       }
     ],
@@ -942,7 +942,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract IContractsRegistry",
+        "internalType": "address",
         "name": "contractsRegistry",
         "type": "address"
       }
