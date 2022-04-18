@@ -5,7 +5,7 @@ import { getProposalContract } from "../entities/invest-pool/proposal/ProposalCo
 import { InvestPool, InvestProposal } from "../../generated/templates";
 
 export function onDeployed(event: Deployed): void {
-  if (event.params.poolName == INVEST_POOL_NAME) {
+  if (event.params.poolType == INVEST_POOL_NAME) {
     let pool = getInvestTraderPool(
       event.params.at,
       event.params.basicToken,

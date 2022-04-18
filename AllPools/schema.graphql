@@ -31,6 +31,9 @@ type TraderPool @entity {
   creationTime: BigInt!
   maxLoss: BigInt!
 
+  trader: Bytes!
+  admins: [Bytes!]!
+
   totalTrades: BigInt!
   totalClosedPositions: BigInt!
 

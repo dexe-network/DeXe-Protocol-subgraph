@@ -4,6 +4,7 @@ import {
   InvestorAdded,
   InvestorRemoved,
   DescriptionURLChanged,
+  ModifiedAdmins,
 } from "../../generated/templates/TraderPool/TraderPool";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
@@ -13,6 +14,7 @@ import { getPositionId } from "../helpers/Position";
 import { DAY, PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { Position } from "../../generated/schema";
+import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getTraderPool(event.address);
@@ -121,4 +123,16 @@ export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
   let pool = getTraderPool(event.address);
   pool.descriptionURL = event.params.descriptionURL;
   pool.save();
+}
+
+export function onModifiedAdmins(event: ModifiedAdmins): void {
+  let pool = getTraderPool(event.address);
+
+  if (event.params.add) {
+    pool.admins = extendArray(pool.admins, event.params.admins);
+  } else {
+    pool.admins = reduceArray(pool.admins, event.params.admins);
+  }
+
+  pool.admins = extendArray(pool.admins, [Address.fromString(pool.trader.toHexString())]);
 }
