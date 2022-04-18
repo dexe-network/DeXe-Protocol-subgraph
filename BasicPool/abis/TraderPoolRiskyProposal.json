@@ -716,8 +716,13 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "positionTokens",
         "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path",
+        "type": "address[]"
       }
     ],
     "stateMutability": "view",
@@ -798,6 +803,11 @@
         "internalType": "uint256",
         "name": "minAmountOut",
         "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path",
+        "type": "address[]"
       }
     ],
     "stateMutability": "view",
@@ -832,6 +842,11 @@
         "internalType": "uint256",
         "name": "maxAmountIn",
         "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path",
+        "type": "address[]"
       }
     ],
     "stateMutability": "view",
@@ -874,6 +889,11 @@
         "internalType": "uint256",
         "name": "positionAmount",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lp2Amount",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -885,7 +905,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "investedBaseUSD",
         "type": "uint256"
       }
     ],
@@ -971,6 +991,11 @@
           {
             "internalType": "uint256",
             "name": "totalProposalBase",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lp2Supply",
             "type": "uint256"
           }
         ],
@@ -1085,67 +1110,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "proposalInfos",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenDecimals",
-        "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "timestampLimit",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "investLPLimit",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "maxTokenPriceLimit",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ITraderPoolRiskyProposal.ProposalLimits",
-        "name": "proposalLimits",
-        "type": "tuple"
-      },
-      {
-        "internalType": "uint256",
-        "name": "lpLocked",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "balanceBase",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "balancePosition",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "proposalsTotalNum",
     "outputs": [
@@ -1245,7 +1209,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract IContractsRegistry",
+        "internalType": "address",
         "name": "contractsRegistry",
         "type": "address"
       }
