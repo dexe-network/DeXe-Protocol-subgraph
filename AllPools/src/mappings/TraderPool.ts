@@ -14,7 +14,7 @@ import { getPositionId } from "../helpers/Position";
 import { DAY, PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { Position } from "../../generated/schema";
-import { extendArray, push, reduceArray } from "../helpers/ArrayHelper";
+import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getTraderPool(event.address);
@@ -134,7 +134,5 @@ export function onModifiedAdmins(event: ModifiedAdmins): void {
     pool.admins = reduceArray(pool.admins, event.params.admins);
   }
 
-  if (!pool.admins.includes(pool.trader)) {
-    pool.admins = push(pool.admins, pool.trader);
-  }
+  pool.admins = extendArray(pool.admins, [Address.fromString(pool.trader.toHexString())]);
 }
