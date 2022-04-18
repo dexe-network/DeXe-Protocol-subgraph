@@ -5,12 +5,13 @@ import { TraderPool } from "../../generated/templates";
 export function onDeployed(event: Deployed): void {
   let pool = getTraderPool(
     event.params.at,
-    event.params.poolName,
+    event.params.poolType,
     event.params.basicToken,
     event.params.symbol,
     event.params.name,
     event.params.descriptionURL,
-    event.block.timestamp
+    event.block.timestamp,
+    event.params.trader
   );
   pool.save();
 

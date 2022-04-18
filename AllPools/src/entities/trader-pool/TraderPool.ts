@@ -8,7 +8,8 @@ export function getTraderPool(
   ticker: string = "",
   name: string = "",
   descriptionURL: string = "",
-  creationTime: BigInt = BigInt.zero()
+  creationTime: BigInt = BigInt.zero(),
+  trader: Address = Address.zero()
 ): TraderPool {
   let traderPool = TraderPool.load(poolAddress.toHexString());
 
@@ -30,6 +31,8 @@ export function getTraderPool(
     traderPool.averagePositionTime = BigInt.zero();
 
     traderPool.priceHistoryCount = BigInt.zero();
+
+    traderPool.trader = trader;
   }
 
   return traderPool;

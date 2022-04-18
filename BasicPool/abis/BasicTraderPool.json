@@ -149,6 +149,25 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address[]",
+        "name": "admins",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "add",
+        "type": "bool"
+      }
+    ],
+    "name": "ModifiedAdmins",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "position",
         "type": "address"
