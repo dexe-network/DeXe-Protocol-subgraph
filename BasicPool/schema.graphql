@@ -189,12 +189,6 @@ type ExchangeHistory @entity {
 ####################################### Proposal #######################################
 
 # @notice The entity holds information about proposal contract
-# @param id the address of proposal contract
-type ProposalContract @entity {
-  id: ID!
-}
-
-# @notice The entity holds information about proposal contract
 # @param token the address of proposal token
 # @param timestampLimit the timestamp from contract after which the investment into proposal closes
 # @param investLPLimit the maximal number of invested LP tokens from contract after which the investment into the proposal closes

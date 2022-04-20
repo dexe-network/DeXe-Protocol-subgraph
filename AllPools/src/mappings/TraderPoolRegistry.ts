@@ -1,4 +1,4 @@
-import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getTraderPoolPriceHistory } from "../entities/trader-pool/TraderPoolPriceHistory";
 import { TraderPoolRegistry } from "../../generated/TraderPoolRegistry/TraderPoolRegistry";

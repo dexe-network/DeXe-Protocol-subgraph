@@ -27,7 +27,6 @@ dataSources:
     name: TraderPoolRegistry
     network: chapel
     source:
-      address: "0x8bB7e65C2BB17065629311E43afD0D3D167fa6CC"
       abi: TraderPoolRegistry
       startBlock: 18560808
     mapping:
