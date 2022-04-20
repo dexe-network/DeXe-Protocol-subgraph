@@ -29,7 +29,7 @@ type BasicPool @entity {
   descriptionURL: String!
   creationTime: BigInt!
 
-  investors: [Investor!]!
+  investors: [Bytes!]!
 
   proposals: [Proposal!]! @derivedFrom(field: "basicPool")
   positions: [Position!]! @derivedFrom(field: "basicPool")
@@ -46,24 +46,9 @@ type BasicPool @entity {
 # @param day timestamp of day, forms from timestamp / 86400
 type BasicPoolHistory @entity {
   id: ID! # pool address + timestamp / 86400
-  investors: [Investor!]!
+  investors: [Bytes!]!
   pool: BasicPool!
   day: BigInt!
-}
-
-# @notice The entity holds information about Investor
-# @param id the investor address
-# @param insurance the bought insurance amount
-# @param claimedAmount the paid insurance amount
-# @param activePools the array with pools with investor's invests
-# @param allPools the array with pools where the  investor has ever invested
-type Investor @entity {
-  id: ID! # investor address
-  insurance: BigInt!
-  claimedAmount: BigInt!
-
-  activePools: [BasicPool!]!
-  allPools: [BasicPool!]!
 }
 
 # @notice The entity holds information about investor's invests and divests in pool

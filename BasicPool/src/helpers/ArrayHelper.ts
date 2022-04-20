@@ -1,15 +1,23 @@
-export function removeByIndex(array: Array<string>, index: i32): Array<string> {
-  if (array.length < 0) {
-    let tmp = array[array.length - 1];
-    array[array.length - 1] = array[index];
-    array[index] = tmp;
-
-    array.pop();
+export function extendArray<T>(array: Array<T>, elements: Array<T>): Array<T> {
+  for (let i = 0; i < elements.length; i++) {
+    if (!array.includes(elements[i])) {
+      array.push(elements[i]);
+    }
   }
   return array;
 }
 
-export function push(new_array: Array<string>, element: string): Array<string> {
-  new_array.push(element);
-  return new_array;
+export function reduceArray<T>(array: Array<T>, elements: Array<T>): Array<T> {
+  for (let i = 0; i < elements.length; i++) {
+    if (array.includes(elements[i])) {
+      let index = array.indexOf(elements[i]);
+
+      let tmp = array[array.length - 1];
+      array[array.length - 1] = array[index];
+      array[index] = tmp;
+
+      array.pop();
+    }
+  }
+  return array;
 }

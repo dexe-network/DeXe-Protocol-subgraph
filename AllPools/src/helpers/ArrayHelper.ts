@@ -1,6 +1,4 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
-
-export function extendArray(array: Array<Bytes>, elements: Array<Address>): Array<Bytes> {
+export function extendArray<T>(array: Array<T>, elements: Array<T>): Array<T> {
   for (let i = 0; i < elements.length; i++) {
     if (!array.includes(elements[i])) {
       array.push(elements[i]);
@@ -9,7 +7,7 @@ export function extendArray(array: Array<Bytes>, elements: Array<Address>): Arra
   return array;
 }
 
-export function reduceArray(array: Array<Bytes>, elements: Array<Address>): Array<Bytes> {
+export function reduceArray<T>(array: Array<T>, elements: Array<T>): Array<T> {
   for (let i = 0; i < elements.length; i++) {
     if (array.includes(elements[i])) {
       let index = array.indexOf(elements[i]);

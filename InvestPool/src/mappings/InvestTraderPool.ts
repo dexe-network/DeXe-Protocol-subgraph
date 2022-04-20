@@ -18,11 +18,10 @@ import { BigInt } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
 import { getInvestHistory } from "../entities/invest-pool/history/InvestHistory";
 import { getExchangeHistory } from "../entities/invest-pool/history/ExchangeHistory";
-import { getInvestor } from "../entities/invest-pool/Investor";
 import { getDivest } from "../entities/invest-pool/Divest";
 import { getDivestHistory } from "../entities/invest-pool/history/DivestHistory";
 import { getInvestorInfo } from "../entities/invest-pool/InvestorInfo";
-import { removeByIndex } from "../helpers/ArrayHelper";
+import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 import { getInvestPoolHistory } from "../entities/invest-pool/history/InvestPoolHistory";
 import { getInvestorLPHistory } from "../entities/invest-pool/history/InvestorLPHistory";
 
@@ -64,12 +63,13 @@ export function onClose(event: PositionClosed): void {
 }
 
 export function onInvestorAdded(event: InvestorAdded): void {
-  let investor = getInvestor(event.params.investor, event.address, event.block.timestamp);
-  investor.save();
+  let pool = getInvestTraderPool(event.address);
+  pool.investors = extendArray(pool.investors, [event.params.investor]);
+  pool.save();
 }
 
 export function onInvest(event: Invested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let invest = getInvest(event.transaction.hash, investorInfo.id, event.params.amount, event.params.toMintLP);
   let history = getInvestHistory(event.block.timestamp, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
@@ -88,24 +88,18 @@ export function onInvest(event: Invested): void {
 }
 
 export function onInvestorRemoved(event: InvestorRemoved): void {
-  let investor = getInvestor(event.params.investor, event.address, event.block.timestamp);
   let investPool = getInvestTraderPool(event.address);
-  investor.activePools = removeByIndex(investor.activePools, investor.activePools.indexOf(investPool.id));
-  investor.save();
 
   let investPoolHistory = getInvestPoolHistory(event.block.timestamp, investPool.id, investPool.investors);
-  investPoolHistory.investors = removeByIndex(
-    investPoolHistory.investors,
-    investPoolHistory.investors.indexOf(investPool.id)
-  );
+  investPoolHistory.investors = reduceArray(investPoolHistory.investors, [event.params.investor]);
   investPoolHistory.save();
 
-  investPool.investors = removeByIndex(investPool.investors, investPool.investors.indexOf(investor.id));
+  investPool.investors = reduceArray(investPool.investors, []);
   investPool.save();
 }
 
 export function onDivest(event: Divested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let divest = getDivest(event.transaction.hash, investorInfo.id, event.params.amount);
   let history = getDivestHistory(event.block.timestamp, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
@@ -122,7 +116,7 @@ export function onDivest(event: Divested): void {
 }
 
 export function onMintLP(event: TraderCommissionMinted): void {
-  let investorInfo = getInvestorInfo(event.params.trader, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.trader, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
 
   lpHistory.lpBalance = lpHistory.lpBalance.plus(event.params.amount);
@@ -132,7 +126,7 @@ export function onMintLP(event: TraderCommissionMinted): void {
 }
 
 export function onBurnLP(event: TraderCommissionPaid): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
 
   lpHistory.lpBalance = lpHistory.lpBalance.minus(event.params.amount);

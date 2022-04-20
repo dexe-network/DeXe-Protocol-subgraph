@@ -18,13 +18,12 @@ import { BigInt } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
 import { getInvestHistory } from "../entities/basic-pool/history/InvestHistory";
 import { getExchangeHistory } from "../entities/basic-pool/history/ExchangeHistory";
-import { getInvestor } from "../entities/basic-pool/Investor";
 import { getDivest } from "../entities/basic-pool/Divest";
 import { getDivestHistory } from "../entities/basic-pool/history/DivestHistory";
 import { getInvestorInfo } from "../entities/basic-pool/InvestorInfo";
-import { removeByIndex } from "../helpers/ArrayHelper";
 import { getBasicPoolHistory } from "../entities/basic-pool/history/BasicPoolHistory";
 import { getInvestorLPHistory } from "../entities/basic-pool/history/InvestorLPHistory";
+import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.address);
@@ -63,8 +62,9 @@ export function onClose(event: PositionClosed): void {
 }
 
 export function onInvestorAdded(event: InvestorAdded): void {
-  let investor = getInvestor(event.params.investor, event.address, event.block.timestamp);
-  investor.save();
+  let pool = getBasicTraderPool(event.address);
+  pool.investors = extendArray(pool.investors, [event.params.investor]);
+  pool.save();
 }
 
 export function onInvest(event: Invested): void {
@@ -87,19 +87,13 @@ export function onInvest(event: Invested): void {
 }
 
 export function onInvestorRemoved(event: InvestorRemoved): void {
-  let investor = getInvestor(event.params.investor, event.address, event.block.timestamp);
   let basicPool = getBasicTraderPool(event.address);
-  investor.activePools = removeByIndex(investor.activePools, investor.activePools.indexOf(basicPool.id));
-  investor.save();
 
   let basicPoolHistory = getBasicPoolHistory(event.block.timestamp, basicPool.id, basicPool.investors);
-  basicPoolHistory.investors = removeByIndex(
-    basicPoolHistory.investors,
-    basicPoolHistory.investors.indexOf(basicPool.id)
-  );
+  basicPoolHistory.investors = reduceArray(basicPoolHistory.investors, [event.params.investor]);
   basicPoolHistory.save();
 
-  basicPool.investors = removeByIndex(basicPool.investors, basicPool.investors.indexOf(investor.id));
+  basicPool.investors = reduceArray(basicPool.investors, [event.params.investor]);
   basicPool.save();
 }
 

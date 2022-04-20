@@ -40,11 +40,13 @@ type TraderPool @entity {
   averageTrades: BigInt!
   averagePositionTime: BigInt!
 
+  investors: [Investor!]!
   investorsCount: BigInt!
-  priceHistoryCount: BigInt!
 
   positions: [Position!]! @derivedFrom(field: "traderPool")
+
   priceHistory: [TraderPoolPriceHistory!]! @derivedFrom(field: "pool")
+  priceHistoryCount: BigInt!
 }
 
 # @notice The entity holds historical information about price of pool. Uses for store info every 100 blocks.
@@ -88,4 +90,19 @@ type Position @entity {
   liveTime: BigInt!
 
   traderPool: TraderPool!
+}
+
+# @notice The entity holds information about Investor
+# @param id the investor address
+# @param insurance the bought insurance amount
+# @param claimedAmount the paid insurance amount
+# @param activePools the array with pools with investor's invests
+# @param allPools the array with pools where the  investor has ever invested
+type Investor @entity {
+  id: ID! # investor address
+  insurance: BigInt!
+  claimedAmount: BigInt!
+
+  activePools: [TraderPool!]!
+  allPools: [TraderPool!]!
 }

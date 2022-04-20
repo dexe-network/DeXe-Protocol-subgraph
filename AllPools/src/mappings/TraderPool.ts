@@ -15,6 +15,7 @@ import { DAY, PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { Position } from "../../generated/schema";
 import { extendArray, reduceArray } from "../helpers/ArrayHelper";
+import { getInvestor } from "../entities/trader-pool/Investor";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getTraderPool(event.address);
@@ -109,13 +110,28 @@ export function onClose(event: PositionClosed): void {
 
 export function onInvestorAdded(event: InvestorAdded): void {
   let pool = getTraderPool(event.address);
+
+  let investor = getInvestor(event.params.investor);
+  pool.investors = extendArray(pool.investors, [investor.id]);
   pool.investorsCount = pool.investorsCount.plus(BigInt.fromI32(1));
+
+  investor.activePools = extendArray(investor.activePools, [pool.id]);
+  investor.allPools = extendArray(investor.allPools, [pool.id]);
+
+  investor.save();
   pool.save();
 }
 
 export function onInvestorRemoved(event: InvestorRemoved): void {
   let pool = getTraderPool(event.address);
+
+  let investor = getInvestor(event.params.investor);
+  pool.investors = reduceArray(pool.investors, [investor.id]);
   pool.investorsCount = pool.investorsCount.minus(BigInt.fromI32(1));
+
+  investor.activePools = reduceArray(investor.activePools, [pool.id]);
+
+  investor.save();
   pool.save();
 }
 
@@ -128,11 +144,17 @@ export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
 export function onModifiedAdmins(event: ModifiedAdmins): void {
   let pool = getTraderPool(event.address);
 
-  if (event.params.add) {
-    pool.admins = extendArray(pool.admins, event.params.admins);
-  } else {
-    pool.admins = reduceArray(pool.admins, event.params.admins);
+  let admins = new Array<Bytes>();
+
+  for (let i = 0; i < event.params.admins.length; i++) {
+    admins.push(event.params.admins[i]);
   }
 
-  pool.admins = extendArray(pool.admins, [Address.fromString(pool.trader.toHexString())]);
+  if (event.params.add) {
+    pool.admins = extendArray<Bytes>(pool.admins, admins);
+  } else {
+    pool.admins = reduceArray<Bytes>(pool.admins, admins);
+  }
+
+  pool.admins = extendArray(pool.admins, [pool.trader]);
 }

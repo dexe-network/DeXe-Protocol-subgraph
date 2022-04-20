@@ -1,5 +1,5 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { Invest, Investor } from "../../../generated/schema";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Invest } from "../../../generated/schema";
 
 export function getInvest(
   hash: Bytes,

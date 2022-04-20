@@ -1,22 +1,19 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { BasicPoolHistory } from "../../../../generated/schema";
-import { push } from "../../../helpers/ArrayHelper";
+import { extendArray } from "../../../helpers/ArrayHelper";
 import { DAY } from "../../global/globals";
-import { getBasicTraderPool } from "../BasicTraderPool";
 
-export function getBasicPoolHistory(timestamp: BigInt, pool: string, investors: Array<string>): BasicPoolHistory {
+export function getBasicPoolHistory(timestamp: BigInt, pool: string, investors: Array<Bytes>): BasicPoolHistory {
   let day = timestamp.div(BigInt.fromI32(DAY));
   let id = pool + day.toString();
   let history = BasicPoolHistory.load(id);
   if (history == null) {
     history = new BasicPoolHistory(id);
     history.pool = pool;
-    history.investors = new Array<string>();
+    history.investors = new Array<Bytes>();
     history.day = day;
 
-    for (let i = 0; i < investors.length; i++) {
-      history.investors = push(history.investors, investors[i]);
-    }
+    history.investors = extendArray(history.investors, investors);
   }
   return history;
 }
