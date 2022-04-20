@@ -45,6 +45,7 @@ export function onProposalInvest(event: ProposalInvested): void {
   proposal.save();
   invest.save();
   history.save();
+  investorInfo.save();
 }
 
 export function onProposalDivest(event: ProposalDivested): void {
@@ -59,6 +60,7 @@ export function onProposalDivest(event: ProposalDivested): void {
   proposal.save();
   divest.save();
   history.save();
+  investorInfo.save();
 }
 
 export function onWithdrawn(event: ProposalWithdrawn): void {
@@ -73,6 +75,7 @@ export function onWithdrawn(event: ProposalWithdrawn): void {
   proposal.save();
   withdraw.save();
   history.save();
+  investorInfo.save();
 }
 
 export function onSupplied(event: ProposalSupplied): void {
@@ -100,4 +103,5 @@ export function onSupplied(event: ProposalSupplied): void {
   proposal.save();
   supply.save();
   history.save();
+  investorInfo.save();
 }
