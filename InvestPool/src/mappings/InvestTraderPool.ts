@@ -113,6 +113,7 @@ export function onDivest(event: Divested): void {
   investorInfo.save();
   divest.save();
   history.save();
+  lpHistory.save();
 }
 
 export function onMintLP(event: TraderCommissionMinted): void {

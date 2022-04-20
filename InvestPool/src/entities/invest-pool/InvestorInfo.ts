@@ -10,8 +10,8 @@ export function getInvestorInfo(investorAddress: Address, investPool: Address): 
   if (investorInfo == null) {
     investorInfo = new InvestorInfo(id);
 
-    investorInfo.totalDivestVolume = BigInt.fromI32(0);
-    investorInfo.totalInvestVolume = BigInt.fromI32(0);
+    investorInfo.totalDivestVolume = BigInt.zero();
+    investorInfo.totalInvestVolume = BigInt.zero();
   }
   return investorInfo;
 }

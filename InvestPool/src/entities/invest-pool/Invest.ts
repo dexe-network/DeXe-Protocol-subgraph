@@ -4,8 +4,8 @@ import { Invest } from "../../../generated/schema";
 export function getInvest(
   hash: Bytes,
   investorInfoId: string = "",
-  volumeBase: BigInt = BigInt.fromI32(0),
-  toMintLP: BigInt = BigInt.fromI32(0)
+  volumeBase: BigInt = BigInt.zero(),
+  toMintLP: BigInt = BigInt.zero()
 ): Invest {
   let id = hash.toHexString();
   let invest = Invest.load(id);

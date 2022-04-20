@@ -68,7 +68,7 @@ export function onInvestorAdded(event: InvestorAdded): void {
 }
 
 export function onInvest(event: Invested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let invest = getInvest(event.transaction.hash, investorInfo.id, event.params.amount, event.params.toMintLP);
   let history = getInvestHistory(event.block.timestamp, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
@@ -88,17 +88,17 @@ export function onInvest(event: Invested): void {
 
 export function onInvestorRemoved(event: InvestorRemoved): void {
   let basicPool = getBasicTraderPool(event.address);
+  basicPool.investors = reduceArray(basicPool.investors, [event.params.investor]);
 
   let basicPoolHistory = getBasicPoolHistory(event.block.timestamp, basicPool.id, basicPool.investors);
   basicPoolHistory.investors = reduceArray(basicPoolHistory.investors, [event.params.investor]);
-  basicPoolHistory.save();
 
-  basicPool.investors = reduceArray(basicPool.investors, [event.params.investor]);
   basicPool.save();
+  basicPoolHistory.save();
 }
 
 export function onDivest(event: Divested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let divest = getDivest(event.transaction.hash, investorInfo.id, event.params.amount);
   let history = getDivestHistory(event.block.timestamp, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
@@ -115,7 +115,7 @@ export function onDivest(event: Divested): void {
 }
 
 export function onTraderCommissionMinted(event: TraderCommissionMinted): void {
-  let investorInfo = getInvestorInfo(event.params.trader, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.trader, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
 
   lpHistory.lpBalance = lpHistory.lpBalance.plus(event.params.amount);
@@ -125,7 +125,7 @@ export function onTraderCommissionMinted(event: TraderCommissionMinted): void {
 }
 
 export function onTraderCommissionPaid(event: TraderCommissionPaid): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
 
   lpHistory.lpBalance = lpHistory.lpBalance.minus(event.params.amount);

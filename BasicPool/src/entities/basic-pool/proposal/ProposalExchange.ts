@@ -1,6 +1,5 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { ProposalExchange } from "../../../../generated/schema";
-import { getProposalExchangeHistory } from "./history/ProposalExchangeHistory";
 
 export function getProposalExchange(
   hash: Bytes,

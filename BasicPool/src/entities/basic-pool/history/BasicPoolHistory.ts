@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { BasicPoolHistory } from "../../../../generated/schema";
 import { extendArray } from "../../../helpers/ArrayHelper";
 import { DAY } from "../../global/globals";
@@ -10,10 +10,9 @@ export function getBasicPoolHistory(timestamp: BigInt, pool: string, investors: 
   if (history == null) {
     history = new BasicPoolHistory(id);
     history.pool = pool;
-    history.investors = new Array<Bytes>();
     history.day = day;
 
-    history.investors = extendArray(history.investors, investors);
+    history.investors = investors;
   }
   return history;
 }
