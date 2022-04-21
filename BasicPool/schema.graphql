@@ -20,7 +20,7 @@ type PositionOffset @entity {
 # @param totalClosedPositions the total number of closed positions
 # @param averageTrades the average trades per day
 # @param averagePositionTime the average live time of all positions
-# @param investors the array with Investor entities
+# @param investors the array with investor's addresses
 type BasicPool @entity {
   id: ID! # pool address
   baseToken: Bytes!
@@ -41,7 +41,7 @@ type BasicPool @entity {
 
 # @notice The entity holds historical information about pool state.
 # @param id forms from pool address + timestamp / 86400
-# @param investors the array with Investor entity
+# @param investors the array with investor's addresses
 # @param pool address of pool for reverse lookup
 # @param day timestamp of day, forms from timestamp / 86400
 type BasicPoolHistory @entity {

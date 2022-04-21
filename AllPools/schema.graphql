@@ -16,6 +16,8 @@ type PositionOffset @entity {
 # @param descriptionURL the description url address from contract
 # @param creationTime the timestamp of creating pool
 # @param maxLoss the maximum loss among all positions
+# @param trader the address of trader
+# @param admins the array of admin's addresses
 # @param totalTrades the total number of trades
 # @param totalClosedPositions the total number of closed positions
 # @param averageTrades the average trades per day
