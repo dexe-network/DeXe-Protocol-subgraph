@@ -94,7 +94,7 @@ export function onInvestorRemoved(event: InvestorRemoved): void {
   investPoolHistory.investors = reduceArray(investPoolHistory.investors, [event.params.investor]);
   investPoolHistory.save();
 
-  investPool.investors = reduceArray(investPool.investors, []);
+  investPool.investors = reduceArray(investPool.investors, [event.params.investor]);
   investPool.save();
 }
 
