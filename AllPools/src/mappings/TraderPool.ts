@@ -14,7 +14,7 @@ import { getPositionId } from "../helpers/Position";
 import { DAY, PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { Position } from "../../generated/schema";
-import { extendArray, reduceArray } from "../helpers/ArrayHelper";
+import { upcastCopy, extendArray, reduceArray } from "../helpers/ArrayHelper";
 import { getInvestor } from "../entities/trader-pool/Investor";
 
 export function onExchange(event: Exchanged): void {
@@ -144,11 +144,7 @@ export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
 export function onModifiedAdmins(event: ModifiedAdmins): void {
   let pool = getTraderPool(event.address);
 
-  let admins = new Array<Bytes>();
-
-  for (let i = 0; i < event.params.admins.length; i++) {
-    admins.push(event.params.admins[i]);
-  }
+  let admins = upcastCopy<Address, Bytes>(event.params.admins);
 
   if (event.params.add) {
     pool.admins = extendArray<Bytes>(pool.admins, admins);
