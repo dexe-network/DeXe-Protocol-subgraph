@@ -16,6 +16,8 @@ type PositionOffset @entity {
 # @param descriptionURL the description url address from contract
 # @param creationTime the timestamp of creating pool
 # @param maxLoss the maximum loss among all positions
+# @param trader the address of trader
+# @param admins the array of admin's addresses
 # @param totalTrades the total number of trades
 # @param totalClosedPositions the total number of closed positions
 # @param averageTrades the average trades per day
@@ -40,11 +42,13 @@ type TraderPool @entity {
   averageTrades: BigInt!
   averagePositionTime: BigInt!
 
+  investors: [Investor!]!
   investorsCount: BigInt!
-  priceHistoryCount: BigInt!
 
   positions: [Position!]! @derivedFrom(field: "traderPool")
+
   priceHistory: [TraderPoolPriceHistory!]! @derivedFrom(field: "pool")
+  priceHistoryCount: BigInt!
 }
 
 # @notice The entity holds historical information about price of pool. Uses for store info every 100 blocks.
@@ -88,4 +92,19 @@ type Position @entity {
   liveTime: BigInt!
 
   traderPool: TraderPool!
+}
+
+# @notice The entity holds information about Investor
+# @param id the investor address
+# @param insurance the bought insurance amount
+# @param claimedAmount the paid insurance amount
+# @param activePools the array with pools with investor's invests
+# @param allPools the array with pools where the  investor has ever invested
+type Investor @entity {
+  id: ID! # investor address
+  insurance: BigInt!
+  claimedAmount: BigInt!
+
+  activePools: [TraderPool!]!
+  allPools: [TraderPool!]!
 }

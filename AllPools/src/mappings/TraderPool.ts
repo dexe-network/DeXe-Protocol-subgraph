@@ -9,12 +9,13 @@ import {
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPosition } from "../entities/trader-pool/Position";
-import { Address, BigInt, ByteArray, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
 import { DAY, PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { Position } from "../../generated/schema";
-import { extendArray, reduceArray } from "../helpers/ArrayHelper";
+import { upcastCopy, extendArray, reduceArray } from "../helpers/ArrayHelper";
+import { getInvestor } from "../entities/trader-pool/Investor";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getTraderPool(event.address);
@@ -109,13 +110,28 @@ export function onClose(event: PositionClosed): void {
 
 export function onInvestorAdded(event: InvestorAdded): void {
   let pool = getTraderPool(event.address);
+
+  let investor = getInvestor(event.params.investor);
+  pool.investors = extendArray(pool.investors, [investor.id]);
   pool.investorsCount = pool.investorsCount.plus(BigInt.fromI32(1));
+
+  investor.activePools = extendArray(investor.activePools, [pool.id]);
+  investor.allPools = extendArray(investor.allPools, [pool.id]);
+
+  investor.save();
   pool.save();
 }
 
 export function onInvestorRemoved(event: InvestorRemoved): void {
   let pool = getTraderPool(event.address);
+
+  let investor = getInvestor(event.params.investor);
+  pool.investors = reduceArray(pool.investors, [investor.id]);
   pool.investorsCount = pool.investorsCount.minus(BigInt.fromI32(1));
+
+  investor.activePools = reduceArray(investor.activePools, [pool.id]);
+
+  investor.save();
   pool.save();
 }
 
@@ -128,11 +144,13 @@ export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
 export function onModifiedAdmins(event: ModifiedAdmins): void {
   let pool = getTraderPool(event.address);
 
+  let admins = upcastCopy<Address, Bytes>(event.params.admins);
+
   if (event.params.add) {
-    pool.admins = extendArray(pool.admins, event.params.admins);
+    pool.admins = extendArray<Bytes>(pool.admins, admins);
   } else {
-    pool.admins = reduceArray(pool.admins, event.params.admins);
+    pool.admins = reduceArray<Bytes>(pool.admins, admins);
   }
 
-  pool.admins = extendArray(pool.admins, [Address.fromString(pool.trader.toHexString())]);
+  pool.admins = extendArray(pool.admins, [pool.trader]);
 }

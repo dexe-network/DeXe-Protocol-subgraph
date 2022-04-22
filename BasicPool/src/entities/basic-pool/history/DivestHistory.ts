@@ -12,7 +12,7 @@ export function getDivestHistory(timestamp: BigInt, basicPool: Address): DivestH
   if (history == null) {
     history = new DivestHistory(id);
 
-    history.totalDivestVolume = BigInt.fromI32(0);
+    history.totalDivestVolume = BigInt.zero();
     history.basicPool = poolId;
     history.day = day;
   }

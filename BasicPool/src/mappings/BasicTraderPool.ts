@@ -18,13 +18,12 @@ import { BigInt } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
 import { getInvestHistory } from "../entities/basic-pool/history/InvestHistory";
 import { getExchangeHistory } from "../entities/basic-pool/history/ExchangeHistory";
-import { getInvestor } from "../entities/basic-pool/Investor";
 import { getDivest } from "../entities/basic-pool/Divest";
 import { getDivestHistory } from "../entities/basic-pool/history/DivestHistory";
 import { getInvestorInfo } from "../entities/basic-pool/InvestorInfo";
-import { removeByIndex } from "../helpers/ArrayHelper";
 import { getBasicPoolHistory } from "../entities/basic-pool/history/BasicPoolHistory";
 import { getInvestorLPHistory } from "../entities/basic-pool/history/InvestorLPHistory";
+import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 
 export function onExchange(event: Exchanged): void {
   let basicPool = getBasicTraderPool(event.address);
@@ -63,12 +62,13 @@ export function onClose(event: PositionClosed): void {
 }
 
 export function onInvestorAdded(event: InvestorAdded): void {
-  let investor = getInvestor(event.params.investor, event.address, event.block.timestamp);
-  investor.save();
+  let pool = getBasicTraderPool(event.address);
+  pool.investors = extendArray(pool.investors, [event.params.investor]);
+  pool.save();
 }
 
 export function onInvest(event: Invested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let invest = getInvest(event.transaction.hash, investorInfo.id, event.params.amount, event.params.toMintLP);
   let history = getInvestHistory(event.block.timestamp, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
@@ -87,24 +87,18 @@ export function onInvest(event: Invested): void {
 }
 
 export function onInvestorRemoved(event: InvestorRemoved): void {
-  let investor = getInvestor(event.params.investor, event.address, event.block.timestamp);
   let basicPool = getBasicTraderPool(event.address);
-  investor.activePools = removeByIndex(investor.activePools, investor.activePools.indexOf(basicPool.id));
-  investor.save();
+  basicPool.investors = reduceArray(basicPool.investors, [event.params.investor]);
 
   let basicPoolHistory = getBasicPoolHistory(event.block.timestamp, basicPool.id, basicPool.investors);
-  basicPoolHistory.investors = removeByIndex(
-    basicPoolHistory.investors,
-    basicPoolHistory.investors.indexOf(basicPool.id)
-  );
-  basicPoolHistory.save();
+  basicPoolHistory.investors = reduceArray(basicPoolHistory.investors, [event.params.investor]);
 
-  basicPool.investors = removeByIndex(basicPool.investors, basicPool.investors.indexOf(investor.id));
   basicPool.save();
+  basicPoolHistory.save();
 }
 
 export function onDivest(event: Divested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let divest = getDivest(event.transaction.hash, investorInfo.id, event.params.amount);
   let history = getDivestHistory(event.block.timestamp, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
@@ -121,7 +115,7 @@ export function onDivest(event: Divested): void {
 }
 
 export function onTraderCommissionMinted(event: TraderCommissionMinted): void {
-  let investorInfo = getInvestorInfo(event.params.trader, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.trader, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
 
   lpHistory.lpBalance = lpHistory.lpBalance.plus(event.params.amount);
@@ -131,7 +125,7 @@ export function onTraderCommissionMinted(event: TraderCommissionMinted): void {
 }
 
 export function onTraderCommissionPaid(event: TraderCommissionPaid): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
 
   lpHistory.lpBalance = lpHistory.lpBalance.minus(event.params.amount);

@@ -27,7 +27,7 @@ export function onProposalCreated(event: ProposalCreated): void {
 }
 
 export function onProposalInvest(event: ProposalInvested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let proposal = getProposal(event.params.index, event.address);
   let invest = getProposalInvest(
     event.transaction.hash,
@@ -45,10 +45,11 @@ export function onProposalInvest(event: ProposalInvested): void {
   proposal.save();
   invest.save();
   history.save();
+  investorInfo.save();
 }
 
 export function onProposalDivest(event: ProposalDivested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let proposal = getProposal(event.params.index, event.address);
   let divest = getProposalDivest(event.transaction.hash, event.params.amount, investorInfo.id);
   let history = getProposalDivestHistory(event.block.timestamp, proposal.id);
@@ -59,10 +60,11 @@ export function onProposalDivest(event: ProposalDivested): void {
   proposal.save();
   divest.save();
   history.save();
+  investorInfo.save();
 }
 
 export function onWithdrawn(event: ProposalWithdrawn): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let withdraw = getProposalWithdrawal(event.transaction.hash, event.params.amount, investorInfo.id);
   let proposal = getProposal(event.params.index, event.address);
   let history = getProposalWithdrawalHistory(event.block.timestamp, proposal.id);
@@ -73,10 +75,11 @@ export function onWithdrawn(event: ProposalWithdrawn): void {
   proposal.save();
   withdraw.save();
   history.save();
+  investorInfo.save();
 }
 
 export function onSupplied(event: ProposalSupplied): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address, event.block.timestamp);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let supply = getProposalSupply(event.transaction.hash, event.params.amount, event.params.token, investorInfo.id);
   let proposal = getProposal(event.params.index, event.address);
   let history = getProposalSupplyHistory(event.block.timestamp, proposal.id);
@@ -100,4 +103,5 @@ export function onSupplied(event: ProposalSupplied): void {
   proposal.save();
   supply.save();
   history.save();
+  investorInfo.save();
 }

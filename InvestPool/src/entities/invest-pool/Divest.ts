@@ -4,8 +4,8 @@ import { Divest } from "../../../generated/schema";
 export function getDivest(
   hash: Bytes,
   investorInfoId: string = "",
-  volumeBase: BigInt = BigInt.fromI32(0),
-  commission: BigInt = BigInt.fromI32(0)
+  volumeBase: BigInt = BigInt.zero(),
+  commission: BigInt = BigInt.zero()
 ): Divest {
   let id = hash.toHexString();
   let divest = Divest.load(id);

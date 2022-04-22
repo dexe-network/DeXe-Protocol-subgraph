@@ -1,7 +1,5 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { ProposalDivest } from "../../../../generated/schema";
-import { getProposalDivestHistory } from "./history/ProposalDivestHistory";
-import { getInvestorInfo } from "../InvestorInfo";
 
 export function getProposalDivest(
   hash: Bytes,

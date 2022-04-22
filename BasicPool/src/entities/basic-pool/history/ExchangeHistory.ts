@@ -1,7 +1,6 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { BigInt } from "@graphprotocol/graph-ts";
 import { ExchangeHistory } from "../../../../generated/schema";
 import { DAY } from "../../global/globals";
-import { getBasicTraderPool } from "../BasicTraderPool";
 
 export function getExchangeHistory(timestamp: BigInt, basicPool: string): ExchangeHistory {
   let day = timestamp.div(BigInt.fromU32(DAY));

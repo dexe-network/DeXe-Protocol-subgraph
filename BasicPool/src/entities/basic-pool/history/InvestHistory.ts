@@ -12,7 +12,7 @@ export function getInvestHistory(timestamp: BigInt, basicPool: Address): InvestH
   if (history == null) {
     history = new InvestHistory(id);
 
-    history.totalInvestVolume = BigInt.fromI32(0);
+    history.totalInvestVolume = BigInt.zero();
     history.basicPool = poolId;
     history.day = day;
   }

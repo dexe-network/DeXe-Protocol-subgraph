@@ -1,5 +1,5 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { BasicPool, Position } from "../../../generated/schema";
+import { Address } from "@graphprotocol/graph-ts";
+import { Position } from "../../../generated/schema";
 
 export function getPosition(id: string, basicPool: string = "", positionToken: Address = Address.zero()): Position {
   let position = Position.load(id);

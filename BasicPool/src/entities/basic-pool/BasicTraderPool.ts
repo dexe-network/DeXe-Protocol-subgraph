@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { BasicPool } from "../../../generated/schema";
 
 export function getBasicTraderPool(
@@ -14,7 +14,7 @@ export function getBasicTraderPool(
   if (basicPool == null) {
     basicPool = new BasicPool(poolAddress.toHexString());
     basicPool.baseToken = basicTokenAddress;
-    basicPool.investors = new Array<string>();
+    basicPool.investors = new Array<Bytes>();
     basicPool.ticker = ticker;
     basicPool.name = name;
     basicPool.creationTime = creationTime;

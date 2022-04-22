@@ -1,4 +1,4 @@
-import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getTraderPoolPriceHistory } from "../entities/trader-pool/TraderPoolPriceHistory";
 import { TraderPoolRegistry } from "../../generated/TraderPoolRegistry/TraderPoolRegistry";
@@ -51,7 +51,7 @@ function updatePools(block: ethereum.Block, type: string): void {
 }
 
 export function handl(block: ethereum.Block): void {
-  if (block.number.mod(BigInt.fromU64(CHECK_PER_BLOCK)).equals(BigInt.fromI32(0))) {
+  if (block.number.mod(BigInt.fromU64(CHECK_PER_BLOCK)).equals(BigInt.zero())) {
     updatePools(block, BASIC_POOL_NAME);
     updatePools(block, INVEST_POOL_NAME);
   }
