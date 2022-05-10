@@ -26,7 +26,7 @@ export function onProposalCreated(event: ProposalCreated): void {
   proposal.save();
 }
 
-export function onProposalInvest(event: ProposalInvested): void {
+export function onProposalInvested(event: ProposalInvested): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let proposal = getProposal(event.params.index, event.address);
   let invest = getProposalInvest(
@@ -48,7 +48,7 @@ export function onProposalInvest(event: ProposalInvested): void {
   investorInfo.save();
 }
 
-export function onProposalDivest(event: ProposalDivested): void {
+export function onProposalDivested(event: ProposalDivested): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let proposal = getProposal(event.params.index, event.address);
   let divest = getProposalDivest(event.transaction.hash, event.params.amount, investorInfo.id);
