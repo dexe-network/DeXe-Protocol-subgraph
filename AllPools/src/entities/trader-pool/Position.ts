@@ -8,8 +8,10 @@ export function getPosition(id: string, traderPool: string = "", positionToken: 
     position = new Position(id);
 
     position.positionToken = positionToken;
-    position.totalOpenVolume = BigInt.zero();
-    position.totalCloseVolume = BigInt.zero();
+    position.totalBaseOpenVolume = BigInt.zero();
+    position.totalBaseCloseVolume = BigInt.zero();
+    position.totalPositionOpenVolume = BigInt.zero();
+    position.totalPositionCloseVolume = BigInt.zero();
     position.traderPool = traderPool;
     position.closed = false;
     position.liveTime = BigInt.zero();

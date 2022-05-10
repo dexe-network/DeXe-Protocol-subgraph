@@ -49,6 +49,8 @@ type TraderPool @entity {
 
   priceHistory: [TraderPoolPriceHistory!]! @derivedFrom(field: "pool")
   priceHistoryCount: BigInt!
+
+  exchanges: [ExchangeHistory!]! @derivedFrom(field: "traderPool")
 }
 
 # @notice The entity holds historical information about price of pool. Uses for store info every 100 blocks.
@@ -86,12 +88,51 @@ type Position @entity {
   positionToken: Bytes!
   closed: Boolean!
 
-  totalOpenVolume: BigInt!
-  totalCloseVolume: BigInt!
+  totalBaseOpenVolume: BigInt!
+  totalBaseCloseVolume: BigInt!
+  totalPositionOpenVolume: BigInt!
+  totalPositionCloseVolume: BigInt!
+
   startTimestamp: BigInt!
   liveTime: BigInt!
 
   traderPool: TraderPool!
+
+  exchanges: [Exchange!]! @derivedFrom(field: "position")
+}
+
+# @notice The entity holds information about exchange in pool's position
+# @param id forms from transaction hash + suffix, _0 - single exchange, _1 - first in pair, _2 - second in pair.
+# @param fromToken the address of in token
+# @param toToken the address of out token
+# @param fromVolume the volume of in token
+# @param toVolume the volume of out token
+# @param position the id of pool's position
+# @param day the history id (pool address + timestamp / 86400), for reverse lookup
+type Exchange @entity {
+  id: ID! # tx hash + suffix
+  hash: Bytes! # tx hash
+  fromToken: Bytes!
+  toToken: Bytes!
+
+  fromVolume: BigInt!
+  toVolume: BigInt!
+
+  position: Position!
+  opening: Boolean!
+
+  day: ExchangeHistory!
+}
+
+# @notice The entity holds historical information about exchanges in pool
+# @param traderPool the traderPool id (address), for reverse lookup
+# @param day the timestamp / 86400
+type ExchangeHistory @entity {
+  id: ID! # pool address + timestamp / 86400
+  traderPool: TraderPool!
+  day: BigInt!
+
+  exchanges: [Exchange!]! @derivedFrom(field: "day")
 }
 
 # @notice The entity holds information about Investor

@@ -1,11 +1,3 @@
-# @notice The etity holds information about current position offset. Uses to avoid collisions in position id
-# @param id forms from pool address + position token address
-# @param offset the current position index offset
-type PositionOffset @entity {
-  id: ID! # trader pool address + position token address
-  offset: BigInt!
-}
-
 ####################################### BasicPool #######################################
 
 # @notice The entity that holds informations about pool
@@ -32,10 +24,8 @@ type BasicPool @entity {
   investors: [Bytes!]!
 
   proposals: [Proposal!]! @derivedFrom(field: "basicPool")
-  positions: [Position!]! @derivedFrom(field: "basicPool")
   invests: [InvestHistory!]! @derivedFrom(field: "basicPool")
   divests: [DivestHistory!]! @derivedFrom(field: "basicPool")
-  exchanges: [ExchangeHistory!]! @derivedFrom(field: "basicPool")
   history: [BasicPoolHistory!]! @derivedFrom(field: "pool")
 }
 
@@ -77,44 +67,6 @@ type InvestorLPHistory @entity {
   lpBalance: BigInt!
   investorInfo: InvestorInfo!
   day: BigInt!
-}
-
-# @notice The entity holds information about position in pool
-# @param id forms from pool address + position token address + position offset from PositionOffset entity
-# @param positionToken the address of position token
-# @param closed the state of position, true when closed
-# @param totalOpenVolume the total open volume of position
-# @param totalCloseVolume the total close volume of position
-# @param startTimestamp the timestamp of position's creation time
-# @param liveTime the time in millis the position was open for if the position is closed.
-# @param basicPool the id of basicPool (address) for reverse lookup
-type Position @entity {
-  id: ID! # trader pool address + position token address + position offset
-  positionToken: Bytes!
-  closed: Boolean!
-
-  basicPool: BasicPool!
-  exchanges: [Exchange!]! @derivedFrom(field: "position")
-}
-
-# @notice The entity holds information about exchange in pool's position
-# @param id forms from transaction hash, useless
-# @param fromToken the address of in token
-# @param toToken the address of out token
-# @param fromVolume the volume of in token
-# @param toVolume the volume of out token
-# @param position the id of pool's position
-# @param day the history id (pool address + timestamp / 86400), for reverse lookup
-type Exchange @entity {
-  id: ID! # tx hash
-  fromToken: Bytes!
-  toToken: Bytes!
-
-  fromVolume: BigInt!
-  toVolume: BigInt!
-  position: Position!
-
-  day: ExchangeHistory!
 }
 
 # @notice The entity holds information about investition in pool
@@ -173,17 +125,6 @@ type DivestHistory @entity {
   basicPool: BasicPool!
 
   divestments: [Divest!]! @derivedFrom(field: "day")
-}
-
-# @notice The entity holds historical information about exchanges in pool
-# @param basicPool the basicPool id (address), for reverse lookup
-# @param day the timestamp / 86400
-type ExchangeHistory @entity {
-  id: ID! # pool address + timestamp / 86400
-  basicPool: BasicPool!
-  day: BigInt!
-
-  exchanges: [Exchange!]! @derivedFrom(field: "day")
 }
 
 ####################################### Proposal #######################################
