@@ -1,6 +1,4 @@
 import {
-  Exchanged,
-  PositionClosed,
   InvestorAdded,
   Invested,
   InvestorRemoved,
@@ -10,57 +8,14 @@ import {
   DescriptionURLChanged,
 } from "../../generated/templates/InvestPool/InvestPool";
 import { getInvestTraderPool } from "../entities/invest-pool/InvestTraderPool";
-import { getPositionOffset } from "../entities/global/PositionOffset";
-import { getPosition } from "../entities/invest-pool/Position";
-import { getExchange } from "../entities/invest-pool/Exchange";
 import { getInvest } from "../entities/invest-pool/Invest";
-import { BigInt } from "@graphprotocol/graph-ts";
-import { getPositionId } from "../helpers/Position";
 import { getInvestHistory } from "../entities/invest-pool/history/InvestHistory";
-import { getExchangeHistory } from "../entities/invest-pool/history/ExchangeHistory";
 import { getDivest } from "../entities/invest-pool/Divest";
 import { getDivestHistory } from "../entities/invest-pool/history/DivestHistory";
 import { getInvestorInfo } from "../entities/invest-pool/InvestorInfo";
 import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 import { getInvestPoolHistory } from "../entities/invest-pool/history/InvestPoolHistory";
 import { getInvestorLPHistory } from "../entities/invest-pool/history/InvestorLPHistory";
-
-export function onExchange(event: Exchanged): void {
-  let investPool = getInvestTraderPool(event.address);
-
-  let position = getPosition(getPositionId(investPool.id, event.params.toToken), investPool.id);
-
-  let trade = getExchange(
-    event.transaction.hash,
-    position.id,
-    event.params.fromToken,
-    event.params.toToken,
-    event.params.fromVolume,
-    event.params.toVolume
-  );
-
-  let history = getExchangeHistory(event.block.timestamp, investPool.id);
-  trade.day = history.id;
-
-  investPool.save();
-  position.save();
-  trade.save();
-  history.save();
-}
-
-export function onClose(event: PositionClosed): void {
-  let investPool = getInvestTraderPool(event.address);
-  let positionOffset = getPositionOffset(investPool.id, event.params.position);
-  let position = getPosition(getPositionId(investPool.id, event.params.position), investPool.id);
-
-  position.closed = true;
-  positionOffset.offset = positionOffset.offset.plus(BigInt.fromI32(1));
-
-  investPool.save();
-
-  position.save();
-  positionOffset.save();
-}
 
 export function onInvestorAdded(event: InvestorAdded): void {
   let pool = getInvestTraderPool(event.address);
