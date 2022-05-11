@@ -13,7 +13,7 @@ import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
 import { DAY, PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
-import { Position } from "../../generated/schema";
+import { Exchange, Position, TraderPool } from "../../generated/schema";
 import { upcastCopy, extendArray, reduceArray } from "../helpers/ArrayHelper";
 import { getInvestor } from "../entities/trader-pool/Investor";
 import { getExchange } from "../entities/trader-pool/Exchange";
@@ -81,105 +81,18 @@ export function onExchange(event: Exchanged): void {
 
   if (position2 == null) {
     // pos1
-    if (position1.startTimestamp.equals(BigInt.zero())) {
-      position1.startTimestamp = event.block.timestamp;
-    }
-
-    let trade = getExchange(
-      event.transaction.hash,
-      position1.id,
-      event.params.fromToken,
-      event.params.toToken,
-      fromBaseVolume,
-      event.params.toVolume,
-      true,
-      "_0"
-    );
-
-    let history = getExchangeHistory(event.block.timestamp, pool.id);
-    trade.day = history.id;
-    history.save();
-    trade.save();
-
-    pool.totalTrades = pool.totalTrades.plus(BigInt.fromI32(1));
-    let days = event.block.timestamp.minus(pool.creationTime).div(BigInt.fromI32(DAY));
-    pool.averageTrades = pool.totalTrades.div(days.equals(BigInt.zero()) ? BigInt.fromI32(1) : days);
-
-    position1.save();
+    exchangeSetup(pool, position1, event, fromBaseVolume, true, "_0");
   } else if (position1 == null) {
     // pos2
-    if (position2.startTimestamp.equals(BigInt.zero())) {
-      position2.startTimestamp = event.block.timestamp;
-    }
-
-    let trade = getExchange(
-      event.transaction.hash,
-      position2.id,
-      event.params.fromToken,
-      event.params.toToken,
-      event.params.fromVolume,
-      toBaseVolume,
-      false,
-      "_0"
-    );
-
-    let history = getExchangeHistory(event.block.timestamp, pool.id);
-    trade.day = history.id;
-    history.save();
-    trade.save();
-
-    pool.totalTrades = pool.totalTrades.plus(BigInt.fromI32(1));
-    let days = event.block.timestamp.minus(pool.creationTime).div(BigInt.fromI32(DAY));
-    pool.averageTrades = pool.totalTrades.div(days.equals(BigInt.zero()) ? BigInt.fromI32(1) : days);
-
-    position2.save();
+    exchangeSetup(pool, position2, event, toBaseVolume, false, "_0");
   } else {
     // pos1 && pos2
-
-    if (position1.startTimestamp.equals(BigInt.zero())) {
-      position1.startTimestamp = event.block.timestamp;
-    }
-
-    if (position2.startTimestamp.equals(BigInt.zero())) {
-      position2.startTimestamp = event.block.timestamp;
-    }
-
-    let trade1 = getExchange(
-      event.transaction.hash,
-      position1.id,
-      event.params.fromToken,
-      event.params.toToken,
-      fromBaseVolume,
-      event.params.toVolume,
-      true,
-      "_1"
-    );
-
-    let trade2 = getExchange(
-      event.transaction.hash,
-      position2.id,
-      event.params.fromToken,
-      event.params.toToken,
-      event.params.fromVolume,
-      toBaseVolume,
-      false,
-      "_2"
-    );
-
-    let history = getExchangeHistory(event.block.timestamp, pool.id);
-    trade1.day = history.id;
-    trade2.day = history.id;
-    history.save();
-    trade1.save();
-    trade2.save();
-
-    pool.totalTrades = pool.totalTrades.plus(BigInt.fromI32(2));
-    let days = event.block.timestamp.minus(pool.creationTime).div(BigInt.fromI32(DAY));
-    pool.averageTrades = pool.totalTrades.div(days.equals(BigInt.zero()) ? BigInt.fromI32(1) : days);
-
-    position1.save();
-    position2.save();
+    exchangeSetup(pool, position1, event, fromBaseVolume, true, "_1");
+    exchangeSetup(pool, position2, event, toBaseVolume, false, "_2");
   }
+
+  let days = event.block.timestamp.minus(pool.creationTime).div(BigInt.fromI32(DAY));
+  pool.averageTrades = pool.totalTrades.div(days.equals(BigInt.zero()) ? BigInt.fromI32(1) : days);
 
   pool.save();
 }
@@ -255,4 +168,51 @@ export function onModifiedAdmins(event: ModifiedAdmins): void {
   }
 
   pool.admins = extendArray(pool.admins, [pool.trader]);
+}
+
+function exchangeSetup(
+  pool: TraderPool,
+  position: Position,
+  event: Exchanged,
+  volume: BigInt,
+  flag: boolean,
+  suffix: string
+): void {
+  if (position.startTimestamp.equals(BigInt.zero())) {
+    position.startTimestamp = event.block.timestamp;
+  }
+
+  let trade: Exchange;
+  if (flag) {
+    trade = getExchange(
+      event.transaction.hash,
+      position.id,
+      event.params.fromToken,
+      event.params.toToken,
+      volume,
+      event.params.toVolume,
+      flag, // true
+      suffix
+    );
+  } else {
+    trade = getExchange(
+      event.transaction.hash,
+      position.id,
+      event.params.fromToken,
+      event.params.toToken,
+      event.params.fromVolume,
+      volume,
+      flag, // false
+      suffix
+    );
+  }
+
+  let history = getExchangeHistory(event.block.timestamp, pool.id);
+  trade.day = history.id;
+  history.save();
+  trade.save();
+
+  pool.totalTrades = pool.totalTrades.plus(BigInt.fromI32(1));
+
+  position.save();
 }
