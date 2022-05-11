@@ -212,7 +212,7 @@ type ProposalWithdrawal @entity {
 # @notice The entity holds historical information about supplies
 # @param id forms from proposal id + timestamp / 86400
 # @param totalAmounts the total amount of supplies at day
-# @param tokens the array with
+# @param tokens the array with token addresses
 # @paeam day the timestamp / 86400
 # @param proposal the proposal entity id for reverse lookup
 type ProposalSupplyHistory @entity {

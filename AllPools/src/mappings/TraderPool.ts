@@ -34,19 +34,15 @@ export function onExchange(event: Exchanged): void {
     // adding funds to the position
 
     position1 = getPosition(getPositionId(pool.id, event.params.toToken), pool.id, event.params.toToken);
-
     position1.totalPositionOpenVolume = position1.totalPositionOpenVolume.plus(event.params.toVolume);
 
     if (event.params.fromToken != pool.baseToken) {
-      let baseVolume = pfPrototype.try_getNormalizedPriceOut(
+      fromBaseVolume = getFromPriceFeed(
+        pfPrototype,
         event.params.fromToken,
         Address.fromString(pool.baseToken.toHexString()),
         event.params.fromVolume
       );
-
-      if (baseVolume.reverted) return;
-
-      fromBaseVolume = baseVolume.value.value0;
     }
 
     position1.totalBaseOpenVolume = position1.totalBaseOpenVolume.plus(fromBaseVolume);
@@ -56,20 +52,15 @@ export function onExchange(event: Exchanged): void {
     // withdrawing funds from the position
 
     position2 = getPosition(getPositionId(pool.id, event.params.fromToken), pool.id, event.params.fromToken);
-
     position2.totalPositionCloseVolume = position2.totalPositionCloseVolume.plus(event.params.fromVolume);
 
     if (event.params.toToken != pool.baseToken) {
-      let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-      let baseVolume = pfPrototype.try_getNormalizedPriceOut(
+      toBaseVolume = getFromPriceFeed(
+        pfPrototype,
         event.params.toToken,
         Address.fromString(pool.baseToken.toHexString()),
         event.params.toVolume
       );
-
-      if (baseVolume.reverted) return;
-
-      toBaseVolume = baseVolume.value.value0;
     }
 
     position2.totalBaseCloseVolume = position2.totalBaseCloseVolume.plus(toBaseVolume);
@@ -217,4 +208,12 @@ function exchangeSetup(
   pool.totalTrades = pool.totalTrades.plus(BigInt.fromI32(1));
 
   position.save();
+}
+
+function getFromPriceFeed(pfPrototype: PriceFeed, fromToken: Address, toToken: Address, amount: BigInt): BigInt {
+  let baseVolume = pfPrototype.try_getNormalizedPriceOut(fromToken, toToken, amount);
+
+  if (baseVolume.reverted) return BigInt.zero();
+
+  return baseVolume.value.value0;
 }
