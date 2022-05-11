@@ -5,7 +5,8 @@ export function getProposalInvest(
   hash: Bytes,
   amountLP: BigInt = BigInt.zero(),
   amountBase: BigInt = BigInt.zero(),
-  investorInfoId: string = ""
+  investorInfoId: string = "",
+  timestamp: BigInt = BigInt.zero()
 ): ProposalInvest {
   let id = hash.toHexString();
   let invest = ProposalInvest.load(id);
@@ -17,6 +18,7 @@ export function getProposalInvest(
     invest.amountBase = amountBase;
     invest.investor = investorInfoId;
     invest.day = "";
+    invest.timestamp = timestamp;
   }
 
   return invest;

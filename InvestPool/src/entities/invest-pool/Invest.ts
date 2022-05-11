@@ -5,7 +5,8 @@ export function getInvest(
   hash: Bytes,
   investorInfoId: string = "",
   volumeBase: BigInt = BigInt.zero(),
-  toMintLP: BigInt = BigInt.zero()
+  toMintLP: BigInt = BigInt.zero(),
+  timestamp: BigInt = BigInt.zero()
 ): Invest {
   let id = hash.toHexString();
   let invest = Invest.load(id);
@@ -17,6 +18,7 @@ export function getInvest(
     invest.volumeBase = volumeBase;
     invest.lpPurchasePrice = volumeBase.div(toMintLP);
     invest.day = "";
+    invest.timestamp = timestamp;
   }
 
   return invest;

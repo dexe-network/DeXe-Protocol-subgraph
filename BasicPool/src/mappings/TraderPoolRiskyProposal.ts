@@ -32,7 +32,8 @@ export function onProposalInvest(event: ProposalInvested): void {
     event.transaction.hash,
     event.params.amountLP,
     event.params.amountBase,
-    investorInfo.id
+    investorInfo.id,
+    event.block.timestamp
   );
   let history = getProposalInvestHistory(event.block.timestamp, proposal.id);
 
@@ -54,7 +55,8 @@ export function onProposalDivest(event: ProposalDivested): void {
     event.transaction.hash,
     event.params.amountLP,
     event.params.amountBase,
-    investorInfo.id
+    investorInfo.id,
+    event.block.timestamp
   );
   let history = getProposalDivestHistory(event.block.timestamp, proposal.id);
 
@@ -76,7 +78,8 @@ export function onProposalExchange(event: ProposalExchanged): void {
     event.params.fromToken,
     event.params.toToken,
     event.params.fromVolume,
-    event.params.toVolume
+    event.params.toVolume,
+    event.block.timestamp
   );
   let history = getProposalExchangeHistory(event.block.timestamp, proposal.id);
 

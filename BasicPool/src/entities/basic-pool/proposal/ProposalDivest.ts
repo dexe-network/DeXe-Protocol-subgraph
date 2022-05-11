@@ -5,7 +5,8 @@ export function getProposalDivest(
   hash: Bytes,
   amountLP: BigInt = BigInt.zero(),
   amountBase: BigInt = BigInt.zero(),
-  investorInfoId: string = ""
+  investorInfoId: string = "",
+  timestamp: BigInt = BigInt.zero()
 ): ProposalDivest {
   let id = hash.toHexString();
   let divest = ProposalDivest.load(id);
@@ -17,6 +18,7 @@ export function getProposalDivest(
     divest.amountBase = amountBase;
     divest.investor = investorInfoId;
     divest.day = "";
+    divest.timestamp = timestamp;
   }
 
   return divest;

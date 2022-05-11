@@ -5,7 +5,8 @@ export function getProposalSupply(
   hash: Bytes,
   amount: BigInt = BigInt.zero(),
   token: Address = Address.zero(),
-  InvestorInfoId: string = ""
+  InvestorInfoId: string = "",
+  timestamp: BigInt = BigInt.zero()
 ): ProposalSupply {
   let id = hash.toHexString();
   let supply = ProposalSupply.load(id);
@@ -16,6 +17,7 @@ export function getProposalSupply(
     supply.amount = amount;
     supply.token = token;
     supply.day = "";
+    supply.timestamp = timestamp;
   }
 
   return supply;
