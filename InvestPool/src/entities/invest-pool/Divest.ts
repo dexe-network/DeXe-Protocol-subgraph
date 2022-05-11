@@ -5,7 +5,8 @@ export function getDivest(
   hash: Bytes,
   investorInfoId: string = "",
   volumeBase: BigInt = BigInt.zero(),
-  commission: BigInt = BigInt.zero()
+  commission: BigInt = BigInt.zero(),
+  timestamp: BigInt = BigInt.zero()
 ): Divest {
   let id = hash.toHexString();
   let divest = Divest.load(id);
@@ -17,6 +18,7 @@ export function getDivest(
     divest.volumeBase = volumeBase;
     divest.commission = commission;
     divest.day = "";
+    divest.timestamp = timestamp;
   }
 
   return divest;

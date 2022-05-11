@@ -77,6 +77,7 @@ type InvestorLPHistory @entity {
 # @param day the history id (pool address + timestamp / 86400), for reverse lookup
 type Invest @entity {
   id: ID! # tx hash
+  timestamp: BigInt!
   investor: InvestorInfo!
   volumeBase: BigInt!
   lpPurchasePrice: BigInt!
@@ -92,6 +93,7 @@ type Invest @entity {
 # @param day the history id (pool address + timestamp / 86400), for reverse lookup
 type Divest @entity {
   id: ID! # tx hash
+  timestamp: BigInt!
   investor: InvestorInfo!
   volumeBase: BigInt!
   commission: BigInt!
@@ -162,6 +164,7 @@ type Proposal @entity {
 # @param day the history id (proposal id + timestamp / 86400), for reverse lookup
 type ProposalInvest @entity {
   id: ID! # tx hash
+  timestamp: BigInt!
   amountLP: BigInt!
   amountBase: BigInt!
 
@@ -177,6 +180,7 @@ type ProposalInvest @entity {
 # @param day the history id (proposal id + timestamp / 86400), for reverse lookup
 type ProposalDivest @entity {
   id: ID! # tx hash
+  timestamp: BigInt!
   amountLP: BigInt!
   amountBase: BigInt!
 
@@ -193,6 +197,7 @@ type ProposalDivest @entity {
 # @param day the history id (proposal id + timestamp / 86400), for reverse lookup
 type ProposalExchange @entity {
   id: ID! # tx hash
+  timestamp: BigInt!
   fromToken: Bytes!
   toToken: Bytes!
 

@@ -25,7 +25,13 @@ export function onInvestorAdded(event: InvestorAdded): void {
 
 export function onInvest(event: Invested): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address);
-  let invest = getInvest(event.transaction.hash, investorInfo.id, event.params.amount, event.params.toMintLP);
+  let invest = getInvest(
+    event.transaction.hash,
+    investorInfo.id,
+    event.params.amount,
+    event.params.toMintLP,
+    event.block.timestamp
+  );
   let history = getInvestHistory(event.block.timestamp, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
 
@@ -55,7 +61,7 @@ export function onInvestorRemoved(event: InvestorRemoved): void {
 
 export function onDivest(event: Divested): void {
   let investorInfo = getInvestorInfo(event.params.investor, event.address);
-  let divest = getDivest(event.transaction.hash, investorInfo.id, event.params.amount);
+  let divest = getDivest(event.transaction.hash, investorInfo.id, event.params.amount, event.block.timestamp);
   let history = getDivestHistory(event.block.timestamp, event.address);
   let lpHistory = getInvestorLPHistory(event.block.timestamp, investorInfo.id);
 

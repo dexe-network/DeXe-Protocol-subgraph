@@ -6,7 +6,8 @@ export function getProposalExchange(
   fromToken: Address = Address.zero(),
   toToken: Address = Address.zero(),
   fromVolume: BigInt = BigInt.zero(),
-  toVolume: BigInt = BigInt.zero()
+  toVolume: BigInt = BigInt.zero(),
+  timestamp: BigInt = BigInt.zero()
 ): ProposalExchange {
   let id = hash.toHexString();
   let exchange = ProposalExchange.load(id);
@@ -19,6 +20,7 @@ export function getProposalExchange(
     exchange.fromVolume = fromVolume;
     exchange.toVolume = toVolume;
     exchange.day = "";
+    exchange.timestamp = timestamp;
   }
 
   return exchange;

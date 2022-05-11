@@ -4,7 +4,8 @@ import { ProposalWithdrawal } from "../../../../generated/schema";
 export function getProposalWithdrawal(
   hash: Bytes,
   amount: BigInt = BigInt.zero(),
-  investorInfoId: string = ""
+  investorInfoId: string = "",
+  timestamp: BigInt = BigInt.zero()
 ): ProposalWithdrawal {
   let id = hash.toHexString();
   let withdraw = ProposalWithdrawal.load(id);
@@ -14,6 +15,7 @@ export function getProposalWithdrawal(
     withdraw.investor = investorInfoId;
     withdraw.amount = amount;
     withdraw.day = "";
+    withdraw.timestamp = timestamp;
   }
   return withdraw;
 }

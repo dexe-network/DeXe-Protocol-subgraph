@@ -112,6 +112,7 @@ type Position @entity {
 type Exchange @entity {
   id: ID! # tx hash + suffix
   hash: Bytes! # tx hash
+  timestamp: BigInt!
   fromToken: Bytes!
   toToken: Bytes!
 

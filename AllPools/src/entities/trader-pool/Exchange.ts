@@ -9,7 +9,8 @@ export function getExchange(
   fromVolume: BigInt = BigInt.zero(),
   toVolume: BigInt = BigInt.zero(),
   opening: boolean = false,
-  suffix: string = "_0"
+  suffix: string = "_0",
+  timestamp: BigInt = BigInt.zero()
 ): Exchange {
   let id = txHash.toHexString() + suffix;
   let trade = Exchange.load(id);
@@ -24,6 +25,7 @@ export function getExchange(
     trade.toVolume = toVolume;
     trade.opening = opening;
     trade.day = "";
+    trade.timestamp = timestamp;
   }
 
   return trade;

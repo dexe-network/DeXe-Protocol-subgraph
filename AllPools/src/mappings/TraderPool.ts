@@ -192,7 +192,8 @@ function exchangeSetup(
       volume,
       event.params.toVolume,
       flag, // true
-      suffix
+      suffix,
+      event.block.timestamp
     );
   } else {
     trade = getExchange(
@@ -203,7 +204,8 @@ function exchangeSetup(
       event.params.fromVolume,
       volume,
       flag, // false
-      suffix
+      suffix,
+      event.block.timestamp
     );
   }
 
