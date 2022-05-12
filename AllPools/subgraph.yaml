@@ -99,3 +99,5 @@ templates:
           handler: onDescriptionURLChanged
         - event: ModifiedAdmins(address[],bool)
           handler: onModifiedAdmins
+        - event: PositionClosed(address)
+          handler: onClose
