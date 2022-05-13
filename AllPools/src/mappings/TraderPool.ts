@@ -205,6 +205,7 @@ function exchangeSetup(
       volume,
       event.params.toVolume,
       usdVolume,
+      event.transaction.from,
       flag, // true
       suffix,
       event.block.timestamp
@@ -219,6 +220,7 @@ function exchangeSetup(
       event.params.fromVolume,
       volume,
       usdVolume,
+      event.transaction.from,
       flag, // false
       suffix,
       event.block.timestamp

@@ -135,6 +135,7 @@ type Exchange @entity {
   position: Position!
   opening: Boolean!
 
+  investor: Bytes!
   day: ExchangeHistory!
 }
 

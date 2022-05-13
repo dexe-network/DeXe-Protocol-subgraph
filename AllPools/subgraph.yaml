@@ -3,11 +3,11 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: TraderPoolFactory
+    name: PoolFactory
     network: chapel
     source:
       address: "0xb9a87BB9Ebf86837A5F8ADB9126F856dFB83596C"
-      abi: TraderPoolFactory
+      abi: PoolFactory
       startBlock: 18560808
     mapping:
       kind: ethereum/events
@@ -15,12 +15,12 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/TraderPoolFactory.ts
       entities:
-        - TraderPoolFactory
+        - PoolFactory
       abis:
-        - name: TraderPoolFactory
-          file: ./abis/TraderPoolFactory.json
+        - name: PoolFactory
+          file: ./abis/PoolFactory.json
       eventHandlers:
-        - event: Deployed(string,string,string,address,address,address,address,string)
+        - event: TraderPoolDeployed(string,string,string,address,address,address,address,string,uint256)
           handler: onDeployed
 
   - kind: ethereum/contract

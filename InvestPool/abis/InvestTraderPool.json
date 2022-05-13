@@ -42,12 +42,6 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "investor",
-        "type": "address"
-      },
-      {
-        "indexed": false,
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
@@ -96,12 +90,6 @@
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "investor",
-        "type": "address"
-      },
       {
         "indexed": false,
         "internalType": "uint256",
@@ -161,6 +149,25 @@
       }
     ],
     "name": "ModifiedAdmins",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "privateInvestors",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "add",
+        "type": "bool"
+      }
+    ],
+    "name": "ModifiedPrivateInvestors",
     "type": "event"
   },
   {
@@ -985,6 +992,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getInvestDelayEnd",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -1607,19 +1627,6 @@
   {
     "inputs": [],
     "name": "totalInvestors",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalOpenPositions",
     "outputs": [
       {
         "internalType": "uint256",

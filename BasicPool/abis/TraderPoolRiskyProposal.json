@@ -145,12 +145,6 @@
       },
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "investor",
-        "type": "address"
-      },
-      {
-        "indexed": false,
         "internalType": "uint256",
         "name": "amountLP",
         "type": "uint256"
@@ -720,6 +714,11 @@
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
+        "name": "positionTokenPrice",
+        "type": "uint256"
+      },
+      {
         "internalType": "address[]",
         "name": "path",
         "type": "address[]"
@@ -916,6 +915,35 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "toBeInvested",
+        "type": "uint256"
+      }
+    ],
+    "name": "getInvestmentPercentage",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "offset",
         "type": "uint256"
       },
@@ -1021,6 +1049,30 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "proposalIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "getUserInvestmentsLimits",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "lps",
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",

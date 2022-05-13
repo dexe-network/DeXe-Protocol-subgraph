@@ -9,7 +9,7 @@ export function getInvestorInfo(investorAddress: Address, investPool: Address): 
 
   if (investorInfo == null) {
     investorInfo = new InvestorInfo(id);
-
+    investorInfo.investor = investorAddress;
     investorInfo.totalDivestVolume = BigInt.zero();
     investorInfo.totalInvestVolume = BigInt.zero();
   }
