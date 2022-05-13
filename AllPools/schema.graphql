@@ -98,6 +98,8 @@ type Position @entity {
   totalBaseCloseVolume: BigInt!
   totalPositionOpenVolume: BigInt!
   totalPositionCloseVolume: BigInt!
+  totalUSDOpenVolume: BigInt!
+  totalUSDCloseVolume: BigInt!
 
   startTimestamp: BigInt!
   liveTime: BigInt!
@@ -127,6 +129,8 @@ type Exchange @entity {
 
   fromVolume: BigInt!
   toVolume: BigInt!
+
+  usdVolume: BigInt!
 
   position: Position!
   opening: Boolean!

@@ -147,6 +147,9 @@ type Proposal @entity {
   totalOpenVolume: BigInt!
   totalCloseVolume: BigInt!
 
+  totalOpenUSDVolume: BigInt!
+  totalCloseUSDVolume: BigInt!
+
   basicPool: BasicPool!
   proposalInvests: [ProposalInvestHistory!]! @derivedFrom(field: "proposal")
   proposalDivests: [ProposalDivestHistory!]! @derivedFrom(field: "proposal")
@@ -203,6 +206,7 @@ type ProposalExchange @entity {
 
   fromVolume: BigInt!
   toVolume: BigInt!
+  usdVolume: BigInt!
 
   day: ProposalExchangeHistory!
 }

@@ -12,6 +12,9 @@ import {
   ProposalExchanged,
   ProposalInvested,
 } from "../../generated/templates/RiskyProposal/RiskyProposal";
+import { PriceFeed } from "../../generated/templates/RiskyProposal/PriceFeed";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let proposal = getProposal(
@@ -87,12 +90,30 @@ export function onProposalExchange(event: ProposalExchanged): void {
   if (event.params.toToken != proposal.token) {
     // adding funds to the position
     proposal.totalOpenVolume = proposal.totalOpenVolume.plus(event.params.toVolume);
+
+    let usd = getUSDPrice(event.params.fromToken, event.params.fromVolume);
+    exchange.usdVolume = usd;
+    proposal.totalOpenUSDVolume = proposal.totalOpenUSDVolume.plus(usd);
   } else if (event.params.fromToken != proposal.token) {
     // withdrawing funds from the position
     proposal.totalCloseVolume = proposal.totalCloseVolume.plus(event.params.toVolume);
+
+    let usd = getUSDPrice(event.params.toToken, event.params.toVolume);
+    exchange.usdVolume = usd;
+    proposal.totalOpenUSDVolume = proposal.totalCloseUSDVolume.plus(usd);
   }
 
   proposal.save();
   exchange.save();
   history.save();
+}
+
+function getUSDPrice(token: Address, amount: BigInt): BigInt {
+  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
+  let resp = pfPrototype.try_getNormalizedPriceInUSD(token, amount);
+  if (resp.reverted) {
+    return BigInt.zero();
+  } else {
+    return resp.value.value0;
+  }
 }

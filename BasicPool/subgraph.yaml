@@ -78,6 +78,8 @@ templates:
       abis:
         - name: RiskyProposal
           file: ./abis/TraderPoolRiskyProposal.json
+        - name: PriceFeed
+          file: ./abis/PriceFeed.json
       eventHandlers:
         - event: ProposalCreated(uint256,address,(uint256,uint256,uint256))
           handler: onProposalCreated

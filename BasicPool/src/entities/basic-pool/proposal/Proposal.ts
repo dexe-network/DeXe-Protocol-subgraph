@@ -23,6 +23,8 @@ export function getProposal(
     proposal.basicPool = getBasicTraderPool(basicPool).id;
     proposal.totalOpenVolume = BigInt.zero();
     proposal.totalCloseVolume = BigInt.zero();
+    proposal.totalOpenUSDVolume = BigInt.zero();
+    proposal.totalCloseUSDVolume = BigInt.zero();
   }
 
   return proposal;
