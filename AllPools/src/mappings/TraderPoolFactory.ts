@@ -1,8 +1,8 @@
-import { TraderPoolDeployed } from "../../generated/PoolFactory/PoolFactory";
+import { Deployed } from "../../generated/TraderPoolFactory/TraderPoolFactory";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { TraderPool } from "../../generated/templates";
 
-export function onDeployed(event: TraderPoolDeployed): void {
+export function onDeployed(event: Deployed): void {
   let pool = getTraderPool(
     event.params.at,
     event.params.poolType,
@@ -11,8 +11,7 @@ export function onDeployed(event: TraderPoolDeployed): void {
     event.params.name,
     event.params.descriptionURL,
     event.block.timestamp,
-    event.params.trader,
-    event.params.commission
+    event.params.trader
   );
   pool.save();
 
