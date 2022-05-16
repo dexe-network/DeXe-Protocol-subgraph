@@ -76,12 +76,14 @@ export function onProposalDivest(event: ProposalDivested): void {
 
 export function onProposalExchange(event: ProposalExchanged): void {
   let proposal = getProposal(event.params.index, event.address);
+
   let exchange = getProposalExchange(
     event.transaction.hash,
     event.params.fromToken,
     event.params.toToken,
     event.params.fromVolume,
     event.params.toVolume,
+    BigInt.zero(),
     event.block.timestamp
   );
   let history = getProposalExchangeHistory(event.block.timestamp, proposal.id);
