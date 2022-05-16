@@ -60,6 +60,8 @@ templates:
           handler: onTraderCommissionPaid
         - event: DescriptionURLChanged(string)
           handler: onDescriptionURLChanged
+        - event: ModifiedPrivateInvestors(address[],bool)
+          handler: onModifiedPrivateInvestors
 
   - kind: ethereum/contract
     name: RiskyProposal

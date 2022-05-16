@@ -15,8 +15,10 @@ type BasicPool @entity {
   name: String!
   descriptionURL: String!
   creationTime: BigInt!
+  commission: BigInt!
 
   investors: [Bytes!]!
+  privateInvestors: [Bytes!]!
 
   proposals: [Proposal!]! @derivedFrom(field: "basicPool")
   invests: [InvestHistory!]! @derivedFrom(field: "basicPool")
