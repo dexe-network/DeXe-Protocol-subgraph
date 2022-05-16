@@ -65,7 +65,7 @@ export function onProposalDivested(event: ProposalDivested): void {
 }
 
 export function onWithdrawn(event: ProposalWithdrawn): void {
-  let investorInfo = getInvestorInfo(event.transaction.from, event.address);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let withdraw = getProposalWithdrawal(
     event.transaction.hash,
     event.params.amount,
@@ -85,7 +85,7 @@ export function onWithdrawn(event: ProposalWithdrawn): void {
 }
 
 export function onSupplied(event: ProposalSupplied): void {
-  let investorInfo = getInvestorInfo(event.transaction.from, event.address);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let supply = getProposalSupply(
     event.transaction.hash,
     event.params.amount,

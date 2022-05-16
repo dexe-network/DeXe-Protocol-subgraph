@@ -145,6 +145,12 @@
       },
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "investor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "amountLP",
         "type": "uint256"

@@ -10,7 +10,8 @@ export function getTraderPool(
   name: string = "",
   descriptionURL: string = "",
   creationTime: BigInt = BigInt.zero(),
-  trader: Address = Address.zero()
+  trader: Address = Address.zero(),
+  commission: BigInt = BigInt.zero()
 ): TraderPool {
   let traderPool = TraderPool.load(poolAddress.toHexString());
 
@@ -35,6 +36,8 @@ export function getTraderPool(
 
     traderPool.admins = extendArray<Bytes>(new Array<Bytes>(), [trader]);
     traderPool.trader = trader;
+
+    traderPool.commission = commission;
   }
 
   return traderPool;

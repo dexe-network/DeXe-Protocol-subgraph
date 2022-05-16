@@ -20,7 +20,7 @@ dataSources:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
       eventHandlers:
-        - event: TraderPoolDeployed(string,string,string,address,address,address,address,string,uint256)
+        - event: TraderPoolDeployed(string,string,string,address,address,address,address,uint256,string)
           handler: onDeployed
 
 templates:
@@ -49,11 +49,11 @@ templates:
           handler: onClose
         - event: InvestorAdded(address)
           handler: onInvestorAdded
-        - event: Invested(uint256,uint256)
+        - event: Invested(address,uint256,uint256)
           handler: onInvest
         - event: InvestorRemoved(address)
           handler: onInvestorRemoved
-        - event: Divested(uint256,uint256)
+        - event: Divested(address,uint256,uint256)
           handler: onDivest
         - event: TraderCommissionMinted(address,uint256)
           handler: onTraderCommissionMinted
@@ -83,7 +83,7 @@ templates:
       eventHandlers:
         - event: ProposalCreated(uint256,address,(uint256,uint256,uint256))
           handler: onProposalCreated
-        - event: ProposalInvested(uint256,uint256,uint256)
+        - event: ProposalInvested(uint256,address,uint256,uint256)
           handler: onProposalInvest
         - event: ProposalDivested(uint256,address,uint256,uint256)
           handler: onProposalDivest

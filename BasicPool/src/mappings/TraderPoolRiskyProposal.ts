@@ -29,7 +29,7 @@ export function onProposalCreated(event: ProposalCreated): void {
 }
 
 export function onProposalInvest(event: ProposalInvested): void {
-  let investorInfo = getInvestorInfo(event.transaction.from, event.address);
+  let investorInfo = getInvestorInfo(event.params.investor, event.address);
   let proposal = getProposal(event.params.index, event.address);
   let invest = getProposalInvest(
     event.transaction.hash,

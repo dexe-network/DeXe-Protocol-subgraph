@@ -46,15 +46,15 @@
       },
       {
         "indexed": false,
-        "internalType": "string",
-        "name": "descriptionURL",
-        "type": "string"
-      },
-      {
-        "indexed": false,
         "internalType": "uint256",
         "name": "commission",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "descriptionURL",
+        "type": "string"
       }
     ],
     "name": "TraderPoolDeployed",
