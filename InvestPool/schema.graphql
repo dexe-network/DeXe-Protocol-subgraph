@@ -15,6 +15,7 @@ type InvestPool @entity {
   name: String!
   creationTime: BigInt!
   descriptionURL: String!
+  fee: BigInt!
 
   investors: [Bytes!]!
 

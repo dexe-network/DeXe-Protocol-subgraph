@@ -35,6 +35,7 @@ type TraderPool @entity {
   descriptionURL: String!
   creationTime: BigInt!
   maxLoss: BigInt!
+  fee: BigInt!
 
   trader: Bytes!
   admins: [Bytes!]!
