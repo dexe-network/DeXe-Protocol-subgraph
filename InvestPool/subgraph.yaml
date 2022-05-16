@@ -13,7 +13,7 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
-      file: ./src/mappings/TraderPoolFactory.ts
+      file: ./src/mappings/PoolFactory.ts
       entities:
         - PoolFactory
       abis:
@@ -35,7 +35,6 @@ templates:
       language: wasm/assemblyscript
       file: ./src/mappings/InvestTraderPool.ts
       entities:
-        - TraderPoolFactory
         - InvestTraderPool
         - Position
         - Trade
@@ -73,7 +72,6 @@ templates:
       language: wasm/assemblyscript
       file: ./src/mappings/TraderPoolInvestProposal.ts
       entities:
-        - TraderPoolFactory
         - ProposalContract
       abis:
         - name: InvestProposal
