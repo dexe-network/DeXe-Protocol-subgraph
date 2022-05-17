@@ -6,6 +6,7 @@ import {
   TraderCommissionMinted,
   TraderCommissionPaid,
   DescriptionURLChanged,
+  ModifiedPrivateInvestors,
 } from "../../generated/templates/InvestPool/InvestPool";
 import { getInvestTraderPool } from "../entities/invest-pool/InvestTraderPool";
 import { getInvest } from "../entities/invest-pool/Invest";
@@ -13,9 +14,10 @@ import { getInvestHistory } from "../entities/invest-pool/history/InvestHistory"
 import { getDivest } from "../entities/invest-pool/Divest";
 import { getDivestHistory } from "../entities/invest-pool/history/DivestHistory";
 import { getInvestorInfo } from "../entities/invest-pool/InvestorInfo";
-import { extendArray, reduceArray } from "../helpers/ArrayHelper";
+import { extendArray, reduceArray, upcastCopy } from "../helpers/ArrayHelper";
 import { getInvestPoolHistory } from "../entities/invest-pool/history/InvestPoolHistory";
 import { getInvestorLPHistory } from "../entities/invest-pool/history/InvestorLPHistory";
+import { Address, Bytes } from "@graphprotocol/graph-ts";
 
 export function onInvestorAdded(event: InvestorAdded): void {
   let pool = getInvestTraderPool(event.address);
@@ -100,5 +102,15 @@ export function onBurnLP(event: TraderCommissionPaid): void {
 export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
   let pool = getInvestTraderPool(event.address);
   pool.descriptionURL = event.params.descriptionURL;
+  pool.save();
+}
+
+export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): void {
+  let pool = getInvestTraderPool(event.address);
+  if (event.params.add) {
+    pool.investors = extendArray(pool.investors, upcastCopy<Address, Bytes>(event.params.privateInvestors));
+  } else {
+    pool.investors = reduceArray(pool.investors, upcastCopy<Address, Bytes>(event.params.privateInvestors));
+  }
   pool.save();
 }

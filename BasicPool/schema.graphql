@@ -15,8 +15,10 @@ type BasicPool @entity {
   name: String!
   descriptionURL: String!
   creationTime: BigInt!
+  commission: BigInt!
 
   investors: [Bytes!]!
+  privateInvestors: [Bytes!]!
 
   proposals: [Proposal!]! @derivedFrom(field: "basicPool")
   invests: [InvestHistory!]! @derivedFrom(field: "basicPool")
@@ -42,6 +44,7 @@ type BasicPoolHistory @entity {
 # @param totalDivestVolume the total volume of investor's divests from pool
 type InvestorInfo @entity {
   id: ID! # investor address + pool address
+  investor: Bytes!
   totalInvestVolume: BigInt!
   totalDivestVolume: BigInt!
 
@@ -133,8 +136,12 @@ type DivestHistory @entity {
 # @param timestampLimit the timestamp from contract after which the investment into proposal closes
 # @param investLPLimit the maximal number of invested LP tokens from contract after which the investment into the proposal closes
 # @param maxTokenPriceLimit the maximal price of the proposal token from contract after which the investment into the proposal closes
-# @param totalOpenVolume the total open volume of proposal
-# @param totalCloseVolume the total close volume of proposal
+# @param totalBaseOpenVolume the total open volume of proposal in base token
+# @param totalBaseCloseVolume the total close volume of proposal in base token
+# @param totalPositionOpenVolume the total open volume of proposal in proposal token
+# @param totalPositionCloseVolume the total close volume of proposal in proposal token
+# @param totalUSDOpenVolume the total open volume of proposal in usd
+# @param totalUSDCloseVolume the total close volume of proposal in usd
 # @param basicPool the basicPool id (address), for reverse lookup
 type Proposal @entity {
   id: ID! # pool address + proposal index
@@ -144,8 +151,12 @@ type Proposal @entity {
   investLPLimit: BigInt!
   maxTokenPriceLimit: BigInt!
 
-  totalOpenVolume: BigInt!
-  totalCloseVolume: BigInt!
+  totalBaseOpenVolume: BigInt!
+  totalBaseCloseVolume: BigInt!
+  totalPositionOpenVolume: BigInt!
+  totalPositionCloseVolume: BigInt!
+  totalUSDOpenVolume: BigInt!
+  totalUSDCloseVolume: BigInt!
 
   basicPool: BasicPool!
   proposalInvests: [ProposalInvestHistory!]! @derivedFrom(field: "proposal")
@@ -194,6 +205,7 @@ type ProposalDivest @entity {
 # @param toToken the address of out token
 # @param fromVolume the volume of in token
 # @param toVolume the volume of out token
+# @param usdVolume the exchange volume in usd
 # @param day the history id (proposal id + timestamp / 86400), for reverse lookup
 type ProposalExchange @entity {
   id: ID! # tx hash
@@ -203,6 +215,7 @@ type ProposalExchange @entity {
 
   fromVolume: BigInt!
   toVolume: BigInt!
+  usdVolume: BigInt!
 
   day: ProposalExchangeHistory!
 }

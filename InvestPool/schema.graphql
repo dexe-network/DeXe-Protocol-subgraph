@@ -15,8 +15,10 @@ type InvestPool @entity {
   name: String!
   creationTime: BigInt!
   descriptionURL: String!
+  commission: BigInt!
 
   investors: [Bytes!]!
+  privateInvestors: [Bytes!]!
 
   proposals: [Proposal!]! @derivedFrom(field: "investPool")
   invests: [InvestHistory!]! @derivedFrom(field: "investPool")
@@ -42,6 +44,7 @@ type InvestPoolHistory @entity {
 # @param totalDivestVolume the total volume of investor's divests from pool
 type InvestorInfo @entity {
   id: ID! # investor address + pool address
+  investor: Bytes!
   totalInvestVolume: BigInt!
   totalDivestVolume: BigInt!
 

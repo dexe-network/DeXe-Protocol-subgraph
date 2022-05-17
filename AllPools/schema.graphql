@@ -17,6 +17,7 @@ type PositionOffset @entity {
 # @param descriptionURL the description url address from contract
 # @param creationTime the timestamp of creating pool
 # @param maxLoss the maximum loss among all positions
+# @param commission the commission of pool
 # @param trader the address of trader
 # @param admins the array of admin's addresses
 # @param totalTrades the total number of trades
@@ -35,6 +36,7 @@ type TraderPool @entity {
   descriptionURL: String!
   creationTime: BigInt!
   maxLoss: BigInt!
+  commission: BigInt!
 
   trader: Bytes!
   admins: [Bytes!]!
@@ -85,7 +87,9 @@ type TraderPoolPriceHistory @entity {
 # @param totalBaseOpenVolume the total open volume of position in base token
 # @param totalBaseCloseVolume the total close volume of position in base token
 # @param totalPositionOpenVolume the total open volume of position in position token
-# @param totalBaseCloseVolume the total close volume of position in position token
+# @param totalPositionCloseVolume the total close volume of position in position token
+# @param totalUSDOpenVolume the total open volume of position in usd
+# @param totalUSDCloseVolume the total close volume of position in usd
 # @param startTimestamp the timestamp of position's creation time
 # @param liveTime the time in millis the position was open for if the position is closed.
 # @param traderPool the id of traderPool (address) for reverse lookup
@@ -98,6 +102,8 @@ type Position @entity {
   totalBaseCloseVolume: BigInt!
   totalPositionOpenVolume: BigInt!
   totalPositionCloseVolume: BigInt!
+  totalUSDOpenVolume: BigInt!
+  totalUSDCloseVolume: BigInt!
 
   startTimestamp: BigInt!
   liveTime: BigInt!
@@ -115,6 +121,7 @@ type Position @entity {
 # @param toToken the address of out token
 # @param fromVolume the volume of in token
 # @param toVolume the volume of out token
+# @param usdVolume the volume of exchange in usd
 # @param position the id of pool's
 # @param opening the boolean flag, if true exchange opening position, else - closing
 # @param day the history id (pool address + timestamp / 86400), for reverse lookup
@@ -127,6 +134,8 @@ type Exchange @entity {
 
   fromVolume: BigInt!
   toVolume: BigInt!
+
+  usdVolume: BigInt!
 
   position: Position!
   opening: Boolean!

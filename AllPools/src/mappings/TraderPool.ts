@@ -28,7 +28,10 @@ export function onExchange(event: Exchanged): void {
   let fromBaseVolume = event.params.fromVolume;
   let toBaseVolume = event.params.toVolume;
 
+  let usdVolume = BigInt.zero();
+
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
+  let baseTokenAddress = Address.fromString(pool.baseToken.toHexString());
 
   if (event.params.toToken != pool.baseToken) {
     // adding funds to the position
@@ -37,12 +40,15 @@ export function onExchange(event: Exchanged): void {
     position1.totalPositionOpenVolume = position1.totalPositionOpenVolume.plus(event.params.toVolume);
 
     if (event.params.fromToken != pool.baseToken) {
-      fromBaseVolume = getFromPriceFeed(
-        pfPrototype,
-        event.params.fromToken,
-        Address.fromString(pool.baseToken.toHexString()),
-        event.params.fromVolume
-      );
+      fromBaseVolume = getFromPriceFeed(pfPrototype, event.params.fromToken, baseTokenAddress, event.params.fromVolume);
+    }
+
+    let resp = pfPrototype.try_getNormalizedPriceInUSD(baseTokenAddress, fromBaseVolume);
+
+    if (resp.reverted) {
+      usdVolume = BigInt.zero();
+    } else {
+      usdVolume = resp.value.value0;
     }
 
     position1.totalBaseOpenVolume = position1.totalBaseOpenVolume.plus(fromBaseVolume);
@@ -55,12 +61,15 @@ export function onExchange(event: Exchanged): void {
     position2.totalPositionCloseVolume = position2.totalPositionCloseVolume.plus(event.params.fromVolume);
 
     if (event.params.toToken != pool.baseToken) {
-      toBaseVolume = getFromPriceFeed(
-        pfPrototype,
-        event.params.toToken,
-        Address.fromString(pool.baseToken.toHexString()),
-        event.params.toVolume
-      );
+      toBaseVolume = getFromPriceFeed(pfPrototype, event.params.toToken, baseTokenAddress, event.params.toVolume);
+    }
+
+    let resp = pfPrototype.try_getNormalizedPriceInUSD(baseTokenAddress, toBaseVolume);
+
+    if (resp.reverted) {
+      usdVolume = BigInt.zero();
+    } else {
+      usdVolume = resp.value.value0;
     }
 
     position2.totalBaseCloseVolume = position2.totalBaseCloseVolume.plus(toBaseVolume);
@@ -72,14 +81,14 @@ export function onExchange(event: Exchanged): void {
 
   if (position2 == null) {
     // pos1
-    exchangeSetup(pool, position1, event, fromBaseVolume, true, "_0");
+    exchangeSetup(pool, position1, event, fromBaseVolume, usdVolume, true, "_0");
   } else if (position1 == null) {
     // pos2
-    exchangeSetup(pool, position2, event, toBaseVolume, false, "_0");
+    exchangeSetup(pool, position2, event, toBaseVolume, usdVolume, false, "_0");
   } else {
     // pos1 && pos2
-    exchangeSetup(pool, position1, event, fromBaseVolume, true, "_1");
-    exchangeSetup(pool, position2, event, toBaseVolume, false, "_2");
+    exchangeSetup(pool, position1, event, fromBaseVolume, usdVolume, true, "_1");
+    exchangeSetup(pool, position2, event, toBaseVolume, usdVolume, false, "_2");
   }
 
   let days = event.block.timestamp.minus(pool.creationTime).div(BigInt.fromI32(DAY));
@@ -166,6 +175,7 @@ function exchangeSetup(
   position: Position,
   event: Exchanged,
   volume: BigInt,
+  usdVolume: BigInt,
   flag: boolean,
   suffix: string
 ): void {
@@ -182,10 +192,12 @@ function exchangeSetup(
       event.params.toToken,
       volume,
       event.params.toVolume,
+      usdVolume,
       flag, // true
       suffix,
       event.block.timestamp
     );
+    position.totalUSDOpenVolume = usdVolume;
   } else {
     trade = getExchange(
       event.transaction.hash,
@@ -194,10 +206,12 @@ function exchangeSetup(
       event.params.toToken,
       event.params.fromVolume,
       volume,
+      usdVolume,
       flag, // false
       suffix,
       event.block.timestamp
     );
+    position.totalUSDCloseVolume = usdVolume;
   }
 
   let history = getExchangeHistory(event.block.timestamp, pool.id);

@@ -12,6 +12,9 @@ import {
   ProposalExchanged,
   ProposalInvested,
 } from "../../generated/templates/RiskyProposal/RiskyProposal";
+import { PriceFeed } from "../../generated/templates/RiskyProposal/PriceFeed";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let proposal = getProposal(
@@ -73,26 +76,48 @@ export function onProposalDivest(event: ProposalDivested): void {
 
 export function onProposalExchange(event: ProposalExchanged): void {
   let proposal = getProposal(event.params.index, event.address);
+
   let exchange = getProposalExchange(
     event.transaction.hash,
     event.params.fromToken,
     event.params.toToken,
     event.params.fromVolume,
     event.params.toVolume,
+    BigInt.zero(),
     event.block.timestamp
   );
   let history = getProposalExchangeHistory(event.block.timestamp, proposal.id);
 
   exchange.day = history.id;
-  if (event.params.toToken != proposal.token) {
+  if (event.params.toToken == proposal.token) {
     // adding funds to the position
-    proposal.totalOpenVolume = proposal.totalOpenVolume.plus(event.params.toVolume);
-  } else if (event.params.fromToken != proposal.token) {
+    proposal.totalPositionOpenVolume = proposal.totalPositionOpenVolume.plus(event.params.toVolume);
+    proposal.totalBaseOpenVolume = proposal.totalBaseOpenVolume.plus(event.params.fromVolume);
+
+    let usd = getUSDPrice(event.params.fromToken, event.params.fromVolume);
+    exchange.usdVolume = usd;
+    proposal.totalUSDOpenVolume = proposal.totalUSDOpenVolume.plus(usd);
+  } else if (event.params.fromToken == proposal.token) {
     // withdrawing funds from the position
-    proposal.totalCloseVolume = proposal.totalCloseVolume.plus(event.params.toVolume);
+    proposal.totalPositionCloseVolume = proposal.totalPositionCloseVolume.plus(event.params.fromVolume);
+    proposal.totalBaseCloseVolume = proposal.totalBaseCloseVolume.plus(event.params.toVolume);
+
+    let usd = getUSDPrice(event.params.toToken, event.params.toVolume);
+    exchange.usdVolume = usd;
+    proposal.totalUSDCloseVolume = proposal.totalUSDCloseVolume.plus(usd);
   }
 
   proposal.save();
   exchange.save();
   history.save();
+}
+
+function getUSDPrice(token: Address, amount: BigInt): BigInt {
+  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
+  let resp = pfPrototype.try_getNormalizedPriceInUSD(token, amount);
+  if (resp.reverted) {
+    return BigInt.zero();
+  } else {
+    return resp.value.value0;
+  }
 }

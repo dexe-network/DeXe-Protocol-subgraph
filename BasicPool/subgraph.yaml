@@ -3,24 +3,24 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: TraderPoolFactory
+    name: PoolFactory
     network: chapel
     source:
       address: "0xb9a87BB9Ebf86837A5F8ADB9126F856dFB83596C"
-      abi: TraderPoolFactory
+      abi: PoolFactory
       startBlock: 18560808
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
-      file: ./src/mappings/TraderPoolFactory.ts
+      file: ./src/mappings/PoolFactory.ts
       entities:
-        - TraderPoolFactory
+        - PoolFactory
       abis:
-        - name: TraderPoolFactory
-          file: ./abis/TraderPoolFactory.json
+        - name: PoolFactory
+          file: ./abis/PoolFactory.json
       eventHandlers:
-        - event: Deployed(string,string,string,address,address,address,address,string)
+        - event: TraderPoolDeployed(string,string,string,address,address,address,address,uint256,string)
           handler: onDeployed
 
 templates:
@@ -35,7 +35,6 @@ templates:
       language: wasm/assemblyscript
       file: ./src/mappings/BasicTraderPool.ts
       entities:
-        - TraderPoolFactory
         - BasicTraderPool
         - Position
         - Trade
@@ -61,6 +60,8 @@ templates:
           handler: onTraderCommissionPaid
         - event: DescriptionURLChanged(string)
           handler: onDescriptionURLChanged
+        - event: ModifiedPrivateInvestors(address[],bool)
+          handler: onModifiedPrivateInvestors
 
   - kind: ethereum/contract
     name: RiskyProposal
@@ -73,11 +74,12 @@ templates:
       language: wasm/assemblyscript
       file: ./src/mappings/TraderPoolRiskyProposal.ts
       entities:
-        - TraderPoolFactory
         - ProposalContract
       abis:
         - name: RiskyProposal
           file: ./abis/TraderPoolRiskyProposal.json
+        - name: PriceFeed
+          file: ./abis/PriceFeed.json
       eventHandlers:
         - event: ProposalCreated(uint256,address,(uint256,uint256,uint256))
           handler: onProposalCreated
