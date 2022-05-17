@@ -31,6 +31,7 @@ export function onExchange(event: Exchanged): void {
   let usdVolume = BigInt.zero();
 
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
+  let baseTokenAddress = Address.fromString(pool.baseToken.toHexString());
 
   if (event.params.toToken != pool.baseToken) {
     // adding funds to the position
@@ -39,18 +40,10 @@ export function onExchange(event: Exchanged): void {
     position1.totalPositionOpenVolume = position1.totalPositionOpenVolume.plus(event.params.toVolume);
 
     if (event.params.fromToken != pool.baseToken) {
-      fromBaseVolume = getFromPriceFeed(
-        pfPrototype,
-        event.params.fromToken,
-        Address.fromString(pool.baseToken.toHexString()),
-        event.params.fromVolume
-      );
+      fromBaseVolume = getFromPriceFeed(pfPrototype, event.params.fromToken, baseTokenAddress, event.params.fromVolume);
     }
 
-    let resp = pfPrototype.try_getNormalizedPriceInUSD(
-      Address.fromString(pool.baseToken.toHexString()),
-      fromBaseVolume
-    );
+    let resp = pfPrototype.try_getNormalizedPriceInUSD(baseTokenAddress, fromBaseVolume);
 
     if (resp.reverted) {
       usdVolume = BigInt.zero();
@@ -68,15 +61,10 @@ export function onExchange(event: Exchanged): void {
     position2.totalPositionCloseVolume = position2.totalPositionCloseVolume.plus(event.params.fromVolume);
 
     if (event.params.toToken != pool.baseToken) {
-      toBaseVolume = getFromPriceFeed(
-        pfPrototype,
-        event.params.toToken,
-        Address.fromString(pool.baseToken.toHexString()),
-        event.params.toVolume
-      );
+      toBaseVolume = getFromPriceFeed(pfPrototype, event.params.toToken, baseTokenAddress, event.params.toVolume);
     }
 
-    let resp = pfPrototype.try_getNormalizedPriceInUSD(Address.fromString(pool.baseToken.toHexString()), toBaseVolume);
+    let resp = pfPrototype.try_getNormalizedPriceInUSD(baseTokenAddress, toBaseVolume);
 
     if (resp.reverted) {
       usdVolume = BigInt.zero();
@@ -205,7 +193,6 @@ function exchangeSetup(
       volume,
       event.params.toVolume,
       usdVolume,
-      event.transaction.from,
       flag, // true
       suffix,
       event.block.timestamp
@@ -220,7 +207,6 @@ function exchangeSetup(
       event.params.fromVolume,
       volume,
       usdVolume,
-      event.transaction.from,
       flag, // false
       suffix,
       event.block.timestamp

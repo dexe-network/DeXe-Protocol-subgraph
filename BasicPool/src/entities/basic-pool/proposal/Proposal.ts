@@ -21,10 +21,12 @@ export function getProposal(
     proposal.investLPLimit = investLPLimit;
     proposal.maxTokenPriceLimit = maxTokenPriceLimit;
     proposal.basicPool = getBasicTraderPool(basicPool).id;
-    proposal.totalOpenVolume = BigInt.zero();
-    proposal.totalCloseVolume = BigInt.zero();
-    proposal.totalOpenUSDVolume = BigInt.zero();
-    proposal.totalCloseUSDVolume = BigInt.zero();
+    proposal.totalBaseOpenVolume = BigInt.zero();
+    proposal.totalBaseCloseVolume = BigInt.zero();
+    proposal.totalUSDOpenVolume = BigInt.zero();
+    proposal.totalUSDCloseVolume = BigInt.zero();
+    proposal.totalPositionOpenVolume = BigInt.zero();
+    proposal.totalPositionCloseVolume = BigInt.zero();
   }
 
   return proposal;

@@ -9,7 +9,6 @@ export function getExchange(
   fromVolume: BigInt = BigInt.zero(),
   toVolume: BigInt = BigInt.zero(),
   usdVolume: BigInt = BigInt.zero(),
-  investor: Address = Address.zero(),
   opening: boolean = false,
   suffix: string = "_0",
   timestamp: BigInt = BigInt.zero()
@@ -29,7 +28,6 @@ export function getExchange(
     trade.opening = opening;
     trade.day = "";
     trade.timestamp = timestamp;
-    trade.investor = investor;
   }
 
   return trade;

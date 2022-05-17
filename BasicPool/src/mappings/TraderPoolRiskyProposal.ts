@@ -89,20 +89,22 @@ export function onProposalExchange(event: ProposalExchanged): void {
   let history = getProposalExchangeHistory(event.block.timestamp, proposal.id);
 
   exchange.day = history.id;
-  if (event.params.toToken != proposal.token) {
+  if (event.params.toToken == proposal.token) {
     // adding funds to the position
-    proposal.totalOpenVolume = proposal.totalOpenVolume.plus(event.params.toVolume);
+    proposal.totalPositionOpenVolume = proposal.totalPositionOpenVolume.plus(event.params.toVolume);
+    proposal.totalBaseOpenVolume = proposal.totalBaseOpenVolume.plus(event.params.fromVolume);
 
     let usd = getUSDPrice(event.params.fromToken, event.params.fromVolume);
     exchange.usdVolume = usd;
-    proposal.totalOpenUSDVolume = proposal.totalOpenUSDVolume.plus(usd);
-  } else if (event.params.fromToken != proposal.token) {
+    proposal.totalUSDOpenVolume = proposal.totalUSDOpenVolume.plus(usd);
+  } else if (event.params.fromToken == proposal.token) {
     // withdrawing funds from the position
-    proposal.totalCloseVolume = proposal.totalCloseVolume.plus(event.params.toVolume);
+    proposal.totalPositionCloseVolume = proposal.totalPositionCloseVolume.plus(event.params.fromVolume);
+    proposal.totalBaseCloseVolume = proposal.totalBaseCloseVolume.plus(event.params.toVolume);
 
     let usd = getUSDPrice(event.params.toToken, event.params.toVolume);
     exchange.usdVolume = usd;
-    proposal.totalOpenUSDVolume = proposal.totalCloseUSDVolume.plus(usd);
+    proposal.totalUSDCloseVolume = proposal.totalUSDCloseVolume.plus(usd);
   }
 
   proposal.save();
