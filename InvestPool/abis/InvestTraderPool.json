@@ -68,37 +68,6 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "fromToken",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "toToken",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "fromVolume",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "toVolume",
-        "type": "uint256"
-      }
-    ],
-    "name": "Exchanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
         "name": "investor",
         "type": "address"
       },
@@ -180,19 +149,6 @@
       }
     ],
     "name": "ModifiedPrivateInvestors",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "position",
-        "type": "address"
-      }
-    ],
-    "name": "PositionClosed",
     "type": "event"
   },
   {
@@ -787,54 +743,26 @@
       },
       {
         "internalType": "uint256",
-        "name": "amountIn",
+        "name": "amount",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "minAmountOut",
+        "name": "amountBound",
         "type": "uint256"
       },
       {
         "internalType": "address[]",
         "name": "optionalPath",
         "type": "address[]"
+      },
+      {
+        "internalType": "enum ITraderPool.ExchangeType",
+        "name": "exType",
+        "type": "uint8"
       }
     ],
-    "name": "exchangeFromExact",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amountOut",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "maxAmountIn",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address[]",
-        "name": "optionalPath",
-        "type": "address[]"
-      }
-    ],
-    "name": "exchangeToExact",
+    "name": "exchange",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -926,64 +854,30 @@
       },
       {
         "internalType": "uint256",
-        "name": "amountIn",
+        "name": "amount",
         "type": "uint256"
       },
       {
         "internalType": "address[]",
         "name": "optionalPath",
         "type": "address[]"
+      },
+      {
+        "internalType": "enum ITraderPool.ExchangeType",
+        "name": "exType",
+        "type": "uint8"
       }
     ],
-    "name": "getExchangeFromExactAmount",
+    "name": "getExchangeAmount",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "minAmountOut",
+        "name": "",
         "type": "uint256"
       },
       {
         "internalType": "address[]",
-        "name": "path",
-        "type": "address[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amountOut",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address[]",
-        "name": "optionalPath",
-        "type": "address[]"
-      }
-    ],
-    "name": "getExchangeToExactAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "maxAmountIn",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address[]",
-        "name": "path",
+        "name": "",
         "type": "address[]"
       }
     ],
@@ -1506,6 +1400,19 @@
   },
   {
     "inputs": [],
+    "name": "openPositions",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "priceFeed",
     "outputs": [
       {
@@ -1714,5 +1621,49 @@
     ],
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "fromToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "toToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fromVolume",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "toVolume",
+        "type": "uint256"
+      }
+    ],
+    "name": "Exchanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "position",
+        "type": "address"
+      }
+    ],
+    "name": "PositionClosed",
+    "type": "event"
   }
 ]
