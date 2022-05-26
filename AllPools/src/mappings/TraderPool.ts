@@ -168,6 +168,7 @@ export function onModifiedAdmins(event: ModifiedAdmins): void {
   }
 
   pool.admins = extendArray(pool.admins, [pool.trader]);
+  pool.save();
 }
 
 function exchangeSetup(
