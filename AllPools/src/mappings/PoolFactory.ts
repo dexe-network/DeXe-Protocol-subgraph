@@ -11,6 +11,7 @@ export function onDeployed(event: TraderPoolDeployed): void {
     event.params.name,
     event.params.descriptionURL,
     event.block.timestamp,
+    event.block.number,
     event.params.trader,
     event.params.commission
   );

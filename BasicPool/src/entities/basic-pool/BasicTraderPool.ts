@@ -16,7 +16,6 @@ export function getBasicTraderPool(
     basicPool = new BasicPool(poolAddress.toHexString());
     basicPool.baseToken = basicTokenAddress;
     basicPool.investors = new Array<Bytes>();
-    basicPool.privateInvestors = new Array<Bytes>();
     basicPool.ticker = ticker;
     basicPool.name = name;
     basicPool.creationTime = creationTime;

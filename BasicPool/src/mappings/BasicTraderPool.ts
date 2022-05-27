@@ -16,8 +16,7 @@ import { getDivestHistory } from "../entities/basic-pool/history/DivestHistory";
 import { getInvestorInfo } from "../entities/basic-pool/InvestorInfo";
 import { getBasicPoolHistory } from "../entities/basic-pool/history/BasicPoolHistory";
 import { getInvestorLPHistory } from "../entities/basic-pool/history/InvestorLPHistory";
-import { extendArray, reduceArray, upcastCopy } from "../helpers/ArrayHelper";
-import { Address, Bytes } from "@graphprotocol/graph-ts";
+import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 
 export function onInvestorAdded(event: InvestorAdded): void {
   let pool = getBasicTraderPool(event.address);
@@ -101,15 +100,5 @@ export function onTraderCommissionPaid(event: TraderCommissionPaid): void {
 export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
   let pool = getBasicTraderPool(event.address);
   pool.descriptionURL = event.params.descriptionURL;
-  pool.save();
-}
-
-export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): void {
-  let pool = getBasicTraderPool(event.address);
-  if (event.params.add) {
-    pool.investors = extendArray(pool.investors, upcastCopy<Address, Bytes>(event.params.privateInvestors));
-  } else {
-    pool.investors = reduceArray(pool.investors, upcastCopy<Address, Bytes>(event.params.privateInvestors));
-  }
   pool.save();
 }

@@ -27,9 +27,9 @@ function updatePools(block: ethereum.Block, type: string): void {
 
     if (!poolInfo.reverted) {
       for (let pool = 0; pool < poolInfo.value.value0.length; pool++) {
-        let basicPool = getTraderPool(poolInfo.value.value0[pool]);
+        let traderPool = getTraderPool(poolInfo.value.value0[pool]);
         let history = getTraderPoolPriceHistory(
-          basicPool.id,
+          traderPool,
           block.number,
           block.timestamp,
           poolInfo.value.value1[pool].totalPoolUSD,
@@ -39,12 +39,12 @@ function updatePools(block: ethereum.Block, type: string): void {
 
         history.save();
 
-        let prevHistory = getTraderPoolPriceHistory(basicPool.id, block.number.minus(BigInt.fromI32(CHECK_PER_BLOCK)));
+        let prevHistory = getTraderPoolPriceHistory(traderPool, block.number.minus(BigInt.fromI32(CHECK_PER_BLOCK)));
         prevHistory.isLast = false;
         prevHistory.save();
 
-        basicPool.priceHistoryCount = basicPool.priceHistoryCount.plus(BigInt.fromI32(1));
-        basicPool.save();
+        traderPool.priceHistoryCount = traderPool.priceHistoryCount.plus(BigInt.fromI32(1));
+        traderPool.save();
       }
     }
   }

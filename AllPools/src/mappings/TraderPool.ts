@@ -5,6 +5,7 @@ import {
   InvestorRemoved,
   DescriptionURLChanged,
   ModifiedAdmins,
+  ModifiedPrivateInvestors,
 } from "../../generated/templates/TraderPool/TraderPool";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
@@ -168,6 +169,22 @@ export function onModifiedAdmins(event: ModifiedAdmins): void {
   }
 
   pool.admins = extendArray(pool.admins, [pool.trader]);
+  pool.save();
+}
+
+export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): void {
+  let pool = getTraderPool(event.address);
+  let newArray = new Array<string>();
+
+  for (let i = 0; i < event.params.privateInvestors.length; i++) {
+    newArray.push(event.params.privateInvestors[i].toHexString());
+  }
+
+  if (event.params.add) {
+    pool.investors = extendArray(pool.investors, newArray);
+  } else {
+    pool.investors = reduceArray(pool.investors, newArray);
+  }
   pool.save();
 }
 

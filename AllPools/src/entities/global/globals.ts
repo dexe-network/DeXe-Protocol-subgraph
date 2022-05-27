@@ -1,4 +1,5 @@
 export const DAY = 86400;
+export const BLOCK_PER_YEAR = 10512000;
 export const CHECK_PER_BLOCK = 100;
 export const BASIC_POOL_NAME = "BASIC_POOL";
 export const INVEST_POOL_NAME = "INVEST_POOL";

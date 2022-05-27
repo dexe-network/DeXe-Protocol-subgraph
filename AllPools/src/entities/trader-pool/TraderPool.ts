@@ -10,6 +10,7 @@ export function getTraderPool(
   name: string = "",
   descriptionURL: string = "",
   creationTime: BigInt = BigInt.zero(),
+  block: BigInt = BigInt.zero(),
   trader: Address = Address.zero(),
   commission: BigInt = BigInt.zero()
 ): TraderPool {
@@ -22,6 +23,7 @@ export function getTraderPool(
     traderPool.ticker = ticker;
     traderPool.name = name;
     traderPool.creationTime = creationTime;
+    traderPool.block = block;
     traderPool.descriptionURL = descriptionURL;
 
     traderPool.maxLoss = BigInt.zero();

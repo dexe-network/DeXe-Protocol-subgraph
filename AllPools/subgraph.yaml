@@ -100,3 +100,5 @@ templates:
           handler: onModifiedAdmins
         - event: PositionClosed(address)
           handler: onClose
+        - event: ModifiedPrivateInvestors(address[],bool)
+          handler: onModifiedPrivateInvestors
