@@ -104,13 +104,3 @@ export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
   pool.descriptionURL = event.params.descriptionURL;
   pool.save();
 }
-
-export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): void {
-  let pool = getInvestTraderPool(event.address);
-  if (event.params.add) {
-    pool.investors = extendArray(pool.investors, upcastCopy<Address, Bytes>(event.params.privateInvestors));
-  } else {
-    pool.investors = reduceArray(pool.investors, upcastCopy<Address, Bytes>(event.params.privateInvestors));
-  }
-  pool.save();
-}
