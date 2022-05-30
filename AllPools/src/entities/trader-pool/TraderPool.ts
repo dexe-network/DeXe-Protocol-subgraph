@@ -23,7 +23,7 @@ export function getTraderPool(
     traderPool.ticker = ticker;
     traderPool.name = name;
     traderPool.creationTime = creationTime;
-    traderPool.block = block;
+    traderPool.creationBlock = block;
     traderPool.descriptionURL = descriptionURL;
 
     traderPool.maxLoss = BigInt.zero();

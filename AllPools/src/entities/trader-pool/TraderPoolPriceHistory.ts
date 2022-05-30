@@ -25,18 +25,15 @@ export function getTraderPoolPriceHistory(
     history.percPNL = currentPrice.minus(BigInt.fromU64(DECIMAL)).div(BigInt.fromU64(PERCENTAGE));
     history.isLast = true;
 
-    let prevBlock: BigInt;
+    let prevBlock = BigInt.fromU64(
+      max(roundTo100(blockNumber.minus(BigInt.fromU64(BLOCK_PER_YEAR))).toU64(), roundTo100(pool.creationBlock).toU64())
+    );
 
-    if (blockNumber.minus(pool.block).gt(BigInt.fromU64(BLOCK_PER_YEAR))) {
-      prevBlock = roundTo100(blockNumber.minus(BigInt.fromU64(BLOCK_PER_YEAR)));
+    if (prevBlock.notEqual(pool.creationBlock)) {
+      history.APY = history.percPNL.minus(getTraderPoolPriceHistory(pool, prevBlock).percPNL);
     } else {
-      prevBlock = roundTo100(pool.block);
+      history.APY = BigInt.zero();
     }
-
-    history.APY = currentPrice
-      .minus(BigInt.fromU64(DECIMAL))
-      .div(BigInt.fromU64(PERCENTAGE))
-      .minus(getTraderPoolPriceHistory(pool, prevBlock).percPNL);
   }
   return history;
 }
