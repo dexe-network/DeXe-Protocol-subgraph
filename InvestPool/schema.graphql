@@ -18,7 +18,6 @@ type InvestPool @entity {
   commission: BigInt!
 
   investors: [Bytes!]!
-  privateInvestors: [Bytes!]!
 
   proposals: [Proposal!]! @derivedFrom(field: "investPool")
   invests: [InvestHistory!]! @derivedFrom(field: "investPool")

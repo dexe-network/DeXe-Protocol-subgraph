@@ -29,50 +29,6 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "fromToken",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "toToken",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "fromVolume",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "toVolume",
-        "type": "uint256"
-      }
-    ],
-    "name": "Exchanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "position",
-        "type": "address"
-      }
-    ],
-    "name": "PositionClosed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
         "internalType": "string",
         "name": "descriptionURL",
         "type": "string"
@@ -838,6 +794,11 @@
           },
           {
             "internalType": "uint256",
+            "name": "totalBlacklistedPositions",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "totalInvestors",
             "type": "uint256"
           },
@@ -859,6 +820,21 @@
           {
             "internalType": "uint256",
             "name": "lpLockedInProposals",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "traderUSD",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "traderBase",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "traderLPBalance",
             "type": "uint256"
           }
         ],
@@ -1321,5 +1297,50 @@
     ],
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "fromToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "toToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fromVolume",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "toVolume",
+        "type": "uint256"
+      }
+    ],
+    "name": "Exchanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "position",
+        "type": "address"
+      }
+    ],
+    "name": "PositionClosed",
+    "type": "event"
   }
 ]

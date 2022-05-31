@@ -8,7 +8,9 @@ export function getTraderPoolPriceHistory(
   timestamp: BigInt = BigInt.zero(),
   usdTVL: BigInt = BigInt.zero(),
   poolBase: BigInt = BigInt.zero(),
-  supply: BigInt = BigInt.zero()
+  supply: BigInt = BigInt.zero(),
+  traderUSD: BigInt = BigInt.zero(),
+  traderBase: BigInt = BigInt.zero()
 ): TraderPoolPriceHistory {
   let id = pool.id + blockNumber.toString();
   let history = TraderPoolPriceHistory.load(id);
@@ -21,27 +23,28 @@ export function getTraderPoolPriceHistory(
     history.supply = supply;
     history.seconds = timestamp;
     history.baseTVL = poolBase;
+
+    history.traderUSD = traderUSD;
+    history.traderBase = traderBase;
+
     history.absPNL = currentPrice.minus(BigInt.fromU64(DECIMAL)).times(supply).div(BigInt.fromU64(DECIMAL));
     history.percPNL = currentPrice.minus(BigInt.fromU64(DECIMAL)).div(BigInt.fromU64(PERCENTAGE));
     history.isLast = true;
 
-    let prevBlock: BigInt;
+    let prevBlock = roundCheckUp(
+      BigInt.fromU64(max(blockNumber.minus(BigInt.fromU64(BLOCK_PER_YEAR)).toU64(), pool.creationBlock.toU64()))
+    );
 
-    if (blockNumber.minus(pool.block).gt(BigInt.fromU64(BLOCK_PER_YEAR))) {
-      prevBlock = roundTo100(blockNumber.minus(BigInt.fromU64(BLOCK_PER_YEAR)));
+    if (prevBlock.notEqual(roundCheckUp(pool.creationBlock))) {
+      history.APY = history.percPNL.minus(getTraderPoolPriceHistory(pool, prevBlock).percPNL);
     } else {
-      prevBlock = roundTo100(pool.block);
+      history.APY = history.percPNL;
     }
-
-    history.APY = currentPrice
-      .minus(BigInt.fromU64(DECIMAL))
-      .div(BigInt.fromU64(PERCENTAGE))
-      .minus(getTraderPoolPriceHistory(pool, prevBlock).percPNL);
   }
   return history;
 }
 
-function roundTo100(block: BigInt): BigInt {
+function roundCheckUp(block: BigInt): BigInt {
   let mod = block.mod(BigInt.fromU64(CHECK_PER_BLOCK));
   return block.plus(BigInt.fromU64(CHECK_PER_BLOCK).minus(mod));
 }

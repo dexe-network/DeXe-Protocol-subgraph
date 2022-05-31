@@ -35,7 +35,7 @@ type TraderPool @entity {
   name: String!
   descriptionURL: String!
   creationTime: BigInt!
-  block: BigInt!
+  creationBlock: BigInt!
   maxLoss: BigInt!
   commission: BigInt!
 
@@ -81,6 +81,8 @@ type TraderPoolPriceHistory @entity {
   seconds: BigInt!
   absPNL: BigInt!
   percPNL: BigInt!
+  traderUSD: BigInt!
+  traderBase: BigInt!
   APY: BigInt!
   isLast: Boolean!
 }

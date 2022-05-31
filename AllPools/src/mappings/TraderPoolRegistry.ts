@@ -34,7 +34,9 @@ function updatePools(block: ethereum.Block, type: string): void {
           block.timestamp,
           poolInfo.value.value1[pool].totalPoolUSD,
           poolInfo.value.value1[pool].totalPoolBase,
-          poolInfo.value.value1[pool].lpSupply
+          poolInfo.value.value1[pool].lpSupply,
+          poolInfo.value.value1[pool].traderUSD,
+          poolInfo.value.value1[pool].traderBase
         );
 
         history.save();
