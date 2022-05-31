@@ -81,6 +81,8 @@ type TraderPoolPriceHistory @entity {
   seconds: BigInt!
   absPNL: BigInt!
   percPNL: BigInt!
+  traderUSD: BigInt!
+  traderBase: BigInt!
   APY: BigInt!
   isLast: Boolean!
 }
