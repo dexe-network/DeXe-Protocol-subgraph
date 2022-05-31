@@ -42,8 +42,6 @@ templates:
         - name: BasicPool
           file: ./abis/BasicTraderPool.json
       eventHandlers:
-        - event: PositionClosed(address)
-          handler: onClose
         - event: InvestorAdded(address)
           handler: onInvestorAdded
         - event: Invested(address,uint256,uint256)
@@ -58,8 +56,6 @@ templates:
           handler: onTraderCommissionPaid
         - event: DescriptionURLChanged(string)
           handler: onDescriptionURLChanged
-        - event: ModifiedPrivateInvestors(address[],bool)
-          handler: onModifiedPrivateInvestors
 
   - kind: ethereum/contract
     name: RiskyProposal
