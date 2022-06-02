@@ -85,6 +85,7 @@ type TraderPoolPriceHistory @entity {
   traderBase: BigInt!
   APY: BigInt!
   isLast: Boolean!
+  aggregationType: BigInt!
 }
 
 # @notice The entity holds information about position in pool
