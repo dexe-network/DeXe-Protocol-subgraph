@@ -206,7 +206,7 @@ function exchangeSetup(
     trade = getExchange(
       event.transaction.hash,
       position.id,
-      event.params.fromToken,
+      Address.fromString(pool.baseToken.toHexString()),
       event.params.toToken,
       volume,
       event.params.toVolume,
@@ -221,7 +221,7 @@ function exchangeSetup(
       event.transaction.hash,
       position.id,
       event.params.fromToken,
-      event.params.toToken,
+      Address.fromString(pool.baseToken.toHexString()),
       event.params.fromVolume,
       volume,
       usdVolume,
