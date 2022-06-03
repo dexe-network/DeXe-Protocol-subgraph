@@ -181,9 +181,9 @@ export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): voi
   }
 
   if (event.params.add) {
-    pool.investors = extendArray(pool.investors, newArray);
+    pool.privateInvestors = extendArray(pool.privateInvestors, newArray);
   } else {
-    pool.investors = reduceArray(pool.investors, newArray);
+    pool.privateInvestors = reduceArray(pool.privateInvestors, newArray);
   }
   pool.save();
 }

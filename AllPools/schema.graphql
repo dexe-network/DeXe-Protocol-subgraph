@@ -51,7 +51,7 @@ type TraderPool @entity {
   investors: [Investor!]!
   investorsCount: BigInt!
 
-  privateInvestors: [Bytes!]!
+  privateInvestors: [Investor!]!
   privateInvestorsCount: BigInt!
 
   positions: [Position!]! @derivedFrom(field: "traderPool")
