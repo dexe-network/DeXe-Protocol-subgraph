@@ -8,8 +8,9 @@ import {
   POOL_OFFSET,
   POOL_REGISTRY_ADDRESS,
   INVEST_POOL_NAME,
-  BLOCK_PER_5MIN,
 } from "../entities/global/globals";
+
+const BLOCK_PER_5MIN = BigInt.fromI32(CHECK_PER_BLOCK);
 
 const BLOCK_INTERVALS = [
   BLOCK_PER_5MIN.times(BigInt.fromI32(3)), // 15 min
@@ -38,7 +39,7 @@ const CODES = [
 ];
 
 function updatePools(block: ethereum.Block, type: string): void {
-  let aggregationType = 0b0000;
+  let aggregationType = 0;
   let tprPrototype = TraderPoolRegistry.bind(Address.fromString(POOL_REGISTRY_ADDRESS));
   let poolCount = tprPrototype.try_countPools(type);
 

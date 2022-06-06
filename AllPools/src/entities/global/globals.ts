@@ -3,7 +3,6 @@ import { BigInt } from "@graphprotocol/graph-ts";
 export const DAY = 86400;
 export const BLOCK_PER_YEAR = 10512000;
 export const CHECK_PER_BLOCK = 100;
-export const BLOCK_PER_5MIN = BigInt.fromI32(CHECK_PER_BLOCK);
 export const BASIC_POOL_NAME = "BASIC_POOL";
 export const INVEST_POOL_NAME = "INVEST_POOL";
 export const POOL_OFFSET = 40;
