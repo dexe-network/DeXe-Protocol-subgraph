@@ -1,4 +1,4 @@
-import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getTraderPoolPriceHistory } from "../entities/trader-pool/TraderPoolPriceHistory";
 import { TraderPoolRegistry } from "../../generated/TraderPoolRegistry/TraderPoolRegistry";
@@ -14,7 +14,10 @@ function updatePools(block: ethereum.Block, type: string): void {
   let tprPrototype = TraderPoolRegistry.bind(Address.fromString(POOL_REGISTRY_ADDRESS));
   let poolCount = tprPrototype.try_countPools(type);
 
-  if (poolCount.reverted) return;
+  if (poolCount.reverted) {
+    log.warning("try_countPools is reverted for type {}, in block {}", [type, block.number.toString()]);
+    return;
+  }
 
   let iters = Math.ceil(F64.parseFloat(poolCount.value.toI64().toString()) / POOL_OFFSET);
 
@@ -48,6 +51,13 @@ function updatePools(block: ethereum.Block, type: string): void {
         traderPool.priceHistoryCount = traderPool.priceHistoryCount.plus(BigInt.fromI32(1));
         traderPool.save();
       }
+    } else {
+      log.warning("try_listPoolsWithInfo is reverted for type {}, interval ({} ; {}), in block {}", [
+        type,
+        BigInt.fromI32(POOL_OFFSET * i).toString(),
+        BigInt.fromI32((i + 1) * POOL_OFFSET).toString(),
+        block.number.toString(),
+      ]);
     }
   }
 }
