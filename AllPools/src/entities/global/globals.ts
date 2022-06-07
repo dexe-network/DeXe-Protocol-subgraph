@@ -1,3 +1,5 @@
+import { BigInt } from "@graphprotocol/graph-ts";
+
 export const DAY = 86400;
 export const BLOCK_PER_YEAR = 10512000;
 export const CHECK_PER_BLOCK = 100;

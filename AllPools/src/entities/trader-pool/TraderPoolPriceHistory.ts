@@ -10,7 +10,8 @@ export function getTraderPoolPriceHistory(
   poolBase: BigInt = BigInt.zero(),
   supply: BigInt = BigInt.zero(),
   traderUSD: BigInt = BigInt.zero(),
-  traderBase: BigInt = BigInt.zero()
+  traderBase: BigInt = BigInt.zero(),
+  aggregationType: BigInt = BigInt.zero()
 ): TraderPoolPriceHistory {
   let id = pool.id + blockNumber.toString();
   let history = TraderPoolPriceHistory.load(id);
@@ -30,6 +31,8 @@ export function getTraderPoolPriceHistory(
     history.absPNL = currentPrice.minus(BigInt.fromU64(DECIMAL)).times(supply).div(BigInt.fromU64(DECIMAL));
     history.percPNL = currentPrice.minus(BigInt.fromU64(DECIMAL)).div(BigInt.fromU64(PERCENTAGE));
     history.isLast = true;
+
+    history.aggregationType = aggregationType;
 
     let prevBlock = roundCheckUp(
       BigInt.fromU64(max(blockNumber.minus(BigInt.fromU64(BLOCK_PER_YEAR)).toU64(), pool.creationBlock.toU64()))
