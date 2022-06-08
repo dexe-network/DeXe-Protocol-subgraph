@@ -6,14 +6,14 @@ import {
   DescriptionURLChanged,
   ModifiedAdmins,
   ModifiedPrivateInvestors,
-  TraderCommissionPaid,
+  TraderCommissionMinted,
 } from "../../generated/templates/TraderPool/TraderPool";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPosition } from "../entities/trader-pool/Position";
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
-import { DAY, PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { DAY, DECIMAL, PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { Exchange, FeeHistory, Position, TraderPool, TraderPoolPriceHistory } from "../../generated/schema";
 import { upcastCopy, extendArray, reduceArray } from "../helpers/ArrayHelper";
@@ -192,7 +192,7 @@ export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): voi
   pool.save();
 }
 
-export function onTraderCommissionPaid(event: TraderCommissionPaid): void {
+export function onTraderCommissionMinted(event: TraderCommissionMinted): void {
   let pool = getTraderPool(event.address);
   let history = getFeeHistory(pool, event.block.timestamp);
   let priceHistory = findPrevHistory<TraderPoolPriceHistory>(
@@ -202,6 +202,7 @@ export function onTraderCommissionPaid(event: TraderCommissionPaid): void {
     BigInt.fromI32(100)
   );
   let currentPNL = priceHistory == null ? BigInt.zero() : priceHistory.percPNL;
+  let currentLpCost = priceHistory == null ? BigInt.zero() : priceHistory.supply.div(priceHistory.usdTVL);
   let prevHistory: FeeHistory | null;
 
   if (history.prevHistory == "") {
@@ -214,9 +215,13 @@ export function onTraderCommissionPaid(event: TraderCommissionPaid): void {
     history.prevHistory = prevHistory == null ? "" : prevHistory.id;
     history.PNL = currentPNL;
   } else {
-    prevHistory = FeeHistory.load(history.prevHistory == null ? "" : history.prevHistory);
+    prevHistory = FeeHistory.load(history.prevHistory);
     history.PNL = currentPNL.minus(prevHistory == null ? BigInt.zero() : prevHistory.PNL);
   }
+
+  let lpCommission = event.params.amount.div(BigInt.fromString("0.7").times(BigInt.fromU64(DECIMAL)));
+  history.perfomanceFee = lpCommission.times(currentLpCost).div(BigInt.fromU64(DECIMAL));
+  history.fundProfit = history.perfomanceFee.div(pool.commission).times(BigInt.fromI32(100).minus(pool.commission));
 
   history.save();
 }

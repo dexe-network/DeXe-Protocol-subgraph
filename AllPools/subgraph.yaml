@@ -102,5 +102,5 @@ templates:
           handler: onClose
         - event: ModifiedPrivateInvestors(address[],bool)
           handler: onModifiedPrivateInvestors
-        - event: TraderCommissionPaid(address,uint256)
-          handler: onTraderCommissionPaid
+        - event: TraderCommissionMinted(address,uint256)
+          handler: onTraderCommissionMinted

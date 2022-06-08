@@ -11,6 +11,8 @@ export function getFeeHistory(pool: TraderPool, timestamp: BigInt): FeeHistory {
     history = new FeeHistory(id);
     history.traderPool = pool.id;
     history.PNL = BigInt.zero();
+    history.fundProfit = BigInt.zero();
+    history.perfomanceFee = BigInt.zero();
     history.day = day;
     history.prevHistory = "";
   }
