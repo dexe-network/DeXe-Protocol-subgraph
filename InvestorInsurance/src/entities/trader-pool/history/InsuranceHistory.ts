@@ -1,5 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { InsuranceHistory, Investor, TraderPool } from "../../../../generated/schema";
+import { InsuranceHistory, Investor } from "../../../../generated/schema";
 import { DAY } from "../../global/globals";
 
 export function getInsuranceHistory(investor: Investor, timestamp: BigInt): InsuranceHistory {
@@ -9,10 +9,11 @@ export function getInsuranceHistory(investor: Investor, timestamp: BigInt): Insu
 
   if (history == null) {
     history = new InsuranceHistory(id);
-    history.insurance = investor.insurance;
-    history.claimedAmount = investor.claimedAmount;
+    history.insurance = BigInt.zero();
+    history.claimedAmount = BigInt.zero();
     history.investor = investor.id;
     history.day = day;
+    history.prevHistory = "";
   }
 
   return history;

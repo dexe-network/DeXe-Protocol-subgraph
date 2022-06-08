@@ -12,12 +12,8 @@
 type TraderPool @entity {
   id: ID! # pool address
   type: String!
-  baseToken: Bytes!
-  ticker: String!
-  name: String!
   creationTime: BigInt!
   creationBlock: BigInt!
-  commission: BigInt!
 
   investors: [Investor!]!
   investorsCount: BigInt!
@@ -34,9 +30,6 @@ type TraderPool @entity {
 # @param allPools the array with pools where the  investor has ever invested
 type Investor @entity {
   id: ID! # investor address
-  insurance: BigInt!
-  claimedAmount: BigInt!
-
   activePools: [TraderPool!]!
   allPools: [TraderPool!]!
 
@@ -50,13 +43,14 @@ type InsuranceHistory @entity {
 
   investor: Investor!
   day: BigInt!
+  prevHistory: InsuranceHistory!
 }
 
 type TraderPoolHistory @entity {
   id: ID! # pool address + timestamp / 86400
-  investors: [Investor!]!
+  investors: [String!]!
   investorsCount: BigInt!
-  privateInvestors: [Investor!]!
+  privateInvestors: [String!]!
   privateInvestorsCount: BigInt!
   pool: TraderPool!
   day: BigInt!
