@@ -47,7 +47,7 @@ export function getTraderPoolPriceHistory(
   return history;
 }
 
-function roundCheckUp(block: BigInt): BigInt {
+export function roundCheckUp(block: BigInt): BigInt {
   let mod = block.mod(BigInt.fromU64(CHECK_PER_BLOCK));
   return block.plus(BigInt.fromU64(CHECK_PER_BLOCK).minus(mod));
 }

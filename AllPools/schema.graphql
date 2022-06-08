@@ -178,3 +178,11 @@ type Investor @entity {
   activePools: [TraderPool!]!
   allPools: [TraderPool!]!
 }
+
+type FeeHistory @entity {
+  id: ID! # pool address + timestamp / 86400
+  traderPool: TraderPool!
+  PNL: BigInt!
+  day: BigInt!
+  prevHistory: FeeHistory!
+}
