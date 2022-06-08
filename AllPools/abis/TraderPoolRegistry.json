@@ -225,7 +225,7 @@
         "type": "address"
       }
     ],
-    "name": "isBasePool",
+    "name": "isBasicPool",
     "outputs": [
       {
         "internalType": "bool",
