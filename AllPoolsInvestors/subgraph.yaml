@@ -76,3 +76,7 @@ templates:
           handler: onModifiedAdmins
         - event: ModifiedPrivateInvestors(address[],bool)
           handler: onModifiedPrivateInvestors
+        - event: Invested(address,uint256,uint256)
+          handler: onInvest
+        - event: Divested(address,uint256,uint256)
+          handler: onDivest

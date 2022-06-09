@@ -1,4 +1,6 @@
 import {
+  Divested,
+  Invested,
   InvestorAdded,
   InvestorRemoved,
   ModifiedPrivateInvestors,
@@ -8,6 +10,11 @@ import { BigInt } from "@graphprotocol/graph-ts";
 import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 import { getInvestor } from "../entities/trader-pool/Investor";
 import { getTraderPoolHistory } from "../entities/trader-pool/history/TraderPoolHistory";
+import { getInvestorInfo } from "../entities/trader-pool/InvestorInfo";
+import { getInvest } from "../entities/trader-pool/Invest";
+import { getInvestHistory } from "../entities/trader-pool/history/InvestHistory";
+import { getDivest } from "../entities/trader-pool/Divest";
+import { getDivestHistory } from "../entities/trader-pool/history/DivestHistory";
 
 export function onInvestorAdded(event: InvestorAdded): void {
   let pool = getTraderPool(event.address);
@@ -71,4 +78,48 @@ export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): voi
   }
   pool.save();
   history.save();
+}
+
+export function onInvest(event: Invested): void {
+  let investor = getInvestor(event.params.investor);
+  let pool = getTraderPool(event.address);
+  let investorInfo = getInvestorInfo(investor, pool);
+  let invest = getInvest(
+    event.transaction.hash,
+    investorInfo,
+    event.params.amount,
+    event.params.toMintLP,
+    event.block.timestamp
+  );
+  let history = getInvestHistory(event.block.timestamp, pool);
+
+  investorInfo.totalInvestVolume = investorInfo.totalInvestVolume.plus(event.params.amount);
+  history.totalInvestVolume = history.totalInvestVolume.plus(event.params.amount);
+  invest.day = history.id;
+
+  investorInfo.save();
+  history.save();
+  invest.save();
+}
+
+export function onDivest(event: Divested): void {
+  let investor = getInvestor(event.params.investor);
+  let pool = getTraderPool(event.address);
+  let investorInfo = getInvestorInfo(investor, pool);
+  let divest = getDivest(
+    event.transaction.hash,
+    investorInfo,
+    event.params.amount,
+    event.params.commission,
+    event.block.timestamp
+  );
+  let history = getDivestHistory(event.block.timestamp, pool);
+
+  investorInfo.totalDivestVolume = investorInfo.totalDivestVolume.plus(event.params.amount);
+  history.totalDivestVolume = history.totalDivestVolume.plus(event.params.amount);
+  divest.day = history.id;
+
+  investorInfo.save();
+  history.save();
+  divest.save();
 }
