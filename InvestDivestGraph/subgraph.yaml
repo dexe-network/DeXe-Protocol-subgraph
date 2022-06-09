@@ -1,0 +1,48 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: PoolFactory
+    network: chapel
+    source:
+      address: "0x820e32B24d51f87951CEEd0BeDE0C6B11829F7b7"
+      abi: PoolFactory
+      startBlock: 20014077
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/PoolFactory.ts
+      entities:
+        - PoolFactory
+      abis:
+        - name: PoolFactory
+          file: ./abis/PoolFactory.json
+      eventHandlers:
+        - event: TraderPoolDeployed(string,string,string,address,address,address,address,uint256,string)
+          handler: onDeployed
+
+templates:
+  - kind: ethereum/contract
+    name: TraderPool
+    network: chapel
+    source:
+      abi: TraderPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/TraderPool.ts
+      entities:
+        - TraderPool
+      abis:
+        - name: TraderPool
+          file: ./abis/TraderPool.json
+        - name: PriceFeed
+          file: ./abis/PriceFeed.json
+      eventHandlers:
+        - event: Invested(address,uint256,uint256)
+          handler: onInvest
+        - event: Divested(address,uint256,uint256)
+          handler: onDivest
