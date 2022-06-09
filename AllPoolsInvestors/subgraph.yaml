@@ -45,7 +45,7 @@ dataSources:
           handler: onDeposit
         - event: Withdrawn(uint256,address)
           handler: onWithdraw
-        - event: Paidout(uint256,address)
+        - event: Paidout(uint256,address,uint256)
           handler: onPayout
 
 templates:
