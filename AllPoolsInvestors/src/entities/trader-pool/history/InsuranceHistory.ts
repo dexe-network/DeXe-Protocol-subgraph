@@ -9,7 +9,7 @@ export function getInsuranceHistory(investor: Investor, timestamp: BigInt): Insu
 
   if (history == null) {
     history = new InsuranceHistory(id);
-    history.insurance = BigInt.zero();
+    history.stake = BigInt.zero();
     history.claimedAmount = BigInt.zero();
     history.investor = investor.id;
     history.day = day;

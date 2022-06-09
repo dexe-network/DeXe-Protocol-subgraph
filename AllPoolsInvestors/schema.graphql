@@ -38,7 +38,7 @@ type Investor @entity {
 
 type InsuranceHistory @entity {
   id: ID! # investor address + timestamp / 86400
-  insurance: BigInt!
+  stake: BigInt!
   claimedAmount: BigInt!
 
   investor: Investor!

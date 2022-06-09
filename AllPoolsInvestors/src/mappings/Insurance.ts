@@ -11,7 +11,7 @@ export function onDeposit(event: Deposited): void {
 
   injectPrevHistory(history, investor);
 
-  history.insurance = history.insurance.plus(event.params.amount);
+  history.stake = history.stake.plus(event.params.amount);
   investor.save();
   history.save();
 }
@@ -22,7 +22,7 @@ export function onWithdraw(event: Withdrawn): void {
 
   injectPrevHistory(history, investor);
 
-  history.insurance = history.insurance.minus(event.params.amount);
+  history.stake = history.stake.minus(event.params.amount);
   investor.save();
   history.save();
 }
@@ -34,7 +34,7 @@ export function onPayout(event: Paidout): void {
   injectPrevHistory(history, investor);
 
   history.claimedAmount = history.claimedAmount.plus(event.params.amount);
-  history.insurance = history.insurance.minus(event.params.userStakePayout);
+  history.stake = history.stake.minus(event.params.userStakePayout);
 
   investor.save();
   history.save();
@@ -47,7 +47,7 @@ function injectPrevHistory(history: InsuranceHistory, investor: Investor): void 
     if (prevHistory != null) {
       history.prevHistory = prevHistory.id;
       history.claimedAmount = prevHistory.claimedAmount;
-      history.insurance = prevHistory.insurance;
+      history.stake = prevHistory.stake;
     }
   }
 }
