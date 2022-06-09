@@ -13,7 +13,7 @@ import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPosition } from "../entities/trader-pool/Position";
 import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
-import { DAY, DECIMAL, PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { DAY, DECIMAL, PERCENT100, PERCENTAGE, PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { Exchange, FeeHistory, Position, TraderPool, TraderPoolPriceHistory } from "../../generated/schema";
 import { upcastCopy, extendArray, reduceArray } from "../helpers/ArrayHelper";
@@ -201,8 +201,8 @@ export function onTraderCommissionMinted(event: TraderCommissionMinted): void {
     roundCheckUp(event.block.number),
     BigInt.fromI32(100)
   );
-  let currentPNL = priceHistory == null ? BigInt.zero() : priceHistory.percPNL;
-  let currentLpCost = priceHistory == null ? BigInt.zero() : priceHistory.supply.div(priceHistory.usdTVL);
+  let currentPNL = priceHistory == null ? BigInt.fromI32(1) : priceHistory.percPNL;
+  let currentLpCost = priceHistory == null ? BigInt.fromI32(1) : priceHistory.usdTVL.div(priceHistory.supply);
   let prevHistory: FeeHistory | null;
 
   if (history.prevHistory == "") {
@@ -219,9 +219,13 @@ export function onTraderCommissionMinted(event: TraderCommissionMinted): void {
     history.PNL = currentPNL.minus(prevHistory == null ? BigInt.zero() : prevHistory.PNL);
   }
 
-  let lpCommission = event.params.amount.div(BigInt.fromString("0.7").times(BigInt.fromU64(DECIMAL)));
-  history.perfomanceFee = lpCommission.times(currentLpCost).div(BigInt.fromU64(DECIMAL));
-  history.fundProfit = history.perfomanceFee.div(pool.commission).times(BigInt.fromI32(100).minus(pool.commission));
+  let lpCommission = event.params.amount
+    .times(BigInt.fromU64(DECIMAL))
+    .div(BigInt.fromString("7").times(BigInt.fromU64(DECIMAL).div(BigInt.fromI32(10))));
+  history.perfomanceFee = lpCommission.times(currentLpCost);
+  history.fundProfit = history.perfomanceFee
+    .times(BigInt.fromU64(PERCENT100).minus(pool.commission))
+    .div(pool.commission);
 
   history.save();
 }
