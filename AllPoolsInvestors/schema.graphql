@@ -67,70 +67,26 @@ type InvestorInfo @entity {
   totalInvestVolume: BigInt!
   totalDivestVolume: BigInt!
 
-  invests: [Invest!]! @derivedFrom(field: "investorInfo")
-  divests: [Divest!]! @derivedFrom(field: "investorInfo")
+  vests: [Vest!]! @derivedFrom(field: "investorInfo")
 }
 
-# @notice The entity holds information about investition in pool
-# @param id forms from transaction hash, useless
-# @param timestamp the block timestamp
-# @param investorInfo the id of InvestorInfo (investor address + pool address)
-# @param volumeBase the volume of investition
-# @param lpPurchasePrice the volumeBase / minted lp
-# @param day the history id (pool address + timestamp / 86400), for reverse lookup
-type Invest @entity {
-  id: ID! # tx hash
+type Vest @entity {
+  id: ID!
+  isInvest: Boolean!
   timestamp: BigInt!
   investorInfo: InvestorInfo!
-  investor: Investor!
   volumeBase: BigInt!
-  lpPurchasePrice: BigInt!
+  volumeLP: BigInt!
 
-  day: InvestHistory!
+  day: VestHistory!
 }
 
-# @notice The entity holds information about divest in pool
-# @param id forms from transaction hash, useless
-# @param timestamp the block timestamp
-# @param investor the id of InvestorInfo (investor address + pool address)
-# @param volumeBase the volume of divest
-# @param commission the volume of commission
-# @param day the history id (pool address + timestamp / 86400), for reverse lookup
-type Divest @entity {
-  id: ID! # tx hash
-  timestamp: BigInt!
-  investorInfo: InvestorInfo!
-  investor: Investor!
-  volumeBase: BigInt!
-  commission: BigInt!
-
-  day: DivestHistory!
-}
-
-# @notice The entity holds historical information about invests in pool
-# @param id forms from pool address + timestamp / 86400
-# @param totalInvestVolume the total invest volume at current day
-# @param day the timestamp / 86400
-# @param pool the pool id (address), for reverse lookup
-type InvestHistory @entity {
-  id: ID! # pool address + timestamp / 86400
+type VestHistory @entity {
+  id: ID!
   totalInvestVolume: BigInt!
-  day: BigInt!
-  pool: TraderPool!
-
-  investments: [Invest!]! @derivedFrom(field: "day")
-}
-
-# @notice The entity holds historical information about divests in pool
-# @param id forms from pool address + timestamp / 86400
-# @param totalDivestVolume the total divest volume at current day
-# @param day the timestamp / 86400
-# @param pool the pool id (address), for reverse lookup
-type DivestHistory @entity {
-  id: ID! # pool address + timestamp / 86400
   totalDivestVolume: BigInt!
-  day: BigInt!
   pool: TraderPool!
+  day: BigInt!
 
-  divestments: [Divest!]! @derivedFrom(field: "day")
+  vests: [Vest!]! @derivedFrom(field: "day")
 }

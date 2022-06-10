@@ -1,16 +1,17 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { InvestHistory, TraderPool } from "../../../../generated/schema";
+import { VestHistory, TraderPool } from "../../../../generated/schema";
 import { DAY } from "../../global/globals";
 
-export function getInvestHistory(timestamp: BigInt, traderPool: TraderPool): InvestHistory {
+export function getVestHistory(timestamp: BigInt, traderPool: TraderPool): VestHistory {
   let day = timestamp.div(BigInt.fromU32(DAY));
   let id = traderPool.id + day.toString();
-  let history = InvestHistory.load(id);
+  let history = VestHistory.load(id);
 
   if (history == null) {
-    history = new InvestHistory(id);
+    history = new VestHistory(id);
 
     history.totalInvestVolume = BigInt.zero();
+    history.totalDivestVolume = BigInt.zero();
     history.pool = traderPool.id;
     history.day = day;
   }
