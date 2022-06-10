@@ -7,6 +7,7 @@ export function getVest(
   isInvest: boolean = false,
   volumeBase: BigInt = BigInt.zero(),
   volumeLP: BigInt = BigInt.zero(),
+  volumeUSD: BigInt = BigInt.zero(),
   timestamp: BigInt = BigInt.zero()
 ): Vest {
   let vest = Vest.load(hash.toHexString());
@@ -17,6 +18,7 @@ export function getVest(
     vest.isInvest = isInvest;
     vest.volumeBase = volumeBase;
     vest.volumeLP = volumeLP;
+    vest.volumeUSD = volumeUSD;
     vest.timestamp = timestamp;
   }
 

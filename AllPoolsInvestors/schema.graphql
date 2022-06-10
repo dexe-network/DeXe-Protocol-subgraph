@@ -77,14 +77,18 @@ type Vest @entity {
   investorInfo: InvestorInfo!
   volumeBase: BigInt!
   volumeLP: BigInt!
+  volumeUSD: BigInt!
 
   day: VestHistory!
 }
 
 type VestHistory @entity {
   id: ID!
-  totalInvestVolume: BigInt!
-  totalDivestVolume: BigInt!
+  totalInvestBaseVolume: BigInt!
+  totalDivestBaseVolume: BigInt!
+  totalInvestUSDVolume: BigInt!
+  totalDivestUSDVolume: BigInt!
+
   pool: TraderPool!
   day: BigInt!
 

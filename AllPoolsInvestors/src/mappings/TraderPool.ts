@@ -6,13 +6,14 @@ import {
   ModifiedPrivateInvestors,
 } from "../../generated/templates/TraderPool/TraderPool";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
-import { BigInt } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 import { getInvestor } from "../entities/trader-pool/Investor";
 import { getTraderPoolHistory } from "../entities/trader-pool/history/TraderPoolHistory";
 import { getInvestorInfo } from "../entities/trader-pool/InvestorInfo";
 import { getVestHistory } from "../entities/trader-pool/history/VestHistory";
 import { getVest } from "../entities/trader-pool/Vest";
+import { Vest, VestHistory } from "../../generated/schema";
 
 export function onInvestorAdded(event: InvestorAdded): void {
   let pool = getTraderPool(event.address);
@@ -79,21 +80,25 @@ export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): voi
 }
 
 export function onInvest(event: Invested): void {
+  // newVest(event);
   let investor = getInvestor(event.params.investor);
   let pool = getTraderPool(event.address);
   let investorInfo = getInvestorInfo(investor, pool);
+  let usdValue = getUSDValue(new Bytes(0), BigInt.zero());
   let vest = getVest(
     event.transaction.hash,
     investorInfo,
     true,
     event.params.amount,
     event.params.toMintLP,
+    usdValue,
     event.block.timestamp
   );
   let history = getVestHistory(event.block.timestamp, pool);
 
   investorInfo.totalInvestVolume = investorInfo.totalInvestVolume.plus(event.params.amount);
-  history.totalInvestVolume = history.totalInvestVolume.plus(event.params.amount);
+  history.totalInvestBaseVolume = history.totalInvestBaseVolume.plus(event.params.amount);
+  history.totalInvestUSDVolume = history.totalInvestUSDVolume.plus(usdValue);
   vest.day = history.id;
 
   investorInfo.save();
@@ -102,24 +107,71 @@ export function onInvest(event: Invested): void {
 }
 
 export function onDivest(event: Divested): void {
+  // newVest(event);
   let investor = getInvestor(event.params.investor);
   let pool = getTraderPool(event.address);
   let investorInfo = getInvestorInfo(investor, pool);
+  let usdValue = getUSDValue(new Bytes(0), BigInt.zero());
   let vest = getVest(
     event.transaction.hash,
     investorInfo,
     false,
     event.params.amount,
     event.params.commission,
+    usdValue,
     event.block.timestamp
   );
   let history = getVestHistory(event.block.timestamp, pool);
 
   investorInfo.totalDivestVolume = investorInfo.totalDivestVolume.plus(event.params.amount);
-  history.totalDivestVolume = history.totalDivestVolume.plus(event.params.amount);
+  history.totalDivestBaseVolume = history.totalDivestBaseVolume.plus(event.params.amount);
+  history.totalDivestUSDVolume = history.totalDivestUSDVolume.plus(usdValue);
   vest.day = history.id;
 
   investorInfo.save();
   history.save();
   vest.save();
+}
+
+// function newVest(event: Invested|Divested): void {
+//   let investor = getInvestor(event.params.investor);
+//   let pool = getTraderPool(event.address);
+//   let investorInfo = getInvestorInfo(investor, pool);
+//   let vest : Vest;
+//   let history : VestHistory;
+//   if (event instanceof Invested){
+//     vest = getVest(
+//       event.transaction.hash,
+//       investorInfo,
+//       true,
+//       event.params.amount,
+//       event.params.toMintLP,
+//       event.block.timestamp
+//     );
+//     history = getVestHistory(event.block.timestamp, pool);
+//     investorInfo.totalInvestVolume = investorInfo.totalInvestVolume.plus(event.params.amount);
+//     history.totalInvestVolume = history.totalInvestVolume.plus(event.params.amount);
+//   }else{
+//     vest = getVest(
+//       event.transaction.hash,
+//       investorInfo,
+//       false,
+//       event.params.amount,
+//       event.params.commission,
+//       event.block.timestamp
+//     );
+//     history = getVestHistory(event.block.timestamp, pool);
+//     investorInfo.totalDivestVolume = investorInfo.totalDivestVolume.plus(event.params.amount);
+//     history.totalDivestVolume = history.totalDivestVolume.plus(event.params.amount);
+//   }
+
+//   vest.day = history.id;
+
+//   investorInfo.save();
+//   history.save();
+//   vest.save();
+// }
+
+function getUSDValue(token: Bytes, amount: BigInt): BigInt {
+  return BigInt.zero();
 }

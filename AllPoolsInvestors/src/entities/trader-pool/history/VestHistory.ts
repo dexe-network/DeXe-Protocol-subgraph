@@ -10,8 +10,10 @@ export function getVestHistory(timestamp: BigInt, traderPool: TraderPool): VestH
   if (history == null) {
     history = new VestHistory(id);
 
-    history.totalInvestVolume = BigInt.zero();
-    history.totalDivestVolume = BigInt.zero();
+    history.totalInvestBaseVolume = BigInt.zero();
+    history.totalDivestBaseVolume = BigInt.zero();
+    history.totalInvestUSDVolume = BigInt.zero();
+    history.totalDivestUSDVolume = BigInt.zero();
     history.pool = traderPool.id;
     history.day = day;
   }
