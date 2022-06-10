@@ -13,7 +13,7 @@ import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPosition } from "../entities/trader-pool/Position";
 import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
-import { DAY, DECIMAL, PERCENT100, PERCENTAGE, PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { DAY, DECIMAL, PERCENTAGE_100, PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { Exchange, FeeHistory, Position, TraderPool, TraderPoolPriceHistory } from "../../generated/schema";
 import { upcastCopy, extendArray, reduceArray } from "../helpers/ArrayHelper";
@@ -201,7 +201,7 @@ export function onTraderCommissionMinted(event: TraderCommissionMinted): void {
     roundCheckUp(event.block.number),
     BigInt.fromI32(100)
   );
-  let currentPNL = priceHistory == null ? BigInt.fromI32(1) : priceHistory.percPNL;
+  let currentPNL = priceHistory == null ? BigInt.zero() : priceHistory.percPNL;
   let currentLpCost = priceHistory == null ? BigInt.fromI32(1) : priceHistory.usdTVL.div(priceHistory.supply);
   let prevHistory: FeeHistory | null;
 
@@ -224,7 +224,7 @@ export function onTraderCommissionMinted(event: TraderCommissionMinted): void {
     .div(BigInt.fromString("7").times(BigInt.fromU64(DECIMAL).div(BigInt.fromI32(10))));
   history.perfomanceFee = lpCommission.times(currentLpCost);
   history.fundProfit = history.perfomanceFee
-    .times(BigInt.fromU64(PERCENT100).minus(pool.commission))
+    .times(BigInt.fromU64(PERCENTAGE_100).minus(pool.commission))
     .div(pool.commission);
 
   history.save();
