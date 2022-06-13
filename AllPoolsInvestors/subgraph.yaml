@@ -61,7 +61,6 @@ templates:
       file: ./src/mappings/TraderPool.ts
       entities:
         - TraderPool
-        - Position
       abis:
         - name: TraderPool
           file: ./abis/TraderPool.json

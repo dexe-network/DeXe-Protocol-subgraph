@@ -4,6 +4,7 @@ import { TraderPool } from "../../../generated/schema";
 export function getTraderPool(
   poolAddress: Address,
   type: string = "",
+  baseToken: Address = Address.zero(),
   creationTime: BigInt = BigInt.zero(),
   block: BigInt = BigInt.zero()
 ): TraderPool {
@@ -12,6 +13,7 @@ export function getTraderPool(
   if (traderPool == null) {
     traderPool = new TraderPool(poolAddress.toHexString());
     traderPool.type = type;
+    traderPool.token = baseToken;
     traderPool.creationTime = creationTime;
     traderPool.creationBlock = block;
   }

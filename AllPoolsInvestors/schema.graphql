@@ -12,6 +12,7 @@
 type TraderPool @entity {
   id: ID! # pool address
   type: String!
+  token: Bytes!
   creationTime: BigInt!
   creationBlock: BigInt!
 
@@ -60,37 +61,33 @@ type TraderPoolHistory @entity {
 # @param id forms from investor addres + pool address
 # @param totalInvestVolume the total volume of investor's invests to pool
 # @param totalDivestVolume the total volume of investor's divests from pool
-type InvestorInfo @entity {
-  id: ID! # investor address + pool address
+type InvestorPosition @entity {
+  id: ID! # investor address + pool address + position offset
   pool: TraderPool!
   investor: Investor!
-  totalInvestVolume: BigInt!
-  totalDivestVolume: BigInt!
 
-  vests: [Vest!]! @derivedFrom(field: "investorInfo")
+  totalBaseInvestVolume: BigInt!
+  totalBaseDivestVolume: BigInt!
+  totalLPInvestVolume: BigInt!
+  totalLPDivestVolume: BigInt!
+  totalUSDInvestVolume: BigInt!
+  totalUSDDivestVolume: BigInt!
+
+  vest: [Vest!]! @derivedFrom(field: "investorPosition")
 }
 
 type Vest @entity {
   id: ID!
   isInvest: Boolean!
   timestamp: BigInt!
-  investorInfo: InvestorInfo!
+  investorPosition: InvestorPosition!
+
   volumeBase: BigInt!
   volumeLP: BigInt!
   volumeUSD: BigInt!
-
-  day: VestHistory!
 }
 
-type VestHistory @entity {
-  id: ID!
-  totalInvestBaseVolume: BigInt!
-  totalDivestBaseVolume: BigInt!
-  totalInvestUSDVolume: BigInt!
-  totalDivestUSDVolume: BigInt!
-
-  pool: TraderPool!
-  day: BigInt!
-
-  vests: [Vest!]! @derivedFrom(field: "day")
+type InvestorPositionOffset @entity {
+  id: ID! # investor address + pool address
+  offset: BigInt!
 }
