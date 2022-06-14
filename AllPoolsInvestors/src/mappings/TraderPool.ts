@@ -4,6 +4,7 @@ import {
   InvestorAdded,
   InvestorRemoved,
   ModifiedPrivateInvestors,
+  TraderPool,
 } from "../../generated/templates/TraderPool/TraderPool";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
@@ -15,6 +16,8 @@ import { getInvestorPosition } from "../entities/trader-pool/InvestorPosition";
 import { getVest } from "../entities/trader-pool/Vest";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { Investor } from "../../generated/schema";
+import { TraderPool as TRP } from "../../generated/schema";
 
 export function onInvestorAdded(event: InvestorAdded): void {
   let pool = getTraderPool(event.address);
@@ -146,10 +149,21 @@ export function onDivest(event: Divested): void {
 
 function getUSDValue(token: Bytes, amount: BigInt): BigInt {
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-  let value = pfPrototype.try_getNormalizedPriceOutUSD(Address.fromString(token.toString()), amount);
+  let usdValue = pfPrototype.try_getNormalizedPriceOutUSD(Address.fromString(token.toString()), amount);
 
-  if (!value.reverted) {
-    return value.value.value0;
+  if (!usdValue.reverted) {
+    return usdValue.value.value0;
+  }
+
+  return BigInt.zero();
+}
+
+function getLPBalanceOf(pool: TRP, investor: Investor): BigInt {
+  let poolPrototype = TraderPool.bind(Address.fromString(pool.id));
+  let LPvalue = poolPrototype.try_balanceOf(Address.fromString(investor.id));
+
+  if (!LPvalue.reverted) {
+    return LPvalue.value;
   }
 
   return BigInt.zero();
