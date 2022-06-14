@@ -1,12 +1,8 @@
 # @notice The entity that holds informations about pool
 # @param id the pool address
 # @param type the string with type of pool
-# @param baseToken the address of base token
-# @param ticker the symbol of pool's token
-# @param name the name of pool's token
-# @param descriptionURL the description url address from contract
+# @param token the address of base token
 # @param creationTime the timestamp of creating pool
-# @param commission the commission of pool
 # @param investors the array with Investor entities
 # @param investorsCount the number of investors
 type TraderPool @entity {
@@ -25,8 +21,6 @@ type TraderPool @entity {
 
 # @notice The entity holds information about Investor
 # @param id the investor address
-# @param insurance the bought insurance amount
-# @param claimedAmount the paid insurance amount
 # @param activePools the array with pools with investor's invests
 # @param allPools the array with pools where the  investor has ever invested
 type Investor @entity {
@@ -37,6 +31,13 @@ type Investor @entity {
   insuranceHistory: [InsuranceHistory!]! @derivedFrom(field: "investor")
 }
 
+# @notice The entity holds historical information about investor's insurance
+# @param id the investor address + day
+# @param stake the staked amount
+# @param claimedAmount the total amount of claims
+# @param investor the investor entity id
+# @param day the timestamp / 86400
+# @param prevHistory the id of previos history
 type InsuranceHistory @entity {
   id: ID! # investor address + timestamp / 86400
   stake: BigInt!
@@ -47,6 +48,14 @@ type InsuranceHistory @entity {
   prevHistory: InsuranceHistory!
 }
 
+# @notice The entity holds historical information about pool
+# @param id the pool address + day
+# @param investors the array of current investors
+# @param investorsCount the current number of investors
+# @param privateInvestors the array of current private investors
+# @param privateInvestorsCount the current number of private investors
+# @param pool the trader pool address
+# @param day the timestamp / 86400
 type TraderPoolHistory @entity {
   id: ID! # pool address + timestamp / 86400
   investors: [String!]!
@@ -59,8 +68,15 @@ type TraderPoolHistory @entity {
 
 # @notice The entity holds information about investor's invests and divests in pool
 # @param id forms from investor addres + pool address
-# @param totalInvestVolume the total volume of investor's invests to pool
-# @param totalDivestVolume the total volume of investor's divests from pool
+# @param pool the trader pool entity id
+# @param investor the investor entity id
+# @param isClosed the bool flag, if true => position closed
+# @param totalBaseInvestVolume the total volume of investor's invests to pool in base token
+# @param totalBaseDivestVolume the total volume of investor's divests from pool in base token
+# @param totalLPInvestVolume the total volume of investor's invests to pool in lp token
+# @param totalLPDivestVolume the total volume of investor's divests from pool in lp token
+# @param totalUSDInvestVolume the total volume of investor's invests to pool in usd token
+# @param totalUSDDivestVolume the total volume of investor's divests from pool in usd token
 type InvestorPosition @entity {
   id: ID! # investor address + pool address + position offset
   pool: TraderPool!
@@ -77,6 +93,14 @@ type InvestorPosition @entity {
   vest: [Vest!]! @derivedFrom(field: "investorPosition")
 }
 
+# @notice The entity holds information about invest and divest operations
+# @param id forms from tx hash
+# @param isInvest the bool flag, if true => invest
+# @param timestamp the timestamp of tx
+# @param investorPosition the id of investorPosition entity
+# @param volumeBase the volume of operation in base
+# @param volumeLP the volume of operaion in lp token
+# @param volumeUSD the volume of operaion in USD
 type Vest @entity {
   id: ID!
   isInvest: Boolean!
