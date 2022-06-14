@@ -13,6 +13,8 @@ export function getInvestorPosition(
     investorInfo = new InvestorPosition(id);
     investorInfo.investor = investor.id;
     investorInfo.pool = traderPool.id;
+    investorInfo.isClosed = false;
+
     investorInfo.totalBaseInvestVolume = BigInt.zero();
     investorInfo.totalBaseDivestVolume = BigInt.zero();
 

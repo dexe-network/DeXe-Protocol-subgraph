@@ -65,6 +65,7 @@ type InvestorPosition @entity {
   id: ID! # investor address + pool address + position offset
   pool: TraderPool!
   investor: Investor!
+  isClosed: Boolean!
 
   totalBaseInvestVolume: BigInt!
   totalBaseDivestVolume: BigInt!

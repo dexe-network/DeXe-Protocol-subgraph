@@ -30,6 +30,13 @@ export function onInvestorAdded(event: InvestorAdded): void {
   investor.activePools = extendArray(investor.activePools, [pool.id]);
   investor.allPools = extendArray(investor.allPools, [pool.id]);
 
+  let positionOffset = getPositionOffset(pool, investor);
+  let investorPosition = getInvestorPosition(investor, pool, positionOffset);
+
+  /* TODO set volumes */
+
+  positionOffset.save();
+  investorPosition.save();
   investor.save();
   pool.save();
   history.save();
@@ -47,6 +54,15 @@ export function onInvestorRemoved(event: InvestorRemoved): void {
   history.investorsCount = history.investorsCount.minus(BigInt.fromI32(1));
 
   investor.activePools = reduceArray(investor.activePools, [pool.id]);
+
+  let positionOffset = getPositionOffset(pool, investor);
+  let investorPosition = getInvestorPosition(investor, pool, positionOffset);
+
+  positionOffset.offset = positionOffset.offset.plus(BigInt.fromI32(1));
+  investorPosition.isClosed = true;
+
+  positionOffset.save();
+  investorPosition.save();
 
   investor.save();
   pool.save();
@@ -85,19 +101,19 @@ export function onInvest(event: Invested): void {
   let pool = getTraderPool(event.address);
   let positionOffset = getPositionOffset(pool, investor);
   let investorPosition = getInvestorPosition(investor, pool, positionOffset);
-  let usdValue = getUSDValue(pool.token, event.params.amount);
+  let usdValue = getUSDValue(pool.token, event.params.investedBase);
   let vest = getVest(
     event.transaction.hash,
     investorPosition,
     true,
-    event.params.amount,
-    event.params.toMintLP,
+    event.params.investedBase,
+    event.params.receivedLP,
     usdValue,
     event.block.timestamp
   );
 
-  investorPosition.totalBaseInvestVolume = investorPosition.totalBaseInvestVolume.plus(event.params.amount);
-  investorPosition.totalLPInvestVolume = investorPosition.totalLPInvestVolume.plus(event.params.toMintLP);
+  investorPosition.totalBaseInvestVolume = investorPosition.totalBaseInvestVolume.plus(event.params.investedBase);
+  investorPosition.totalLPInvestVolume = investorPosition.totalLPInvestVolume.plus(event.params.receivedLP);
   investorPosition.totalUSDInvestVolume = investorPosition.totalUSDInvestVolume.plus(usdValue);
 
   investorPosition.save();
@@ -109,19 +125,19 @@ export function onDivest(event: Divested): void {
   let pool = getTraderPool(event.address);
   let positionOffset = getPositionOffset(pool, investor);
   let investorPosition = getInvestorPosition(investor, pool, positionOffset);
-  let usdValue = getUSDValue(pool.token, event.params.amount);
+  let usdValue = getUSDValue(pool.token, event.params.receivedBase);
   let vest = getVest(
     event.transaction.hash,
     investorPosition,
     false,
-    event.params.amount,
-    event.params.commission,
+    event.params.receivedBase,
+    event.params.divestedLP,
     usdValue,
     event.block.timestamp
   );
 
-  investorPosition.totalBaseDivestVolume = investorPosition.totalBaseDivestVolume.plus(event.params.amount);
-  investorPosition.totalLPDivestVolume = investorPosition.totalLPDivestVolume.plus(event.params.commission);
+  investorPosition.totalBaseDivestVolume = investorPosition.totalBaseDivestVolume.plus(event.params.receivedBase);
+  investorPosition.totalLPDivestVolume = investorPosition.totalLPDivestVolume.plus(event.params.divestedLP);
   investorPosition.totalUSDDivestVolume = investorPosition.totalUSDDivestVolume.plus(usdValue);
 
   investorPosition.save();
