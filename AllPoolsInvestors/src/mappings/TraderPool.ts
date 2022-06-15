@@ -12,7 +12,7 @@ import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 import { getInvestor } from "../entities/trader-pool/Investor";
 import { getTraderPoolHistory } from "../entities/trader-pool/history/TraderPoolHistory";
-import { getInvestorPosition } from "../entities/trader-pool/InvestorPosition";
+import { getInvestorPoolPosition } from "../entities/trader-pool/InvestorPoolPosition";
 import { getVest } from "../entities/trader-pool/Vest";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
@@ -34,12 +34,12 @@ export function onInvestorAdded(event: InvestorAdded): void {
   investor.allPools = extendArray(investor.allPools, [pool.id]);
 
   let positionOffset = getPositionOffset(pool, investor);
-  let investorPosition = getInvestorPosition(investor, pool, positionOffset);
+  let investorPoolPosition = getInvestorPoolPosition(investor, pool, positionOffset);
 
   /* TODO set volumes */
 
   positionOffset.save();
-  investorPosition.save();
+  investorPoolPosition.save();
   investor.save();
   pool.save();
   history.save();
@@ -59,13 +59,13 @@ export function onInvestorRemoved(event: InvestorRemoved): void {
   investor.activePools = reduceArray(investor.activePools, [pool.id]);
 
   let positionOffset = getPositionOffset(pool, investor);
-  let investorPosition = getInvestorPosition(investor, pool, positionOffset);
+  let investorPoolPosition = getInvestorPoolPosition(investor, pool, positionOffset);
 
   positionOffset.offset = positionOffset.offset.plus(BigInt.fromI32(1));
-  investorPosition.isClosed = true;
+  investorPoolPosition.isClosed = true;
 
   positionOffset.save();
-  investorPosition.save();
+  investorPoolPosition.save();
 
   investor.save();
   pool.save();
@@ -103,11 +103,11 @@ export function onInvest(event: Invested): void {
   let investor = getInvestor(event.params.investor);
   let pool = getTraderPool(event.address);
   let positionOffset = getPositionOffset(pool, investor);
-  let investorPosition = getInvestorPosition(investor, pool, positionOffset);
+  let investorPoolPosition = getInvestorPoolPosition(investor, pool, positionOffset);
   let usdValue = getUSDValue(pool.token, event.params.investedBase);
   let vest = getVest(
     event.transaction.hash,
-    investorPosition,
+    investorPoolPosition,
     true,
     event.params.investedBase,
     event.params.receivedLP,
@@ -115,11 +115,13 @@ export function onInvest(event: Invested): void {
     event.block.timestamp
   );
 
-  investorPosition.totalBaseInvestVolume = investorPosition.totalBaseInvestVolume.plus(event.params.investedBase);
-  investorPosition.totalLPInvestVolume = investorPosition.totalLPInvestVolume.plus(event.params.receivedLP);
-  investorPosition.totalUSDInvestVolume = investorPosition.totalUSDInvestVolume.plus(usdValue);
+  investorPoolPosition.totalBaseInvestVolume = investorPoolPosition.totalBaseInvestVolume.plus(
+    event.params.investedBase
+  );
+  investorPoolPosition.totalLPInvestVolume = investorPoolPosition.totalLPInvestVolume.plus(event.params.receivedLP);
+  investorPoolPosition.totalUSDInvestVolume = investorPoolPosition.totalUSDInvestVolume.plus(usdValue);
 
-  investorPosition.save();
+  investorPoolPosition.save();
   vest.save();
 }
 
@@ -127,11 +129,11 @@ export function onDivest(event: Divested): void {
   let investor = getInvestor(event.params.investor);
   let pool = getTraderPool(event.address);
   let positionOffset = getPositionOffset(pool, investor);
-  let investorPosition = getInvestorPosition(investor, pool, positionOffset);
+  let investorPoolPosition = getInvestorPoolPosition(investor, pool, positionOffset);
   let usdValue = getUSDValue(pool.token, event.params.receivedBase);
   let vest = getVest(
     event.transaction.hash,
-    investorPosition,
+    investorPoolPosition,
     false,
     event.params.receivedBase,
     event.params.divestedLP,
@@ -139,11 +141,13 @@ export function onDivest(event: Divested): void {
     event.block.timestamp
   );
 
-  investorPosition.totalBaseDivestVolume = investorPosition.totalBaseDivestVolume.plus(event.params.receivedBase);
-  investorPosition.totalLPDivestVolume = investorPosition.totalLPDivestVolume.plus(event.params.divestedLP);
-  investorPosition.totalUSDDivestVolume = investorPosition.totalUSDDivestVolume.plus(usdValue);
+  investorPoolPosition.totalBaseDivestVolume = investorPoolPosition.totalBaseDivestVolume.plus(
+    event.params.receivedBase
+  );
+  investorPoolPosition.totalLPDivestVolume = investorPoolPosition.totalLPDivestVolume.plus(event.params.divestedLP);
+  investorPoolPosition.totalUSDDivestVolume = investorPoolPosition.totalUSDDivestVolume.plus(usdValue);
 
-  investorPosition.save();
+  investorPoolPosition.save();
   vest.save();
 }
 

@@ -1,16 +1,16 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Investor, InvestorPosition, InvestorPositionOffset, TraderPool } from "../../../generated/schema";
+import { Investor, InvestorPoolPosition, InvestorPoolPositionOffset, TraderPool } from "../../../generated/schema";
 
-export function getInvestorPosition(
+export function getInvestorPoolPosition(
   investor: Investor,
   traderPool: TraderPool,
-  positionOffset: InvestorPositionOffset
-): InvestorPosition {
+  positionOffset: InvestorPoolPositionOffset
+): InvestorPoolPosition {
   let id = investor.id + traderPool.id + positionOffset.offset.toString();
-  let investorInfo = InvestorPosition.load(id);
+  let investorInfo = InvestorPoolPosition.load(id);
 
   if (investorInfo == null) {
-    investorInfo = new InvestorPosition(id);
+    investorInfo = new InvestorPoolPosition(id);
     investorInfo.investor = investor.id;
     investorInfo.pool = traderPool.id;
     investorInfo.isClosed = false;

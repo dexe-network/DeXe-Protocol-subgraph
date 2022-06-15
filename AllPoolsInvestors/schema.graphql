@@ -77,7 +77,7 @@ type TraderPoolHistory @entity {
 # @param totalLPDivestVolume the total volume of investor's divests from pool in lp token
 # @param totalUSDInvestVolume the total volume of investor's invests to pool in usd token
 # @param totalUSDDivestVolume the total volume of investor's divests from pool in usd token
-type InvestorPosition @entity {
+type InvestorPoolPosition @entity {
   id: ID! # investor address + pool address + position offset
   pool: TraderPool!
   investor: Investor!
@@ -90,7 +90,7 @@ type InvestorPosition @entity {
   totalUSDInvestVolume: BigInt!
   totalUSDDivestVolume: BigInt!
 
-  vest: [Vest!]! @derivedFrom(field: "investorPosition")
+  vest: [Vest!]! @derivedFrom(field: "investorPoolPosition")
 }
 
 # @notice The entity holds information about invest and divest operations
@@ -105,14 +105,66 @@ type Vest @entity {
   id: ID!
   isInvest: Boolean!
   timestamp: BigInt!
-  investorPosition: InvestorPosition!
+  investorPoolPosition: InvestorPoolPosition!
 
   volumeBase: BigInt!
   volumeLP: BigInt!
   volumeUSD: BigInt!
 }
 
-type InvestorPositionOffset @entity {
+type InvestorPoolPositionOffset @entity {
   id: ID! # investor address + pool address
   offset: BigInt!
+}
+
+####################################### Risky Proposal #######################################
+
+type RiskyProposalContract @entity {
+  id: ID!
+  traderPool: TraderPool!
+
+  proposals: [RiskyProposal!]! @derivedFrom(field: "proposalContract")
+}
+
+# @notice The entity holds information about proposal contract
+# @param token the address of proposal token
+# @param timestampLimit the timestamp from contract after which the investment into proposal closes
+# @param investLPLimit the maximal number of invested LP tokens from contract after which the investment into the proposal closes
+# @param maxTokenPriceLimit the maximal price of the proposal token from contract after which the investment into the proposal closes
+# @param totalBaseOpenVolume the total open volume of proposal in base token
+# @param totalBaseCloseVolume the total close volume of proposal in base token
+# @param totalPositionOpenVolume the total open volume of proposal in proposal token
+# @param totalPositionCloseVolume the total close volume of proposal in proposal token
+# @param totalUSDOpenVolume the total open volume of proposal in usd
+# @param totalUSDCloseVolume the total close volume of proposal in usd
+# @param basicPool the basicPool id (address), for reverse lookup
+type RiskyProposal @entity {
+  id: ID! # proposal address + proposal index
+  token: Bytes!
+
+  timestampLimit: BigInt!
+  investLPLimit: BigInt!
+  maxTokenPriceLimit: BigInt!
+
+  totalBaseOpenVolume: BigInt!
+  totalBaseCloseVolume: BigInt!
+  totalPositionOpenVolume: BigInt!
+  totalPositionCloseVolume: BigInt!
+  totalUSDOpenVolume: BigInt!
+  totalUSDCloseVolume: BigInt!
+
+  proposalContract: RiskyProposalContract!
+  vests: [RiskyProposalVest!]! @derivedFrom(field: "proposal")
+}
+
+type RiskyProposalVest @entity {
+  id: ID! # tx hash
+  isInvest: Boolean!
+  timestamp: BigInt!
+
+  baseVolume: BigInt!
+  lpVolume: BigInt!
+  usdVolume: BigInt!
+
+  proposal: RiskyProposal!
 }

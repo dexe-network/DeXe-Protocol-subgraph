@@ -1,9 +1,9 @@
-import { InvestorPosition, Vest } from "../../../generated/schema";
+import { InvestorPoolPosition, Vest } from "../../../generated/schema";
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 
 export function getVest(
   hash: Bytes,
-  investorPosition: InvestorPosition,
+  investorPoolPosition: InvestorPoolPosition,
   isInvest: boolean = false,
   volumeBase: BigInt = BigInt.zero(),
   volumeLP: BigInt = BigInt.zero(),
@@ -14,7 +14,7 @@ export function getVest(
 
   if (vest == null) {
     vest = new Vest(hash.toHexString());
-    vest.investorPosition = investorPosition.id;
+    vest.investorPoolPosition = investorPoolPosition.id;
     vest.isInvest = isInvest;
     vest.volumeBase = volumeBase;
     vest.volumeLP = volumeLP;
