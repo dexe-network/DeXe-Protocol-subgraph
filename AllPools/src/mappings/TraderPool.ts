@@ -6,19 +6,29 @@ import {
   DescriptionURLChanged,
   ModifiedAdmins,
   ModifiedPrivateInvestors,
+  TraderCommissionMinted,
 } from "../../generated/templates/TraderPool/TraderPool";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPosition } from "../entities/trader-pool/Position";
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
-import { DAY, PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import {
+  DAY,
+  DECIMAL,
+  REVERSED_PLATFORM_COMMISSION,
+  PERCENTAGE_100,
+  PRICE_FEED_ADDRESS,
+} from "../entities/global/globals";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
-import { Exchange, Position, TraderPool } from "../../generated/schema";
+import { Exchange, FeeHistory, Position, TraderPool, TraderPoolPriceHistory } from "../../generated/schema";
 import { upcastCopy, extendArray, reduceArray } from "../helpers/ArrayHelper";
 import { getInvestor } from "../entities/trader-pool/Investor";
 import { getExchange } from "../entities/trader-pool/Exchange";
 import { getExchangeHistory } from "../entities/trader-pool/history/ExchangeHistory";
+import { findPrevHistory } from "../helpers/HistorySearcher";
+import { getFeeHistory } from "../entities/trader-pool/history/FeeHistory";
+import { roundCheckUp } from "../entities/trader-pool/TraderPoolPriceHistory";
 
 export function onExchange(event: Exchanged): void {
   let pool = getTraderPool(event.address);
@@ -186,6 +196,44 @@ export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): voi
     pool.privateInvestors = reduceArray(pool.privateInvestors, newArray);
   }
   pool.save();
+}
+
+export function onTraderCommissionMinted(event: TraderCommissionMinted): void {
+  let pool = getTraderPool(event.address);
+  let history = getFeeHistory(pool, event.block.timestamp);
+  let priceHistory = findPrevHistory<TraderPoolPriceHistory>(
+    TraderPoolPriceHistory.load,
+    pool.id,
+    roundCheckUp(event.block.number),
+    BigInt.fromI32(100)
+  );
+  let currentPNL = priceHistory == null ? BigInt.zero() : priceHistory.percPNL;
+  let currentLpCost = priceHistory == null ? BigInt.fromI32(1) : priceHistory.usdTVL.div(priceHistory.supply);
+  let prevHistory: FeeHistory | null;
+
+  if (history.prevHistory == "") {
+    prevHistory = findPrevHistory<FeeHistory>(
+      FeeHistory.load,
+      event.address.toHexString(),
+      history.day,
+      BigInt.fromI32(1)
+    );
+    history.prevHistory = prevHistory == null ? "" : prevHistory.id;
+    history.PNL = currentPNL;
+  } else {
+    prevHistory = FeeHistory.load(history.prevHistory);
+    history.PNL = currentPNL.minus(prevHistory == null ? BigInt.zero() : prevHistory.PNL);
+  }
+
+  let lpCommission = event.params.amount
+    .times(BigInt.fromU64(DECIMAL))
+    .div(BigInt.fromI32(REVERSED_PLATFORM_COMMISSION).times(BigInt.fromU64(DECIMAL).div(BigInt.fromI32(10))));
+  history.perfomanceFee = lpCommission.times(currentLpCost);
+  history.fundProfit = history.perfomanceFee
+    .times(BigInt.fromU64(PERCENTAGE_100).minus(pool.commission))
+    .div(pool.commission);
+
+  history.save();
 }
 
 function exchangeSetup(

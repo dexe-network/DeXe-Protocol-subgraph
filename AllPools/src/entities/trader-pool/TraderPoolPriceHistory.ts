@@ -1,6 +1,6 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import { TraderPool, TraderPoolPriceHistory } from "../../../generated/schema";
-import { BLOCK_PER_YEAR, CHECK_PER_BLOCK, DECIMAL, PERCENTAGE } from "../global/globals";
+import { BLOCK_PER_YEAR, CHECK_PER_BLOCK, DECIMAL, PERCENTAGE_DENOMINATOR } from "../global/globals";
 
 export function getTraderPoolPriceHistory(
   pool: TraderPool,
@@ -29,7 +29,7 @@ export function getTraderPoolPriceHistory(
     history.traderBase = traderBase;
 
     history.absPNL = currentPrice.minus(BigInt.fromU64(DECIMAL)).times(supply).div(BigInt.fromU64(DECIMAL));
-    history.percPNL = currentPrice.minus(BigInt.fromU64(DECIMAL)).div(BigInt.fromU64(PERCENTAGE));
+    history.percPNL = currentPrice.minus(BigInt.fromU64(DECIMAL)).div(BigInt.fromU64(PERCENTAGE_DENOMINATOR));
     history.isLast = true;
 
     history.aggregationType = aggregationType;
@@ -47,7 +47,7 @@ export function getTraderPoolPriceHistory(
   return history;
 }
 
-function roundCheckUp(block: BigInt): BigInt {
+export function roundCheckUp(block: BigInt): BigInt {
   let mod = block.mod(BigInt.fromU64(CHECK_PER_BLOCK));
   return block.plus(BigInt.fromU64(CHECK_PER_BLOCK).minus(mod));
 }
