@@ -79,22 +79,24 @@ templates:
           handler: onInvest
         - event: Divested(address,uint256,uint256)
           handler: onDivest
+        - event: ProposalDivested(uint256,address,uint256,uint256,uint256)
+          handler: onProposalDivest
 
   - kind: ethereum/contract
-    name: RiskyProposal
+    name: Proposal
     network: chapel
     source:
-      abi: RiskyProposal
+      abi: Proposal
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
-      file: ./src/mappings/TraderPoolRiskyProposal.ts
+      file: ./src/mappings/TraderPoolProposal.ts
       entities:
         - ProposalContract
       abis:
-        - name: RiskyProposal
-          file: ./abis/TraderPoolRiskyProposal.json
+        - name: Proposal
+          file: ./abis/TraderPoolProposal.json
         - name: PriceFeed
           file: ./abis/PriceFeed.json
       eventHandlers:

@@ -3,6 +3,7 @@ import { TraderPool } from "../../../generated/schema";
 
 export function getTraderPool(
   poolAddress: Address,
+  proposalContract: Address = Address.zero(),
   type: string = "",
   baseToken: Address = Address.zero(),
   creationTime: BigInt = BigInt.zero(),
@@ -12,6 +13,7 @@ export function getTraderPool(
 
   if (traderPool == null) {
     traderPool = new TraderPool(poolAddress.toHexString());
+    traderPool.proposalContract = proposalContract;
     traderPool.type = type;
     traderPool.token = baseToken;
     traderPool.creationTime = creationTime;

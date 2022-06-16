@@ -1,19 +1,19 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { RiskyProposal, RiskyProposalContract } from "../../../../generated/schema";
+import { Proposal, ProposalContract } from "../../../../generated/schema";
 
-export function getRiskyProposal(
+export function getProposal(
   index: BigInt,
-  proposalContract: RiskyProposalContract,
+  proposalContract: ProposalContract,
   token: Address = Address.zero(),
   timestampLimit: BigInt = BigInt.zero(),
   investLPLimit: BigInt = BigInt.zero(),
   maxTokenPriceLimit: BigInt = BigInt.zero()
-): RiskyProposal {
+): Proposal {
   let id = proposalContract.id + index.toString();
-  let proposal = RiskyProposal.load(id);
+  let proposal = Proposal.load(id);
 
   if (proposal == null) {
-    proposal = new RiskyProposal(id);
+    proposal = new Proposal(id);
 
     proposal.token = token;
     proposal.timestampLimit = timestampLimit;

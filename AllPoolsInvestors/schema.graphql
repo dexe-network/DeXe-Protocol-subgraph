@@ -7,6 +7,7 @@
 # @param investorsCount the number of investors
 type TraderPool @entity {
   id: ID! # pool address
+  proposalContract: Bytes!
   type: String!
   token: Bytes!
   creationTime: BigInt!
@@ -117,13 +118,13 @@ type InvestorPoolPositionOffset @entity {
   offset: BigInt!
 }
 
-####################################### Risky Proposal #######################################
+####################################### Proposal #######################################
 
-type RiskyProposalContract @entity {
+type ProposalContract @entity {
   id: ID!
   traderPool: TraderPool!
 
-  proposals: [RiskyProposal!]! @derivedFrom(field: "proposalContract")
+  proposals: [Proposal!]! @derivedFrom(field: "proposalContract")
 }
 
 # @notice The entity holds information about proposal contract
@@ -138,7 +139,7 @@ type RiskyProposalContract @entity {
 # @param totalUSDOpenVolume the total open volume of proposal in usd
 # @param totalUSDCloseVolume the total close volume of proposal in usd
 # @param basicPool the basicPool id (address), for reverse lookup
-type RiskyProposal @entity {
+type Proposal @entity {
   id: ID! # proposal address + proposal index
   token: Bytes!
 
@@ -153,18 +154,19 @@ type RiskyProposal @entity {
   totalUSDOpenVolume: BigInt!
   totalUSDCloseVolume: BigInt!
 
-  proposalContract: RiskyProposalContract!
-  vests: [RiskyProposalVest!]! @derivedFrom(field: "proposal")
+  proposalContract: ProposalContract!
+  vests: [ProposalVest!]! @derivedFrom(field: "proposal")
 }
 
-type RiskyProposalVest @entity {
+type ProposalVest @entity {
   id: ID! # tx hash
   isInvest: Boolean!
   timestamp: BigInt!
 
   baseVolume: BigInt!
   lpVolume: BigInt!
+  lp2Volume: BigInt!
   usdVolume: BigInt!
 
-  proposal: RiskyProposal!
+  proposal: Proposal!
 }
