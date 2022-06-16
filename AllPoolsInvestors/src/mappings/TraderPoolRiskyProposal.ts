@@ -14,7 +14,7 @@ import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let proposal = getRiskyProposal(
-    event.params.index,
+    event.params.proposalId,
     getProposalContract(event.address),
     event.params.token,
     event.params.proposalLimits[0].toBigInt(),
@@ -26,18 +26,18 @@ export function onProposalCreated(event: ProposalCreated): void {
 
 export function onProposalInvest(event: ProposalInvested): void {
   let proposalContract = getProposalContract(event.address);
-  let proposal = getRiskyProposal(event.params.index, proposalContract);
+  let proposal = getRiskyProposal(event.params.proposalId, proposalContract);
 
   let usdValue = getUSDValue(
     getTraderPool(Address.fromString(proposalContract.traderPool)).token,
-    event.params.amountBase
+    event.params.investedBase
   );
   let invest = getRiskyProposalVest(
     event.transaction.hash,
     proposal,
     true,
-    event.params.amountBase,
-    event.params.amountLP,
+    event.params.investedBase,
+    event.params.investedLP,
     usdValue,
     event.block.timestamp
   );
@@ -49,18 +49,18 @@ export function onProposalInvest(event: ProposalInvested): void {
 
 export function onProposalDivest(event: ProposalDivested): void {
   let proposalContract = getProposalContract(event.address);
-  let proposal = getRiskyProposal(event.params.index, proposalContract);
+  let proposal = getRiskyProposal(event.params.proposalId, proposalContract);
 
   let usdValue = getUSDValue(
     getTraderPool(Address.fromString(proposalContract.traderPool)).token,
-    event.params.amountBase
+    event.params.receivedBase
   );
   let divest = getRiskyProposalVest(
     event.transaction.hash,
     proposal,
     false,
-    event.params.amountBase,
-    event.params.amountLP,
+    event.params.receivedBase,
+    event.params.receivedLP,
     usdValue,
     event.block.timestamp
   );

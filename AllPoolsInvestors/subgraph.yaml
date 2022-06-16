@@ -45,7 +45,7 @@ dataSources:
           handler: onDeposit
         - event: Withdrawn(uint256,address)
           handler: onWithdraw
-        - event: Paidout(uint256,address,uint256)
+        - event: Paidout(uint256,uint256,address)
           handler: onPayout
 
 templates:
@@ -100,7 +100,7 @@ templates:
       eventHandlers:
         - event: ProposalCreated(uint256,address,(uint256,uint256,uint256))
           handler: onProposalCreated
-        - event: ProposalInvested(uint256,address,uint256,uint256)
+        - event: ProposalInvested(uint256,address,uint256,uint256,uint256)
           handler: onProposalInvest
-        - event: ProposalDivested(uint256,address,uint256,uint256)
+        - event: ProposalDivested(uint256,address,uint256,uint256,uint256)
           handler: onProposalDivest

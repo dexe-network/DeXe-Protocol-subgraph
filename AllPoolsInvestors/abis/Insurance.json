@@ -43,7 +43,13 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "insurancePayout",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "userStakePayout",
         "type": "uint256"
       },
       {
@@ -51,12 +57,6 @@
         "internalType": "address",
         "name": "investor",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "userStakePayout",
-        "type": "uint256"
       }
     ],
     "name": "Paidout",

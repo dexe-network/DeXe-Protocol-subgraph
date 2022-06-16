@@ -30,7 +30,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "index",
+        "name": "proposalId",
         "type": "uint256"
       },
       {
@@ -72,25 +72,31 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "index",
+        "name": "proposalId",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "investor",
+        "name": "user",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amountLP",
+        "name": "divestedLP2",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amountBase",
+        "name": "receivedLP",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "receivedBase",
         "type": "uint256"
       }
     ],
@@ -103,7 +109,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "index",
+        "name": "proposalId",
         "type": "uint256"
       },
       {
@@ -140,25 +146,31 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "index",
+        "name": "proposalId",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "investor",
+        "name": "user",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amountLP",
+        "name": "investedLP",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amountBase",
+        "name": "investedBase",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "receivedLP2",
         "type": "uint256"
       }
     ],
@@ -504,31 +516,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "minPositionsOut",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "divestAll",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "totalReceivedBase",
+        "name": "receivedBase",
         "type": "uint256"
       }
     ],
@@ -626,7 +614,12 @@
           },
           {
             "internalType": "uint256",
-            "name": "lpLocked",
+            "name": "baseInvested",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lpInvested",
             "type": "uint256"
           },
           {
@@ -968,6 +961,16 @@
           {
             "internalType": "uint256",
             "name": "lp2Supply",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalInvestors",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "positionTokenPrice",
             "type": "uint256"
           }
         ],

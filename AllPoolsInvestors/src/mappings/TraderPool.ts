@@ -100,7 +100,7 @@ export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): voi
 }
 
 export function onInvest(event: Invested): void {
-  let investor = getInvestor(event.params.investor);
+  let investor = getInvestor(event.params.user);
   let pool = getTraderPool(event.address);
   let positionOffset = getPositionOffset(pool, investor);
   let investorPoolPosition = getInvestorPoolPosition(investor, pool, positionOffset);
@@ -126,7 +126,7 @@ export function onInvest(event: Invested): void {
 }
 
 export function onDivest(event: Divested): void {
-  let investor = getInvestor(event.params.investor);
+  let investor = getInvestor(event.params.user);
   let pool = getTraderPool(event.address);
   let positionOffset = getPositionOffset(pool, investor);
   let investorPoolPosition = getInvestorPoolPosition(investor, pool, positionOffset);

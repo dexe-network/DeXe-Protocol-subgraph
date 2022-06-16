@@ -33,7 +33,7 @@ export function onPayout(event: Paidout): void {
 
   injectPrevHistory(history, investor);
 
-  history.claimedAmount = history.claimedAmount.plus(event.params.amount);
+  history.claimedAmount = history.claimedAmount.plus(event.params.insurancePayout);
   history.stake = history.stake.minus(event.params.userStakePayout);
 
   investor.save();

@@ -43,7 +43,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "investor",
+        "name": "user",
         "type": "address"
       },
       {
@@ -68,7 +68,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "investor",
+        "name": "user",
         "type": "address"
       },
       {
