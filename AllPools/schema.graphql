@@ -56,6 +56,8 @@ type TraderPool @entity {
   privateInvestors: [Investor!]!
   privateInvestorsCount: BigInt!
 
+  orderSize: BigInt!
+
   positions: [Position!]! @derivedFrom(field: "traderPool")
 
   priceHistory: [TraderPoolPriceHistory!]! @derivedFrom(field: "pool")

@@ -280,6 +280,10 @@ function exchangeSetup(
     position.totalUSDCloseVolume = usdVolume;
   }
 
+  if (suffix == "_0" || suffix == "_1") {
+    recalculateOrderSize(volume, pool);
+  }
+
   let history = getExchangeHistory(event.block.timestamp, pool.id);
   trade.day = history.id;
   history.save();
@@ -288,6 +292,14 @@ function exchangeSetup(
   pool.totalTrades = pool.totalTrades.plus(BigInt.fromI32(1));
 
   position.save();
+}
+
+function recalculateOrderSize(baseVolume: BigInt, pool: TraderPool): void {
+  let currentPercentage = baseVolume.times(BigInt.fromI32(100)).div(pool.totalTrades);
+  pool.orderSize = pool.totalTrades
+    .times(pool.orderSize)
+    .plus(currentPercentage)
+    .div(pool.totalTrades.plus(BigInt.fromI32(1)));
 }
 
 function getFromPriceFeed(pfPrototype: PriceFeed, fromToken: Address, toToken: Address, amount: BigInt): BigInt {
