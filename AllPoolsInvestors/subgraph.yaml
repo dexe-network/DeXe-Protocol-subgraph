@@ -100,9 +100,11 @@ templates:
         - name: PriceFeed
           file: ./abis/PriceFeed.json
       eventHandlers:
-        - event: ProposalCreated(uint256,address,(uint256,uint256,uint256))
-          handler: onProposalCreated
         - event: ProposalInvested(uint256,address,uint256,uint256,uint256)
           handler: onProposalInvest
         - event: ProposalDivested(uint256,address,uint256,uint256,uint256)
           handler: onProposalDivest
+        - event: ProposalInvestorAdded(uint256,address)
+          handler: onProposalInvestorAdded
+        - event: ProposalInvestorRemoved(uint256,address)
+          handler: onProposalInvestorRemoved

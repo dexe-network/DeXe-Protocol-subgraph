@@ -20,8 +20,9 @@ import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { Investor } from "../../generated/schema";
 import { TraderPool as TRP } from "../../generated/schema";
 import { getProposalContract } from "../entities/trader-pool/proposal/ProposalContract";
-import { getProposal } from "../entities/trader-pool/proposal/Proposal";
+import { getProposalPosition } from "../entities/trader-pool/proposal/ProposalPosition";
 import { getProposalVest } from "../entities/trader-pool/proposal/ProposalVest";
+import { getProposalPositionOffset } from "../entities/global/ProposalPositionOffset";
 
 export function onInvestorAdded(event: InvestorAdded): void {
   let pool = getTraderPool(event.address);
@@ -39,8 +40,6 @@ export function onInvestorAdded(event: InvestorAdded): void {
 
   let positionOffset = getPositionOffset(pool, investor);
   let investorPoolPosition = getInvestorPoolPosition(investor, pool, positionOffset);
-
-  /* TODO set volumes */
 
   positionOffset.save();
   investorPoolPosition.save();
@@ -158,7 +157,9 @@ export function onDivest(event: Divested): void {
 export function onProposalDivest(event: ProposalDivested): void {
   let pool = getTraderPool(event.address);
   let proposalContract = getProposalContract(Address.fromString(pool.proposalContract.toHexString()));
-  let proposal = getProposal(event.params.proposalId, proposalContract);
+  let investor = getInvestor(event.params.user);
+  let proposalOffset = getProposalPositionOffset(pool, investor, event.params.proposalId);
+  let proposal = getProposalPosition(event.params.proposalId, proposalContract, investor, proposalOffset);
 
   let usdValue = getUSDValue(pool.token, event.params.receivedBase);
   let divest = getProposalVest(

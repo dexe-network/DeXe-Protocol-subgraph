@@ -1,9 +1,9 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { Proposal, ProposalVest } from "../../../../generated/schema";
+import { ProposalPosition, ProposalVest } from "../../../../generated/schema";
 
 export function getProposalVest(
   hash: Bytes,
-  proposal: Proposal,
+  proposal: ProposalPosition,
   isInvest: boolean = false,
   volumeBase: BigInt = BigInt.zero(),
   volumeLP: BigInt = BigInt.zero(),

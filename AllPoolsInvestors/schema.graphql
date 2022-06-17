@@ -2,7 +2,6 @@
 # @param id the pool address
 # @param type the string with type of pool
 # @param token the address of base token
-# @param creationTime the timestamp of creating pool
 # @param investors the array with Investor entities
 # @param investorsCount the number of investors
 type TraderPool @entity {
@@ -10,8 +9,6 @@ type TraderPool @entity {
   proposalContract: Bytes!
   type: String!
   token: Bytes!
-  creationTime: BigInt!
-  creationBlock: BigInt!
 
   investors: [Investor!]!
   investorsCount: BigInt!
@@ -123,15 +120,16 @@ type InvestorPoolPositionOffset @entity {
 type ProposalContract @entity {
   id: ID!
   traderPool: TraderPool!
+  proposalType: String!
+}
 
-  proposals: [Proposal!]! @derivedFrom(field: "proposalContract")
+type ProposalPositionOffset @entity {
+  id: ID!
+  offset: BigInt!
 }
 
 # @notice The entity holds information about proposal contract
 # @param token the address of proposal token
-# @param timestampLimit the timestamp from contract after which the investment into proposal closes
-# @param investLPLimit the maximal number of invested LP tokens from contract after which the investment into the proposal closes
-# @param maxTokenPriceLimit the maximal price of the proposal token from contract after which the investment into the proposal closes
 # @param totalBaseOpenVolume the total open volume of proposal in base token
 # @param totalBaseCloseVolume the total close volume of proposal in base token
 # @param totalPositionOpenVolume the total open volume of proposal in proposal token
@@ -139,18 +137,16 @@ type ProposalContract @entity {
 # @param totalUSDOpenVolume the total open volume of proposal in usd
 # @param totalUSDCloseVolume the total close volume of proposal in usd
 # @param basicPool the basicPool id (address), for reverse lookup
-type Proposal @entity {
-  id: ID! # proposal address + proposal index
-  token: Bytes!
-
-  timestampLimit: BigInt!
-  investLPLimit: BigInt!
-  maxTokenPriceLimit: BigInt!
+type ProposalPosition @entity {
+  id: ID! # proposal address + investor address + proposal index + position proposal offset
+  isClosed: Boolean!
 
   totalBaseOpenVolume: BigInt!
   totalBaseCloseVolume: BigInt!
-  totalPositionOpenVolume: BigInt!
-  totalPositionCloseVolume: BigInt!
+  totalLPOpenVolume: BigInt!
+  totalLPCloseVolume: BigInt!
+  totalLP2OpenVolume: BigInt!
+  totalLP2CloseVolume: BigInt!
   totalUSDOpenVolume: BigInt!
   totalUSDCloseVolume: BigInt!
 
@@ -168,5 +164,5 @@ type ProposalVest @entity {
   lp2Volume: BigInt!
   usdVolume: BigInt!
 
-  proposal: Proposal!
+  proposal: ProposalPosition!
 }

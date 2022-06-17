@@ -5,9 +5,7 @@ export function getTraderPool(
   poolAddress: Address,
   proposalContract: Address = Address.zero(),
   type: string = "",
-  baseToken: Address = Address.zero(),
-  creationTime: BigInt = BigInt.zero(),
-  block: BigInt = BigInt.zero()
+  baseToken: Address = Address.zero()
 ): TraderPool {
   let traderPool = TraderPool.load(poolAddress.toHexString());
 
@@ -16,8 +14,6 @@ export function getTraderPool(
     traderPool.proposalContract = proposalContract;
     traderPool.type = type;
     traderPool.token = baseToken;
-    traderPool.creationTime = creationTime;
-    traderPool.creationBlock = block;
   }
 
   return traderPool;
