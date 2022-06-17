@@ -281,7 +281,7 @@ function exchangeSetup(
   }
 
   if (suffix == "_0" || suffix == "_1") {
-    recalculateOrderSize(volume, pool);
+    recalculateOrderSize(volume, pool, event.block.number);
   }
 
   let history = getExchangeHistory(event.block.timestamp, pool.id);
@@ -294,8 +294,15 @@ function exchangeSetup(
   position.save();
 }
 
-function recalculateOrderSize(baseVolume: BigInt, pool: TraderPool): void {
-  let currentPercentage = baseVolume.times(BigInt.fromI32(100)).div(pool.totalTrades);
+function recalculateOrderSize(baseVolume: BigInt, pool: TraderPool, block: BigInt): void {
+  let lastHistory = findPrevHistory<TraderPoolPriceHistory>(
+    TraderPoolPriceHistory.load,
+    pool.id,
+    block,
+    BigInt.fromI32(100)
+  );
+  let tvl = lastHistory == null ? BigInt.fromI32(1) : lastHistory.baseTVL;
+  let currentPercentage = baseVolume.times(BigInt.fromU64(PERCENTAGE)).div(tvl);
   pool.orderSize = pool.totalTrades
     .times(pool.orderSize)
     .plus(currentPercentage)
