@@ -302,8 +302,13 @@ function recalculateOrderSize(baseVolume: BigInt, pool: TraderPool, block: BigIn
     block,
     BigInt.fromI32(100)
   );
-  let tvl = lastHistory == null ? BigInt.fromI32(1) : lastHistory.baseTVL;
-  let currentPercentage = baseVolume.times(BigInt.fromU64(PERCENTAGE_DENOMINATOR)).div(tvl);
+  let currentPercentage: BigInt;
+  if (lastHistory == null) {
+    currentPercentage = BigInt.zero();
+  } else {
+    currentPercentage = baseVolume.times(BigInt.fromU64(PERCENTAGE_DENOMINATOR)).div(lastHistory.baseTVL);
+  }
+
   pool.orderSize = pool.totalTrades
     .times(pool.orderSize)
     .plus(currentPercentage)
