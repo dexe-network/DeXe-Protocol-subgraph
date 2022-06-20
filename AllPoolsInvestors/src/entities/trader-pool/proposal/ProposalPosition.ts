@@ -7,7 +7,7 @@ export function getProposalPosition(
   investor: Investor,
   proposalPositionOffset: ProposalPositionOffset
 ): ProposalPosition {
-  let id = proposalContract.id + investor.id + index.toString() + proposalPositionOffset.offset.toString();
+  let id = proposalContract.id + investor.id + index.toString() + "_" + proposalPositionOffset.offset.toString();
   let proposal = ProposalPosition.load(id);
 
   if (proposal == null) {

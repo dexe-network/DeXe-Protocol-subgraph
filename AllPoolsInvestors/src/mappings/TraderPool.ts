@@ -172,6 +172,11 @@ export function onProposalDivest(event: ProposalDivested): void {
     event.block.timestamp
   );
 
+  proposal.totalBaseCloseVolume = proposal.totalBaseCloseVolume.plus(event.params.receivedBase);
+  proposal.totalLPCloseVolume = proposal.totalLPCloseVolume.plus(event.params.receivedLP);
+  proposal.totalLP2CloseVolume = proposal.totalLP2CloseVolume.plus(event.params.divestedLP2);
+  proposal.totalUSDCloseVolume = proposal.totalUSDCloseVolume.plus(usdValue);
+
   proposalContract.save();
   proposal.save();
   divest.save();

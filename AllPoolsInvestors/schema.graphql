@@ -138,7 +138,7 @@ type ProposalPositionOffset @entity {
 # @param totalUSDCloseVolume the total close volume of proposal in usd
 # @param basicPool the basicPool id (address), for reverse lookup
 type ProposalPosition @entity {
-  id: ID! # proposal address + investor address + proposal index + position proposal offset
+  id: ID! # proposal address + investor address + proposal index + "_" + position proposal offset
   isClosed: Boolean!
 
   totalBaseOpenVolume: BigInt!
