@@ -1,0 +1,188 @@
+# @notice The entity that holds informations about pool
+# @param id the pool address
+# @param type the string with type of pool
+# @param token the address of base token
+# @param investors the array with Investor entities
+# @param investorsCount the number of investors
+type TraderPool @entity {
+  id: ID! # pool address
+  proposalContract: Bytes!
+  type: String!
+  token: Bytes!
+
+  investors: [Investor!]!
+  investorsCount: BigInt!
+
+  privateInvestors: [Investor!]!
+  privateInvestorsCount: BigInt!
+}
+
+# @notice The entity holds information about Investor
+# @param id the investor address
+# @param activePools the array with pools with investor's invests
+# @param allPools the array with pools where the  investor has ever invested
+type Investor @entity {
+  id: ID! # investor address
+  activePools: [TraderPool!]!
+  allPools: [TraderPool!]!
+
+  insuranceHistory: [InsuranceHistory!]! @derivedFrom(field: "investor")
+}
+
+# @notice The entity holds historical information about investor's insurance
+# @param id the investor address + day
+# @param stake the staked amount
+# @param claimedAmount the total amount of claims
+# @param investor the investor entity id
+# @param day the timestamp / 86400
+# @param prevHistory the id of previos history
+type InsuranceHistory @entity {
+  id: ID! # investor address + timestamp / 86400
+  stake: BigInt!
+  claimedAmount: BigInt!
+
+  investor: Investor!
+  day: BigInt!
+  prevHistory: InsuranceHistory!
+}
+
+# @notice The entity holds historical information about pool
+# @param id the pool address + day
+# @param investors the array of current investors
+# @param investorsCount the current number of investors
+# @param privateInvestors the array of current private investors
+# @param privateInvestorsCount the current number of private investors
+# @param pool the trader pool address
+# @param day the timestamp / 86400
+type TraderPoolHistory @entity {
+  id: ID! # pool address + timestamp / 86400
+  investors: [String!]!
+  investorsCount: BigInt!
+  privateInvestors: [String!]!
+  privateInvestorsCount: BigInt!
+  pool: TraderPool!
+  day: BigInt!
+}
+
+# @notice The entity holds information about investor's invests and divests in pool
+# @param id forms from investor addres + pool address
+# @param pool the trader pool entity id
+# @param investor the investor entity id
+# @param isClosed the bool flag, if true => position closed
+# @param totalBaseInvestVolume the total volume of investor's invests to pool in base token
+# @param totalBaseDivestVolume the total volume of investor's divests from pool in base token
+# @param totalLPInvestVolume the total volume of investor's invests to pool in lp token
+# @param totalLPDivestVolume the total volume of investor's divests from pool in lp token
+# @param totalUSDInvestVolume the total volume of investor's invests to pool in usd token
+# @param totalUSDDivestVolume the total volume of investor's divests from pool in usd token
+type InvestorPoolPosition @entity {
+  id: ID! # investor address + pool address + position offset
+  pool: TraderPool!
+  investor: Investor!
+  isClosed: Boolean!
+
+  totalBaseInvestVolume: BigInt!
+  totalBaseDivestVolume: BigInt!
+  totalLPInvestVolume: BigInt!
+  totalLPDivestVolume: BigInt!
+  totalUSDInvestVolume: BigInt!
+  totalUSDDivestVolume: BigInt!
+
+  vest: [Vest!]! @derivedFrom(field: "investorPoolPosition")
+}
+
+# @notice The entity holds information about invest and divest operations
+# @param id forms from tx hash
+# @param isInvest the bool flag, if true => invest
+# @param timestamp the timestamp of tx
+# @param investorPosition the id of investorPosition entity
+# @param volumeBase the volume of operation in base
+# @param volumeLP the volume of operaion in lp token
+# @param volumeUSD the volume of operaion in USD
+type Vest @entity {
+  id: ID!
+  isInvest: Boolean!
+  timestamp: BigInt!
+  investorPoolPosition: InvestorPoolPosition!
+
+  volumeBase: BigInt!
+  volumeLP: BigInt!
+  volumeUSD: BigInt!
+}
+
+# @notice The entity holds information about investor position offset in pool
+# @param id forms from investor address + pool address
+# @param offset the investor position offset in pool
+type InvestorPoolPositionOffset @entity {
+  id: ID! # investor address + pool address
+  offset: BigInt!
+}
+
+####################################### Proposal #######################################
+
+# @notice The entity holds information about proposal contract
+# @param id forms from proposal contract address
+# @param traderPool the trader pool entity
+# @param proposalType the string with type of proposal
+type ProposalContract @entity {
+  id: ID! # proposal contract address
+  traderPool: TraderPool!
+  proposalType: String!
+}
+
+# @notice The entity holds information about proposal position offset
+# @param id froms from proposal address + investor address
+# @param offset the investor position offset in proposal
+type ProposalPositionOffset @entity {
+  id: ID! # proposal address + investor address
+  offset: BigInt!
+}
+
+# @notice The entity holds information about investor position in proposal
+# @param id proposal address + investor address + proposal index + "_" + position proposal offset
+# @param isClosed the boolean flag, if true -> position closed
+# @param totalBaseOpenVolume the total open volume of proposal in base token
+# @param totalBaseCloseVolume the total close volume of proposal in base token
+# @param totalPositionOpenVolume the total open volume of proposal in proposal token
+# @param totalPositionCloseVolume the total close volume of proposal in proposal token
+# @param totalUSDOpenVolume the total open volume of proposal in usd
+# @param totalUSDCloseVolume the total close volume of proposal in usd
+# @param proposalContract the proposalContract entity
+type ProposalPosition @entity {
+  id: ID! # proposal address + investor address + proposal index + "_" + position proposal offset
+  isClosed: Boolean!
+
+  totalBaseOpenVolume: BigInt!
+  totalBaseCloseVolume: BigInt!
+  totalLPOpenVolume: BigInt!
+  totalLPCloseVolume: BigInt!
+  totalLP2OpenVolume: BigInt!
+  totalLP2CloseVolume: BigInt!
+  totalUSDOpenVolume: BigInt!
+  totalUSDCloseVolume: BigInt!
+
+  proposalContract: ProposalContract!
+  vests: [ProposalVest!]! @derivedFrom(field: "proposal")
+}
+
+# @notice The entity holds information about invest/divest in proposal
+# @param id forms from tx hash
+# @param isInvest the booleand flag, if true -> invest
+# @param timestamp the timestamp of tx
+# @param baseVolume the volume of vest in base token
+# @param lpVolume the volume of vest in lp token
+# @param lp2Volume the volume of vest in lp2 token
+# @param usdVolume the volume of vest in usdVolume token
+# @param proposal the proposal entity
+type ProposalVest @entity {
+  id: ID! # tx hash
+  isInvest: Boolean!
+  timestamp: BigInt!
+
+  baseVolume: BigInt!
+  lpVolume: BigInt!
+  lp2Volume: BigInt!
+  usdVolume: BigInt!
+
+  proposal: ProposalPosition!
+}
