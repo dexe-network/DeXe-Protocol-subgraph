@@ -110,6 +110,9 @@ type Vest @entity {
   volumeUSD: BigInt!
 }
 
+# @notice The entity holds information about investor position offset in pool
+# @param id forms from investor address + pool address
+# @param offset the investor position offset in pool
 type InvestorPoolPositionOffset @entity {
   id: ID! # investor address + pool address
   offset: BigInt!
@@ -117,26 +120,34 @@ type InvestorPoolPositionOffset @entity {
 
 ####################################### Proposal #######################################
 
+# @notice The entity holds information about proposal contract
+# @param id forms from proposal contract address
+# @param traderPool the trader pool entity
+# @param proposalType the string with type of proposal
 type ProposalContract @entity {
-  id: ID!
+  id: ID! # proposal contract address
   traderPool: TraderPool!
   proposalType: String!
 }
 
+# @notice The entity holds information about proposal position offset
+# @param id froms from proposal address + investor address
+# @param offset the investor position offset in proposal
 type ProposalPositionOffset @entity {
-  id: ID!
+  id: ID! # proposal address + investor address
   offset: BigInt!
 }
 
-# @notice The entity holds information about proposal contract
-# @param token the address of proposal token
+# @notice The entity holds information about investor position in proposal
+# @param id proposal address + investor address + proposal index + "_" + position proposal offset
+# @param isClosed the boolean flag, if true -> position closed
 # @param totalBaseOpenVolume the total open volume of proposal in base token
 # @param totalBaseCloseVolume the total close volume of proposal in base token
 # @param totalPositionOpenVolume the total open volume of proposal in proposal token
 # @param totalPositionCloseVolume the total close volume of proposal in proposal token
 # @param totalUSDOpenVolume the total open volume of proposal in usd
 # @param totalUSDCloseVolume the total close volume of proposal in usd
-# @param basicPool the basicPool id (address), for reverse lookup
+# @param proposalContract the proposalContract entity
 type ProposalPosition @entity {
   id: ID! # proposal address + investor address + proposal index + "_" + position proposal offset
   isClosed: Boolean!
@@ -154,6 +165,15 @@ type ProposalPosition @entity {
   vests: [ProposalVest!]! @derivedFrom(field: "proposal")
 }
 
+# @notice The entity holds information about invest/divest in proposal
+# @param id forms from tx hash
+# @param isInvest the booleand flag, if true -> invest
+# @param timestamp the timestamp of tx
+# @param baseVolume the volume of vest in base token
+# @param lpVolume the volume of vest in lp token
+# @param lp2Volume the volume of vest in lp2 token
+# @param usdVolume the volume of vest in usdVolume token
+# @param proposal the proposal entity
 type ProposalVest @entity {
   id: ID! # tx hash
   isInvest: Boolean!
