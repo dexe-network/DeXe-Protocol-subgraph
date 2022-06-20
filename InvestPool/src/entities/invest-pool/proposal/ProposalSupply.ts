@@ -1,11 +1,12 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { ProposalSupply } from "../../../../generated/schema";
+import { Proposal, ProposalSupply } from "../../../../generated/schema";
 
 export function getProposalSupply(
   hash: Bytes,
+  proposal: Proposal,
   amount: BigInt = BigInt.zero(),
   token: Address = Address.zero(),
-  InvestorInfoId: string = "",
+  investor: Address = Address.zero(),
   timestamp: BigInt = BigInt.zero()
 ): ProposalSupply {
   let id = hash.toHexString();
@@ -13,10 +14,10 @@ export function getProposalSupply(
 
   if (supply == null) {
     supply = new ProposalSupply(id);
-    supply.investor = InvestorInfoId;
+    supply.proposal = proposal.id;
+    supply.investor = investor;
     supply.amount = amount;
     supply.token = token;
-    supply.day = "";
     supply.timestamp = timestamp;
   }
 
