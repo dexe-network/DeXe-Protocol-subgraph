@@ -19,6 +19,7 @@ import {
   REVERSED_PLATFORM_COMMISSION,
   PERCENTAGE_100,
   PRICE_FEED_ADDRESS,
+  PERCENTAGE_DENOMINATOR,
 } from "../entities/global/globals";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { Exchange, FeeHistory, Position, TraderPool, TraderPoolPriceHistory } from "../../generated/schema";
@@ -280,6 +281,10 @@ function exchangeSetup(
     position.totalUSDCloseVolume = usdVolume;
   }
 
+  if (suffix == "_0" || suffix == "_1") {
+    recalculateOrderSize(volume, pool, event.block.number);
+  }
+
   let history = getExchangeHistory(event.block.timestamp, pool.id);
   trade.day = history.id;
   history.save();
@@ -288,6 +293,26 @@ function exchangeSetup(
   pool.totalTrades = pool.totalTrades.plus(BigInt.fromI32(1));
 
   position.save();
+}
+
+function recalculateOrderSize(baseVolume: BigInt, pool: TraderPool, block: BigInt): void {
+  let lastHistory = findPrevHistory<TraderPoolPriceHistory>(
+    TraderPoolPriceHistory.load,
+    pool.id,
+    block,
+    BigInt.fromI32(100)
+  );
+  let currentPercentage: BigInt;
+  if (lastHistory == null) {
+    currentPercentage = BigInt.zero();
+  } else {
+    currentPercentage = baseVolume.times(BigInt.fromU64(PERCENTAGE_DENOMINATOR)).div(lastHistory.baseTVL);
+  }
+
+  pool.orderSize = pool.totalTrades
+    .times(pool.orderSize)
+    .plus(currentPercentage)
+    .div(pool.totalTrades.plus(BigInt.fromI32(1)));
 }
 
 function getFromPriceFeed(pfPrototype: PriceFeed, fromToken: Address, toToken: Address, amount: BigInt): BigInt {

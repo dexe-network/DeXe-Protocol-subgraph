@@ -22,7 +22,8 @@ export function getTraderPoolPriceHistory(
     history.pool = pool.id;
     history.usdTVL = usdTVL;
     history.supply = supply;
-    history.seconds = timestamp;
+    history.timestamp = timestamp;
+    history.block = blockNumber;
     history.baseTVL = poolBase;
 
     history.traderUSD = traderUSD;
