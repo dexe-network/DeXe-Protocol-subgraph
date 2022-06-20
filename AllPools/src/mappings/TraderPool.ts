@@ -19,6 +19,7 @@ import {
   REVERSED_PLATFORM_COMMISSION,
   PERCENTAGE_100,
   PRICE_FEED_ADDRESS,
+  PERCENTAGE_DENOMINATOR,
 } from "../entities/global/globals";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { Exchange, FeeHistory, Position, TraderPool, TraderPoolPriceHistory } from "../../generated/schema";
@@ -302,7 +303,7 @@ function recalculateOrderSize(baseVolume: BigInt, pool: TraderPool, block: BigIn
     BigInt.fromI32(100)
   );
   let tvl = lastHistory == null ? BigInt.fromI32(1) : lastHistory.baseTVL;
-  let currentPercentage = baseVolume.times(BigInt.fromU64(PERCENTAGE)).div(tvl);
+  let currentPercentage = baseVolume.times(BigInt.fromU64(PERCENTAGE_DENOMINATOR)).div(tvl);
   pool.orderSize = pool.totalTrades
     .times(pool.orderSize)
     .plus(currentPercentage)

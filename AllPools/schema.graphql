@@ -16,6 +16,7 @@ type PositionOffset @entity {
 # @param name the name of pool's token
 # @param descriptionURL the description url address from contract
 # @param creationTime the timestamp of creating pool
+# @param creationBlock the block number of creating pool
 # @param maxLoss the maximum loss among all positions
 # @param commission the commission of pool
 # @param trader the address of trader
@@ -26,8 +27,9 @@ type PositionOffset @entity {
 # @param averagePositionTime the average live time of all positions
 # @param investors the array with Investor entities
 # @param investorsCount the number of investors
-# @param privateInvestors the array with private investors
+# @param privateInvestors the array with private investor
 # @param privateInvestorsCount the number of private investors
+# @param orderSize the average order size
 # @param priceHistoryCount the number of priceHistories
 type TraderPool @entity {
   id: ID! # pool address
