@@ -546,7 +546,27 @@
           },
           {
             "internalType": "uint256",
+            "name": "traderLPCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "traderUSDCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "dexeBaseCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "dexeLPCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "dexeUSDCommission",
             "type": "uint256"
           },
           {
@@ -870,7 +890,27 @@
           },
           {
             "internalType": "uint256",
+            "name": "traderLPCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "traderUSDCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "dexeBaseCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "dexeLPCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "dexeUSDCommission",
             "type": "uint256"
           },
           {
@@ -1303,6 +1343,7 @@
     "stateMutability": "nonpayable",
     "type": "function"
   },
+  
   {
     "anonymous": false,
     "inputs": [
@@ -1348,40 +1389,40 @@
     "type": "event"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "proposalId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "divestedLP2",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "receivedLP",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "receivedBase",
-        "type": "uint256"
-      }
-    ],
-    "name": "ProposalDivested",
-    "type": "event"
+  "anonymous": false,
+  "inputs": [
+    {
+      "indexed": false,
+      "internalType": "uint256",
+      "name": "proposalId",
+      "type": "uint256"
+    },
+    {
+      "indexed": false,
+      "internalType": "address",
+      "name": "user",
+      "type": "address"
+    },
+    {
+      "indexed": false,
+      "internalType": "uint256",
+      "name": "divestedLP2",
+      "type": "uint256"
+    },
+    {
+      "indexed": false,
+      "internalType": "uint256",
+      "name": "receivedLP",
+      "type": "uint256"
+    },
+    {
+      "indexed": false,
+      "internalType": "uint256",
+      "name": "receivedBase",
+      "type": "uint256"
+    }
+  ],
+  "name": "ProposalDivested",
+  "type": "event"
   }
 ]

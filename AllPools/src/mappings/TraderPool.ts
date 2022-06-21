@@ -226,7 +226,7 @@ export function onTraderCommissionMinted(event: TraderCommissionMinted): void {
     history.PNL = currentPNL.minus(prevHistory == null ? BigInt.zero() : prevHistory.PNL);
   }
 
-  let lpCommission = event.params.amount
+  let lpCommission = event.params.lpMinted
     .times(BigInt.fromU64(DECIMAL))
     .div(BigInt.fromI32(REVERSED_PLATFORM_COMMISSION).times(BigInt.fromU64(DECIMAL).div(BigInt.fromI32(10))));
   history.perfomanceFee = lpCommission.times(currentLpCost);
