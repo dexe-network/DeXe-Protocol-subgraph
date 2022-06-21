@@ -10,7 +10,7 @@ import { getProposalContract } from "../entities/basic-pool/proposal/ProposalCon
 export function onProposalCreated(event: ProposalCreated): void {
   let proposalContract = getProposalContract(event.address);
   let proposal = getProposal(
-    event.params.index,
+    event.params.proposalId,
     proposalContract,
     event.params.token,
     event.params.proposalLimits[0].toBigInt(),
@@ -23,7 +23,7 @@ export function onProposalCreated(event: ProposalCreated): void {
 
 export function onProposalExchange(event: ProposalExchanged): void {
   let proposalContract = getProposalContract(event.address);
-  let proposal = getProposal(event.params.index, proposalContract);
+  let proposal = getProposal(event.params.proposalId, proposalContract);
 
   let exchange = getProposalExchange(
     event.transaction.hash,

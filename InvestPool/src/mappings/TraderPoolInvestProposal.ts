@@ -11,7 +11,7 @@ import { getProposalWithdrawal } from "../entities/invest-pool/proposal/Proposal
 export function onProposalCreated(event: ProposalCreated): void {
   let proposalContract = getProposalContract(event.address);
   let proposal = getProposal(
-    event.params.index,
+    event.params.proposalId,
     proposalContract,
     event.params.proposalLimits[0].toBigInt(),
     event.params.proposalLimits[1].toBigInt()
@@ -22,12 +22,12 @@ export function onProposalCreated(event: ProposalCreated): void {
 
 export function onWithdrawn(event: ProposalWithdrawn): void {
   let proposalContract = getProposalContract(event.address);
-  let proposal = getProposal(event.params.index, proposalContract);
+  let proposal = getProposal(event.params.proposalId, proposalContract);
   let withdraw = getProposalWithdrawal(
     event.transaction.hash,
     proposal,
     event.params.amount,
-    event.params.investor,
+    event.params.admin,
     event.block.timestamp
   );
 
@@ -38,13 +38,13 @@ export function onWithdrawn(event: ProposalWithdrawn): void {
 
 export function onSupplied(event: ProposalSupplied): void {
   let proposalContract = getProposalContract(event.address);
-  let proposal = getProposal(event.params.index, proposalContract);
+  let proposal = getProposal(event.params.proposalId, proposalContract);
   let supply = getProposalSupply(
     event.transaction.hash,
     proposal,
     event.params.amount,
     event.params.token,
-    event.params.investor,
+    event.params.admin,
     event.block.timestamp
   );
 
