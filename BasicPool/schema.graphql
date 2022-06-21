@@ -13,6 +13,15 @@ type BasicPool @entity {
 ####################################### Proposal #######################################
 
 # @notice The entity holds information about proposal contract
+# @param id forms from proposal contract address
+# @param basicPool the basicPool entity
+type ProposalContract @entity {
+  id: ID! # proposal contract address
+  basicPool: BasicPool!
+}
+
+# @notice The entity holds information about proposal
+# @param id forms from proposal contract address + proposal index
 # @param token the address of proposal token
 # @param timestampLimit the timestamp from contract after which the investment into proposal closes
 # @param investLPLimit the maximal number of invested LP tokens from contract after which the investment into the proposal closes
@@ -25,7 +34,7 @@ type BasicPool @entity {
 # @param totalUSDCloseVolume the total close volume of proposal in usd
 # @param basicPool the basicPool id (address), for reverse lookup
 type Proposal @entity {
-  id: ID! # pool address + proposal index
+  id: ID! # proposal address + proposal index
   token: Bytes!
 
   timestampLimit: BigInt!

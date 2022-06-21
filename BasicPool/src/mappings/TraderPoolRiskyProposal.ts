@@ -5,21 +5,25 @@ import { ProposalCreated, ProposalExchanged } from "../../generated/templates/Ri
 import { PriceFeed } from "../../generated/templates/RiskyProposal/PriceFeed";
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { getProposalContract } from "../entities/basic-pool/proposal/ProposalContract";
 
 export function onProposalCreated(event: ProposalCreated): void {
+  let proposalContract = getProposalContract(event.address);
   let proposal = getProposal(
     event.params.index,
-    event.address,
+    proposalContract,
     event.params.token,
     event.params.proposalLimits[0].toBigInt(),
     event.params.proposalLimits[1].toBigInt(),
     event.params.proposalLimits[2].toBigInt()
   );
   proposal.save();
+  proposalContract.save();
 }
 
 export function onProposalExchange(event: ProposalExchanged): void {
-  let proposal = getProposal(event.params.index, event.address);
+  let proposalContract = getProposalContract(event.address);
+  let proposal = getProposal(event.params.index, proposalContract);
 
   let exchange = getProposalExchange(
     event.transaction.hash,
@@ -54,6 +58,7 @@ export function onProposalExchange(event: ProposalExchanged): void {
   proposal.save();
   exchange.save();
   history.save();
+  proposalContract.save();
 }
 
 function getUSDPrice(token: Address, amount: BigInt): BigInt {
