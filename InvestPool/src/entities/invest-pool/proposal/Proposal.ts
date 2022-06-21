@@ -1,6 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import { Proposal, ProposalContract } from "../../../../generated/schema";
-import { getInvestTraderPool } from "../InvestTraderPool";
 
 export function getProposal(
   index: BigInt,

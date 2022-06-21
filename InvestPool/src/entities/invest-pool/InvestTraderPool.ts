@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address } from "@graphprotocol/graph-ts";
 import { InvestPool } from "../../../generated/schema";
 
 export function getInvestTraderPool(poolAddress: Address, basicTokenAddress: Address = Address.zero()): InvestPool {
