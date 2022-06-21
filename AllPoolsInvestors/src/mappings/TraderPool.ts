@@ -124,6 +124,9 @@ export function onInvest(event: Invested): void {
   investorPoolPosition.totalLPInvestVolume = investorPoolPosition.totalLPInvestVolume.plus(event.params.receivedLP);
   investorPoolPosition.totalUSDInvestVolume = investorPoolPosition.totalUSDInvestVolume.plus(usdValue);
 
+  investor.save();
+  pool.save();
+  positionOffset.save();
   investorPoolPosition.save();
   vest.save();
 }
@@ -150,6 +153,9 @@ export function onDivest(event: Divested): void {
   investorPoolPosition.totalLPDivestVolume = investorPoolPosition.totalLPDivestVolume.plus(event.params.divestedLP);
   investorPoolPosition.totalUSDDivestVolume = investorPoolPosition.totalUSDDivestVolume.plus(usdValue);
 
+  investor.save();
+  pool.save();
+  positionOffset.save();
   investorPoolPosition.save();
   vest.save();
 }
@@ -177,7 +183,9 @@ export function onProposalDivest(event: ProposalDivested): void {
   proposal.totalLP2CloseVolume = proposal.totalLP2CloseVolume.plus(event.params.divestedLP2);
   proposal.totalUSDCloseVolume = proposal.totalUSDCloseVolume.plus(usdValue);
 
-  proposalContract.save();
+  pool.save();
+  investor.save();
+  proposalOffset.save();
   proposal.save();
   divest.save();
 }
