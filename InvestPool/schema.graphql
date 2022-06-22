@@ -30,39 +30,39 @@ type Proposal @entity {
   timestampLimit: BigInt!
   investLPLimit: BigInt!
 
+  tokens: [Bytes!]!
+  amounts: [BigInt!]!
+
+  totalUSDSupply: BigInt!
+  APR: BigInt!
+
+  lastSupply: LastSupply!
+  lastWithdraw: LastWithdraw!
+
   investPool: InvestPool!
-  proposalSupplies: [ProposalSupply!]! @derivedFrom(field: "proposal")
-  proposalWithdrawals: [ProposalWithdrawal!]! @derivedFrom(field: "proposal")
 }
 
-# @notice The entity holds information about supply in proposal
-# @param id forms from transaction hash, useless
-# @param timestamp the block timestamp
-# @param amount the amount of supply
-# @param token the address of supplied token
-# @param investor the investorInfo entity id for reverse lookup
-# @param day the history id (proposal id + timestamp / 86400), for reverse lookup
-type ProposalSupply @entity {
-  id: ID! #tx hash
+# @notice The entity holds information about last withdraw in proposal
+# @param id froms from proposal id
+# @param timestamp the timestamp of tx
+# @param amountBase the amount of withdraw in base token
+# @param amountDividendsToken the anount of withdraw in dividends token
+# @param proposal the proposal entity
+type LastWithdraw @entity {
+  id: ID! # proposal id
   timestamp: BigInt!
-  amount: BigInt!
-  token: Bytes!
-
-  investor: Bytes!
-  proposal: Proposal!
+  amountBase: BigInt!
 }
 
-# @notice The entity holds information about withdraw in proposal
-# @param id forms from transaction hash, useless
-# @param timestamp the block timestamp
-# @param amount the amount of withdraw
-# @param investor the investorInfo entity id for reverse lookup
-# @param day the history id (proposal id + timestamp / 86400), for reverse lookup
-type ProposalWithdrawal @entity {
-  id: ID! # tx hash
+# @notice The entity holds information about last supply in proposal
+# @param id froms from proposal id
+# @param timestamp the timestamp of tx
+# @param amountBase the amount of supply in base token
+# @param amountDividendsToken the anount of supply in dividends token
+# @param proposal the proposal entity
+type LastSupply @entity {
+  id: ID! # proposal id
   timestamp: BigInt!
-  amount: BigInt!
-
-  investor: Bytes!
-  proposal: Proposal!
+  dividendsTokens: [Bytes!]!
+  amountDividendsTokens: [BigInt!]!
 }

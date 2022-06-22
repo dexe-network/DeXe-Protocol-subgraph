@@ -1,2 +1,3 @@
 export const DAY = 86400;
 export const INVEST_POOL_NAME = "INVEST_POOL";
+export const PRICE_FEED_ADDRESS = "0x3A9f4B1f3fc4B89C90A5E8236cdea62b5D973B60";
