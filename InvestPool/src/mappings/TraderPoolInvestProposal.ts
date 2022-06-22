@@ -5,8 +5,9 @@ import {
   ProposalSupplied,
   ProposalClaimed,
 } from "../../generated/templates/InvestProposal/InvestProposal";
+import { InvestProposal } from "../../generated/templates/InvestProposal/InvestProposal";
 import { PriceFeed } from "../../generated/templates/InvestProposal/PriceFeed";
-import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { DAY, PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { getProposal } from "../entities/invest-pool/proposal/Proposal";
 import { getProposalContract } from "../entities/invest-pool/proposal/ProposalContract";
 import { getLastSupply } from "../entities/invest-pool/proposal/ProposalLastSupply";
@@ -46,6 +47,19 @@ export function onProposalSupplied(event: ProposalSupplied): void {
   lastSupply.amountDividendsTokens = event.params.amounts;
 
   proposal.totalUSDSupply = proposal.totalUSDSupply.plus(totalTokenUSDCost(event.params.tokens, event.params.amounts));
+
+  if (proposal.firstSupplyTimestamp.equals(BigInt.zero())) {
+    proposal.firstSupplyTimestamp = event.block.timestamp;
+  }
+
+  let difference = event.block.timestamp
+    .minus(proposal.firstSupplyTimestamp)
+    .div(BigInt.fromU64(DAY))
+    .plus(BigInt.fromI32(1));
+  proposal.APR = proposal.totalUSDSupply
+    .times(BigInt.fromI32(365))
+    .div(difference)
+    .div(getInvestedBase(event.address, event.params.proposalId));
 
   let tokens = proposal.tokens;
   let amounts = proposal.amounts;
@@ -120,4 +134,15 @@ function totalTokenUSDCost(tokens: Array<Address>, volumes: Array<BigInt>): BigI
   }
 
   return totalCost;
+}
+
+function getInvestedBase(proposalAddress: Address, proposalId: BigInt): BigInt {
+  let proposalPrototype = InvestProposal.bind(proposalAddress);
+  let resp = proposalPrototype.try_getProposalInfos(proposalId, BigInt.fromI32(1));
+
+  if (resp.reverted) {
+    return BigInt.fromI32(1);
+  } else {
+    return resp.value[0].proposalInfo.investedBase;
+  }
 }
