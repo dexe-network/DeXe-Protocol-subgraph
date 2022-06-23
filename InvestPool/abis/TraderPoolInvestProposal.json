@@ -30,7 +30,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "index",
+        "name": "proposalId",
         "type": "uint256"
       },
       {
@@ -61,19 +61,31 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "index",
+        "name": "proposalId",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "investor",
+        "name": "user",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "divestedLP2",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "receivedLP",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "receivedBase",
         "type": "uint256"
       }
     ],
@@ -86,25 +98,31 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "index",
+        "name": "proposalId",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "investor",
+        "name": "user",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amountLP",
+        "name": "investedLP",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amountBase",
+        "name": "investedBase",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "receivedLP2",
         "type": "uint256"
       }
     ],
@@ -117,7 +135,45 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "index",
+        "name": "proposalId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "investor",
+        "type": "address"
+      }
+    ],
+    "name": "ProposalInvestorAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "investor",
+        "type": "address"
+      }
+    ],
+    "name": "ProposalInvestorRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "proposalId",
         "type": "uint256"
       },
       {
@@ -135,7 +191,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "investor",
+        "name": "admin",
         "type": "address"
       }
     ],
@@ -148,7 +204,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "index",
+        "name": "proposalId",
         "type": "uint256"
       },
       {
@@ -160,7 +216,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "investor",
+        "name": "admin",
         "type": "address"
       }
     ],
@@ -416,26 +472,6 @@
         "type": "uint256"
       }
     ],
-    "name": "claim",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "claimAll",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "proposalId",
-        "type": "uint256"
-      }
-    ],
     "name": "convertInvestedBaseToDividends",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -504,26 +540,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "baseAmount",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "divestAll",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
+        "name": "claimedBase",
         "type": "uint256"
       }
     ],
@@ -583,7 +600,12 @@
           },
           {
             "internalType": "uint256",
-            "name": "lpLocked",
+            "name": "baseInvested",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lpInvested",
             "type": "uint256"
           }
         ],
@@ -652,44 +674,56 @@
       {
         "components": [
           {
-            "internalType": "string",
-            "name": "descriptionURL",
-            "type": "string"
-          },
-          {
             "components": [
               {
+                "internalType": "string",
+                "name": "descriptionURL",
+                "type": "string"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "uint256",
+                    "name": "timestampLimit",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "investLPLimit",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct ITraderPoolInvestProposal.ProposalLimits",
+                "name": "proposalLimits",
+                "type": "tuple"
+              },
+              {
                 "internalType": "uint256",
-                "name": "timestampLimit",
+                "name": "lpLocked",
                 "type": "uint256"
               },
               {
                 "internalType": "uint256",
-                "name": "investLPLimit",
+                "name": "investedBase",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "newInvestedBase",
                 "type": "uint256"
               }
             ],
-            "internalType": "struct ITraderPoolInvestProposal.ProposalLimits",
-            "name": "proposalLimits",
+            "internalType": "struct ITraderPoolInvestProposal.ProposalInfo",
+            "name": "proposalInfo",
             "type": "tuple"
           },
           {
             "internalType": "uint256",
-            "name": "lpLocked",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "investedBase",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "newInvestedBase",
+            "name": "totalInvestors",
             "type": "uint256"
           }
         ],
-        "internalType": "struct ITraderPoolInvestProposal.ProposalInfo[]",
+        "internalType": "struct ITraderPoolInvestProposal.ProposalInfoExtended[]",
         "name": "proposals",
         "type": "tuple[]"
       }

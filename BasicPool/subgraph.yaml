@@ -25,39 +25,6 @@ dataSources:
 
 templates:
   - kind: ethereum/contract
-    name: BasicPool
-    network: chapel
-    source:
-      abi: BasicPool
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      file: ./src/mappings/BasicTraderPool.ts
-      entities:
-        - BasicTraderPool
-        - Position
-        - Trade
-      abis:
-        - name: BasicPool
-          file: ./abis/BasicTraderPool.json
-      eventHandlers:
-        - event: InvestorAdded(address)
-          handler: onInvestorAdded
-        - event: Invested(address,uint256,uint256)
-          handler: onInvest
-        - event: InvestorRemoved(address)
-          handler: onInvestorRemoved
-        - event: Divested(address,uint256,uint256)
-          handler: onDivest
-        - event: TraderCommissionMinted(address,uint256)
-          handler: onTraderCommissionMinted
-        - event: TraderCommissionPaid(address,uint256)
-          handler: onTraderCommissionPaid
-        - event: DescriptionURLChanged(string)
-          handler: onDescriptionURLChanged
-
-  - kind: ethereum/contract
     name: RiskyProposal
     network: chapel
     source:
@@ -68,7 +35,7 @@ templates:
       language: wasm/assemblyscript
       file: ./src/mappings/TraderPoolRiskyProposal.ts
       entities:
-        - ProposalContract
+        - Proposal
       abis:
         - name: RiskyProposal
           file: ./abis/TraderPoolRiskyProposal.json
@@ -77,9 +44,5 @@ templates:
       eventHandlers:
         - event: ProposalCreated(uint256,address,(uint256,uint256,uint256))
           handler: onProposalCreated
-        - event: ProposalInvested(uint256,address,uint256,uint256)
-          handler: onProposalInvest
-        - event: ProposalDivested(uint256,address,uint256,uint256)
-          handler: onProposalDivest
         - event: ProposalExchanged(uint256,address,address,uint256,uint256)
           handler: onProposalExchange

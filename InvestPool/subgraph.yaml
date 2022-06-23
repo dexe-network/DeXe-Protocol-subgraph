@@ -25,39 +25,6 @@ dataSources:
 
 templates:
   - kind: ethereum/contract
-    name: InvestPool
-    network: chapel
-    source:
-      abi: InvestPool
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      file: ./src/mappings/InvestTraderPool.ts
-      entities:
-        - InvestTraderPool
-        - Position
-        - Trade
-      abis:
-        - name: InvestPool
-          file: ./abis/InvestTraderPool.json
-      eventHandlers:
-        - event: InvestorAdded(address)
-          handler: onInvestorAdded
-        - event: Invested(address,uint256,uint256)
-          handler: onInvest
-        - event: InvestorRemoved(address)
-          handler: onInvestorRemoved
-        - event: Divested(address,uint256,uint256)
-          handler: onDivest
-        - event: TraderCommissionMinted(address,uint256)
-          handler: onTraderCommissionMinted
-        - event: TraderCommissionPaid(address,uint256)
-          handler: onTraderCommissionPaid
-        - event: DescriptionURLChanged(string)
-          handler: onDescriptionURLChanged
-
-  - kind: ethereum/contract
     name: InvestProposal
     network: chapel
     source:
@@ -75,10 +42,6 @@ templates:
       eventHandlers:
         - event: ProposalCreated(uint256,(uint256,uint256))
           handler: onProposalCreated
-        - event: ProposalInvested(uint256,address,uint256,uint256)
-          handler: onProposalInvested
-        - event: ProposalDivested(uint256,address,uint256)
-          handler: onProposalDivested
         - event: ProposalWithdrawn(uint256,uint256,address)
           handler: onProposalWithdrawn
         - event: ProposalSupplied(uint256,uint256,address,address)

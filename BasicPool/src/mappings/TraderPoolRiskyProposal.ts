@@ -1,81 +1,29 @@
-import { getInvestorInfo } from "../entities/basic-pool/InvestorInfo";
-import { getProposalDivestHistory } from "../entities/basic-pool/proposal/history/ProposalDivestHistory";
 import { getProposalExchangeHistory } from "../entities/basic-pool/proposal/history/ProposalExchangeHistory";
-import { getProposalInvestHistory } from "../entities/basic-pool/proposal/history/ProposalInvestHistory";
 import { getProposal } from "../entities/basic-pool/proposal/Proposal";
-import { getProposalDivest } from "../entities/basic-pool/proposal/ProposalDivest";
 import { getProposalExchange } from "../entities/basic-pool/proposal/ProposalExchange";
-import { getProposalInvest } from "../entities/basic-pool/proposal/ProposalInvest";
-import {
-  ProposalCreated,
-  ProposalDivested,
-  ProposalExchanged,
-  ProposalInvested,
-} from "../../generated/templates/RiskyProposal/RiskyProposal";
+import { ProposalCreated, ProposalExchanged } from "../../generated/templates/RiskyProposal/RiskyProposal";
 import { PriceFeed } from "../../generated/templates/RiskyProposal/PriceFeed";
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { getProposalContract } from "../entities/basic-pool/proposal/ProposalContract";
 
 export function onProposalCreated(event: ProposalCreated): void {
+  let proposalContract = getProposalContract(event.address);
   let proposal = getProposal(
-    event.params.index,
-    event.address,
+    event.params.proposalId,
+    proposalContract,
     event.params.token,
     event.params.proposalLimits[0].toBigInt(),
     event.params.proposalLimits[1].toBigInt(),
     event.params.proposalLimits[2].toBigInt()
   );
   proposal.save();
-}
-
-export function onProposalInvest(event: ProposalInvested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
-  let proposal = getProposal(event.params.index, event.address);
-  let invest = getProposalInvest(
-    event.transaction.hash,
-    event.params.amountLP,
-    event.params.amountBase,
-    investorInfo.id,
-    event.block.timestamp
-  );
-  let history = getProposalInvestHistory(event.block.timestamp, proposal.id);
-
-  invest.day = history.id;
-
-  history.totalInvestVolumeBase = history.totalInvestVolumeBase.plus(event.params.amountBase);
-  history.totalInvestVolumeLP = history.totalInvestVolumeLP.plus(event.params.amountLP);
-
-  proposal.save();
-  invest.save();
-  history.save();
-  investorInfo.save();
-}
-
-export function onProposalDivest(event: ProposalDivested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
-  let proposal = getProposal(event.params.index, event.address);
-  let divest = getProposalDivest(
-    event.transaction.hash,
-    event.params.amountLP,
-    event.params.amountBase,
-    investorInfo.id,
-    event.block.timestamp
-  );
-  let history = getProposalDivestHistory(event.block.timestamp, proposal.id);
-
-  divest.day = history.id;
-
-  history.totalDivestVolumeBase = history.totalDivestVolumeBase.plus(event.params.amountBase);
-  history.totalDivestVolumeLP = history.totalDivestVolumeLP.plus(event.params.amountLP);
-
-  proposal.save();
-  divest.save();
-  history.save();
-  investorInfo.save();
+  proposalContract.save();
 }
 
 export function onProposalExchange(event: ProposalExchanged): void {
-  let proposal = getProposal(event.params.index, event.address);
+  let proposalContract = getProposalContract(event.address);
+  let proposal = getProposal(event.params.proposalId, proposalContract);
 
   let exchange = getProposalExchange(
     event.transaction.hash,
@@ -89,6 +37,7 @@ export function onProposalExchange(event: ProposalExchanged): void {
   let history = getProposalExchangeHistory(event.block.timestamp, proposal.id);
 
   exchange.day = history.id;
+
   if (event.params.toToken == proposal.token) {
     // adding funds to the position
     proposal.totalPositionOpenVolume = proposal.totalPositionOpenVolume.plus(event.params.toVolume);
@@ -110,6 +59,7 @@ export function onProposalExchange(event: ProposalExchanged): void {
   proposal.save();
   exchange.save();
   history.save();
+  proposalContract.save();
 }
 
 function getUSDPrice(token: Address, amount: BigInt): BigInt {
