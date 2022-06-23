@@ -39,10 +39,14 @@ templates:
       abis:
         - name: InvestProposal
           file: ./abis/TraderPoolInvestProposal.json
+        - name: PriceFeed
+          file: ./abis/PriceFeed.json
       eventHandlers:
         - event: ProposalCreated(uint256,(uint256,uint256))
           handler: onProposalCreated
-        - event: ProposalWithdrawn(uint256,uint256,address)
+        - event: ProposalWithdrawn(uint256,uint256)
           handler: onProposalWithdrawn
-        - event: ProposalSupplied(uint256,uint256,address,address)
+        - event: ProposalSupplied(uint256,uint256[],address[])
           handler: onProposalSupplied
+        - event: ProposalClaimed(uint256,address,uint256[],address[])
+          handler: onProposalClaimed

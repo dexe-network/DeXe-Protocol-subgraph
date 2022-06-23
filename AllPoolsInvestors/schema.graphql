@@ -161,6 +161,9 @@ type ProposalPosition @entity {
   totalUSDOpenVolume: BigInt!
   totalUSDCloseVolume: BigInt!
 
+  lastTokensClaimed: [Bytes!]!
+  lastAmountsClaimed: [BigInt!]!
+
   proposalContract: ProposalContract!
   vests: [ProposalVest!]! @derivedFrom(field: "proposal")
 }
