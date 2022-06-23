@@ -92,7 +92,7 @@ export function onProposalInvestorAdded(event: ProposalInvestorAdded): void {
   proposal.save();
 }
 
-export function onProposalClimed(event: ProposalClaimed): void {
+export function onProposalClaimed(event: ProposalClaimed): void {
   let proposalContract = getProposalContract(event.address);
   let investor = getInvestor(event.params.user);
   let pool = getTraderPool(Address.fromString(proposalContract.traderPool));

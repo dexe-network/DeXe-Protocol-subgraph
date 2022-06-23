@@ -109,4 +109,4 @@ templates:
         - event: ProposalInvestorRemoved(uint256,address)
           handler: onProposalInvestorRemoved
         - event: ProposalClaimed(uint256,address,uint256[],address[])
-          handler: onProposalClimed
+          handler: onProposalClaimed

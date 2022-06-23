@@ -7,7 +7,8 @@ import {
 } from "../../generated/templates/InvestProposal/InvestProposal";
 import { InvestProposal } from "../../generated/templates/InvestProposal/InvestProposal";
 import { PriceFeed } from "../../generated/templates/InvestProposal/PriceFeed";
-import { DAY, PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { DAY, PRECISION, PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { getInvestTraderPool } from "../entities/invest-pool/InvestTraderPool";
 import { getProposal } from "../entities/invest-pool/proposal/Proposal";
 import { getProposalContract } from "../entities/invest-pool/proposal/ProposalContract";
 import { getLastSupply } from "../entities/invest-pool/proposal/ProposalLastSupply";
@@ -57,29 +58,27 @@ export function onProposalSupplied(event: ProposalSupplied): void {
     .div(BigInt.fromU64(DAY))
     .plus(BigInt.fromI32(1));
   proposal.APR = proposal.totalUSDSupply
+    .times(BigInt.fromU64(PRECISION))
     .times(BigInt.fromI32(365))
     .div(difference)
-    .div(getInvestedBase(event.address, event.params.proposalId));
+    .div(getInvestedBaseInUSD(event.address, event.params.proposalId, Address.fromString(proposalContract.investPool)));
 
-  let tokens = proposal.tokens;
-  let amounts = proposal.amounts;
-
-  let extendTokens = new Array<Bytes>();
-  let extendAmount = new Array<BigInt>();
+  let extendTokens = proposal.leftTokens;
+  let extendAmount = proposal.leftAmounts;
 
   for (let i = 0; i < event.params.tokens.length; i++) {
-    let index = tokens.indexOf(event.params.tokens.at(i));
+    let index = extendTokens.indexOf(event.params.tokens.at(i));
 
     if (index == -1) {
       extendTokens.push(event.params.tokens.at(i));
       extendAmount.push(event.params.amounts.at(i));
     } else {
-      amounts[i] = amounts.at(i).plus(event.params.amounts[i]);
+      extendAmount[index] = extendAmount.at(index).plus(event.params.amounts.at(i));
     }
   }
 
-  proposal.tokens = extendArray(tokens, extendTokens);
-  proposal.amounts = extendArray(amounts, extendAmount);
+  proposal.leftTokens = extendTokens;
+  proposal.leftAmounts = extendAmount;
 
   lastSupply.save();
   proposal.save();
@@ -90,8 +89,8 @@ export function onProposalClaimed(event: ProposalClaimed): void {
   let proposalContract = getProposalContract(event.address);
   let proposal = getProposal(event.params.proposalId, proposalContract);
 
-  let tokens = proposal.tokens;
-  let amounts = proposal.amounts;
+  let tokens = proposal.leftTokens;
+  let amounts = proposal.leftAmounts;
 
   let reduceTokens = new Array<Bytes>();
 
@@ -99,10 +98,10 @@ export function onProposalClaimed(event: ProposalClaimed): void {
     let index = tokens.indexOf(event.params.tokens.at(i));
 
     if (index != -1) {
-      amounts[i] = amounts.at(i).minus(event.params.amounts[i]);
+      amounts[index] = amounts.at(index).minus(event.params.amounts[i]);
 
-      if (amounts.at(i) == BigInt.zero()) {
-        reduceTokens.push(tokens.at(i));
+      if (amounts.at(index) == BigInt.zero()) {
+        reduceTokens.push(tokens.at(index));
       }
     }
   }
@@ -114,8 +113,8 @@ export function onProposalClaimed(event: ProposalClaimed): void {
     amounts = deleteByIndex(amounts, index);
   }
 
-  proposal.tokens = tokens;
-  proposal.amounts = amounts;
+  proposal.leftTokens = tokens;
+  proposal.leftAmounts = amounts;
 
   proposal.save();
   proposalContract.save();
@@ -136,13 +135,21 @@ function totalTokenUSDCost(tokens: Array<Address>, volumes: Array<BigInt>): BigI
   return totalCost;
 }
 
-function getInvestedBase(proposalAddress: Address, proposalId: BigInt): BigInt {
+function getInvestedBaseInUSD(proposalAddress: Address, proposalId: BigInt, baseToken: Address): BigInt {
   let proposalPrototype = InvestProposal.bind(proposalAddress);
   let resp = proposalPrototype.try_getProposalInfos(proposalId, BigInt.fromI32(1));
 
   if (resp.reverted) {
     return BigInt.fromI32(1);
-  } else {
-    return resp.value[0].proposalInfo.investedBase;
   }
+  // return resp.value[0].proposalInfo.investedBase;
+
+  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
+  let pfResp = pfPrototype.try_getNormalizedPriceOutUSD(baseToken, resp.value[0].proposalInfo.investedBase);
+
+  if (pfResp.reverted) {
+    return BigInt.fromI32(1);
+  }
+
+  return pfResp.value.value0;
 }

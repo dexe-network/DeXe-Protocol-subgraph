@@ -30,8 +30,8 @@ type Proposal @entity {
   timestampLimit: BigInt!
   investLPLimit: BigInt!
 
-  tokens: [Bytes!]!
-  amounts: [BigInt!]!
+  leftTokens: [Bytes!]!
+  leftAmounts: [BigInt!]!
 
   totalUSDSupply: BigInt!
   firstSupplyTimestamp: BigInt!
@@ -50,7 +50,7 @@ type Proposal @entity {
 # @param amountDividendsToken the anount of withdraw in dividends token
 # @param proposal the proposal entity
 type LastWithdraw @entity {
-  id: ID! # proposal id
+  id: ID! # proposal entity id
   timestamp: BigInt!
   amountBase: BigInt!
 }
@@ -62,7 +62,7 @@ type LastWithdraw @entity {
 # @param amountDividendsToken the anount of supply in dividends token
 # @param proposal the proposal entity
 type LastSupply @entity {
-  id: ID! # proposal id
+  id: ID! # proposal entity id
   timestamp: BigInt!
   dividendsTokens: [Bytes!]!
   amountDividendsTokens: [BigInt!]!
