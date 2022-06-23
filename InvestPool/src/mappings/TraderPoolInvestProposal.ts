@@ -7,7 +7,7 @@ import {
 } from "../../generated/templates/InvestProposal/InvestProposal";
 import { InvestProposal } from "../../generated/templates/InvestProposal/InvestProposal";
 import { PriceFeed } from "../../generated/templates/InvestProposal/PriceFeed";
-import { DAY, PRECISION, PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { DAY, PERCENTAGE_PRECISION, PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { getInvestTraderPool } from "../entities/invest-pool/InvestTraderPool";
 import { getProposal } from "../entities/invest-pool/proposal/Proposal";
 import { getProposalContract } from "../entities/invest-pool/proposal/ProposalContract";
@@ -43,6 +43,7 @@ export function onProposalSupplied(event: ProposalSupplied): void {
   let proposalContract = getProposalContract(event.address);
   let proposal = getProposal(event.params.proposalId, proposalContract);
   let lastSupply = getLastSupply(proposal);
+  let pool = getInvestTraderPool(Address.fromString(proposalContract.investPool));
 
   lastSupply.dividendsTokens = upcastCopy<Address, Bytes>(event.params.tokens);
   lastSupply.amountDividendsTokens = event.params.amounts;
@@ -58,10 +59,10 @@ export function onProposalSupplied(event: ProposalSupplied): void {
     .div(BigInt.fromU64(DAY))
     .plus(BigInt.fromI32(1));
   proposal.APR = proposal.totalUSDSupply
-    .times(BigInt.fromU64(PRECISION))
+    .times(BigInt.fromU64(PERCENTAGE_PRECISION))
     .times(BigInt.fromI32(365))
     .div(difference)
-    .div(getInvestedBaseInUSD(event.address, event.params.proposalId, Address.fromString(proposalContract.investPool)));
+    .div(getInvestedBaseInUSD(event.address, event.params.proposalId, Address.fromString(pool.baseToken.toString())));
 
   let extendTokens = proposal.leftTokens;
   let extendAmount = proposal.leftAmounts;
@@ -142,7 +143,6 @@ function getInvestedBaseInUSD(proposalAddress: Address, proposalId: BigInt, base
   if (resp.reverted) {
     return BigInt.fromI32(1);
   }
-  // return resp.value[0].proposalInfo.investedBase;
 
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
   let pfResp = pfPrototype.try_getNormalizedPriceOutUSD(baseToken, resp.value[0].proposalInfo.investedBase);
