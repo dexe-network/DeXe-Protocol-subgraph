@@ -41,13 +41,6 @@ type Proposal @entity {
   investLPLimit: BigInt!
   maxTokenPriceLimit: BigInt!
 
-  totalBaseOpenVolume: BigInt!
-  totalBaseCloseVolume: BigInt!
-  totalPositionOpenVolume: BigInt!
-  totalPositionCloseVolume: BigInt!
-  totalUSDOpenVolume: BigInt!
-  totalUSDCloseVolume: BigInt!
-
   basicPool: BasicPool!
   exchanges: [ProposalExchangeHistory!]! @derivedFrom(field: "proposal")
 }
@@ -84,4 +77,36 @@ type ProposalExchangeHistory @entity {
   day: BigInt!
 
   exchanges: [ProposalExchange!]! @derivedFrom(field: "day")
+}
+
+# @notice The entity holds information about proposal position offset
+# @param id froms from proposal address + proposal index
+# @param offset the position offset in proposal
+type ProposalPositionOffset @entity {
+  id: ID! # proposal address + proposal index
+  offset: BigInt!
+}
+
+# @notice entity holds information about proposal position
+# @param id forms from proposal address + proposal position + _ + proposal offset
+# @param isClosed the boolean flag, if true -> position closed
+# @param totalBaseOpenVolume the total open volume of proposal in base token
+# @param totalBaseCloseVolume the total close volume of proposal in base token
+# @param totalPositionOpenVolume the total open volume of proposal in proposal token
+# @param totalPositionCloseVolume the total close volume of proposal in proposal token
+# @param totalUSDOpenVolume the total open volume of proposal in usd
+# @param totalUSDCloseVolume the total close volume of proposal in usd
+# @param proposal the proposal entity
+type ProposalPosition @entity {
+  id: ID! # proposal address + proposal position + _ + proposal offset
+  isClosed: Boolean
+
+  totalBaseOpenVolume: BigInt!
+  totalBaseCloseVolume: BigInt!
+  totalPositionOpenVolume: BigInt!
+  totalPositionCloseVolume: BigInt!
+  totalUSDOpenVolume: BigInt!
+  totalUSDCloseVolume: BigInt!
+
+  proposal: Proposal!
 }
