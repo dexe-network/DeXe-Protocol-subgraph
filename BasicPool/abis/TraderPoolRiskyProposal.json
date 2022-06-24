@@ -36,6 +36,43 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "fromToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "toToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fromVolume",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "toVolume",
+        "type": "uint256"
+      }
+    ],
+    "name": "ProposalActivePortfolioExchanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "token",
         "type": "address"
       },
@@ -213,6 +250,25 @@
       }
     ],
     "name": "ProposalInvestorRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "positionToken",
+        "type": "address"
+      }
+    ],
+    "name": "ProposalPositionClosed",
     "type": "event"
   },
   {
@@ -507,7 +563,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "minProposalOut",
+        "name": "minPositionOut",
         "type": "uint256"
       },
       {
