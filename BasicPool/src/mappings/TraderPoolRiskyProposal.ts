@@ -2,6 +2,7 @@ import { getProposalExchangeHistory } from "../entities/basic-pool/proposal/hist
 import { getProposal } from "../entities/basic-pool/proposal/Proposal";
 import { getProposalExchange } from "../entities/basic-pool/proposal/ProposalExchange";
 import {
+  ProposalActivePortfolioExchanged,
   ProposalCreated,
   ProposalExchanged,
   ProposalPositionClosed,
@@ -84,6 +85,32 @@ export function onProposalPositionClosed(event: ProposalPositionClosed): void {
 
   proposalContract.save();
   proposal.save();
+  positionOffset.save();
+  position.save();
+}
+
+export function onProposalActivePortfolioExchanged(event: ProposalActivePortfolioExchanged): void {
+  let proposalContract = getProposalContract(event.address);
+  let proposal = getProposal(event.params.proposalId, proposalContract);
+  let positionOffset = getPositionOffset(proposal);
+  let position = getProposalPosition(proposal, positionOffset);
+
+  if (event.params.toToken == proposal.token) {
+    // adding funds to the position
+    position.totalPositionOpenVolume = position.totalPositionOpenVolume.plus(event.params.toVolume);
+    position.totalBaseOpenVolume = position.totalBaseOpenVolume.plus(event.params.fromVolume);
+
+    let usd = getUSDPrice(event.params.fromToken, event.params.fromVolume);
+    position.totalUSDOpenVolume = position.totalUSDOpenVolume.plus(usd);
+  } else if (event.params.fromToken == proposal.token) {
+    // withdrawing funds from the position
+    position.totalPositionCloseVolume = position.totalPositionCloseVolume.plus(event.params.fromVolume);
+    position.totalBaseCloseVolume = position.totalBaseCloseVolume.plus(event.params.toVolume);
+
+    let usd = getUSDPrice(event.params.toToken, event.params.toVolume);
+    position.totalUSDCloseVolume = position.totalUSDCloseVolume.plus(usd);
+  }
+
   positionOffset.save();
   position.save();
 }

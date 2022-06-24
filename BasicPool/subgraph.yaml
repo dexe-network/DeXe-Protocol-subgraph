@@ -48,3 +48,5 @@ templates:
           handler: onProposalExchange
         - event: ProposalPositionClosed(uint256,address)
           handler: onProposalPositionClosed
+        - event: ProposalActivePortfolioExchanged(uint256,address,address,uint256,uint256)
+          handler: onProposalActivePortfolioExchanged
