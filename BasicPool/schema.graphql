@@ -43,6 +43,7 @@ type Proposal @entity {
 
   basicPool: BasicPool!
   exchanges: [ProposalExchangeHistory!]! @derivedFrom(field: "proposal")
+  positions: [ProposalPosition!]! @derivedFrom(field: "proposal")
 }
 
 # @notice The entity holds information about exchange in proposal
