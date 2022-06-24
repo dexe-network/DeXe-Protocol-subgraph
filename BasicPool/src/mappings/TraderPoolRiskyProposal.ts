@@ -1,11 +1,17 @@
 import { getProposalExchangeHistory } from "../entities/basic-pool/proposal/history/ProposalExchangeHistory";
 import { getProposal } from "../entities/basic-pool/proposal/Proposal";
 import { getProposalExchange } from "../entities/basic-pool/proposal/ProposalExchange";
-import { ProposalCreated, ProposalExchanged } from "../../generated/templates/RiskyProposal/RiskyProposal";
+import {
+  ProposalCreated,
+  ProposalExchanged,
+  ProposalPositionClosed,
+} from "../../generated/templates/RiskyProposal/RiskyProposal";
 import { PriceFeed } from "../../generated/templates/RiskyProposal/PriceFeed";
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { getProposalContract } from "../entities/basic-pool/proposal/ProposalContract";
+import { getPositionOffset } from "../entities/global/PositionOffset";
+import { getProposalPosition } from "../entities/basic-pool/proposal/ProposalPosition";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let proposalContract = getProposalContract(event.address);
@@ -24,6 +30,8 @@ export function onProposalCreated(event: ProposalCreated): void {
 export function onProposalExchange(event: ProposalExchanged): void {
   let proposalContract = getProposalContract(event.address);
   let proposal = getProposal(event.params.proposalId, proposalContract);
+  let positionOffset = getPositionOffset(proposal);
+  let position = getProposalPosition(proposal, positionOffset);
 
   let exchange = getProposalExchange(
     event.transaction.hash,
@@ -40,26 +48,44 @@ export function onProposalExchange(event: ProposalExchanged): void {
 
   if (event.params.toToken == proposal.token) {
     // adding funds to the position
-    proposal.totalPositionOpenVolume = proposal.totalPositionOpenVolume.plus(event.params.toVolume);
-    proposal.totalBaseOpenVolume = proposal.totalBaseOpenVolume.plus(event.params.fromVolume);
+    position.totalPositionOpenVolume = position.totalPositionOpenVolume.plus(event.params.toVolume);
+    position.totalBaseOpenVolume = position.totalBaseOpenVolume.plus(event.params.fromVolume);
 
     let usd = getUSDPrice(event.params.fromToken, event.params.fromVolume);
     exchange.usdVolume = usd;
-    proposal.totalUSDOpenVolume = proposal.totalUSDOpenVolume.plus(usd);
+    position.totalUSDOpenVolume = position.totalUSDOpenVolume.plus(usd);
   } else if (event.params.fromToken == proposal.token) {
     // withdrawing funds from the position
-    proposal.totalPositionCloseVolume = proposal.totalPositionCloseVolume.plus(event.params.fromVolume);
-    proposal.totalBaseCloseVolume = proposal.totalBaseCloseVolume.plus(event.params.toVolume);
+    position.totalPositionCloseVolume = position.totalPositionCloseVolume.plus(event.params.fromVolume);
+    position.totalBaseCloseVolume = position.totalBaseCloseVolume.plus(event.params.toVolume);
 
     let usd = getUSDPrice(event.params.toToken, event.params.toVolume);
     exchange.usdVolume = usd;
-    proposal.totalUSDCloseVolume = proposal.totalUSDCloseVolume.plus(usd);
+    position.totalUSDCloseVolume = position.totalUSDCloseVolume.plus(usd);
   }
 
   proposal.save();
   exchange.save();
   history.save();
   proposalContract.save();
+  positionOffset.save();
+  position.save();
+}
+
+export function onProposalPositionClosed(event: ProposalPositionClosed): void {
+  let proposalContract = getProposalContract(event.address);
+  let proposal = getProposal(event.params.proposalId, proposalContract);
+  let positionOffset = getPositionOffset(proposal);
+  let position = getProposalPosition(proposal, positionOffset);
+
+  position.isClosed = true;
+
+  positionOffset.offset = positionOffset.offset.plus(BigInt.fromI32(1));
+
+  proposalContract.save();
+  proposal.save();
+  positionOffset.save();
+  position.save();
 }
 
 function getUSDPrice(token: Address, amount: BigInt): BigInt {

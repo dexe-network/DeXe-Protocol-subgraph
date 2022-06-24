@@ -20,12 +20,6 @@ export function getProposal(
     proposal.investLPLimit = investLPLimit;
     proposal.maxTokenPriceLimit = maxTokenPriceLimit;
     proposal.basicPool = proposalContract.basicPool;
-    proposal.totalBaseOpenVolume = BigInt.zero();
-    proposal.totalBaseCloseVolume = BigInt.zero();
-    proposal.totalUSDOpenVolume = BigInt.zero();
-    proposal.totalUSDCloseVolume = BigInt.zero();
-    proposal.totalPositionOpenVolume = BigInt.zero();
-    proposal.totalPositionCloseVolume = BigInt.zero();
   }
 
   return proposal;

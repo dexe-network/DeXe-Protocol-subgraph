@@ -46,3 +46,5 @@ templates:
           handler: onProposalCreated
         - event: ProposalExchanged(uint256,address,address,uint256,uint256)
           handler: onProposalExchange
+        - event: ProposalPositionClosed(uint256,address)
+          handler: onProposalPositionClosed
