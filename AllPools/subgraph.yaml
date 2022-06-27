@@ -104,3 +104,5 @@ templates:
           handler: onModifiedPrivateInvestors
         - event: TraderCommissionMinted(address,uint256)
           handler: onTraderCommissionMinted
+        - event: ActivePortfolioExchanged(address,address,uint256,uint256)
+          handler: onActivePortfolioExchanged

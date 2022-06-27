@@ -7,6 +7,7 @@ import {
   ModifiedAdmins,
   ModifiedPrivateInvestors,
   TraderCommissionMinted,
+  ActivePortfolioExchanged,
 } from "../../generated/templates/TraderPool/TraderPool";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
@@ -235,6 +236,85 @@ export function onTraderCommissionMinted(event: TraderCommissionMinted): void {
     .div(pool.commission);
 
   history.save();
+}
+export function onActivePortfolioExchanged(event: ActivePortfolioExchanged): void {
+  let pool = getTraderPool(event.address);
+
+  let position1: Position;
+  let position2: Position;
+
+  let fromBaseVolume = event.params.fromVolume;
+  let toBaseVolume = event.params.toVolume;
+
+  let usdVolume = BigInt.zero();
+
+  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
+  let baseTokenAddress = Address.fromString(pool.baseToken.toHexString());
+
+  if (event.params.toToken != pool.baseToken) {
+    // adding funds to the position
+
+    position1 = getPosition(getPositionId(pool.id, event.params.toToken), pool.id, event.params.toToken);
+    position1.totalPositionOpenVolume = position1.totalPositionOpenVolume.plus(event.params.toVolume);
+
+    if (event.params.fromToken != pool.baseToken) {
+      fromBaseVolume = getFromPriceFeed(pfPrototype, event.params.fromToken, baseTokenAddress, event.params.fromVolume);
+    }
+
+    let resp = pfPrototype.try_getNormalizedPriceInUSD(baseTokenAddress, fromBaseVolume);
+
+    if (resp.reverted) {
+      usdVolume = BigInt.zero();
+    } else {
+      usdVolume = resp.value.value0;
+    }
+
+    position1.totalBaseOpenVolume = position1.totalBaseOpenVolume.plus(fromBaseVolume);
+  }
+
+  if (event.params.fromToken != pool.baseToken) {
+    // withdrawing funds from the position
+
+    position2 = getPosition(getPositionId(pool.id, event.params.fromToken), pool.id, event.params.fromToken);
+    position2.totalPositionCloseVolume = position2.totalPositionCloseVolume.plus(event.params.fromVolume);
+
+    if (event.params.toToken != pool.baseToken) {
+      toBaseVolume = getFromPriceFeed(pfPrototype, event.params.toToken, baseTokenAddress, event.params.toVolume);
+    }
+
+    let resp = pfPrototype.try_getNormalizedPriceInUSD(baseTokenAddress, toBaseVolume);
+
+    if (resp.reverted) {
+      usdVolume = BigInt.zero();
+    } else {
+      usdVolume = resp.value.value0;
+    }
+
+    position2.totalBaseCloseVolume = position2.totalBaseCloseVolume.plus(toBaseVolume);
+  }
+
+  if (position1 == null && position2 == null) {
+    return; // catch any random error
+  }
+
+  if (position2 == null) {
+    // pos1
+    position1.totalUSDOpenVolume = position1.totalUSDOpenVolume.plus(usdVolume);
+
+    position1.save();
+  } else if (position1 == null) {
+    // pos2
+    position2.totalUSDCloseVolume = position2.totalUSDCloseVolume.plus(usdVolume);
+
+    position2.save();
+  } else {
+    // pos1 && pos2
+    position1.totalUSDOpenVolume = position1.totalUSDOpenVolume.plus(usdVolume);
+    position2.totalUSDCloseVolume = position2.totalUSDCloseVolume.plus(usdVolume);
+
+    position1.save();
+    position2.save();
+  }
 }
 
 function exchangeSetup(
