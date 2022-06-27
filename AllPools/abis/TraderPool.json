@@ -3,6 +3,37 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "fromToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "toToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fromVolume",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "toVolume",
+        "type": "uint256"
+      }
+    ],
+    "name": "ActivePortfolioExchanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "owner",
@@ -43,19 +74,19 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "investor",
+        "name": "user",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "divestedLP",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "commission",
+        "name": "receivedBase",
         "type": "uint256"
       }
     ],
@@ -68,50 +99,19 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "fromToken",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "toToken",
+        "name": "user",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "fromVolume",
+        "name": "investedBase",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "toVolume",
-        "type": "uint256"
-      }
-    ],
-    "name": "Exchanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "investor",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "toMintLP",
+        "name": "receivedLP",
         "type": "uint256"
       }
     ],
@@ -168,12 +168,18 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "position",
-        "type": "address"
+        "internalType": "address[]",
+        "name": "privateInvestors",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "add",
+        "type": "bool"
       }
     ],
-    "name": "PositionClosed",
+    "name": "ModifiedPrivateInvestors",
     "type": "event"
   },
   {
@@ -188,7 +194,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "lpMinted",
         "type": "uint256"
       }
     ],
@@ -207,7 +213,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "lpPaid",
         "type": "uint256"
       }
     ],
@@ -491,54 +497,26 @@
       },
       {
         "internalType": "uint256",
-        "name": "amountIn",
+        "name": "amount",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "minAmountOut",
+        "name": "amountBound",
         "type": "uint256"
       },
       {
         "internalType": "address[]",
         "name": "optionalPath",
         "type": "address[]"
+      },
+      {
+        "internalType": "enum ITraderPool.ExchangeType",
+        "name": "exType",
+        "type": "uint8"
       }
     ],
-    "name": "exchangeFromExact",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amountOut",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "maxAmountIn",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address[]",
-        "name": "optionalPath",
-        "type": "address[]"
-      }
-    ],
-    "name": "exchangeToExact",
+    "name": "exchange",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -599,7 +577,27 @@
           },
           {
             "internalType": "uint256",
+            "name": "traderLPCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "traderUSDCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "dexeBaseCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "dexeLPCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "dexeUSDCommission",
             "type": "uint256"
           },
           {
@@ -630,64 +628,30 @@
       },
       {
         "internalType": "uint256",
-        "name": "amountIn",
+        "name": "amount",
         "type": "uint256"
       },
       {
         "internalType": "address[]",
         "name": "optionalPath",
         "type": "address[]"
+      },
+      {
+        "internalType": "enum ITraderPool.ExchangeType",
+        "name": "exType",
+        "type": "uint8"
       }
     ],
-    "name": "getExchangeFromExactAmount",
+    "name": "getExchangeAmount",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "minAmountOut",
+        "name": "",
         "type": "uint256"
       },
       {
         "internalType": "address[]",
-        "name": "path",
-        "type": "address[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amountOut",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address[]",
-        "name": "optionalPath",
-        "type": "address[]"
-      }
-    ],
-    "name": "getExchangeToExactAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "maxAmountIn",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address[]",
-        "name": "path",
+        "name": "",
         "type": "address[]"
       }
     ],
@@ -881,6 +845,11 @@
           },
           {
             "internalType": "uint256",
+            "name": "totalBlacklistedPositions",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "totalInvestors",
             "type": "uint256"
           },
@@ -902,6 +871,21 @@
           {
             "internalType": "uint256",
             "name": "lpLockedInProposals",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "traderUSD",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "traderBase",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "traderLPBalance",
             "type": "uint256"
           }
         ],
@@ -937,7 +921,27 @@
           },
           {
             "internalType": "uint256",
+            "name": "traderLPCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "traderUSDCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "dexeBaseCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "dexeLPCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "dexeUSDCommission",
             "type": "uint256"
           },
           {
@@ -971,6 +975,11 @@
     "outputs": [
       {
         "components": [
+          {
+            "internalType": "uint256",
+            "name": "commissionUnlockTimestamp",
+            "type": "uint256"
+          },
           {
             "internalType": "uint256",
             "name": "poolLPBalance",
@@ -1174,6 +1183,19 @@
   },
   {
     "inputs": [],
+    "name": "openPositions",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "priceFeed",
     "outputs": [
       {
@@ -1288,19 +1310,6 @@
   },
   {
     "inputs": [],
-    "name": "totalOpenPositions",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "totalSupply",
     "outputs": [
       {
@@ -1316,7 +1325,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "recipient",
+        "name": "to",
         "type": "address"
       },
       {
@@ -1340,12 +1349,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "sender",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "recipient",
+        "name": "to",
         "type": "address"
       },
       {
@@ -1364,5 +1373,50 @@
     ],
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "fromToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "toToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fromVolume",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "toVolume",
+        "type": "uint256"
+      }
+    ],
+    "name": "Exchanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "position",
+        "type": "address"
+      }
+    ],
+    "name": "PositionClosed",
+    "type": "event"
   }
 ]

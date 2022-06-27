@@ -3,268 +3,67 @@
 # @notice The entity that holds informations about pool
 # @param id the pool address
 # @param baseToken the address of base token
-# @param ticker the symbol of pool's token
-# @param name the name of pool's token
-# @param descriptionURL the description url address from contract
-# @param creationTime the timestamp of creating pool
-# @param investors the array with investor's addresses
 type InvestPool @entity {
   id: ID! # pool address
   baseToken: Bytes!
-  ticker: String!
-  name: String!
-  creationTime: BigInt!
-  descriptionURL: String!
-
-  investors: [Bytes!]!
 
   proposals: [Proposal!]! @derivedFrom(field: "investPool")
-  invests: [InvestHistory!]! @derivedFrom(field: "investPool")
-  divests: [DivestHistory!]! @derivedFrom(field: "investPool")
-  history: [InvestPoolHistory!]! @derivedFrom(field: "pool")
-}
-
-# @notice The entity holds historical information about pool state.
-# @param id forms from pool address + timestamp / 86400
-# @param investors the array with investor's addresses
-# @param pool address of pool for reverse lookup
-# @param day timestamp of day, forms from timestamp / 86400
-type InvestPoolHistory @entity {
-  id: ID! #  # pool address + timestamp / 86400
-  investors: [Bytes!]!
-  pool: InvestPool!
-  day: BigInt!
-}
-
-# @notice The entity holds information about investor's invests and divests in pool
-# @param id forms from investor addres + pool address
-# @param totalInvestVolume the total volume of investor's invests to pool
-# @param totalDivestVolume the total volume of investor's divests from pool
-type InvestorInfo @entity {
-  id: ID! # investor address + pool address
-  totalInvestVolume: BigInt!
-  totalDivestVolume: BigInt!
-
-  invests: [Invest!]! @derivedFrom(field: "investor")
-  divests: [Divest!]! @derivedFrom(field: "investor")
-  proposalInvests: [ProposalInvest!]! @derivedFrom(field: "investor")
-  proposalDivests: [ProposalDivest!]! @derivedFrom(field: "investor")
-  investLPHistory: [InvestorLPHistory!]! @derivedFrom(field: "investorInfo")
-}
-
-# @notice The entity holds historical information about investor's lp balance
-# @param id forms from investorInfo id + day (timestamp / 86400)
-# @param lpBalance the investor's balance of lp of pool from InvestorInfo address
-# @param investorInfo the investorInfo entity id for reverse lookup
-# @param day timestamp of day, forms from timestamp / 86400
-type InvestorLPHistory @entity {
-  id: ID! # investorInfo + day
-  lpBalance: BigInt!
-  investorInfo: InvestorInfo!
-  day: BigInt!
-}
-
-# @notice The entity holds information about investition in pool
-# @param id forms from transaction hash, useless
-# @param timestamp the block timestamp
-# @param investor the id of InvestorInfo (investor address + pool address)
-# @param volumeBase the volume of investition
-# @param lpPurchasePrice the volumeBase / minted lp
-# @param day the history id (pool address + timestamp / 86400), for reverse lookup
-type Invest @entity {
-  id: ID! # tx hash
-  timestamp: BigInt!
-  investor: InvestorInfo!
-  volumeBase: BigInt!
-  lpPurchasePrice: BigInt!
-
-  day: InvestHistory!
-}
-
-# @notice The entity holds information about divest in pool
-# @param id forms from transaction hash, useless
-# @param timestamp the block timestamp
-# @param investor the id of InvestorInfo (investor address + pool address)
-# @param volumeBase the volume of divest
-# @param commission the volume of commission
-# @param day the history id (pool address + timestamp / 86400), for reverse lookup
-type Divest @entity {
-  id: ID! # tx hash
-  timestamp: BigInt!
-  investor: InvestorInfo!
-  volumeBase: BigInt!
-  commission: BigInt!
-
-  day: DivestHistory!
-}
-
-# @notice The entity holds historical information about invests in pool
-# @param id forms from pool address + timestamp / 86400
-# @param investPool the invest pool address
-# @param totalInvestVolume the total invest volume at current day
-# @param day the timestamp / 86400
-type InvestHistory @entity {
-  id: ID! # pool address + timestamp / 86400  totalInvestVolume: BigInt!
-  investPool: InvestPool!
-  totalInvestVolume: BigInt!
-  day: BigInt!
-
-  investments: [Invest!]! @derivedFrom(field: "day")
-}
-
-# @notice The entity holds historical information about divests in pool
-# @param id forms from pool address + timestamp / 86400
-# @param totalDivestVolume the total divest volume at current day
-# @param day the timestamp / 86400
-# @param investPool the investPool id (address), for reverse lookup
-type DivestHistory @entity {
-  id: ID! # pool address + timestamp / 86400
-  totalDivestVolume: BigInt!
-  day: BigInt!
-  investPool: InvestPool!
-
-  divestments: [Divest!]! @derivedFrom(field: "day")
 }
 
 ####################################### Proposal #######################################
 
 # @notice The entity holds information about proposal contract
-# @param id forms from pool address + proposal index
+# @param id forms from proposal contract address
+# @param basicPool the basicPool entity
+type ProposalContract @entity {
+  id: ID! # proposal contract address
+  investPool: InvestPool!
+}
+
+# @notice The entity holds information about proposal contract
+# @param id forms from proposal contract address + proposal index
 # @param timestampLimit the timestamp from contract after which the investment into proposal closes
 # @param investLPLimit the maximal number of invested LP tokens from contract after which the investment into the proposal closes
 # @param investPool the investPool id (address), for reverse lookup
 type Proposal @entity {
-  id: ID! # pool address + proposal index
+  id: ID! # proposal address + proposal index
   timestampLimit: BigInt!
   investLPLimit: BigInt!
 
+  leftTokens: [Bytes!]!
+  leftAmounts: [BigInt!]!
+
+  totalUSDSupply: BigInt!
+  firstSupplyTimestamp: BigInt!
+  APR: BigInt!
+
+  lastSupply: LastSupply!
+  lastWithdraw: LastWithdraw!
+
   investPool: InvestPool!
-  proposalInvests: [ProposalInvestHistory!]! @derivedFrom(field: "proposal")
-  proposalDivests: [ProposalDivestHistory!]! @derivedFrom(field: "proposal")
-  proposalSupplies: [ProposalSupplyHistory!]! @derivedFrom(field: "proposal")
-  proposalWithdrawals: [ProposalWithdrawalHistory!]! @derivedFrom(field: "proposal")
 }
 
-# @notice The entity holds information about invest into proposal
-# @param id forms from transaction hash, useless
-# @param timestamp the block timestamp
-# @param amountLP the lp amount of investment
-# @param amountBase the amount of investment in base token
-# @param investor the investorInfo entity id for reverse lookup
-# @param day the history id (proposal id + timestamp / 86400), for reverse lookup
-type ProposalInvest @entity {
-  id: ID! # tx hash
+# @notice The entity holds information about last withdraw in proposal
+# @param id froms from proposal id
+# @param timestamp the timestamp of tx
+# @param amountBase the amount of withdraw in base token
+# @param amountDividendsToken the anount of withdraw in dividends token
+# @param proposal the proposal entity
+type LastWithdraw @entity {
+  id: ID! # proposal entity id
   timestamp: BigInt!
-  amountLP: BigInt!
   amountBase: BigInt!
-
-  investor: InvestorInfo!
-  day: ProposalInvestHistory!
 }
 
-# @notice The entity holds information about divests from proposal
-# @param id forms from transaction hash, useless
-# @param timestamp the block timestamp
-# @param amount the amount of divest
-# @param investor the investorInfo entity id for reverse lookup
-# @param day the history id (proposal id + timestamp / 86400), for reverse lookup
-type ProposalDivest @entity {
-  id: ID! # tx hash
+# @notice The entity holds information about last supply in proposal
+# @param id froms from proposal id
+# @param timestamp the timestamp of tx
+# @param amountBase the amount of supply in base token
+# @param amountDividendsToken the anount of supply in dividends token
+# @param proposal the proposal entity
+type LastSupply @entity {
+  id: ID! # proposal entity id
   timestamp: BigInt!
-  amount: BigInt!
-
-  investor: InvestorInfo!
-  day: ProposalDivestHistory!
-}
-
-# @notice The entity holds information about supply in proposal
-# @param id forms from transaction hash, useless
-# @param timestamp the block timestamp
-# @param amount the amount of supply
-# @param token the address of supplied token
-# @param investor the investorInfo entity id for reverse lookup
-# @param day the history id (proposal id + timestamp / 86400), for reverse lookup
-type ProposalSupply @entity {
-  id: ID! #tx hash
-  timestamp: BigInt!
-  amount: BigInt!
-  token: Bytes!
-
-  investor: InvestorInfo!
-  day: ProposalSupplyHistory!
-}
-
-# @notice The entity holds information about withdraw in proposal
-# @param id forms from transaction hash, useless
-# @param timestamp the block timestamp
-# @param amount the amount of withdraw
-# @param investor the investorInfo entity id for reverse lookup
-# @param day the history id (proposal id + timestamp / 86400), for reverse lookup
-type ProposalWithdrawal @entity {
-  id: ID! # tx hash
-  timestamp: BigInt!
-  amount: BigInt!
-
-  investor: InvestorInfo!
-  day: ProposalWithdrawalHistory!
-}
-
-# @notice The entity holds historical information about supplies
-# @param id forms from proposal id + timestamp / 86400
-# @param totalAmounts the total amount of supplies at day
-# @param tokens the array with token addresses
-# @paeam day the timestamp / 86400
-# @param proposal the proposal entity id for reverse lookup
-type ProposalSupplyHistory @entity {
-  id: ID! # Proposal.id + timestamp / 86400
-  totalAmounts: [BigInt!]!
-  tokens: [Bytes!]!
-
-  day: BigInt!
-  proposal: Proposal!
-  supplies: [ProposalSupply!]! @derivedFrom(field: "day")
-}
-
-# @notice The entity holds historical information about withdrawals
-# @param id forms from proposal id + timestamp / 86400
-# @param totalWithdrawal the total amount of withdrawals at day
-# @paeam day the timestamp / 86400
-# @param proposal the proposal entity id for reverse lookup
-type ProposalWithdrawalHistory @entity {
-  id: ID! # Proposal.id + timestamp / 86400
-  totalWithdrawal: BigInt!
-
-  day: BigInt!
-  proposal: Proposal!
-  supplies: [ProposalWithdrawal!]! @derivedFrom(field: "day")
-}
-
-# @notice The entity holds historical information about invests in proposal
-# @param id forms from proposal id + timestamp / 86400
-# @param totalInvestVolumeLP the total volume of invested lp
-# @param totalInvestVolumeBase the total volume of invested in base token
-# @param day the timestamp / 86400
-# @param proposal the id of proposal entity
-type ProposalInvestHistory @entity {
-  id: ID! # Proposal.id + timestamp / 86400
-  totalInvestVolumeLP: BigInt!
-  totalInvestVolumeBase: BigInt!
-  day: BigInt!
-
-  proposal: Proposal!
-  invests: [ProposalInvest!]! @derivedFrom(field: "day")
-}
-
-# @notice The entity holds historical information about divests in proposal
-# @param id forms from proposal id + timestamp / 86400
-# @param totalDivestVolume the total volume of divestes
-# @param day the timestamp / 86400
-# @param proposal the id of proposal entity
-type ProposalDivestHistory @entity {
-  id: ID! # Proposal.id + timestamp / 86400
-  totalDivestVolume: BigInt!
-  day: BigInt!
-
-  proposal: Proposal!
-  divests: [ProposalDivest!]! @derivedFrom(field: "day")
+  dividendsTokens: [Bytes!]!
+  amountDividendsTokens: [BigInt!]!
 }

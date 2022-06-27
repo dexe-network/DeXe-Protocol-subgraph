@@ -1,119 +1,155 @@
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   ProposalCreated,
-  ProposalDivested,
-  ProposalInvested,
   ProposalWithdrawn,
   ProposalSupplied,
+  ProposalClaimed,
 } from "../../generated/templates/InvestProposal/InvestProposal";
-import { getInvestorInfo } from "../entities/invest-pool/InvestorInfo";
-import { getProposalDivestHistory } from "../entities/invest-pool/proposal/history/ProposalDivestHistory";
-import { getProposalInvestHistory } from "../entities/invest-pool/proposal/history/ProposalInvestHistory";
-import { getProposalSupplyHistory } from "../entities/invest-pool/proposal/history/ProposalSupplyHistory";
-import { getProposalWithdrawalHistory } from "../entities/invest-pool/proposal/history/ProposalWithdrawalHistory";
-import { getProposalDivest } from "../entities/invest-pool/proposal/ProposalDivest";
-import { getProposalInvest } from "../entities/invest-pool/proposal/ProposalInvest";
+import { InvestProposal } from "../../generated/templates/InvestProposal/InvestProposal";
+import { PriceFeed } from "../../generated/templates/InvestProposal/PriceFeed";
+import { DAY, PERCENTAGE_PRECISION, PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { getInvestTraderPool } from "../entities/invest-pool/InvestTraderPool";
 import { getProposal } from "../entities/invest-pool/proposal/Proposal";
-import { getProposalSupply } from "../entities/invest-pool/proposal/ProposalSupply";
-import { getProposalWithdrawal } from "../entities/invest-pool/proposal/ProposalWithdrawal";
+import { getProposalContract } from "../entities/invest-pool/proposal/ProposalContract";
+import { getLastSupply } from "../entities/invest-pool/proposal/ProposalLastSupply";
+import { getLastWithdraw } from "../entities/invest-pool/proposal/ProposalLastWithdraw";
+import { deleteByIndex, extendArray, upcastCopy } from "../helpers/ArrayHelper";
 
 export function onProposalCreated(event: ProposalCreated): void {
+  let proposalContract = getProposalContract(event.address);
   let proposal = getProposal(
-    event.params.index,
-    event.address,
+    event.params.proposalId,
+    proposalContract,
     event.params.proposalLimits[0].toBigInt(),
     event.params.proposalLimits[1].toBigInt()
   );
   proposal.save();
+  proposalContract.save();
 }
 
-export function onProposalInvested(event: ProposalInvested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
-  let proposal = getProposal(event.params.index, event.address);
-  let invest = getProposalInvest(
-    event.transaction.hash,
-    event.params.amountLP,
-    event.params.amountBase,
-    investorInfo.id,
-    event.block.timestamp
-  );
-  let history = getProposalInvestHistory(event.block.timestamp, proposal.id);
+export function onProposalWithdrawn(event: ProposalWithdrawn): void {
+  let proposalContract = getProposalContract(event.address);
+  let proposal = getProposal(event.params.proposalId, proposalContract);
+  let lastWithdraw = getLastWithdraw(proposal);
 
-  invest.day = history.id;
+  lastWithdraw.amountBase = event.params.amount;
 
-  history.totalInvestVolumeBase = history.totalInvestVolumeBase.plus(event.params.amountBase);
-  history.totalInvestVolumeLP = history.totalInvestVolumeLP.plus(event.params.amountLP);
-
+  lastWithdraw.save();
   proposal.save();
-  invest.save();
-  history.save();
-  investorInfo.save();
+  proposalContract.save();
 }
 
-export function onProposalDivested(event: ProposalDivested): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
-  let proposal = getProposal(event.params.index, event.address);
-  let divest = getProposalDivest(event.transaction.hash, event.params.amount, investorInfo.id, event.block.timestamp);
-  let history = getProposalDivestHistory(event.block.timestamp, proposal.id);
+export function onProposalSupplied(event: ProposalSupplied): void {
+  let proposalContract = getProposalContract(event.address);
+  let proposal = getProposal(event.params.proposalId, proposalContract);
+  let lastSupply = getLastSupply(proposal);
+  let pool = getInvestTraderPool(Address.fromString(proposalContract.investPool));
 
-  divest.day = history.id;
-  history.totalDivestVolume = history.totalDivestVolume.plus(event.params.amount);
+  lastSupply.dividendsTokens = upcastCopy<Address, Bytes>(event.params.tokens);
+  lastSupply.amountDividendsTokens = event.params.amounts;
 
-  proposal.save();
-  divest.save();
-  history.save();
-  investorInfo.save();
-}
+  proposal.totalUSDSupply = proposal.totalUSDSupply.plus(totalTokenUSDCost(event.params.tokens, event.params.amounts));
 
-export function onWithdrawn(event: ProposalWithdrawn): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
-  let withdraw = getProposalWithdrawal(
-    event.transaction.hash,
-    event.params.amount,
-    investorInfo.id,
-    event.block.timestamp
-  );
-  let proposal = getProposal(event.params.index, event.address);
-  let history = getProposalWithdrawalHistory(event.block.timestamp, proposal.id);
-
-  withdraw.day = history.id;
-  history.totalWithdrawal = history.totalWithdrawal.plus(event.params.amount);
-
-  proposal.save();
-  withdraw.save();
-  history.save();
-  investorInfo.save();
-}
-
-export function onSupplied(event: ProposalSupplied): void {
-  let investorInfo = getInvestorInfo(event.params.investor, event.address);
-  let supply = getProposalSupply(
-    event.transaction.hash,
-    event.params.amount,
-    event.params.token,
-    investorInfo.id,
-    event.block.timestamp
-  );
-  let proposal = getProposal(event.params.index, event.address);
-  let history = getProposalSupplyHistory(event.block.timestamp, proposal.id);
-
-  supply.day = history.id;
-
-  let tokenArr = history.tokens;
-  let index = tokenArr.indexOf(event.params.token);
-  let amountsArr = history.totalAmounts;
-
-  if (index == -1) {
-    tokenArr.push(event.params.token);
-    history.tokens = tokenArr;
-    amountsArr.push(event.params.amount);
-  } else {
-    amountsArr[index].plus(event.params.amount);
+  if (proposal.firstSupplyTimestamp.equals(BigInt.zero())) {
+    proposal.firstSupplyTimestamp = event.block.timestamp;
   }
 
-  history.totalAmounts = amountsArr;
+  let difference = event.block.timestamp
+    .minus(proposal.firstSupplyTimestamp)
+    .div(BigInt.fromU64(DAY))
+    .plus(BigInt.fromI32(1));
+  proposal.APR = proposal.totalUSDSupply
+    .times(BigInt.fromU64(PERCENTAGE_PRECISION))
+    .times(BigInt.fromI32(365))
+    .div(difference)
+    .div(getInvestedBaseInUSD(event.address, event.params.proposalId, Address.fromString(pool.baseToken.toString())));
+
+  let extendTokens = proposal.leftTokens;
+  let extendAmount = proposal.leftAmounts;
+
+  for (let i = 0; i < event.params.tokens.length; i++) {
+    let index = extendTokens.indexOf(event.params.tokens.at(i));
+
+    if (index == -1) {
+      extendTokens.push(event.params.tokens.at(i));
+      extendAmount.push(event.params.amounts.at(i));
+    } else {
+      extendAmount[index] = extendAmount.at(index).plus(event.params.amounts.at(i));
+    }
+  }
+
+  proposal.leftTokens = extendTokens;
+  proposal.leftAmounts = extendAmount;
+
+  lastSupply.save();
+  proposal.save();
+  proposalContract.save();
+}
+
+export function onProposalClaimed(event: ProposalClaimed): void {
+  let proposalContract = getProposalContract(event.address);
+  let proposal = getProposal(event.params.proposalId, proposalContract);
+
+  let tokens = proposal.leftTokens;
+  let amounts = proposal.leftAmounts;
+
+  let reduceTokens = new Array<Bytes>();
+
+  for (let i = 0; i < event.params.tokens.length; i++) {
+    let index = tokens.indexOf(event.params.tokens.at(i));
+
+    if (index != -1) {
+      amounts[index] = amounts.at(index).minus(event.params.amounts[i]);
+
+      if (amounts.at(index) == BigInt.zero()) {
+        reduceTokens.push(tokens.at(index));
+      }
+    }
+  }
+
+  for (let i = 0; i < reduceTokens.length; i++) {
+    let index = tokens.indexOf(reduceTokens.at(i));
+
+    tokens = deleteByIndex(tokens, index);
+    amounts = deleteByIndex(amounts, index);
+  }
+
+  proposal.leftTokens = tokens;
+  proposal.leftAmounts = amounts;
 
   proposal.save();
-  supply.save();
-  history.save();
-  investorInfo.save();
+  proposalContract.save();
+}
+
+function totalTokenUSDCost(tokens: Array<Address>, volumes: Array<BigInt>): BigInt {
+  let totalCost = BigInt.zero();
+  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
+
+  for (let i = 0; i < tokens.length; i++) {
+    let resp = pfPrototype.try_getNormalizedPriceOutUSD(tokens[i], volumes[i]);
+
+    if (!resp.reverted) {
+      totalCost = totalCost.plus(resp.value.value0);
+    }
+  }
+
+  return totalCost;
+}
+
+function getInvestedBaseInUSD(proposalAddress: Address, proposalId: BigInt, baseToken: Address): BigInt {
+  let proposalPrototype = InvestProposal.bind(proposalAddress);
+  let resp = proposalPrototype.try_getProposalInfos(proposalId, BigInt.fromI32(1));
+
+  if (resp.reverted) {
+    return BigInt.fromI32(1);
+  }
+
+  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
+  let pfResp = pfPrototype.try_getNormalizedPriceOutUSD(baseToken, resp.value[0].proposalInfo.investedBase);
+
+  if (pfResp.reverted) {
+    return BigInt.fromI32(1);
+  }
+
+  return pfResp.value.value0;
 }

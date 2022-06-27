@@ -1,16 +1,15 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Proposal } from "../../../../generated/schema";
-import { getBasicTraderPool } from "../BasicTraderPool";
+import { Proposal, ProposalContract } from "../../../../generated/schema";
 
 export function getProposal(
   index: BigInt,
-  basicPool: Address,
+  proposalContract: ProposalContract,
   token: Address = Address.zero(),
   timestampLimit: BigInt = BigInt.zero(),
   investLPLimit: BigInt = BigInt.zero(),
   maxTokenPriceLimit: BigInt = BigInt.zero()
 ): Proposal {
-  let id = getBasicTraderPool(basicPool).id + index.toString();
+  let id = proposalContract.id + index.toString();
   let proposal = Proposal.load(id);
 
   if (proposal == null) {
@@ -20,9 +19,7 @@ export function getProposal(
     proposal.timestampLimit = timestampLimit;
     proposal.investLPLimit = investLPLimit;
     proposal.maxTokenPriceLimit = maxTokenPriceLimit;
-    proposal.basicPool = getBasicTraderPool(basicPool).id;
-    proposal.totalOpenVolume = BigInt.zero();
-    proposal.totalCloseVolume = BigInt.zero();
+    proposal.basicPool = proposalContract.basicPool;
   }
 
   return proposal;

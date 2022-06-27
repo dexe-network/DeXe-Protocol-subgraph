@@ -8,6 +8,7 @@ export function getExchange(
   toToken: Address = Address.zero(),
   fromVolume: BigInt = BigInt.zero(),
   toVolume: BigInt = BigInt.zero(),
+  usdVolume: BigInt = BigInt.zero(),
   opening: boolean = false,
   suffix: string = "_0",
   timestamp: BigInt = BigInt.zero()
@@ -23,6 +24,7 @@ export function getExchange(
     trade.toToken = toToken;
     trade.fromVolume = fromVolume;
     trade.toVolume = toVolume;
+    trade.usdVolume = usdVolume;
     trade.opening = opening;
     trade.day = "";
     trade.timestamp = timestamp;

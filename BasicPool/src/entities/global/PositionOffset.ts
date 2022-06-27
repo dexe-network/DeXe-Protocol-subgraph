@@ -1,12 +1,12 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { PositionOffset } from "../../../generated/schema";
+import { BigInt } from "@graphprotocol/graph-ts";
+import { Proposal, ProposalPositionOffset } from "../../../generated/schema";
 
-export function getPositionOffset(poolId: string, token: Address): PositionOffset {
-  let id = poolId + token.toHexString();
-  let positionOffset = PositionOffset.load(id);
+export function getPositionOffset(proposal: Proposal): ProposalPositionOffset {
+  let id = proposal.id;
+  let positionOffset = ProposalPositionOffset.load(id);
 
   if (positionOffset == null) {
-    positionOffset = new PositionOffset(id);
+    positionOffset = new ProposalPositionOffset(id);
 
     positionOffset.offset = BigInt.zero();
   }

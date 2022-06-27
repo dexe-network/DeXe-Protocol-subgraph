@@ -3,65 +3,27 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: TraderPoolFactory
+    name: PoolFactory
     network: chapel
     source:
-      address: "0xb9a87BB9Ebf86837A5F8ADB9126F856dFB83596C"
-      abi: TraderPoolFactory
-      startBlock: 18560808
+      address: "0xf06E7E1D08a016f38Bc216a41ceEd37d12b66A81"
+      abi: PoolFactory
+      startBlock: 20559346
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
-      file: ./src/mappings/TraderPoolFactory.ts
+      file: ./src/mappings/PoolFactory.ts
       entities:
-        - TraderPoolFactory
+        - PoolFactory
       abis:
-        - name: TraderPoolFactory
-          file: ./abis/TraderPoolFactory.json
+        - name: PoolFactory
+          file: ./abis/PoolFactory.json
       eventHandlers:
-        - event: Deployed(string,string,string,address,address,address,address,string)
+        - event: TraderPoolDeployed(string,string,string,address,address,address,address,uint256,string)
           handler: onDeployed
 
 templates:
-  - kind: ethereum/contract
-    name: BasicPool
-    network: chapel
-    source:
-      abi: BasicPool
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      file: ./src/mappings/BasicTraderPool.ts
-      entities:
-        - TraderPoolFactory
-        - BasicTraderPool
-        - Position
-        - Trade
-      abis:
-        - name: BasicPool
-          file: ./abis/BasicTraderPool.json
-      eventHandlers:
-        - event: Exchanged(address,address,uint256,uint256)
-          handler: onExchange
-        - event: PositionClosed(address)
-          handler: onClose
-        - event: InvestorAdded(address)
-          handler: onInvestorAdded
-        - event: Invested(address,uint256,uint256)
-          handler: onInvest
-        - event: InvestorRemoved(address)
-          handler: onInvestorRemoved
-        - event: Divested(address,uint256,uint256)
-          handler: onDivest
-        - event: TraderCommissionMinted(address,uint256)
-          handler: onTraderCommissionMinted
-        - event: TraderCommissionPaid(address,uint256)
-          handler: onTraderCommissionPaid
-        - event: DescriptionURLChanged(string)
-          handler: onDescriptionURLChanged
-
   - kind: ethereum/contract
     name: RiskyProposal
     network: chapel
@@ -73,17 +35,18 @@ templates:
       language: wasm/assemblyscript
       file: ./src/mappings/TraderPoolRiskyProposal.ts
       entities:
-        - TraderPoolFactory
-        - ProposalContract
+        - Proposal
       abis:
         - name: RiskyProposal
           file: ./abis/TraderPoolRiskyProposal.json
+        - name: PriceFeed
+          file: ./abis/PriceFeed.json
       eventHandlers:
         - event: ProposalCreated(uint256,address,(uint256,uint256,uint256))
           handler: onProposalCreated
-        - event: ProposalInvested(uint256,address,uint256,uint256)
-          handler: onProposalInvest
-        - event: ProposalDivested(uint256,address,uint256,uint256)
-          handler: onProposalDivest
         - event: ProposalExchanged(uint256,address,address,uint256,uint256)
           handler: onProposalExchange
+        - event: ProposalPositionClosed(uint256,address)
+          handler: onProposalPositionClosed
+        - event: ProposalActivePortfolioExchanged(uint256,address,address,uint256,uint256)
+          handler: onProposalActivePortfolioExchanged

@@ -16,6 +16,8 @@ export function getPosition(id: string, traderPool: string = "", positionToken: 
     position.closed = false;
     position.liveTime = BigInt.zero();
     position.startTimestamp = BigInt.zero();
+    position.totalUSDOpenVolume = BigInt.zero();
+    position.totalUSDCloseVolume = BigInt.zero();
   }
 
   return position;
