@@ -1,0 +1,33 @@
+enum TransactionType {
+  EXCHANGE
+  INVEST
+  DIVEST
+}
+
+type Transaction @entity {
+  id: ID! # tx hash
+  timestamp: BigInt!
+  block: BigInt!
+  type: TransactionType!
+
+  pool: Bytes!
+  investor: Bytes!
+
+  exchange: Exchange!
+  vest: Vest!
+}
+
+type Exchange @entity {
+  id: ID!
+  toToken: Bytes!
+  fromToken: Bytes!
+
+  transaction: Transaction!
+}
+
+type Vest @entity {
+  id: ID!
+  amount: BigInt!
+
+  transaction: Transaction!
+}
