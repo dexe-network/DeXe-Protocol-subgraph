@@ -126,7 +126,7 @@ export function onProposalInvestorRemoved(event: ProposalInvestorRemoved): void 
 
 function getUSDValue(token: Bytes, amount: BigInt): BigInt {
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-  let usdValue = pfPrototype.try_getNormalizedPriceOutUSD(Address.fromString(token.toString()), amount);
+  let usdValue = pfPrototype.try_getNormalizedPriceOutUSD(Address.fromString(token.toHexString()), amount);
 
   if (!usdValue.reverted) {
     return usdValue.value.value0;
