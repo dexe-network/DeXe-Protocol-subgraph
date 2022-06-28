@@ -1,6 +1,14 @@
 import { Bytes, BigInt } from "@graphprotocol/graph-ts";
 import { Transaction } from "../../generated/schema";
-import { Divested, Exchanged, Invested } from "../../generated/templates/TraderPool/TraderPool";
+import {
+  DescriptionURLChanged,
+  Divested,
+  Exchanged,
+  Invested,
+  ModifiedAdmins,
+  ModifiedPrivateInvestors,
+  ProposalDivested,
+} from "../../generated/templates/TraderPool/TraderPool";
 import { DIVEST, EXCHANGE, INVEST } from "../entities/global/TransactionTypeEnum";
 import { getExchange } from "../entities/trader-pool/Exchange";
 import { getTransaction } from "../entities/trader-pool/Transaction";
@@ -44,6 +52,26 @@ export function onDivest(event: Divested): void {
     event.address
   );
   setupVest(transaction, event.params.receivedBase, event.transaction.hash, DIVEST);
+}
+
+export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
+  event.params.descriptionURL;
+  event.params.user;
+}
+
+export function onProposalDivest(event: ProposalDivested): void {
+  event.params.proposalId;
+  event.params.divestedLP2;
+  event.params.receivedBase;
+  event.params.user;
+}
+
+export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): void {
+  event.params.user;
+}
+
+export function onModifiedAdmins(event: ModifiedAdmins): void {
+  event.params.user;
 }
 
 function setupVest(transaction: Transaction, amount: BigInt, hash: Bytes, type: string): void {
