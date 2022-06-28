@@ -6,8 +6,8 @@ import {
   DescriptionURLChanged,
   ModifiedAdmins,
   ModifiedPrivateInvestors,
-  TraderCommissionMinted,
   ActivePortfolioExchanged,
+  CommissionClaimed,
 } from "../../generated/templates/TraderPool/TraderPool";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
@@ -200,7 +200,7 @@ export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): voi
   pool.save();
 }
 
-export function onTraderCommissionMinted(event: TraderCommissionMinted): void {
+export function onTraderCommissionMinted(event: CommissionClaimed): void {
   let pool = getTraderPool(event.address);
   let history = getFeeHistory(pool, event.block.timestamp);
   let priceHistory = findPrevHistory<TraderPoolPriceHistory>(
@@ -227,7 +227,7 @@ export function onTraderCommissionMinted(event: TraderCommissionMinted): void {
     history.PNL = currentPNL.minus(prevHistory == null ? BigInt.zero() : prevHistory.PNL);
   }
 
-  let lpCommission = event.params.lpMinted
+  let lpCommission = event.params.traderLpClaimed
     .times(BigInt.fromU64(DECIMAL))
     .div(BigInt.fromI32(REVERSED_PLATFORM_COMMISSION).times(BigInt.fromU64(DECIMAL).div(BigInt.fromI32(10))));
   history.perfomanceFee = lpCommission.times(currentLpCost);

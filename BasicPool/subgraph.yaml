@@ -44,7 +44,7 @@ templates:
       eventHandlers:
         - event: ProposalCreated(uint256,address,(uint256,uint256,uint256))
           handler: onProposalCreated
-        - event: ProposalExchanged(uint256,address,address,uint256,uint256)
+        - event: ProposalExchanged(uint256,address,address,address,uint256,uint256)
           handler: onProposalExchange
         - event: ProposalPositionClosed(uint256,address)
           handler: onProposalPositionClosed

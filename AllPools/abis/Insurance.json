@@ -43,7 +43,13 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "insurancePayout",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "userStakePayout",
         "type": "uint256"
       },
       {
@@ -54,6 +60,25 @@
       }
     ],
     "name": "Paidout",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "url",
+        "type": "string"
+      }
+    ],
+    "name": "ProposedClaim",
     "type": "event"
   },
   {
@@ -177,25 +202,6 @@
       }
     ],
     "name": "getReceivedInsurance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "lastProposal",
     "outputs": [
       {
         "internalType": "uint256",
@@ -408,11 +414,21 @@
         "type": "address"
       }
     ],
-    "name": "userStakes",
+    "name": "userInfos",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "stake",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lastDepositTimestamp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lastProposalTimestamp",
         "type": "uint256"
       }
     ],

@@ -65,7 +65,7 @@ dataSources:
           handler: onDeposit
         - event: Withdrawn(uint256,address)
           handler: onWithdraw
-        - event: Paidout(uint256,address)
+        - event: Paidout(uint256,uint256,address)
           handler: onPayout
 
 templates:
@@ -94,15 +94,15 @@ templates:
           handler: onInvestorAdded
         - event: InvestorRemoved(address)
           handler: onInvestorRemoved
-        - event: DescriptionURLChanged(string)
+        - event: DescriptionURLChanged(address,string)
           handler: onDescriptionURLChanged
-        - event: ModifiedAdmins(address[],bool)
+        - event: ModifiedAdmins(address,address[],bool)
           handler: onModifiedAdmins
         - event: PositionClosed(address)
           handler: onClose
-        - event: ModifiedPrivateInvestors(address[],bool)
+        - event: ModifiedPrivateInvestors(address,address[],bool)
           handler: onModifiedPrivateInvestors
-        - event: TraderCommissionMinted(address,uint256)
-          handler: onTraderCommissionMinted
+        - event: CommissionClaimed(address,uint256,uint256)
+          handler: onCommissionClaimed
         - event: ActivePortfolioExchanged(address,address,uint256,uint256)
           handler: onActivePortfolioExchanged
