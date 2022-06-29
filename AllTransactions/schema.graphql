@@ -1,33 +1,160 @@
-enum TransactionType {
-  EXCHANGE
-  INVEST
-  DIVEST
+####################################  Pool <-> Proposal  ####################################
+type Pool @entity {
+  id: ID!
+  trader: Bytes!
+  proposalContract: proposalContract!
 }
 
+type proposalContract @entity {
+  id: ID!
+  pool: Pool!
+}
+
+#################################### Transaction History ####################################
 type Transaction @entity {
   id: ID! # tx hash
   timestamp: BigInt!
   block: BigInt!
-  type: TransactionType!
+  type: BigInt!
 
-  pool: Bytes!
-  investor: Bytes!
+  user: Bytes!
 
   exchange: Exchange!
   vest: Vest!
+  poolCreate: PoolCreate!
+
+  proposalEdit: ProposalEdit!
+
+  riskyProposalCreate: RiskyProposalCreate!
+  riskyProposalExchange: RiskyProposalExchange!
+  riskyProposalVest: RiskyProposalVest!
+
+  investProposalClaimSupply: InvestProposalClaimSupply!
+  investProposalCreate: InvestProposalCreate!
+  investProposalWithdraw: InvestProposalWithdraw!
+
+  insuranceStake: InsuranceStake!
+
+  getPerfomanceFee: GetPerfomanceFee!
+
+  onlyPool: OnlyPool!
 }
 
 type Exchange @entity {
   id: ID!
-  toToken: Bytes!
+  pool: Bytes!
+
   fromToken: Bytes!
+  toToken: Bytes!
+
+  fromVolume: BigInt!
+  toVolume: BigInt!
 
   transaction: Transaction!
 }
 
 type Vest @entity {
   id: ID!
+  pool: Bytes!
   amount: BigInt!
+
+  transaction: Transaction!
+}
+
+type PoolCreate @entity {
+  id: ID!
+
+  transaction: Transaction!
+}
+
+type RiskyProposalCreate @entity {
+  id: ID!
+  pool: Bytes!
+  proposalId: BigInt!
+  token: Bytes!
+
+  transaction: Transaction!
+}
+
+type ProposalEdit @entity {
+  id: ID!
+  pool: Bytes!
+  proposalId: BigInt!
+
+  transaction: Transaction!
+}
+
+type RiskyProposalVest @entity {
+  id: ID!
+  pool: Bytes!
+  proposalId: BigInt!
+
+  baseAmount: BigInt!
+  lp2Amount: BigInt!
+
+  transaction: Transaction!
+}
+
+type RiskyProposalExchange @entity {
+  id: ID!
+  pool: Bytes!
+  proposalId: BigInt!
+
+  fromToken: Bytes!
+  toToken: Bytes!
+
+  fromVolume: BigInt!
+  toVolume: BigInt!
+
+  transaction: Transaction!
+}
+
+type InvestProposalCreate @entity {
+  id: ID!
+  pool: Bytes!
+  proposalId: BigInt!
+
+  transaction: Transaction!
+}
+
+type InvestProposalWithdraw @entity {
+  id: ID!
+  pool: Bytes!
+  proposalId: BigInt!
+
+  amount: BigInt!
+
+  transaction: Transaction!
+}
+
+type InvestProposalClaimSupply @entity {
+  id: ID!
+  pool: Bytes!
+  proposalId: BigInt!
+
+  tokens: [Bytes!]!
+  amounts: [BigInt!]!
+
+  transaction: Transaction!
+}
+
+type InsuranceStake @entity {
+  id: ID!
+  amount: BigInt!
+
+  transaction: Transaction!
+}
+
+type GetPerfomanceFee @entity {
+  id: ID!
+  amount: BigInt!
+
+  transaction: Transaction!
+}
+
+type OnlyPool @entity {
+  id: ID!
+  pool: Bytes!
 
   transaction: Transaction!
 }
