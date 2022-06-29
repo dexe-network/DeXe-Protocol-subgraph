@@ -11,7 +11,7 @@ import {
 } from "../../generated/templates/TraderPool/TraderPool";
 import { DIVEST, EXCHANGE, INVEST } from "../entities/global/TransactionTypeEnum";
 import { getExchange } from "../entities/trader-pool/Exchange";
-import { getTransaction } from "../entities/trader-pool/Transaction";
+import { getTransaction } from "../entities/transaction/Transaction";
 import { getVest } from "../entities/trader-pool/Vest";
 
 export function onExchange(event: Exchanged): void {

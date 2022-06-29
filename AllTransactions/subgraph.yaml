@@ -104,7 +104,7 @@ templates:
         - event: ModifiedAdmins(address,address[],bool)
           handler: onModifiedAdmins
         - event: CommissionClaimed(address,uint256,uint256)
-          handler: onCommissionClaimed()
+          handler: onCommissionClaimed
 
   - kind: ethereum/contract
     name: TraderPoolRiskyProposal

@@ -2,12 +2,12 @@
 type Pool @entity {
   id: ID!
   trader: Bytes!
-  proposalContract: proposalContract!
+  proposalContract: Bytes!
 }
 
-type proposalContract @entity {
+type ProposalContract @entity {
   id: ID!
-  pool: Pool!
+  pool: Bytes!
 }
 
 #################################### Transaction History ####################################
@@ -63,6 +63,7 @@ type Vest @entity {
 
 type PoolCreate @entity {
   id: ID!
+  pool: Bytes!
 
   transaction: Transaction!
 }
