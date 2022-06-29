@@ -24,6 +24,29 @@ dataSources:
           handler: onDeployed
 
   - kind: ethereum/contract
+    name: UserRegistry
+    network: chapel
+    source:
+      address: "0xf06E7E1D08a016f38Bc216a41ceEd37d12b66A81"
+      abi: UserRegistry
+      startBlock: 20559346
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/UserRegistry.ts
+      entities:
+        - UserRegistry
+      abis:
+        - name: UserRegistry
+          file: ./abis/UserRegistry.json
+      eventHandlers:
+        - event: Agreed(address,bytes32)
+          handler: onAgreed
+        - event: UpdatedProfile(address,string)
+          handler: onUpdatedProfile
+
+  - kind: ethereum/contract
     name: Insurance
     network: chapel
     source:
@@ -72,16 +95,16 @@ templates:
           handler: onInvest
         - event: Divested(address,uint256,uint256)
           handler: onDivest
-        - event: DescriptionURLChanged(string)
+        - event: DescriptionURLChanged(address,string)
           handler: onDescriptionURLChanged
         - event: ProposalDivested(uint256,address,uint256,uint256,uint256)
           handler: onProposalDivest
-        - event: ModifiedPrivateInvestors(address[],bool)
+        - event: ModifiedPrivateInvestors(address,address[],bool)
           handler: onModifiedPrivateInvestors
-        - event: ModifiedAdmins(address[],bool)
+        - event: ModifiedAdmins(address,address[],bool)
           handler: onModifiedAdmins
-        - event: TraderCommissionMinted()
-          handler: onTraderCommissionMinted()
+        - event: CommissionClaimed(address,uint256,uint256)
+          handler: onCommissionClaimed()
 
   - kind: ethereum/contract
     name: TraderPoolRiskyProposal
@@ -101,7 +124,7 @@ templates:
       eventHandlers:
         - event: ProposalCreated(uint256,address,(uint256,uint256,uint256))
           handler: onProposalCreated
-        - event: ProposalExchanged(uint256,address,address,uint256,uint256)
+        - event: ProposalExchanged(uint256,address,address,address,uint256,uint256)
           handler: onProposalExchange
         - event: ProposalInvested(uint256,address,uint256,uint256,uint256)
           handler: onProposalInvest
@@ -126,9 +149,9 @@ templates:
       eventHandlers:
         - event: ProposalCreated(uint256,(uint256,uint256))
           handler: onProposalCreated
-        - event: ProposalWithdrawn(uint256,uint256)
+        - event: ProposalWithdrawn(uint256,address,uint256)
           handler: onProposalWithdrawn
-        - event: ProposalSupplied(uint256,uint256[],address[])
+        - event: ProposalSupplied(uint256,address,uint256[],address[])
           handler: onProposalSupplied
         - event: ProposalClaimed(uint256,address,uint256[],address[])
           handler: onProposalClaimed
