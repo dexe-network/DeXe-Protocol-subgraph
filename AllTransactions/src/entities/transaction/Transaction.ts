@@ -1,13 +1,7 @@
 import { Bytes, BigInt } from "@graphprotocol/graph-ts";
 import { Transaction } from "../../../generated/schema";
 
-export function getTransaction(
-  hash: Bytes,
-  block: BigInt,
-  timestamp: BigInt,
-  investor: Bytes,
-  pool: Bytes
-): Transaction {
+export function getTransaction(hash: Bytes, block: BigInt, timestamp: BigInt, investor: Bytes): Transaction {
   let id = hash.toHexString();
   let transaction = Transaction.load(id);
 

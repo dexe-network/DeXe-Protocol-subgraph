@@ -3,6 +3,7 @@ import { Exchange } from "../../../generated/schema";
 
 export function getExchange(
   hash: Bytes,
+  pool: Bytes,
   fromToken: Bytes,
   toToken: Bytes,
   fromVolume: BigInt,
@@ -13,6 +14,7 @@ export function getExchange(
 
   if (exchange == null) {
     exchange = new Exchange(id);
+    exchange.pool = pool;
     exchange.fromToken = fromToken;
     exchange.toToken = toToken;
 

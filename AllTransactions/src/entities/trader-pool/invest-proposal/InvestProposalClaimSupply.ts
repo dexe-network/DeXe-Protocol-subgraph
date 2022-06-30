@@ -1,4 +1,4 @@
-import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { InvestProposalClaimSupply } from "../../../../generated/schema";
 
 export function getInvestProposalClaimSupply(

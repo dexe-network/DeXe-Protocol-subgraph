@@ -68,8 +68,8 @@ dataSources:
           handler: onDeposit
         - event: Withdrawn(uint256,address)
           handler: onWithdraw
-        - event: Paidout(uint256,uint256,address)
-          handler: onPayout
+        - event: ProposedClaim(address,string)
+          handler: onProposedClaim
 
 templates:
   - kind: ethereum/contract
@@ -89,7 +89,7 @@ templates:
         - name: TraderPool
           file: ./abis/TraderPool.json
       eventHandlers:
-        - event: Exchanged(address,address,uint256,uint256)
+        - event: Exchanged(address,address,address,uint256,uint256)
           handler: onExchange
         - event: Invested(address,uint256,uint256)
           handler: onInvest
@@ -130,6 +130,8 @@ templates:
           handler: onProposalInvest
         - event: ProposalDivested(uint256,address,uint256,uint256,uint256)
           handler: onProposalDivest
+        - event: ProposalRestrictionsChanged(uint256,address)
+          handler: onProposalRestrictionsChanged
 
   - kind: ethereum/contract
     name: TraderPoolInvestProposal
@@ -155,3 +157,5 @@ templates:
           handler: onProposalSupplied
         - event: ProposalClaimed(uint256,address,uint256[],address[])
           handler: onProposalClaimed
+        - event: ProposalRestrictionsChanged(uint256,address)
+          handler: onProposalRestrictionsChanged

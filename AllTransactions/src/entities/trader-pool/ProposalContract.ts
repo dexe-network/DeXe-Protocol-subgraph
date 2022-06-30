@@ -6,7 +6,7 @@ export function getProposalContract(address: Address, pool: Address = Address.ze
 
   if (proposalContract == null) {
     proposalContract = new ProposalContract(address.toHexString());
-    proposalContract.pool = pool.toHexString();
+    proposalContract.pool = pool;
   }
 
   return proposalContract;

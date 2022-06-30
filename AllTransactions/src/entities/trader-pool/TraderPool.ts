@@ -11,7 +11,7 @@ export function getTraderPool(
   if (pool == null) {
     pool = new Pool(address.toHexString());
 
-    pool.proposalContract = proposalAddress.toHexString();
+    pool.proposalContract = proposalAddress;
     pool.trader = trader;
   }
 

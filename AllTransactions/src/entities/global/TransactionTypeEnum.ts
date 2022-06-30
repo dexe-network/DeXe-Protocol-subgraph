@@ -1,3 +1,5 @@
+import { BigInt } from "@graphprotocol/graph-ts";
+
 export enum TransactionType {
   SWAP = 1,
   INVEST = 2,
@@ -29,4 +31,8 @@ export enum TransactionType {
 
   TRADER_GET_PERFOMANCE_FEE = 24,
   TRADER_AGREED = 25,
+}
+
+export function getEnumBigInt(operation: TransactionType): BigInt {
+  return BigInt.fromI32(operation as i32);
 }

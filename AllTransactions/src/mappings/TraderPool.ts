@@ -1,6 +1,7 @@
 import { Bytes, BigInt } from "@graphprotocol/graph-ts";
 import { Transaction } from "../../generated/schema";
 import {
+  CommissionClaimed,
   DescriptionURLChanged,
   Divested,
   Exchanged,
@@ -9,23 +10,31 @@ import {
   ModifiedPrivateInvestors,
   ProposalDivested,
 } from "../../generated/templates/TraderPool/TraderPool";
-import { DIVEST, EXCHANGE, INVEST } from "../entities/global/TransactionTypeEnum";
 import { getExchange } from "../entities/trader-pool/Exchange";
 import { getTransaction } from "../entities/transaction/Transaction";
 import { getVest } from "../entities/trader-pool/Vest";
+import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
+import { getOnlyPool } from "../entities/transaction/OnlyPool";
+import { getRiskyProposalVest } from "../entities/trader-pool/risky-proposal/RiskyProposalVest";
 
 export function onExchange(event: Exchanged): void {
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    Bytes.empty(),
-    event.address
+    event.params.sender
   );
-  let exchange = getExchange(event.transaction.hash, event.params.fromToken, event.params.toToken);
+  let exchange = getExchange(
+    event.transaction.hash,
+    event.address,
+    event.params.fromToken,
+    event.params.toToken,
+    event.params.fromVolume,
+    event.params.toVolume
+  );
 
   transaction.exchange = exchange.id;
-  transaction.type = EXCHANGE;
+  transaction.type = getEnumBigInt(TransactionType.SWAP);
   exchange.transaction = transaction.id;
 
   transaction.save();
@@ -37,10 +46,9 @@ export function onInvest(event: Invested): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.user,
-    event.address
+    event.params.user
   );
-  setupVest(transaction, event.params.investedBase, event.transaction.hash, INVEST);
+  setupVest(transaction, event.params.investedBase, event.transaction.hash, getEnumBigInt(TransactionType.INVEST));
 }
 
 export function onDivest(event: Divested): void {
@@ -48,33 +56,107 @@ export function onDivest(event: Divested): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.user,
-    event.address
+    event.params.user
   );
-  setupVest(transaction, event.params.receivedBase, event.transaction.hash, DIVEST);
+  setupVest(transaction, event.params.receivedBase, event.transaction.hash, getEnumBigInt(TransactionType.DIVEST));
 }
 
 export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
-  event.params.descriptionURL;
-  event.params.user;
+  let transaction = getTransaction(
+    event.transaction.hash,
+    event.block.number,
+    event.block.timestamp,
+    event.params.sender
+  );
+
+  let onlyPool = getOnlyPool(event.transaction.hash, event.address);
+
+  onlyPool.transaction = transaction.id;
+  transaction.onlyPool = onlyPool.id;
+  transaction.type = getEnumBigInt(TransactionType.POOL_EDIT);
+
+  transaction.save();
+  onlyPool.save();
 }
 
 export function onProposalDivest(event: ProposalDivested): void {
-  event.params.proposalId;
-  event.params.divestedLP2;
-  event.params.receivedBase;
-  event.params.user;
+  let transaction = getTransaction(
+    event.transaction.hash,
+    event.block.number,
+    event.block.timestamp,
+    event.params.user
+  );
+
+  let proposalVest = getRiskyProposalVest(
+    event.transaction.hash,
+    event.address,
+    event.params.proposalId,
+    event.params.receivedBase,
+    event.params.divestedLP2
+  );
+  proposalVest.transaction = transaction.id;
+  transaction.riskyProposalVest = proposalVest.id;
+  transaction.type = getEnumBigInt(TransactionType.RISKY_PROPOSAL_DIVEST);
+
+  proposalVest.save();
+  transaction.save();
 }
 
 export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): void {
-  event.params.user;
+  let transaction = getTransaction(
+    event.transaction.hash,
+    event.block.number,
+    event.block.timestamp,
+    event.params.sender
+  );
+
+  let onlyPool = getOnlyPool(event.transaction.hash, event.address);
+
+  onlyPool.transaction = transaction.id;
+  transaction.onlyPool = onlyPool.id;
+  transaction.type = getEnumBigInt(TransactionType.POOL_UPDATE_INVESTORS);
+
+  transaction.save();
+  onlyPool.save();
 }
 
 export function onModifiedAdmins(event: ModifiedAdmins): void {
-  event.params.user;
+  let transaction = getTransaction(
+    event.transaction.hash,
+    event.block.number,
+    event.block.timestamp,
+    event.params.sender
+  );
+
+  let onlyPool = getOnlyPool(event.transaction.hash, event.address);
+
+  onlyPool.transaction = transaction.id;
+  transaction.onlyPool = onlyPool.id;
+  transaction.type = getEnumBigInt(TransactionType.POOL_UPDATE_MANAGERS);
+
+  transaction.save();
+  onlyPool.save();
 }
 
-function setupVest(transaction: Transaction, amount: BigInt, hash: Bytes, type: string): void {
+export function onCommissionClaimed(event: CommissionClaimed): void {
+  let transaction = getTransaction(
+    event.transaction.hash,
+    event.block.number,
+    event.block.timestamp,
+    event.params.sender
+  );
+
+  let onlyPool = getOnlyPool(event.transaction.hash, event.address);
+
+  onlyPool.transaction = transaction.id;
+  transaction.onlyPool = onlyPool.id;
+  transaction.type = getEnumBigInt(TransactionType.TRADER_GET_PERFOMANCE_FEE);
+
+  transaction.save();
+  onlyPool.save();
+}
+
+function setupVest(transaction: Transaction, amount: BigInt, hash: Bytes, type: BigInt): void {
   let vest = getVest(hash, amount);
 
   transaction.vest = vest.id;
