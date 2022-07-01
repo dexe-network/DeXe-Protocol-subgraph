@@ -26,7 +26,7 @@ export function onDeployed(event: TraderPoolDeployed): void {
     event.block.timestamp,
     event.params.trader
   );
-  let create = getPoolCreate(event.transaction.hash, event.address);
+  let create = getPoolCreate(event.transaction.hash, event.address, event.params.symbol);
 
   transaction.type = getEnumBigInt(TransactionType.POOL_CREATE);
   transaction.poolCreate = create.id;
