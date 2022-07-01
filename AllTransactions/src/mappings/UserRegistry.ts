@@ -10,7 +10,7 @@ export function onAgreed(event: Agreed): void {
     event.params.user
   );
 
-  transaction.type = getEnumBigInt(TransactionType.TRADER_AGREED);
+  transaction.type = getEnumBigInt(TransactionType.TRADER_GET_PERFOMANCE_FEE);
 
   transaction.save();
 }
@@ -23,7 +23,7 @@ export function onUpdatedProfile(event: UpdatedProfile): void {
     event.params.user
   );
 
-  transaction.type = getEnumBigInt(TransactionType.UPDATED_USER_CREDNTIALS);
+  transaction.type = getEnumBigInt(TransactionType.UPDATED_USER_CREDENTIALS);
 
   transaction.save();
 }

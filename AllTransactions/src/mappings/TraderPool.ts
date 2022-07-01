@@ -48,7 +48,13 @@ export function onInvest(event: Invested): void {
     event.block.timestamp,
     event.params.user
   );
-  setupVest(transaction, event.params.investedBase, event.transaction.hash, getEnumBigInt(TransactionType.INVEST));
+  setupVest(
+    transaction,
+    event.params.investedBase,
+    event.params.receivedLP,
+    event.transaction.hash,
+    getEnumBigInt(TransactionType.INVEST)
+  );
 }
 
 export function onDivest(event: Divested): void {
@@ -58,7 +64,13 @@ export function onDivest(event: Divested): void {
     event.block.timestamp,
     event.params.user
   );
-  setupVest(transaction, event.params.receivedBase, event.transaction.hash, getEnumBigInt(TransactionType.DIVEST));
+  setupVest(
+    transaction,
+    event.params.receivedBase,
+    event.params.divestedLP,
+    event.transaction.hash,
+    getEnumBigInt(TransactionType.DIVEST)
+  );
 }
 
 export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
@@ -156,8 +168,8 @@ export function onCommissionClaimed(event: CommissionClaimed): void {
   onlyPool.save();
 }
 
-function setupVest(transaction: Transaction, amount: BigInt, hash: Bytes, type: BigInt): void {
-  let vest = getVest(hash, amount);
+function setupVest(transaction: Transaction, baseAmount: BigInt, lpAmount: BigInt, hash: Bytes, type: BigInt): void {
+  let vest = getVest(hash, baseAmount, lpAmount);
 
   transaction.vest = vest.id;
   transaction.type = type;

@@ -124,8 +124,8 @@ export function onProposalRestrictionsChanged(event: ProposalRestrictionsChanged
   );
 
   edit.transaction = transaction.id;
-  transaction.investProposalClaimSupply = edit.id;
-  transaction.type = getEnumBigInt(TransactionType.INVEST_PROPOSAL_SUPPLY);
+  transaction.proposalEdit = edit.id;
+  transaction.type = getEnumBigInt(TransactionType.RISKY_PROPOSAL_EDIT);
 
   edit.save();
   transaction.save();

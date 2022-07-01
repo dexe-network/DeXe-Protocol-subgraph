@@ -7,7 +7,7 @@ import {
   ProposalWithdrawn,
 } from "../../generated/templates/TraderPoolInvestProposal/TraderPoolInvestProposal";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
-import { getInvestProposalClaimSupply } from "../entities/trader-pool/invest-proposal/InvestProposalClaimSupply";
+import { getInvestProposalClaimOrSupply } from "../entities/trader-pool/invest-proposal/InvestProposalClaimSupply";
 import { getInvestProposalCreate } from "../entities/trader-pool/invest-proposal/InvestProposalCreate";
 import { getInvestProposalEdited } from "../entities/trader-pool/invest-proposal/InvestProposalEdited";
 import { getInvestProposalWithdraw } from "../entities/trader-pool/invest-proposal/InvestProposalWithdraw";
@@ -55,7 +55,7 @@ export function onProposalWithdrawn(event: ProposalWithdrawn): void {
 
 export function onProposalSupplied(event: ProposalSupplied): void {
   let pool = getProposalContract(event.address).pool;
-  let supply = getInvestProposalClaimSupply(
+  let supply = getInvestProposalClaimOrSupply(
     event.transaction.hash,
     pool,
     event.params.proposalId,
@@ -79,7 +79,7 @@ export function onProposalSupplied(event: ProposalSupplied): void {
 
 export function onProposalClaimed(event: ProposalClaimed): void {
   let pool = getProposalContract(event.address).pool;
-  let supply = getInvestProposalClaimSupply(
+  let supply = getInvestProposalClaimOrSupply(
     event.transaction.hash,
     pool,
     event.params.proposalId,
@@ -112,8 +112,8 @@ export function onProposalRestrictionsChanged(event: ProposalRestrictionsChanged
   );
 
   edit.transaction = transaction.id;
-  transaction.investProposalClaimSupply = edit.id;
-  transaction.type = getEnumBigInt(TransactionType.INVEST_PROPOSAL_SUPPLY);
+  transaction.proposalEdit = edit.id;
+  transaction.type = getEnumBigInt(TransactionType.INVEST_PROPOSAL_EDIT);
 
   edit.save();
   transaction.save();

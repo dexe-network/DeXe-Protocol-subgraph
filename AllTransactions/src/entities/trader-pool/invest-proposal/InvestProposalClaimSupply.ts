@@ -1,18 +1,18 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { InvestProposalClaimSupply } from "../../../../generated/schema";
+import { InvestProposalClaimOrSupply } from "../../../../generated/schema";
 
-export function getInvestProposalClaimSupply(
+export function getInvestProposalClaimOrSupply(
   hash: Bytes,
   pool: Bytes,
   proposalId: BigInt,
   tokens: Array<Bytes>,
   amounts: Array<BigInt>
-): InvestProposalClaimSupply {
+): InvestProposalClaimOrSupply {
   let id = hash.toHexString();
-  let claimSupply = InvestProposalClaimSupply.load(id);
+  let claimSupply = InvestProposalClaimOrSupply.load(id);
 
   if (claimSupply == null) {
-    claimSupply = new InvestProposalClaimSupply(id);
+    claimSupply = new InvestProposalClaimOrSupply(id);
 
     claimSupply.pool = pool;
     claimSupply.proposalId = proposalId;

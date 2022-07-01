@@ -45,7 +45,7 @@ export function onProposedClaim(event: ProposedClaim): void {
     event.params.sender
   );
 
-  transaction.type = getEnumBigInt(TransactionType.INSURANCE_UNSTAKE);
+  transaction.type = getEnumBigInt(TransactionType.INSURANCE_REGISTER_PROPOSAL_CLAIM);
 
   transaction.save();
 }

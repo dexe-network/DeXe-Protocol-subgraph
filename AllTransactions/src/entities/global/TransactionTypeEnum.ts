@@ -10,7 +10,7 @@ export enum TransactionType {
   POOL_UPDATE_MANAGERS = 6,
   POOL_UPDATE_INVESTORS = 7,
 
-  UPDATED_USER_CREDNTIALS = 8,
+  UPDATED_USER_CREDENTIALS = 8,
 
   RISKY_PROPOSAL_CREATE = 9,
   RISKY_PROPOSAL_EDIT = 10,
@@ -30,7 +30,7 @@ export enum TransactionType {
   INSURANCE_REGISTER_PROPOSAL_CLAIM = 23,
 
   TRADER_GET_PERFOMANCE_FEE = 24,
-  TRADER_AGREED = 25,
+  USER_AGREED_TO_PRIVACY_POLICY = 25,
 }
 
 export function getEnumBigInt(operation: TransactionType): BigInt {

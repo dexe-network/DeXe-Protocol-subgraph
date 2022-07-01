@@ -29,7 +29,7 @@ type Transaction @entity {
   riskyProposalExchange: RiskyProposalExchange!
   riskyProposalVest: RiskyProposalVest!
 
-  investProposalClaimSupply: InvestProposalClaimSupply!
+  investProposalClaimSupply: InvestProposalClaimOrSupply!
   investProposalCreate: InvestProposalCreate!
   investProposalWithdraw: InvestProposalWithdraw!
 
@@ -56,7 +56,8 @@ type Exchange @entity {
 type Vest @entity {
   id: ID!
   pool: Bytes!
-  amount: BigInt!
+  baseAmount: BigInt!
+  lpAmount: BigInt!
 
   transaction: Transaction!
 }
@@ -64,6 +65,7 @@ type Vest @entity {
 type PoolCreate @entity {
   id: ID!
   pool: Bytes!
+  symbol: String!
 
   transaction: Transaction!
 }
@@ -128,7 +130,7 @@ type InvestProposalWithdraw @entity {
   transaction: Transaction!
 }
 
-type InvestProposalClaimSupply @entity {
+type InvestProposalClaimOrSupply @entity {
   id: ID!
   pool: Bytes!
   proposalId: BigInt!
@@ -148,7 +150,8 @@ type InsuranceStake @entity {
 
 type GetPerfomanceFee @entity {
   id: ID!
-  amount: BigInt!
+  baseAmount: BigInt!
+  lpAmount: BigInt!
 
   transaction: Transaction!
 }
