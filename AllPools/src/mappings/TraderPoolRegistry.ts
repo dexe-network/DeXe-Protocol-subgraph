@@ -50,15 +50,18 @@ function updatePools(block: ethereum.Block, type: string): void {
     let poolInfo = tprPrototype.try_listPoolsWithInfo(
       type,
       BigInt.fromI32(POOL_OFFSET * i),
-      BigInt.fromI32((i + 1) * POOL_OFFSET)
+      BigInt.fromI32(POOL_OFFSET)
     );
 
     if (!poolInfo.reverted) {
       for (let pool = 0; pool < poolInfo.value.value0.length; pool++) {
         let traderPool = getTraderPool(poolInfo.value.value0[pool]);
+        let creationBlock = traderPool.creationBlock.plus(
+          block.number.minus(traderPool.creationBlock).mod(BLOCK_PER_5MIN)
+        );
 
         for (let i = 0; i < BLOCK_INTERVALS.length; i++) {
-          if (block.number.minus(traderPool.creationBlock).mod(BLOCK_INTERVALS[i]).equals(BigInt.zero())) {
+          if (block.number.minus(creationBlock).mod(BLOCK_INTERVALS[i]).equals(BigInt.zero())) {
             aggregationType += CODES[i];
           }
         }
@@ -88,7 +91,7 @@ function updatePools(block: ethereum.Block, type: string): void {
       log.warning("try_listPoolsWithInfo is reverted for type {}, interval ({} ; {}), in block {}", [
         type,
         BigInt.fromI32(POOL_OFFSET * i).toString(),
-        BigInt.fromI32((i + 1) * POOL_OFFSET).toString(),
+        POOL_OFFSET.toString(),
         block.number.toString(),
       ]);
     }
