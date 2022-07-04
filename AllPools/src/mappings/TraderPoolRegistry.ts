@@ -15,27 +15,23 @@ const BLOCK_PER_5MIN = BigInt.fromI32(CHECK_PER_BLOCK);
 const BLOCK_INTERVALS = [
   BLOCK_PER_5MIN.times(BigInt.fromI32(3)), // 15 min
   BLOCK_PER_5MIN.times(BigInt.fromI32(6)), // 30 min
-  BLOCK_PER_5MIN.times(BigInt.fromI32(9)), // 45 min
   BLOCK_PER_5MIN.times(BigInt.fromI32(12)), // 1 h
   BLOCK_PER_5MIN.times(BigInt.fromI32(24)), // 2 h
   BLOCK_PER_5MIN.times(BigInt.fromI32(48)), // 4 h
-  BLOCK_PER_5MIN.times(BigInt.fromI32(72)), // 6 h
   BLOCK_PER_5MIN.times(BigInt.fromI32(144)), // 12 h
   BLOCK_PER_5MIN.times(BigInt.fromI32(288)), // 24 h
   BLOCK_PER_5MIN.times(BigInt.fromI32(288)).times(BigInt.fromI32(30)), // 1 m
 ];
 
 const CODES = [
-  0b0000000001, // = 1   => 15 min
-  0b0000000010, // = 2   => 30 min
-  0b0000000100, // = 4   => 45 min
-  0b0000001000, // = 8   => 1 h
-  0b0000010000, // = 16  => 2 h
-  0b0000100000, // = 32  => 4 h
-  0b0001000000, // = 64  => 6 h
-  0b0010000000, // = 128 => 12 h
-  0b0100000000, // = 256 => 24 h
-  0b1000000000, // = 512 => 1 m
+  0b00000001, // = 1   => 15 min
+  0b00000010, // = 2   => 30 min
+  0b00000100, // = 4   => 1 h
+  0b00001000, // = 8   => 2 h
+  0b00010000, // = 16  => 4 h
+  0b00100000, // = 32  => 12 h
+  0b01000000, // = 64  => 24 h
+  0b10000000, // = 128  => 1 m
 ];
 
 function updatePools(block: ethereum.Block, type: string): void {
