@@ -19,25 +19,25 @@ type Transaction @entity {
 
   user: Bytes!
 
-  exchange: Exchange!
-  vest: Vest!
-  poolCreate: PoolCreate!
+  exchange: [Exchange!]! @derivedFrom(field: "transaction")
+  vest: [Vest!]! @derivedFrom(field: "transaction")
+  poolCreate: [PoolCreate!]! @derivedFrom(field: "transaction")
 
-  proposalEdit: ProposalEdit!
+  proposalEdit: [ProposalEdit!]! @derivedFrom(field: "transaction")
 
-  riskyProposalCreate: RiskyProposalCreate!
-  riskyProposalExchange: RiskyProposalExchange!
-  riskyProposalVest: RiskyProposalVest!
+  riskyProposalCreate: [RiskyProposalCreate!]! @derivedFrom(field: "transaction")
+  riskyProposalExchange: [RiskyProposalExchange!]! @derivedFrom(field: "transaction")
+  riskyProposalVest: [RiskyProposalVest!]! @derivedFrom(field: "transaction")
 
-  investProposalClaimSupply: InvestProposalClaimOrSupply!
-  investProposalCreate: InvestProposalCreate!
-  investProposalWithdraw: InvestProposalWithdraw!
+  investProposalClaimSupply: [InvestProposalClaimOrSupply!]! @derivedFrom(field: "transaction")
+  investProposalCreate: [InvestProposalCreate!]! @derivedFrom(field: "transaction")
+  investProposalWithdraw: [InvestProposalWithdraw!]! @derivedFrom(field: "transaction")
 
-  insuranceStake: InsuranceStake!
+  insuranceStake: [InsuranceStake!]! @derivedFrom(field: "transaction")
 
-  getPerfomanceFee: GetPerfomanceFee!
+  getPerfomanceFee: [GetPerfomanceFee!]! @derivedFrom(field: "transaction")
 
-  onlyPool: OnlyPool!
+  onlyPool: [OnlyPool!]! @derivedFrom(field: "transaction")
 }
 
 type Exchange @entity {

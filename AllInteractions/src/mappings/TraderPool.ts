@@ -33,7 +33,6 @@ export function onExchange(event: Exchanged): void {
     event.params.toVolume
   );
 
-  transaction.exchange = exchange.id;
   transaction.type = getEnumBigInt(TransactionType.SWAP);
   exchange.transaction = transaction.id;
 
@@ -84,7 +83,6 @@ export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
   let onlyPool = getOnlyPool(event.transaction.hash, event.address);
 
   onlyPool.transaction = transaction.id;
-  transaction.onlyPool = onlyPool.id;
   transaction.type = getEnumBigInt(TransactionType.POOL_EDIT);
 
   transaction.save();
@@ -107,7 +105,6 @@ export function onProposalDivest(event: ProposalDivested): void {
     event.params.divestedLP2
   );
   proposalVest.transaction = transaction.id;
-  transaction.riskyProposalVest = proposalVest.id;
   transaction.type = getEnumBigInt(TransactionType.RISKY_PROPOSAL_DIVEST);
 
   proposalVest.save();
@@ -125,7 +122,6 @@ export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): voi
   let onlyPool = getOnlyPool(event.transaction.hash, event.address);
 
   onlyPool.transaction = transaction.id;
-  transaction.onlyPool = onlyPool.id;
   transaction.type = getEnumBigInt(TransactionType.POOL_UPDATE_INVESTORS);
 
   transaction.save();
@@ -143,7 +139,6 @@ export function onModifiedAdmins(event: ModifiedAdmins): void {
   let onlyPool = getOnlyPool(event.transaction.hash, event.address);
 
   onlyPool.transaction = transaction.id;
-  transaction.onlyPool = onlyPool.id;
   transaction.type = getEnumBigInt(TransactionType.POOL_UPDATE_MANAGERS);
 
   transaction.save();
@@ -161,7 +156,6 @@ export function onCommissionClaimed(event: CommissionClaimed): void {
   let onlyPool = getOnlyPool(event.transaction.hash, event.address);
 
   onlyPool.transaction = transaction.id;
-  transaction.onlyPool = onlyPool.id;
   transaction.type = getEnumBigInt(TransactionType.TRADER_GET_PERFOMANCE_FEE);
 
   transaction.save();
@@ -171,7 +165,6 @@ export function onCommissionClaimed(event: CommissionClaimed): void {
 function setupVest(transaction: Transaction, baseAmount: BigInt, lpAmount: BigInt, hash: Bytes, type: BigInt): void {
   let vest = getVest(hash, baseAmount, lpAmount);
 
-  transaction.vest = vest.id;
   transaction.type = type;
   vest.transaction = transaction.id;
 
