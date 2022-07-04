@@ -88,7 +88,7 @@ templates:
         - name: PriceFeed
           file: ./abis/PriceFeed.json
       eventHandlers:
-        - event: Exchanged(address,address,uint256,uint256)
+        - event: Exchanged(address,address,address,uint256,uint256)
           handler: onExchange
         - event: InvestorAdded(address)
           handler: onInvestorAdded
