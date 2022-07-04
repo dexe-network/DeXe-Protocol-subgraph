@@ -32,7 +32,6 @@ export function onProposalCreated(event: ProposalCreated): void {
   );
 
   proposalCreate.transaction = transaction.id;
-  transaction.investProposalCreate = proposalCreate.id;
   transaction.type = getEnumBigInt(TransactionType.RISKY_PROPOSAL_CREATE);
 
   proposalCreate.save();
@@ -58,7 +57,6 @@ export function onProposalExchange(event: ProposalExchanged): void {
   );
 
   exchange.transaction = transaction.id;
-  transaction.investProposalClaimSupply = exchange.id;
   transaction.type = getEnumBigInt(TransactionType.RISKY_PROPOSAL_SWAP);
 
   exchange.save();
@@ -82,7 +80,6 @@ export function onProposalInvest(event: ProposalInvested): void {
   );
 
   vest.transaction = transaction.id;
-  transaction.investProposalClaimSupply = vest.id;
   transaction.type = getEnumBigInt(TransactionType.RISKY_PROPOSAL_INVEST);
 
   vest.save();
@@ -106,7 +103,6 @@ export function onProposalDivest(event: ProposalDivested): void {
   );
 
   vest.transaction = transaction.id;
-  transaction.investProposalClaimSupply = vest.id;
   transaction.type = getEnumBigInt(TransactionType.RISKY_PROPOSAL_DIVEST);
 
   vest.save();
@@ -124,7 +120,6 @@ export function onProposalRestrictionsChanged(event: ProposalRestrictionsChanged
   );
 
   edit.transaction = transaction.id;
-  transaction.proposalEdit = edit.id;
   transaction.type = getEnumBigInt(TransactionType.RISKY_PROPOSAL_EDIT);
 
   edit.save();

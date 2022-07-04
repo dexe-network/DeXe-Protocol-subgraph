@@ -12,7 +12,6 @@ export function onDeposit(event: Deposited): void {
   );
   let stake = getInsuranceStake(event.transaction.hash, event.params.amount);
 
-  transaction.insuranceStake = stake.id;
   transaction.type = getEnumBigInt(TransactionType.INSURANCE_STAKE);
   stake.transaction = transaction.id;
 
@@ -29,7 +28,6 @@ export function onWithdraw(event: Withdrawn): void {
   );
   let stake = getInsuranceStake(event.transaction.hash, event.params.amount);
 
-  transaction.insuranceStake = stake.id;
   transaction.type = getEnumBigInt(TransactionType.INSURANCE_UNSTAKE);
   stake.transaction = transaction.id;
 
