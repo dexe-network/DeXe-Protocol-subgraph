@@ -10,11 +10,10 @@ export function getProposalExchange(
   usdVolume: BigInt = BigInt.zero(),
   timestamp: BigInt = BigInt.zero()
 ): ProposalExchange {
-  let id = hash.toHexString();
-  let exchange = ProposalExchange.load(id);
+  let exchange = ProposalExchange.load(hash);
 
   if (exchange == null) {
-    exchange = new ProposalExchange(id);
+    exchange = new ProposalExchange(hash);
 
     exchange.fromToken = fromToken;
     exchange.toToken = toToken;

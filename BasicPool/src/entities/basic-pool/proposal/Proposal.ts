@@ -9,7 +9,7 @@ export function getProposal(
   investLPLimit: BigInt = BigInt.zero(),
   maxTokenPriceLimit: BigInt = BigInt.zero()
 ): Proposal {
-  let id = proposalContract.id + index.toString();
+  let id = proposalContract.id.toHexString() + index.toString();
   let proposal = Proposal.load(id);
 
   if (proposal == null) {

@@ -3,8 +3,8 @@
 # @notice The entity that holds informations about pool
 # @param id the pool address
 # @param baseToken the address of base token
-type BasicPool @entity {
-  id: ID! # pool address
+type BasicPool @entity(immutable: true) {
+  id: Bytes! # pool address
   baseToken: Bytes!
 
   proposals: [Proposal!]! @derivedFrom(field: "basicPool")
@@ -15,8 +15,8 @@ type BasicPool @entity {
 # @notice The entity holds information about proposal contract
 # @param id forms from proposal contract address
 # @param basicPool the basicPool entity
-type ProposalContract @entity {
-  id: ID! # proposal contract address
+type ProposalContract @entity(immutable: true) {
+  id: Bytes! # proposal contract address
   basicPool: BasicPool!
 }
 
@@ -55,8 +55,8 @@ type Proposal @entity {
 # @param toVolume the volume of out token
 # @param usdVolume the exchange volume in usd
 # @param day the history id (proposal id + timestamp / 86400), for reverse lookup
-type ProposalExchange @entity {
-  id: ID! # tx hash
+type ProposalExchange @entity(immutable: true) {
+  id: Bytes! # tx hash
   timestamp: BigInt!
   fromToken: Bytes!
   toToken: Bytes!
@@ -72,7 +72,7 @@ type ProposalExchange @entity {
 # @param id forms from proposal id + timestamp / 86400
 # @param proposal the proposal id for reverse lookup
 # @param day the timestamp / 86400
-type ProposalExchangeHistory @entity {
+type ProposalExchangeHistory @entity(immutable: true) {
   id: ID! # Proposal.id + timestamp / 86400
   proposal: Proposal!
   day: BigInt!
