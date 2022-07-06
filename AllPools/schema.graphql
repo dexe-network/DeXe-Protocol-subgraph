@@ -145,7 +145,7 @@ type Position @entity {
 # @param position the id of pool's
 # @param opening the boolean flag, if true exchange opening position, else - closing
 # @param day the history id (pool address + timestamp / 86400), for reverse lookup
-type Exchange @entity {
+type Exchange @entity(immutable: true) {
   id: ID! # tx hash + suffix
   hash: Bytes! # tx hash
   timestamp: BigInt!
@@ -167,7 +167,7 @@ type Exchange @entity {
 # @param id forms from pool address + day
 # @param traderPool the traderPool id (address), for reverse lookup
 # @param day the timestamp / 86400
-type ExchangeHistory @entity {
+type ExchangeHistory @entity(immutable: true) {
   id: ID! # pool address + timestamp / 86400
   traderPool: TraderPool!
   day: BigInt!
@@ -182,7 +182,7 @@ type ExchangeHistory @entity {
 # @param activePools the array with pools with investor's invests
 # @param allPools the array with pools where the  investor has ever invested
 type Investor @entity {
-  id: ID! # investor address
+  id: Bytes! # investor address
   insurance: BigInt!
   claimedAmount: BigInt!
 
