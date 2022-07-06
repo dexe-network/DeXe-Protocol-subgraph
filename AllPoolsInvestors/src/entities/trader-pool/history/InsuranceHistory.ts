@@ -4,7 +4,7 @@ import { DAY } from "../../global/globals";
 
 export function getInsuranceHistory(investor: Investor, timestamp: BigInt): InsuranceHistory {
   let day = timestamp.div(BigInt.fromI32(DAY));
-  let id = investor.id + day.toString();
+  let id = investor.id.toHexString() + day.toString();
   let history = InsuranceHistory.load(id);
 
   if (history == null) {

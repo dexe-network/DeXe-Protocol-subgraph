@@ -5,7 +5,7 @@
 # @param investors the array with Investor entities
 # @param investorsCount the number of investors
 type TraderPool @entity {
-  id: ID! # pool address
+  id: Bytes! # pool address
   proposalContract: Bytes!
   type: String!
   token: Bytes!
@@ -22,7 +22,7 @@ type TraderPool @entity {
 # @param activePools the array with pools with investor's invests
 # @param allPools the array with pools where the  investor has ever invested
 type Investor @entity {
-  id: ID! # investor address
+  id: Bytes! # investor address
   activePools: [TraderPool!]!
   allPools: [TraderPool!]!
 
@@ -56,9 +56,9 @@ type InsuranceHistory @entity {
 # @param day the timestamp / 86400
 type TraderPoolHistory @entity {
   id: ID! # pool address + timestamp / 86400
-  investors: [String!]!
+  investors: [Bytes!]!
   investorsCount: BigInt!
-  privateInvestors: [String!]!
+  privateInvestors: [Bytes!]!
   privateInvestorsCount: BigInt!
   pool: TraderPool!
   day: BigInt!
@@ -99,8 +99,8 @@ type InvestorPoolPosition @entity {
 # @param volumeBase the volume of operation in base
 # @param volumeLP the volume of operaion in lp token
 # @param volumeUSD the volume of operaion in USD
-type Vest @entity {
-  id: ID!
+type Vest @entity(immutable: true) {
+  id: Bytes!
   isInvest: Boolean!
   timestamp: BigInt!
   investorPoolPosition: InvestorPoolPosition!
@@ -114,7 +114,7 @@ type Vest @entity {
 # @param id forms from investor address + pool address
 # @param offset the investor position offset in pool
 type InvestorPoolPositionOffset @entity {
-  id: ID! # investor address + pool address
+  id: Bytes! # investor address + pool address
   offset: BigInt!
 }
 
@@ -124,8 +124,8 @@ type InvestorPoolPositionOffset @entity {
 # @param id forms from proposal contract address
 # @param traderPool the trader pool entity
 # @param proposalType the string with type of proposal
-type ProposalContract @entity {
-  id: ID! # proposal contract address
+type ProposalContract @entity(immutable: true) {
+  id: Bytes! # proposal contract address
   traderPool: TraderPool!
   proposalType: String!
 }
@@ -177,8 +177,8 @@ type ProposalPosition @entity {
 # @param lp2Volume the volume of vest in lp2 token
 # @param usdVolume the volume of vest in usdVolume token
 # @param proposal the proposal entity
-type ProposalVest @entity {
-  id: ID! # tx hash
+type ProposalVest @entity(immutable: true) {
+  id: Bytes! # tx hash
   isInvest: Boolean!
   timestamp: BigInt!
 

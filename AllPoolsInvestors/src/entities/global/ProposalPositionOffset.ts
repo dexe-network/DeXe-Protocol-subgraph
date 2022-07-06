@@ -6,7 +6,7 @@ export function getProposalPositionOffset(
   investor: Investor,
   proposalId: BigInt
 ): ProposalPositionOffset {
-  let id = pool.id + investor.id + proposalId.toString();
+  let id = pool.id.toHexString() + investor.id.toHexString() + proposalId.toString();
   let positionOffset = ProposalPositionOffset.load(id);
 
   if (positionOffset == null) {

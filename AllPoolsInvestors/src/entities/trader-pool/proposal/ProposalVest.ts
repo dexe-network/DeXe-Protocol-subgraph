@@ -11,10 +11,10 @@ export function getProposalVest(
   volumeUSD: BigInt = BigInt.zero(),
   timestamp: BigInt = BigInt.zero()
 ): ProposalVest {
-  let vest = ProposalVest.load(hash.toHexString());
+  let vest = ProposalVest.load(hash);
 
   if (vest == null) {
-    vest = new ProposalVest(hash.toHexString());
+    vest = new ProposalVest(hash);
     vest.isInvest = isInvest;
     vest.baseVolume = volumeBase;
     vest.lpVolume = volumeLP;

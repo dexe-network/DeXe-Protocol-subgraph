@@ -4,7 +4,7 @@ import { DAY } from "../../global/globals";
 
 export function getTraderPoolHistory(pool: TraderPool, timestamp: BigInt): TraderPoolHistory {
   let day = timestamp.div(BigInt.fromI32(DAY));
-  let id = pool.id + day.toString();
+  let id = pool.id.toHexString() + day.toString();
   let history = TraderPoolHistory.load(id);
 
   if (history == null) {
