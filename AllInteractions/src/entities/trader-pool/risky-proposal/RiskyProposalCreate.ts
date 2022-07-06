@@ -7,17 +7,16 @@ export function getRiskyProposalCreate(
   proposalId: BigInt,
   token: Address
 ): RiskyProposalCreate {
-  let id = hash.toHexString();
-  let riskyProposalCreate = RiskyProposalCreate.load(id);
+  let riskyProposalCreate = RiskyProposalCreate.load(hash);
 
   if (riskyProposalCreate == null) {
-    riskyProposalCreate = new RiskyProposalCreate(id);
+    riskyProposalCreate = new RiskyProposalCreate(hash);
 
     riskyProposalCreate.pool = pool;
     riskyProposalCreate.proposalId = proposalId;
     riskyProposalCreate.token = token;
 
-    riskyProposalCreate.transaction = "";
+    riskyProposalCreate.transaction = Bytes.empty();
   }
 
   return riskyProposalCreate;

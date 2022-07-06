@@ -6,10 +6,10 @@ export function getTraderPool(
   proposalAddress: Address = Address.zero(),
   trader: Address = Address.zero()
 ): Pool {
-  let pool = Pool.load(address.toHexString());
+  let pool = Pool.load(address);
 
   if (pool == null) {
-    pool = new Pool(address.toHexString());
+    pool = new Pool(address);
 
     pool.proposalContract = proposalAddress;
     pool.trader = trader;

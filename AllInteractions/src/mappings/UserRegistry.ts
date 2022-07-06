@@ -10,7 +10,7 @@ export function onAgreed(event: Agreed): void {
     event.params.user
   );
 
-  transaction.type = getEnumBigInt(TransactionType.TRADER_GET_PERFOMANCE_FEE);
+  transaction.type = getEnumBigInt(TransactionType.USER_AGREED_TO_PRIVACY_POLICY);
 
   transaction.save();
 }
