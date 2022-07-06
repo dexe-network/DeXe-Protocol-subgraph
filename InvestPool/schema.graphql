@@ -3,8 +3,8 @@
 # @notice The entity that holds informations about pool
 # @param id the pool address
 # @param baseToken the address of base token
-type InvestPool @entity {
-  id: ID! # pool address
+type InvestPool @entity(immutable: true) {
+  id: Bytes! # pool address
   baseToken: Bytes!
 
   proposals: [Proposal!]! @derivedFrom(field: "investPool")
@@ -15,8 +15,8 @@ type InvestPool @entity {
 # @notice The entity holds information about proposal contract
 # @param id forms from proposal contract address
 # @param basicPool the basicPool entity
-type ProposalContract @entity {
-  id: ID! # proposal contract address
+type ProposalContract @entity(immutable: true) {
+  id: Bytes! # proposal contract address
   investPool: InvestPool!
 }
 
