@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { ProposalPosition, ProposalContract, ProposalPositionOffset, Investor } from "../../../../generated/schema";
 
 export function getProposalPosition(
@@ -22,6 +22,9 @@ export function getProposalPosition(
     proposal.totalLPCloseVolume = BigInt.zero();
     proposal.totalLP2OpenVolume = BigInt.zero();
     proposal.totalLP2CloseVolume = BigInt.zero();
+
+    proposal.lastAmountsClaimed = new Array<BigInt>();
+    proposal.lastTokensClaimed = new Array<Bytes>();
 
     proposal.isClosed = false;
   }
