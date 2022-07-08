@@ -79,31 +79,21 @@ export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): voi
   let pool = getTraderPool(event.address);
   let history = getTraderPoolHistory(pool, event.block.timestamp);
 
+  let upcastedArray = upcastCopy<Address, Bytes>(event.params.privateInvestors);
+
   if (event.params.add) {
-    pool.privateInvestors = extendArray(
-      pool.privateInvestors,
-      upcastCopy<Address, Bytes>(event.params.privateInvestors)
-    );
+    pool.privateInvestors = extendArray(pool.privateInvestors, upcastedArray);
     pool.privateInvestorsCount = pool.privateInvestorsCount.plus(BigInt.fromI32(event.params.privateInvestors.length));
 
-    history.privateInvestors = extendArray(
-      history.privateInvestors,
-      upcastCopy<Address, Bytes>(event.params.privateInvestors)
-    );
+    history.privateInvestors = extendArray(history.privateInvestors, upcastedArray);
     history.privateInvestorsCount = history.privateInvestorsCount.plus(
       BigInt.fromI32(event.params.privateInvestors.length)
     );
   } else {
-    pool.privateInvestors = reduceArray(
-      pool.privateInvestors,
-      upcastCopy<Address, Bytes>(event.params.privateInvestors)
-    );
+    pool.privateInvestors = reduceArray(pool.privateInvestors, upcastedArray);
     pool.privateInvestorsCount = pool.privateInvestorsCount.minus(BigInt.fromI32(event.params.privateInvestors.length));
 
-    history.privateInvestors = reduceArray(
-      history.privateInvestors,
-      upcastCopy<Address, Bytes>(event.params.privateInvestors)
-    );
+    history.privateInvestors = reduceArray(history.privateInvestors, upcastedArray);
     history.privateInvestorsCount = history.privateInvestorsCount.minus(
       BigInt.fromI32(event.params.privateInvestors.length)
     );
