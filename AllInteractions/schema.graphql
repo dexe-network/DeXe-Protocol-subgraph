@@ -1,16 +1,30 @@
 ####################################  Pool <-> Proposal  ####################################
+# @notice The entity holds information about trader pool
+# @param id forms from pool address
+# @param trader the address of trader
+# @param proposalContract the address of proposal contract
 type Pool @entity {
-  id: ID!
+  id: ID! # pool address
   trader: Bytes!
   proposalContract: Bytes!
 }
 
+# @notice The entity holds information about proposal contract
+# @param id forms from proposal contract address
+# @param pool the address of pool
 type ProposalContract @entity {
-  id: ID!
+  id: ID! # proposal contract address
   pool: Bytes!
 }
 
 #################################### Transaction History ####################################
+
+# @noitce The entity holds information about Transaction
+# @param id forms from tx hash
+# @param timestamp the timestamp of block
+# @param block the number of block
+# @param type the number associated with enum of interactions type
+# @param user the address of sender
 type Transaction @entity {
   id: ID! # tx hash
   timestamp: BigInt!
@@ -40,8 +54,16 @@ type Transaction @entity {
   onlyPool: [OnlyPool!]! @derivedFrom(field: "transaction")
 }
 
+# @notice The entity holds information about exchange
+# @param id forms from tx hash
+# @param pool the address of pool
+# @param fromToken the address of from token
+# @param toToken the address of to token
+# @param fromVolume the volume of from token
+# @param toVolume the volume of to token
+# @param transaction the transaction entity id
 type Exchange @entity {
-  id: ID!
+  id: ID! # tx hash
   pool: Bytes!
 
   fromToken: Bytes!
@@ -53,8 +75,14 @@ type Exchange @entity {
   transaction: Transaction!
 }
 
+# @notice The entity holds information about invest/divest in pool
+# @param id forms from tx hash
+# @param pool the address of pool
+# @param baseAmount the amount in base token
+# @param lpAmount the amount in lp token
+# @param transaction the transaction entity id
 type Vest @entity {
-  id: ID!
+  id: ID! # tx hash
   pool: Bytes!
   baseAmount: BigInt!
   lpAmount: BigInt!
@@ -62,16 +90,26 @@ type Vest @entity {
   transaction: Transaction!
 }
 
+# @notice The entity holds information about pool creation
+# @param id forms from tx hash
+# @param pool the address of pool
+# @param symbol the string with pool's symbol
+# @param transaction the transaction entity id
 type PoolCreate @entity {
-  id: ID!
+  id: ID! # tx hash
   pool: Bytes!
   symbol: String!
 
   transaction: Transaction!
 }
-
+# @notice The entity holds information about creation of risky proposal
+# @param id forms from tx hash
+# @param pool the address of pool
+# @param proposalId the internal id of proposal
+# @param token the address of token
+# @param transaction the transaction entity id
 type RiskyProposalCreate @entity {
-  id: ID!
+  id: ID! # tx hash
   pool: Bytes!
   proposalId: BigInt!
   token: Bytes!
@@ -79,16 +117,28 @@ type RiskyProposalCreate @entity {
   transaction: Transaction!
 }
 
+# @notice The entity holds information about changes in pool
+# @param id forms from tx hash
+# @param pool the address of pool
+# @param proposalId the internal id of proposal
+# @param transaction the transaction entity id
 type ProposalEdit @entity {
-  id: ID!
+  id: ID! # tx hash
   pool: Bytes!
   proposalId: BigInt!
 
   transaction: Transaction!
 }
 
+# @notice The entity holds information about invest/divest in proposal
+# @param id forms from tx hash
+# @param pool the address of pool
+# @param proposalId the internal id of proposal
+# @param baseAmount the amount in base token
+# @param lp2Amount the amount in lp2 token
+# @param transaction the transaction entity id
 type RiskyProposalVest @entity {
-  id: ID!
+  id: ID! # tx hash
   pool: Bytes!
   proposalId: BigInt!
 
@@ -98,8 +148,17 @@ type RiskyProposalVest @entity {
   transaction: Transaction!
 }
 
+# @notice The entity holds information about exchange in risky proposal
+# @param id forms from tx hash
+# @param pool the address of pool
+# @param proposalId the internal id of proposal
+# @param fromToken the address of from token
+# @param toToken the address of to token
+# @param fromVolume the volume of from token
+# @param toVolume the volume of to token
+# @param transaction the transaction entity id
 type RiskyProposalExchange @entity {
-  id: ID!
+  id: ID! # tx hash
   pool: Bytes!
   proposalId: BigInt!
 
@@ -112,16 +171,27 @@ type RiskyProposalExchange @entity {
   transaction: Transaction!
 }
 
+# @notice The entity holds information about creation of invest proposal
+# @param id forms from tx hash
+# @param pool the address of pool
+# @param proposalId the internal id of proposal
+# @param transaction the transaction entity id
 type InvestProposalCreate @entity {
-  id: ID!
+  id: ID! # tx hash
   pool: Bytes!
   proposalId: BigInt!
 
   transaction: Transaction!
 }
 
+# @notice The entity holds information about withdraw in invest proposal
+# @param id forms from tx hash
+# @param pool the address of pool
+# @param proposalId the internal id of proposal
+# @param amount the amount of withdraw
+# @param transaction the transaction entity id
 type InvestProposalWithdraw @entity {
-  id: ID!
+  id: ID! # tx hash
   pool: Bytes!
   proposalId: BigInt!
 
@@ -130,8 +200,15 @@ type InvestProposalWithdraw @entity {
   transaction: Transaction!
 }
 
+# @notice The entity holds information about claim/supply in invest proposal
+# @param id forms from tx hash
+# @param pool the address of pool
+# @param proposalId the internal id of proposal
+# @param tokens the tokens of claim/supply
+# @param amounts the amounts of claim/supply
+# @param transaction the transaction entity id
 type InvestProposalClaimOrSupply @entity {
-  id: ID!
+  id: ID! # tx hash
   pool: Bytes!
   proposalId: BigInt!
 
@@ -141,23 +218,36 @@ type InvestProposalClaimOrSupply @entity {
   transaction: Transaction!
 }
 
+# @notice The entity holds information about stake/unstake in insurance
+# @param id forms from tx hash
+# @param amount the amount of stake
+# @param transaction the transaction entity id
 type InsuranceStake @entity {
-  id: ID!
+  id: ID! # tx hash
   amount: BigInt!
 
   transaction: Transaction!
 }
 
+# @notice The entity holds information about getting performance fee
+# @param id forms from tx hash
+# @param baseAmount the amount in base token
+# @param lpAmount the amount in lp token
+# @param transaction the transaction entity id
 type GetPerfomanceFee @entity {
-  id: ID!
+  id: ID! # tx hash
   baseAmount: BigInt!
   lpAmount: BigInt!
 
   transaction: Transaction!
 }
 
+# @notice The entity holds inforamtion about pool address of transaction
+# @param id forms from tx hash
+# @param pool the pool address
+# @param transaction the transaction entity id
 type OnlyPool @entity {
-  id: ID!
+  id: ID! # tx hash
   pool: Bytes!
 
   transaction: Transaction!
