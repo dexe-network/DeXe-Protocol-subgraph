@@ -1,6 +1,6 @@
 ####################################  Pool <-> Proposal  ####################################
 # @notice The entity holds information about trader pool
-# @param id froms from pool address
+# @param id forms from pool address
 # @param trader the address of trader
 # @param proposalContract the address of proposal contract
 type Pool @entity {
@@ -10,7 +10,7 @@ type Pool @entity {
 }
 
 # @notice The entity holds information about proposal contract
-# @param id froms from proposal contract address
+# @param id forms from proposal contract address
 # @param pool the address of pool
 type ProposalContract @entity {
   id: ID! # proposal contract address
@@ -219,7 +219,7 @@ type InvestProposalClaimOrSupply @entity {
 }
 
 # @notice The entity holds information about stake/unstake in insurance
-# @param id froms from tx hash
+# @param id forms from tx hash
 # @param amount the amount of stake
 # @param transaction the transaction entity id
 type InsuranceStake @entity {
@@ -230,7 +230,7 @@ type InsuranceStake @entity {
 }
 
 # @notice The entity holds information about getting performance fee
-# @param id froms from tx hash
+# @param id forms from tx hash
 # @param baseAmount the amount in base token
 # @param lpAmount the amount in lp token
 # @param transaction the transaction entity id
@@ -243,7 +243,7 @@ type GetPerfomanceFee @entity {
 }
 
 # @notice The entity holds inforamtion about pool address of transaction
-# @param id froms from tx hash
+# @param id forms from tx hash
 # @param pool the pool address
 # @param transaction the transaction entity id
 type OnlyPool @entity {
