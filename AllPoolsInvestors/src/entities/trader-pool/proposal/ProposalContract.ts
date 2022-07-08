@@ -4,13 +4,13 @@ import { ProposalContract } from "../../../../generated/schema";
 export function getProposalContract(
   contractAddress: Address,
   traderPoolAddress: Address = Address.zero(),
-  proposalType: String = ""
+  proposalType: string = ""
 ): ProposalContract {
-  let contract = ProposalContract.load(contractAddress.toHexString());
+  let contract = ProposalContract.load(contractAddress);
 
   if (contract == null) {
-    contract = new ProposalContract(contractAddress.toHexString());
-    contract.traderPool = traderPoolAddress.toHexString();
+    contract = new ProposalContract(contractAddress);
+    contract.traderPool = traderPoolAddress;
     contract.proposalType = proposalType;
   }
 

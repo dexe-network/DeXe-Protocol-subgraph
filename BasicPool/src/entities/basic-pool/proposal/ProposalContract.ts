@@ -1,12 +1,14 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { ProposalContract } from "../../../../generated/schema";
 
-export function getProposalContract(proposalContractAddress: Address, basicPool: string = ""): ProposalContract {
-  let id = proposalContractAddress.toHexString();
-  let proposalContract = ProposalContract.load(id);
+export function getProposalContract(
+  proposalContractAddress: Address,
+  basicPool: Bytes = Bytes.empty()
+): ProposalContract {
+  let proposalContract = ProposalContract.load(proposalContractAddress);
 
   if (proposalContract == null) {
-    proposalContract = new ProposalContract(id);
+    proposalContract = new ProposalContract(proposalContractAddress);
     proposalContract.basicPool = basicPool;
   }
 

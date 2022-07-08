@@ -19,7 +19,7 @@ import { upcastCopy } from "../helpers/ArrayHelper";
 export function onProposalInvest(event: ProposalInvested): void {
   let proposalContract = getProposalContract(event.address);
   let investor = getInvestor(event.params.user);
-  let pool = getTraderPool(Address.fromString(proposalContract.traderPool));
+  let pool = getTraderPool(Address.fromString(proposalContract.traderPool.toHexString()));
   let proposalOffset = getProposalPositionOffset(pool, investor, event.params.proposalId);
   let proposal = getProposalPosition(event.params.proposalId, proposalContract, investor, proposalOffset);
 
@@ -49,12 +49,12 @@ export function onProposalInvest(event: ProposalInvested): void {
 export function onProposalDivest(event: ProposalDivested): void {
   let proposalContract = getProposalContract(event.address);
   let investor = getInvestor(event.params.user);
-  let pool = getTraderPool(Address.fromString(proposalContract.traderPool));
+  let pool = getTraderPool(Address.fromString(proposalContract.traderPool.toHexString()));
   let proposalOffset = getProposalPositionOffset(pool, investor, event.params.proposalId);
   let proposal = getProposalPosition(event.params.proposalId, proposalContract, investor, proposalOffset);
 
   let usdValue = getUSDValue(
-    getTraderPool(Address.fromString(proposalContract.traderPool)).token,
+    getTraderPool(Address.fromString(proposalContract.traderPool.toHexString())).token,
     event.params.receivedBase
   );
   let divest = getProposalVest(
@@ -82,7 +82,7 @@ export function onProposalDivest(event: ProposalDivested): void {
 export function onProposalInvestorAdded(event: ProposalInvestorAdded): void {
   let proposalContract = getProposalContract(event.address);
   let investor = getInvestor(event.params.investor);
-  let pool = getTraderPool(Address.fromString(proposalContract.traderPool));
+  let pool = getTraderPool(Address.fromString(proposalContract.traderPool.toHexString()));
   let proposalOffset = getProposalPositionOffset(pool, investor, event.params.proposalId);
   let proposal = getProposalPosition(event.params.proposalId, proposalContract, investor, proposalOffset);
 
@@ -95,7 +95,7 @@ export function onProposalInvestorAdded(event: ProposalInvestorAdded): void {
 export function onProposalClaimed(event: ProposalClaimed): void {
   let proposalContract = getProposalContract(event.address);
   let investor = getInvestor(event.params.user);
-  let pool = getTraderPool(Address.fromString(proposalContract.traderPool));
+  let pool = getTraderPool(Address.fromString(proposalContract.traderPool.toHexString()));
   let proposalOffset = getProposalPositionOffset(pool, investor, event.params.proposalId);
   let proposal = getProposalPosition(event.params.proposalId, proposalContract, investor, proposalOffset);
 
@@ -111,7 +111,7 @@ export function onProposalClaimed(event: ProposalClaimed): void {
 export function onProposalInvestorRemoved(event: ProposalInvestorRemoved): void {
   let proposalContract = getProposalContract(event.address);
   let investor = getInvestor(event.params.investor);
-  let pool = getTraderPool(Address.fromString(proposalContract.traderPool));
+  let pool = getTraderPool(Address.fromString(proposalContract.traderPool.toHexString()));
   let proposalOffset = getProposalPositionOffset(pool, investor, event.params.proposalId);
   let proposal = getProposalPosition(event.params.proposalId, proposalContract, investor, proposalOffset);
 

@@ -8,16 +8,15 @@ export function getRiskyProposalVest(
   baseAmount: BigInt,
   lp2Amount: BigInt
 ): RiskyProposalVest {
-  let id = hash.toHexString();
-  let vest = RiskyProposalVest.load(id);
+  let vest = RiskyProposalVest.load(hash);
 
   if (vest == null) {
-    vest = new RiskyProposalVest(id);
+    vest = new RiskyProposalVest(hash);
     vest.pool = pool;
     vest.proposalId = proposalId;
     vest.baseAmount = baseAmount;
     vest.lp2Amount = lp2Amount;
-    vest.transaction = "";
+    vest.transaction = Bytes.empty();
   }
 
   return vest;

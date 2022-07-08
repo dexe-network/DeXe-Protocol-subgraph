@@ -7,11 +7,10 @@ export function getInvestProposalWithdraw(
   proposalId: BigInt,
   amount: BigInt
 ): InvestProposalWithdraw {
-  let id = hash.toHexString();
-  let withdraw = InvestProposalWithdraw.load(id);
+  let withdraw = InvestProposalWithdraw.load(hash);
 
   if (withdraw == null) {
-    withdraw = new InvestProposalWithdraw(id);
+    withdraw = new InvestProposalWithdraw(hash);
 
     withdraw.pool = pool;
     withdraw.proposalId = proposalId;

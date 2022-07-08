@@ -43,7 +43,7 @@ export function onProposalSupplied(event: ProposalSupplied): void {
   let proposalContract = getProposalContract(event.address);
   let proposal = getProposal(event.params.proposalId, proposalContract);
   let lastSupply = getLastSupply(proposal);
-  let pool = getInvestTraderPool(Address.fromString(proposalContract.investPool));
+  let pool = getInvestTraderPool(Address.fromString(proposalContract.investPool.toHexString()));
 
   lastSupply.dividendsTokens = upcastCopy<Address, Bytes>(event.params.tokens);
   lastSupply.amountDividendsTokens = event.params.amounts;

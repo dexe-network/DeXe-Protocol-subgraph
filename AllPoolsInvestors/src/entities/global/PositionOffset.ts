@@ -2,7 +2,7 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { Investor, InvestorPoolPositionOffset, TraderPool } from "../../../generated/schema";
 
 export function getPositionOffset(pool: TraderPool, investor: Investor): InvestorPoolPositionOffset {
-  let id = pool.id + investor.id;
+  let id = pool.id.concat(investor.id);
   let positionOffset = InvestorPoolPositionOffset.load(id);
 
   if (positionOffset == null) {

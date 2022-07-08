@@ -16,6 +16,7 @@ import { getVest } from "../entities/trader-pool/Vest";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getOnlyPool } from "../entities/transaction/OnlyPool";
 import { getRiskyProposalVest } from "../entities/trader-pool/risky-proposal/RiskyProposalVest";
+import { getGetPerfomaneFee } from "../entities/transaction/GetPerfomanceFee";
 
 export function onExchange(event: Exchanged): void {
   let transaction = getTransaction(
@@ -153,13 +154,17 @@ export function onCommissionClaimed(event: CommissionClaimed): void {
     event.params.sender
   );
 
-  let onlyPool = getOnlyPool(event.transaction.hash, event.address);
+  let perfomanceFee = getGetPerfomaneFee(
+    event.transaction.hash,
+    event.params.traderBaseClaimed,
+    event.params.traderLpClaimed
+  );
 
-  onlyPool.transaction = transaction.id;
+  perfomanceFee.transaction = transaction.id;
   transaction.type = getEnumBigInt(TransactionType.TRADER_GET_PERFOMANCE_FEE);
 
   transaction.save();
-  onlyPool.save();
+  perfomanceFee.save();
 }
 
 function setupVest(transaction: Transaction, baseAmount: BigInt, lpAmount: BigInt, hash: Bytes, type: BigInt): void {

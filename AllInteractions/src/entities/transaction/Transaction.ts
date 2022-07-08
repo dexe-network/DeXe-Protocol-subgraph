@@ -2,11 +2,10 @@ import { Bytes, BigInt } from "@graphprotocol/graph-ts";
 import { Transaction } from "../../../generated/schema";
 
 export function getTransaction(hash: Bytes, block: BigInt, timestamp: BigInt, investor: Bytes): Transaction {
-  let id = hash.toHexString();
-  let transaction = Transaction.load(id);
+  let transaction = Transaction.load(hash);
 
   if (transaction == null) {
-    transaction = new Transaction(id);
+    transaction = new Transaction(hash);
     transaction.block = block;
     transaction.timestamp = timestamp;
     transaction.type = BigInt.zero();

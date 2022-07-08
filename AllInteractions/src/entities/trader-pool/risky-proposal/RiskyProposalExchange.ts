@@ -10,11 +10,10 @@ export function getRiskyProposalExchange(
   fromVolume: BigInt,
   toVolume: BigInt
 ): RiskyProposalExchange {
-  let id = hash.toHexString();
-  let exchange = RiskyProposalExchange.load(id);
+  let exchange = RiskyProposalExchange.load(hash);
 
   if (exchange == null) {
-    exchange = new RiskyProposalExchange(id);
+    exchange = new RiskyProposalExchange(hash);
 
     exchange.pool = pool;
     exchange.proposalId = proposalId;

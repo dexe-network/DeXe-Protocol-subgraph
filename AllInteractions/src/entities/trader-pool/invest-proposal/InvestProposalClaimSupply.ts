@@ -8,11 +8,10 @@ export function getInvestProposalClaimOrSupply(
   tokens: Array<Bytes>,
   amounts: Array<BigInt>
 ): InvestProposalClaimOrSupply {
-  let id = hash.toHexString();
-  let claimSupply = InvestProposalClaimOrSupply.load(id);
+  let claimSupply = InvestProposalClaimOrSupply.load(hash);
 
   if (claimSupply == null) {
-    claimSupply = new InvestProposalClaimOrSupply(id);
+    claimSupply = new InvestProposalClaimOrSupply(hash);
 
     claimSupply.pool = pool;
     claimSupply.proposalId = proposalId;
@@ -20,7 +19,7 @@ export function getInvestProposalClaimOrSupply(
     claimSupply.tokens = tokens;
     claimSupply.amounts = amounts;
 
-    claimSupply.transaction = "";
+    claimSupply.transaction = Bytes.empty();
   }
 
   return claimSupply;

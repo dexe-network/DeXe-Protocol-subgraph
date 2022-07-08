@@ -6,7 +6,7 @@ export function getInvestorPoolPosition(
   traderPool: TraderPool,
   positionOffset: InvestorPoolPositionOffset
 ): InvestorPoolPosition {
-  let id = investor.id + traderPool.id + positionOffset.offset.toString();
+  let id = investor.id.toHexString() + traderPool.id.toHexString() + positionOffset.offset.toString();
   let investorInfo = InvestorPoolPosition.load(id);
 
   if (investorInfo == null) {

@@ -10,7 +10,7 @@ import {
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { extendArray, reduceArray } from "../helpers/ArrayHelper";
+import { extendArray, reduceArray, upcastCopy } from "../helpers/ArrayHelper";
 import { getInvestor } from "../entities/trader-pool/Investor";
 import { getTraderPoolHistory } from "../entities/trader-pool/history/TraderPoolHistory";
 import { getInvestorPoolPosition } from "../entities/trader-pool/InvestorPoolPosition";
@@ -79,24 +79,24 @@ export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): voi
   let pool = getTraderPool(event.address);
   let history = getTraderPoolHistory(pool, event.block.timestamp);
 
-  let newArray = new Array<string>();
-
-  for (let i = 0; i < event.params.privateInvestors.length; i++) {
-    newArray.push(event.params.privateInvestors[i].toHexString());
-  }
+  let upcastedArray = upcastCopy<Address, Bytes>(event.params.privateInvestors);
 
   if (event.params.add) {
-    pool.privateInvestors = extendArray(pool.privateInvestors, newArray);
-    pool.privateInvestorsCount = pool.privateInvestorsCount.plus(BigInt.fromI32(newArray.length));
+    pool.privateInvestors = extendArray(pool.privateInvestors, upcastedArray);
+    pool.privateInvestorsCount = pool.privateInvestorsCount.plus(BigInt.fromI32(event.params.privateInvestors.length));
 
-    history.privateInvestors = extendArray(history.privateInvestors, newArray);
-    history.privateInvestorsCount = history.privateInvestorsCount.plus(BigInt.fromI32(newArray.length));
+    history.privateInvestors = extendArray(history.privateInvestors, upcastedArray);
+    history.privateInvestorsCount = history.privateInvestorsCount.plus(
+      BigInt.fromI32(event.params.privateInvestors.length)
+    );
   } else {
-    pool.privateInvestors = reduceArray(pool.privateInvestors, newArray);
-    pool.privateInvestorsCount = pool.privateInvestorsCount.minus(BigInt.fromI32(newArray.length));
+    pool.privateInvestors = reduceArray(pool.privateInvestors, upcastedArray);
+    pool.privateInvestorsCount = pool.privateInvestorsCount.minus(BigInt.fromI32(event.params.privateInvestors.length));
 
-    history.privateInvestors = reduceArray(history.privateInvestors, newArray);
-    history.privateInvestorsCount = history.privateInvestorsCount.minus(BigInt.fromI32(newArray.length));
+    history.privateInvestors = reduceArray(history.privateInvestors, upcastedArray);
+    history.privateInvestorsCount = history.privateInvestorsCount.minus(
+      BigInt.fromI32(event.params.privateInvestors.length)
+    );
   }
   pool.save();
   history.save();
@@ -202,8 +202,8 @@ function getUSDValue(token: Bytes, amount: BigInt): BigInt {
 }
 
 function getLPBalanceOf(pool: TRP, investor: Investor): BigInt {
-  let poolPrototype = TraderPool.bind(Address.fromString(pool.id));
-  let LPvalue = poolPrototype.try_balanceOf(Address.fromString(investor.id));
+  let poolPrototype = TraderPool.bind(Address.fromString(pool.id.toHexString()));
+  let LPvalue = poolPrototype.try_balanceOf(Address.fromString(investor.id.toHexString()));
 
   if (!LPvalue.reverted) {
     return LPvalue.value;

@@ -9,11 +9,10 @@ export function getExchange(
   fromVolume: BigInt,
   toVolume: BigInt
 ): Exchange {
-  let id = hash.toHexString();
-  let exchange = Exchange.load(id);
+  let exchange = Exchange.load(hash);
 
   if (exchange == null) {
-    exchange = new Exchange(id);
+    exchange = new Exchange(hash);
     exchange.pool = pool;
     exchange.fromToken = fromToken;
     exchange.toToken = toToken;
@@ -21,7 +20,7 @@ export function getExchange(
     exchange.fromVolume = fromVolume;
     exchange.toVolume = toVolume;
 
-    exchange.transaction = "";
+    exchange.transaction = Bytes.empty();
   }
 
   return exchange;

@@ -10,10 +10,10 @@ export function getVest(
   volumeUSD: BigInt = BigInt.zero(),
   timestamp: BigInt = BigInt.zero()
 ): Vest {
-  let vest = Vest.load(hash.toHexString());
+  let vest = Vest.load(hash);
 
   if (vest == null) {
-    vest = new Vest(hash.toHexString());
+    vest = new Vest(hash);
     vest.investorPoolPosition = investorPoolPosition.id;
     vest.isInvest = isInvest;
     vest.volumeBase = volumeBase;

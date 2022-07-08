@@ -186,16 +186,11 @@ export function onModifiedAdmins(event: ModifiedAdmins): void {
 
 export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): void {
   let pool = getTraderPool(event.address);
-  let newArray = new Array<string>();
-
-  for (let i = 0; i < event.params.privateInvestors.length; i++) {
-    newArray.push(event.params.privateInvestors[i].toHexString());
-  }
-
+  let upcastedArray = upcastCopy<Address, Bytes>(event.params.privateInvestors);
   if (event.params.add) {
-    pool.privateInvestors = extendArray(pool.privateInvestors, newArray);
+    pool.privateInvestors = extendArray(pool.privateInvestors, upcastedArray);
   } else {
-    pool.privateInvestors = reduceArray(pool.privateInvestors, newArray);
+    pool.privateInvestors = reduceArray(pool.privateInvestors, upcastedArray);
   }
   pool.save();
 }

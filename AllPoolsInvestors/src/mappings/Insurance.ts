@@ -43,7 +43,12 @@ export function onPayout(event: Paidout): void {
 function injectPrevHistory(history: InsuranceHistory, investor: Investor): void {
   let prevHistory: InsuranceHistory | null;
   if (history.prevHistory == "") {
-    prevHistory = findPrevHistory<InsuranceHistory>(InsuranceHistory.load, investor.id, history.day, BigInt.fromI32(1));
+    prevHistory = findPrevHistory<InsuranceHistory>(
+      InsuranceHistory.load,
+      investor.id.toHexString(),
+      history.day,
+      BigInt.fromI32(1)
+    );
     if (prevHistory != null) {
       history.prevHistory = prevHistory.id;
       history.claimedAmount = prevHistory.claimedAmount;

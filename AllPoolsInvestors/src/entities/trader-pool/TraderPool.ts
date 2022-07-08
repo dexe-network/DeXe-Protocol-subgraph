@@ -7,10 +7,10 @@ export function getTraderPool(
   type: string = "",
   baseToken: Address = Address.zero()
 ): TraderPool {
-  let traderPool = TraderPool.load(poolAddress.toHexString());
+  let traderPool = TraderPool.load(poolAddress);
 
   if (traderPool == null) {
-    traderPool = new TraderPool(poolAddress.toHexString());
+    traderPool = new TraderPool(poolAddress);
     traderPool.proposalContract = proposalContract;
     traderPool.type = type;
     traderPool.token = baseToken;
