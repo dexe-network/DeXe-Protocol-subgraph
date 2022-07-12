@@ -5,6 +5,7 @@
     "compile": "graph codegen && graph build",
     "codegen": "graph codegen",
     "build": "graph build",
+    "test": "graph test",
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ volodymyrzolotukhin/dexe",
     "create-local": "graph create --node http://localhost:8020/ volodymyrzolotukhin/dexe",
     "remove-local": "graph remove --node http://localhost:8020/ volodymyrzolotukhin/dexe",

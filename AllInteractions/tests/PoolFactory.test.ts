@@ -42,6 +42,10 @@ const block = getBlock(BigInt.fromI32(1), BigInt.fromI32(1));
 const tx = getTransaction(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromI32(1))));
 
 describe("PoolFactory", () => {
+  afterEach(() => {
+    clearStore();
+  });
+
   test("should handle TraderPoolDeployed event", () => {
     let expectedPoolType = BASIC_POOL_NAME;
     let expectedSymbol = "BSTP";

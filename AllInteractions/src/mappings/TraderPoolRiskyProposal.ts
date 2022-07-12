@@ -1,13 +1,12 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { ProposalDivested } from "../../generated/templates/TraderPool/TraderPool";
-import { ProposalRestrictionsChanged } from "../../generated/templates/TraderPoolInvestProposal/TraderPoolInvestProposal";
 import {
   ProposalCreated,
   ProposalExchanged,
   ProposalInvested,
+  ProposalDivested,
+  ProposalRestrictionsChanged,
 } from "../../generated/templates/TraderPoolRiskyProposal/TraderPoolRiskyProposal";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
-import { getExchange } from "../entities/trader-pool/Exchange";
 import { getProposalContract } from "../entities/trader-pool/ProposalContract";
 import { getRiskyProposalCreate } from "../entities/trader-pool/risky-proposal/RiskyProposalCreate";
 import { getRiskyProposalEdited } from "../entities/trader-pool/risky-proposal/RiskyProposalEdited";
