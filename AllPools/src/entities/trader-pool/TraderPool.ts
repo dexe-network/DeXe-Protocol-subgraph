@@ -34,12 +34,20 @@ export function getTraderPool(
     traderPool.averageTrades = BigInt.zero();
     traderPool.averagePositionTime = BigInt.zero();
 
+    traderPool.investors = new Array<Bytes>();
+    traderPool.investorsCount = BigInt.zero();
+
+    traderPool.privateInvestors = new Array<Bytes>();
+    traderPool.privateInvestorsCount = BigInt.zero();
+
     traderPool.priceHistoryCount = BigInt.zero();
 
     traderPool.admins = extendArray<Bytes>(new Array<Bytes>(), [trader]);
     traderPool.trader = trader;
 
     traderPool.commission = commission;
+
+    traderPool.orderSize = BigInt.zero();
   }
 
   return traderPool;
