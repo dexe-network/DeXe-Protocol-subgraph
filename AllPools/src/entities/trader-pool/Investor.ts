@@ -6,7 +6,6 @@ export function getInvestor(id: Address): Investor {
 
   if (investor == null) {
     investor = new Investor(id);
-    investor.claimedAmount = BigInt.zero();
     investor.activePools = new Array();
     investor.allPools = new Array();
   }

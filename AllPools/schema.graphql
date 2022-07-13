@@ -183,8 +183,6 @@ type ExchangeHistory @entity(immutable: true) {
 # @param allPools the array with pools where the  investor has ever invested
 type Investor @entity {
   id: Bytes! # investor address
-  claimedAmount: BigInt!
-
   activePools: [TraderPool!]!
   allPools: [TraderPool!]!
 }
