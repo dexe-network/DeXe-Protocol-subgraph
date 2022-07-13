@@ -43,31 +43,6 @@ dataSources:
       blockHandlers:
         - handler: handl
 
-  - kind: ethereum/contract
-    name: Insurance
-    network: chapel
-    source:
-      address: "0x2e9bb5aee047162EaD1E3600Eb948c7059c669bC"
-      abi: Insurance
-      startBlock: 20559346
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      file: ./src/mappings/Insurance.ts
-      entities:
-        - Investor
-      abis:
-        - name: Insurance
-          file: ./abis/Insurance.json
-      eventHandlers:
-        - event: Deposited(uint256,address)
-          handler: onDeposit
-        - event: Withdrawn(uint256,address)
-          handler: onWithdraw
-        - event: Paidout(uint256,uint256,address)
-          handler: onPayout
-
 templates:
   - kind: ethereum/contract
     name: TraderPool
