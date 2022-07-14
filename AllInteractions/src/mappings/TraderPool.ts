@@ -1,4 +1,4 @@
-import { Bytes, BigInt } from "@graphprotocol/graph-ts";
+import { Bytes, BigInt, Address } from "@graphprotocol/graph-ts";
 import { Transaction } from "../../generated/schema";
 import {
   CommissionClaimed,
@@ -53,7 +53,8 @@ export function onInvest(event: Invested): void {
     event.params.investedBase,
     event.params.receivedLP,
     event.transaction.hash,
-    getEnumBigInt(TransactionType.INVEST)
+    getEnumBigInt(TransactionType.INVEST),
+    event.address
   );
 }
 
@@ -69,7 +70,8 @@ export function onDivest(event: Divested): void {
     event.params.receivedBase,
     event.params.divestedLP,
     event.transaction.hash,
-    getEnumBigInt(TransactionType.DIVEST)
+    getEnumBigInt(TransactionType.DIVEST),
+    event.address
   );
 }
 
@@ -167,8 +169,15 @@ export function onCommissionClaimed(event: CommissionClaimed): void {
   perfomanceFee.save();
 }
 
-function setupVest(transaction: Transaction, baseAmount: BigInt, lpAmount: BigInt, hash: Bytes, type: BigInt): void {
-  let vest = getVest(hash, baseAmount, lpAmount);
+function setupVest(
+  transaction: Transaction,
+  baseAmount: BigInt,
+  lpAmount: BigInt,
+  hash: Bytes,
+  type: BigInt,
+  pool: Address
+): void {
+  let vest = getVest(hash, baseAmount, lpAmount, pool);
 
   transaction.type = type;
   vest.transaction = transaction.id;

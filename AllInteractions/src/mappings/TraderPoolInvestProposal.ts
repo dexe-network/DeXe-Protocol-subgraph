@@ -14,7 +14,6 @@ import { getInvestProposalEdited } from "../entities/trader-pool/invest-proposal
 import { getInvestProposalWithdraw } from "../entities/trader-pool/invest-proposal/InvestProposalWithdraw";
 import { getProposalContract } from "../entities/trader-pool/ProposalContract";
 import { getProposalVest } from "../entities/trader-pool/risky-proposal/ProposalVest";
-import { getRiskyProposalEdited } from "../entities/trader-pool/risky-proposal/RiskyProposalEdited";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getTransaction } from "../entities/transaction/Transaction";
 import { upcastCopy } from "../helpers/ArrayHelper";
