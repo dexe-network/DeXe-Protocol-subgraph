@@ -11,6 +11,7 @@ import {
   ProposalSupplied,
   ProposalClaimed,
   ProposalRestrictionsChanged,
+  ProposalInvested,
 } from "../generated/templates/TraderPoolInvestProposal/TraderPoolInvestProposal";
 import {
   onProposalClaimed,
@@ -18,6 +19,7 @@ import {
   onProposalRestrictionsChanged,
   onProposalSupplied,
   onProposalWithdrawn,
+  onProposalInvest,
 } from "../src/mappings/TraderPoolInvestProposal";
 
 function createProposalCreated(
@@ -82,6 +84,32 @@ function createProposalSupplied(
   event.block = block;
   event.transaction = tx;
   event.address = sender;
+
+  return event;
+}
+
+function createProposalInvested(
+  proposalId: BigInt,
+  user: Address,
+  investedLP: BigInt,
+  investedBase: BigInt,
+  receivedLP2: BigInt,
+  sender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): ProposalInvested {
+  let event = changetype<ProposalInvested>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
+  event.parameters.push(new ethereum.EventParam("user", ethereum.Value.fromAddress(user)));
+  event.parameters.push(new ethereum.EventParam("investedLP", ethereum.Value.fromUnsignedBigInt(investedLP)));
+  event.parameters.push(new ethereum.EventParam("investedBase", ethereum.Value.fromUnsignedBigInt(investedBase)));
+  event.parameters.push(new ethereum.EventParam("receivedLP2", ethereum.Value.fromUnsignedBigInt(receivedLP2)));
+
+  event.address = sender;
+  event.block = block;
+  event.transaction = tx;
 
   return event;
 }
@@ -223,6 +251,25 @@ describe("TraderPoolInvestProposal", () => {
     assert.fieldEquals("InvestProposalClaimOrSupply", tx.hash.toHexString(), "transaction", tx.hash.toHexString());
 
     assertTransaction(tx.hash, event.params.user, block, TransactionType.INVEST_PROPOSAL_CLAIM);
+  });
+
+  test("should handle ProposalInvested", () => {
+    let user = Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670");
+    let investedLP = BigInt.fromI32(10).pow(18);
+    let investedBase = BigInt.fromI32(100).pow(18);
+    let receivedLP2 = BigInt.fromI32(50).pow(17);
+
+    let event = createProposalInvested(proposalId, user, investedLP, investedBase, receivedLP2, sender, block, tx);
+
+    onProposalInvest(event);
+
+    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "proposalId", proposalId.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "pool", pool.toHexString());
+    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "baseAmount", investedBase.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "lp2Amount", receivedLP2.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "transaction", tx.hash.toHexString());
+
+    assertTransaction(tx.hash, event.params.user, block, TransactionType.INVEST_PROPOSAL_INVEST);
   });
 
   test("should handle ProposalRestrictionsChanged", () => {

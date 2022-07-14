@@ -209,11 +209,11 @@ describe("TraderPoolRiskyProposal", () => {
 
     onProposalInvest(event);
 
-    assert.fieldEquals("RiskyProposalVest", tx.hash.toHexString(), "proposalId", proposalId.toString());
-    assert.fieldEquals("RiskyProposalVest", tx.hash.toHexString(), "pool", pool.toHexString());
-    assert.fieldEquals("RiskyProposalVest", tx.hash.toHexString(), "baseAmount", investedBase.toString());
-    assert.fieldEquals("RiskyProposalVest", tx.hash.toHexString(), "lp2Amount", receivedLP2.toString());
-    assert.fieldEquals("RiskyProposalVest", tx.hash.toHexString(), "transaction", tx.hash.toHexString());
+    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "proposalId", proposalId.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "pool", pool.toHexString());
+    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "baseAmount", investedBase.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "lp2Amount", receivedLP2.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "transaction", tx.hash.toHexString());
 
     assertTransaction(tx.hash, event.params.user, block, TransactionType.RISKY_PROPOSAL_INVEST);
   });
@@ -228,11 +228,11 @@ describe("TraderPoolRiskyProposal", () => {
 
     onProposalDivest(event);
 
-    assert.fieldEquals("RiskyProposalVest", tx.hash.toHexString(), "proposalId", proposalId.toString());
-    assert.fieldEquals("RiskyProposalVest", tx.hash.toHexString(), "pool", pool.toHexString());
-    assert.fieldEquals("RiskyProposalVest", tx.hash.toHexString(), "baseAmount", receivedBase.toString());
-    assert.fieldEquals("RiskyProposalVest", tx.hash.toHexString(), "lp2Amount", divestedLP2.toString());
-    assert.fieldEquals("RiskyProposalVest", tx.hash.toHexString(), "transaction", tx.hash.toHexString());
+    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "proposalId", proposalId.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "pool", pool.toHexString());
+    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "baseAmount", receivedBase.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "lp2Amount", divestedLP2.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "transaction", tx.hash.toHexString());
 
     assertTransaction(tx.hash, event.params.user, block, TransactionType.RISKY_PROPOSAL_DIVEST);
   });
