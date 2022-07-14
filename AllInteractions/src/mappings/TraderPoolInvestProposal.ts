@@ -2,6 +2,7 @@ import { Address, Bytes } from "@graphprotocol/graph-ts";
 import {
   ProposalClaimed,
   ProposalCreated,
+  ProposalInvested,
   ProposalRestrictionsChanged,
   ProposalSupplied,
   ProposalWithdrawn,
@@ -12,6 +13,7 @@ import { getInvestProposalCreate } from "../entities/trader-pool/invest-proposal
 import { getInvestProposalEdited } from "../entities/trader-pool/invest-proposal/InvestProposalEdited";
 import { getInvestProposalWithdraw } from "../entities/trader-pool/invest-proposal/InvestProposalWithdraw";
 import { getProposalContract } from "../entities/trader-pool/ProposalContract";
+import { getProposalVest } from "../entities/trader-pool/risky-proposal/ProposalVest";
 import { getRiskyProposalEdited } from "../entities/trader-pool/risky-proposal/RiskyProposalEdited";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getTransaction } from "../entities/transaction/Transaction";
@@ -111,5 +113,28 @@ export function onProposalRestrictionsChanged(event: ProposalRestrictionsChanged
   transaction.type = getEnumBigInt(TransactionType.INVEST_PROPOSAL_EDIT);
 
   edit.save();
+  transaction.save();
+}
+
+export function onProposalInvest(event: ProposalInvested): void {
+  let pool = getProposalContract(event.address).pool;
+  let vest = getProposalVest(
+    event.transaction.hash,
+    pool,
+    event.params.proposalId,
+    event.params.investedBase,
+    event.params.receivedLP2
+  );
+  let transaction = getTransaction(
+    event.transaction.hash,
+    event.block.number,
+    event.block.timestamp,
+    event.params.user
+  );
+
+  vest.transaction = transaction.id;
+  transaction.type = getEnumBigInt(TransactionType.INVEST_PROPOSAL_INVEST);
+
+  vest.save();
   transaction.save();
 }

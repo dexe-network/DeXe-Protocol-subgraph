@@ -41,7 +41,7 @@ type Transaction @entity(immutable: true) {
 
   riskyProposalCreate: [RiskyProposalCreate!]! @derivedFrom(field: "transaction")
   riskyProposalExchange: [RiskyProposalExchange!]! @derivedFrom(field: "transaction")
-  riskyProposalVest: [RiskyProposalVest!]! @derivedFrom(field: "transaction")
+  riskyProposalVest: [ProposalVest!]! @derivedFrom(field: "transaction")
 
   investProposalClaimSupply: [InvestProposalClaimOrSupply!]! @derivedFrom(field: "transaction")
   investProposalCreate: [InvestProposalCreate!]! @derivedFrom(field: "transaction")
@@ -137,7 +137,7 @@ type ProposalEdit @entity(immutable: true) {
 # @param baseAmount the amount in base token
 # @param lp2Amount the amount in lp2 token
 # @param transaction the transaction entity id
-type RiskyProposalVest @entity(immutable: true) {
+type ProposalVest @entity(immutable: true) {
   id: Bytes! # tx hash
   pool: Bytes!
   proposalId: BigInt!
