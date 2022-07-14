@@ -12,7 +12,7 @@ import { getProposalContract } from "../entities/trader-pool/ProposalContract";
 import { getRiskyProposalCreate } from "../entities/trader-pool/risky-proposal/RiskyProposalCreate";
 import { getRiskyProposalEdited } from "../entities/trader-pool/risky-proposal/RiskyProposalEdited";
 import { getRiskyProposalExchange } from "../entities/trader-pool/risky-proposal/RiskyProposalExchange";
-import { getRiskyProposalVest } from "../entities/trader-pool/risky-proposal/RiskyProposalVest";
+import { getProposalVest } from "../entities/trader-pool/risky-proposal/ProposalVest";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getTransaction } from "../entities/transaction/Transaction";
 
@@ -65,7 +65,7 @@ export function onProposalExchange(event: ProposalExchanged): void {
 
 export function onProposalInvest(event: ProposalInvested): void {
   let pool = getProposalContract(event.address).pool;
-  let vest = getRiskyProposalVest(
+  let vest = getProposalVest(
     event.transaction.hash,
     pool,
     event.params.proposalId,
@@ -88,7 +88,7 @@ export function onProposalInvest(event: ProposalInvested): void {
 
 export function onProposalDivest(event: ProposalDivested): void {
   let pool = getProposalContract(event.address).pool;
-  let vest = getRiskyProposalVest(
+  let vest = getProposalVest(
     event.transaction.hash,
     pool,
     event.params.proposalId,

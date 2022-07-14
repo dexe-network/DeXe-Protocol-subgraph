@@ -159,3 +159,5 @@ templates:
           handler: onProposalClaimed
         - event: ProposalRestrictionsChanged(uint256,address)
           handler: onProposalRestrictionsChanged
+        - event: ProposalInvested(uint256,address,uint256,uint256,uint256)
+          handler: onProposalInvest

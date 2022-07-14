@@ -1,17 +1,17 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { RiskyProposalVest } from "../../../../generated/schema";
+import { ProposalVest } from "../../../../generated/schema";
 
-export function getRiskyProposalVest(
+export function getProposalVest(
   hash: Bytes,
   pool: Bytes,
   proposalId: BigInt,
   baseAmount: BigInt,
   lp2Amount: BigInt
-): RiskyProposalVest {
-  let vest = RiskyProposalVest.load(hash);
+): ProposalVest {
+  let vest = ProposalVest.load(hash);
 
   if (vest == null) {
-    vest = new RiskyProposalVest(hash);
+    vest = new ProposalVest(hash);
     vest.pool = pool;
     vest.proposalId = proposalId;
     vest.baseAmount = baseAmount;

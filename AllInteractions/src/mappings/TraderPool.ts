@@ -15,7 +15,7 @@ import { getTransaction } from "../entities/transaction/Transaction";
 import { getVest } from "../entities/trader-pool/Vest";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getOnlyPool } from "../entities/transaction/OnlyPool";
-import { getRiskyProposalVest } from "../entities/trader-pool/risky-proposal/RiskyProposalVest";
+import { getProposalVest } from "../entities/trader-pool/risky-proposal/ProposalVest";
 import { getGetPerfomaneFee } from "../entities/transaction/GetPerfomanceFee";
 
 export function onExchange(event: Exchanged): void {
@@ -98,7 +98,7 @@ export function onProposalDivest(event: ProposalDivested): void {
     event.params.user
   );
 
-  let proposalVest = getRiskyProposalVest(
+  let proposalVest = getProposalVest(
     event.transaction.hash,
     event.address,
     event.params.proposalId,
