@@ -56,7 +56,7 @@ export function onExchange(event: Exchanged): void {
       fromBaseVolume = getFromPriceFeed(pfPrototype, event.params.fromToken, baseTokenAddress, event.params.fromVolume);
     }
 
-    let resp = pfPrototype.try_getNormalizedPriceInUSD(baseTokenAddress, fromBaseVolume);
+    let resp = pfPrototype.try_getNormalizedPriceOutUSD(baseTokenAddress, fromBaseVolume);
 
     if (resp.reverted) {
       usdVolume = BigInt.zero();
@@ -77,7 +77,7 @@ export function onExchange(event: Exchanged): void {
       toBaseVolume = getFromPriceFeed(pfPrototype, event.params.toToken, baseTokenAddress, event.params.toVolume);
     }
 
-    let resp = pfPrototype.try_getNormalizedPriceInUSD(baseTokenAddress, toBaseVolume);
+    let resp = pfPrototype.try_getNormalizedPriceOutUSD(baseTokenAddress, toBaseVolume);
 
     if (resp.reverted) {
       usdVolume = BigInt.zero();
@@ -256,7 +256,7 @@ export function onActivePortfolioExchanged(event: ActivePortfolioExchanged): voi
       fromBaseVolume = getFromPriceFeed(pfPrototype, event.params.fromToken, baseTokenAddress, event.params.fromVolume);
     }
 
-    let resp = pfPrototype.try_getNormalizedPriceInUSD(baseTokenAddress, fromBaseVolume);
+    let resp = pfPrototype.try_getNormalizedPriceOutUSD(baseTokenAddress, fromBaseVolume);
 
     if (resp.reverted) {
       usdVolume = BigInt.zero();
@@ -277,7 +277,7 @@ export function onActivePortfolioExchanged(event: ActivePortfolioExchanged): voi
       toBaseVolume = getFromPriceFeed(pfPrototype, event.params.toToken, baseTokenAddress, event.params.toVolume);
     }
 
-    let resp = pfPrototype.try_getNormalizedPriceInUSD(baseTokenAddress, toBaseVolume);
+    let resp = pfPrototype.try_getNormalizedPriceOutUSD(baseTokenAddress, toBaseVolume);
 
     if (resp.reverted) {
       usdVolume = BigInt.zero();

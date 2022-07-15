@@ -117,7 +117,7 @@ export function onProposalActivePortfolioExchanged(event: ProposalActivePortfoli
 
 function getUSDPrice(token: Address, amount: BigInt): BigInt {
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-  let resp = pfPrototype.try_getNormalizedPriceInUSD(token, amount);
+  let resp = pfPrototype.try_getNormalizedPriceOutUSD(token, amount);
   if (resp.reverted) {
     return BigInt.zero();
   } else {
