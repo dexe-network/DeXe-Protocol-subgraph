@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import {
   ProposalCreated,
   ProposalWithdrawn,
@@ -126,11 +126,7 @@ function totalTokenUSDCost(tokens: Array<Address>, volumes: Array<BigInt>): BigI
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
 
   for (let i = 0; i < tokens.length; i++) {
-    let resp = pfPrototype.try_getNormalizedPriceOutUSD(tokens[i], volumes[i]);
-
-    if (!resp.reverted) {
-      totalCost = totalCost.plus(resp.value.value0);
-    }
+    totalCost = totalCost.plus(getUSDFromPriceFeed(pfPrototype, tokens[i], volumes[i]));
   }
 
   return totalCost;
@@ -145,11 +141,31 @@ function getInvestedBaseInUSD(proposalAddress: Address, proposalId: BigInt, base
   }
 
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-  let pfResp = pfPrototype.try_getNormalizedPriceOutUSD(baseToken, resp.value[0].proposalInfo.investedBase);
 
-  if (pfResp.reverted) {
+  let usd = getUSDFromPriceFeed(pfPrototype, baseToken, resp.value[0].proposalInfo.investedBase);
+
+  if (usd.equals(BigInt.zero())) {
     return BigInt.fromI32(1);
+  } else {
+    return usd;
   }
+}
 
-  return pfResp.value.value0;
+function getUSDFromPriceFeed(pfPrototype: PriceFeed, baseTokenAddress: Address, fromBaseVolume: BigInt): BigInt {
+  let resp = pfPrototype.try_getNormalizedPriceOutUSD(baseTokenAddress, fromBaseVolume);
+  if (resp.reverted) {
+    log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
+      baseTokenAddress.toHexString(),
+      fromBaseVolume.toString(),
+    ]);
+    return BigInt.zero();
+  } else {
+    if (resp.value.value1.length == 0) {
+      log.warning("try_getNormalizedPriceOutUSD returned 0 length path. FromToken: {}, Amount:{}", [
+        baseTokenAddress.toHexString(),
+        fromBaseVolume.toString(),
+      ]);
+    }
+    return resp.value.value0;
+  }
 }
