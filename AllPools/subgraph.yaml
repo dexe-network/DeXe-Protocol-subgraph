@@ -6,9 +6,9 @@ dataSources:
     name: PoolFactory
     network: chapel
     source:
-      address: "0xf06E7E1D08a016f38Bc216a41ceEd37d12b66A81"
+      address: "0xD30Dc877E914ABdec262c95F813E644b5269DBB7"
       abi: PoolFactory
-      startBlock: 20559346
+      startBlock: 21058813
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -27,9 +27,9 @@ dataSources:
     name: TraderPoolRegistry
     network: chapel
     source:
-      address: "0x0F361c234372cE5b63758526fe3b9545CE5f3Fed"
+      address: "0x7302d46CD524fe29038A5109198CD5c67302eE24"
       abi: TraderPoolRegistry
-      startBlock: 20559346
+      startBlock: 21058813
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
