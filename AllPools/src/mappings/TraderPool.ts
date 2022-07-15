@@ -12,7 +12,7 @@ import {
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPosition } from "../entities/trader-pool/Position";
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import { getPositionId } from "../helpers/Position";
 import {
   DAY,
@@ -56,13 +56,7 @@ export function onExchange(event: Exchanged): void {
       fromBaseVolume = getFromPriceFeed(pfPrototype, event.params.fromToken, baseTokenAddress, event.params.fromVolume);
     }
 
-    let resp = pfPrototype.try_getNormalizedPriceInUSD(baseTokenAddress, fromBaseVolume);
-
-    if (resp.reverted) {
-      usdVolume = BigInt.zero();
-    } else {
-      usdVolume = resp.value.value0;
-    }
+    usdVolume = getUSDFromPriceFeed(pfPrototype, baseTokenAddress, fromBaseVolume);
 
     position1.totalBaseOpenVolume = position1.totalBaseOpenVolume.plus(fromBaseVolume);
   }
@@ -77,13 +71,7 @@ export function onExchange(event: Exchanged): void {
       toBaseVolume = getFromPriceFeed(pfPrototype, event.params.toToken, baseTokenAddress, event.params.toVolume);
     }
 
-    let resp = pfPrototype.try_getNormalizedPriceInUSD(baseTokenAddress, toBaseVolume);
-
-    if (resp.reverted) {
-      usdVolume = BigInt.zero();
-    } else {
-      usdVolume = resp.value.value0;
-    }
+    usdVolume = getUSDFromPriceFeed(pfPrototype, baseTokenAddress, toBaseVolume);
 
     position2.totalBaseCloseVolume = position2.totalBaseCloseVolume.plus(toBaseVolume);
   }
@@ -256,13 +244,7 @@ export function onActivePortfolioExchanged(event: ActivePortfolioExchanged): voi
       fromBaseVolume = getFromPriceFeed(pfPrototype, event.params.fromToken, baseTokenAddress, event.params.fromVolume);
     }
 
-    let resp = pfPrototype.try_getNormalizedPriceInUSD(baseTokenAddress, fromBaseVolume);
-
-    if (resp.reverted) {
-      usdVolume = BigInt.zero();
-    } else {
-      usdVolume = resp.value.value0;
-    }
+    usdVolume = getUSDFromPriceFeed(pfPrototype, baseTokenAddress, fromBaseVolume);
 
     position1.totalBaseOpenVolume = position1.totalBaseOpenVolume.plus(fromBaseVolume);
   }
@@ -277,13 +259,7 @@ export function onActivePortfolioExchanged(event: ActivePortfolioExchanged): voi
       toBaseVolume = getFromPriceFeed(pfPrototype, event.params.toToken, baseTokenAddress, event.params.toVolume);
     }
 
-    let resp = pfPrototype.try_getNormalizedPriceInUSD(baseTokenAddress, toBaseVolume);
-
-    if (resp.reverted) {
-      usdVolume = BigInt.zero();
-    } else {
-      usdVolume = resp.value.value0;
-    }
+    usdVolume = getUSDFromPriceFeed(pfPrototype, baseTokenAddress, toBaseVolume);
 
     position2.totalBaseCloseVolume = position2.totalBaseCloseVolume.plus(toBaseVolume);
   }
@@ -393,7 +369,40 @@ function recalculateOrderSize(baseVolume: BigInt, pool: TraderPool, block: BigIn
 function getFromPriceFeed(pfPrototype: PriceFeed, fromToken: Address, toToken: Address, amount: BigInt): BigInt {
   let baseVolume = pfPrototype.try_getNormalizedPriceOut(fromToken, toToken, amount);
 
-  if (baseVolume.reverted) return BigInt.zero();
+  if (baseVolume.reverted) {
+    log.warning("try_getNormalizedPriceOut reverted. FromToken: {}, toToken: {}, Amount:{}", [
+      fromToken.toHexString(),
+      toToken.toHexString(),
+      amount.toString(),
+    ]);
+    return BigInt.zero();
+  } else {
+    if (baseVolume.value.value1.length == 0) {
+      log.warning("try_getNormalizedPriceOut returned 0 length path. FromToken: {}, toToken: {}, Amount:{}", [
+        fromToken.toHexString(),
+        toToken.toHexString(),
+        amount.toString(),
+      ]);
+    }
+    return baseVolume.value.value0;
+  }
+}
 
-  return baseVolume.value.value0;
+function getUSDFromPriceFeed(pfPrototype: PriceFeed, baseTokenAddress: Address, fromBaseVolume: BigInt): BigInt {
+  let resp = pfPrototype.try_getNormalizedPriceOutUSD(baseTokenAddress, fromBaseVolume);
+  if (resp.reverted) {
+    log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
+      baseTokenAddress.toHexString(),
+      fromBaseVolume.toString(),
+    ]);
+    return BigInt.zero();
+  } else {
+    if (resp.value.value1.length == 0) {
+      log.warning("try_getNormalizedPriceOutUSD returned 0 length path. FromToken: {}, Amount:{}", [
+        baseTokenAddress.toHexString(),
+        fromBaseVolume.toString(),
+      ]);
+    }
+    return resp.value.value0;
+  }
 }
