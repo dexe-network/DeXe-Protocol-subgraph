@@ -174,6 +174,7 @@ export function onProposalDivest(event: ProposalDivested): void {
     false,
     event.params.receivedBase,
     event.params.receivedLP,
+    event.params.divestedLP2,
     usdValue,
     event.block.timestamp
   );
