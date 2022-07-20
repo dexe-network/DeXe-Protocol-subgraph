@@ -89,7 +89,7 @@ type ProposalPositionOffset @entity {
 }
 
 # @notice entity holds information about proposal position
-# @param id forms from proposal address + proposal position + _ + proposal offset
+# @param id forms from proposal address + proposal id + _ + proposal offset
 # @param isClosed the boolean flag, if true -> position closed
 # @param totalBaseOpenVolume the total open volume of proposal in base token
 # @param totalBaseCloseVolume the total close volume of proposal in base token
@@ -99,7 +99,7 @@ type ProposalPositionOffset @entity {
 # @param totalUSDCloseVolume the total close volume of proposal in usd
 # @param proposal the proposal entity
 type ProposalPosition @entity {
-  id: ID! # proposal address + proposal position + _ + proposal offset
+  id: ID! # proposal address + proposal id + _ + proposal offset
   isClosed: Boolean
 
   totalBaseOpenVolume: BigInt!
