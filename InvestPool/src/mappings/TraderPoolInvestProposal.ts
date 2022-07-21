@@ -62,7 +62,9 @@ export function onProposalSupplied(event: ProposalSupplied): void {
     .times(BigInt.fromU64(PERCENTAGE_PRECISION))
     .times(BigInt.fromI32(365))
     .div(difference)
-    .div(getInvestedBaseInUSD(event.address, event.params.proposalId, Address.fromString(pool.baseToken.toString())));
+    .div(
+      getInvestedBaseInUSD(event.address, event.params.proposalId, Address.fromString(pool.baseToken.toHexString()))
+    );
 
   let extendTokens = proposal.leftTokens;
   let extendAmount = proposal.leftAmounts;
