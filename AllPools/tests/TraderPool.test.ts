@@ -1,5 +1,14 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
-import { afterEach, assert, clearStore, describe, newMockEvent, test } from "matchstick-as";
+import {
+  afterEach,
+  beforeAll,
+  assert,
+  clearStore,
+  describe,
+  newMockEvent,
+  test,
+  createMockedFunction,
+} from "matchstick-as";
 import {
   CommissionClaimed,
   DescriptionURLChanged,
@@ -7,10 +16,14 @@ import {
   InvestorRemoved,
   ModifiedAdmins,
   ModifiedPrivateInvestors,
+  PositionClosed,
+  Exchanged,
 } from "../generated/templates/TraderPool/TraderPool";
-import { getBlock, getTransaction } from "./utils";
+import { getBlock, getNextBlock, getNextTx, getTransaction } from "./utils";
 import {
+  onClose,
   onDescriptionURLChanged,
+  onExchange,
   onInvestorAdded,
   onInvestorRemoved,
   onModifiedAdmins,
@@ -18,7 +31,51 @@ import {
   onTraderCommissionMinted,
 } from "../src/mappings/TraderPool";
 import { getTraderPool } from "../src/entities/trader-pool/TraderPool";
-import { getFeeHistory } from "../src/entities/trader-pool/history/FeeHistory";
+import { PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
+
+function createExchanged(
+  user: Address,
+  fromToken: Address,
+  toToken: Address,
+  fromVolume: BigInt,
+  toVolume: BigInt,
+  sender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): Exchanged {
+  let event = changetype<Exchanged>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("user", ethereum.Value.fromAddress(user)));
+  event.parameters.push(new ethereum.EventParam("fromToken", ethereum.Value.fromAddress(fromToken)));
+  event.parameters.push(new ethereum.EventParam("toToken", ethereum.Value.fromAddress(toToken)));
+  event.parameters.push(new ethereum.EventParam("fromVolume", ethereum.Value.fromUnsignedBigInt(fromVolume)));
+  event.parameters.push(new ethereum.EventParam("toToken", ethereum.Value.fromUnsignedBigInt(toVolume)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = sender;
+
+  return event;
+}
+
+function createClosed(
+  position: Address,
+  sender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): PositionClosed {
+  let event = changetype<PositionClosed>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("position", ethereum.Value.fromAddress(position)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = sender;
+
+  return event;
+}
 
 function createInvestorAdded(
   investor: Address,
@@ -123,8 +180,23 @@ function createModifiedPrivateInvestors(
 const sender = Address.fromString("0x86e98f7d84603AEb97cd1c89A80A9e914f181679");
 const block = getBlock(BigInt.fromI32(1), BigInt.fromI32(1));
 const tx = getTransaction(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromI32(1))));
+const baseToken = Address.fromString("0x86e98f7d84603AEb97cd1c89A80A9e914f181675");
+const expectedUSD = BigInt.fromI32(10).pow(18);
 
 describe("TraderPool", () => {
+  beforeAll(() => {
+    createMockedFunction(
+      Address.fromString(PRICE_FEED_ADDRESS),
+      "getNormalizedPriceOutUSD",
+      "getNormalizedPriceOutUSD(address,uint256):(uint256,address[])"
+    )
+      .withArgs([
+        ethereum.Value.fromAddress(Address.fromString("0x86e98f7d84603aeb97cd1c89a80a9e914f181675")),
+        ethereum.Value.fromUnsignedBigInt(expectedUSD),
+      ])
+      .returns([ethereum.Value.fromUnsignedBigInt(expectedUSD), ethereum.Value.fromAddressArray([sender, sender])]);
+  });
+
   afterEach(() => {
     clearStore();
   });
@@ -204,5 +276,89 @@ describe("TraderPool", () => {
       "privateInvestors",
       "[" + Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679").toHexString() + "]"
     );
+  });
+
+  test("should handle Exchange event", () => {
+    getTraderPool(
+      sender,
+      "BASIC_TRADER_POOL",
+      baseToken,
+      "tiker",
+      "name",
+      "url",
+      block.timestamp,
+      block.number,
+      Address.zero(),
+      BigInt.fromI32(30)
+    ).save();
+
+    let user = Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670");
+    let fromToken = baseToken;
+    let toToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181979");
+    let fromVolume = BigInt.fromI32(10).pow(18);
+    let toVolume = BigInt.fromI32(10).pow(19);
+
+    let event = createExchanged(user, fromToken, toToken, fromVolume, toVolume, sender, block, tx);
+
+    onExchange(event);
+
+    assert.fieldEquals("Exchange", tx.hash.toHexString() + "_0", "fromToken", fromToken.toHexString());
+    assert.fieldEquals("Exchange", tx.hash.toHexString() + "_0", "toToken", toToken.toHexString());
+    assert.fieldEquals("Exchange", tx.hash.toHexString() + "_0", "fromVolume", fromVolume.toString());
+    assert.fieldEquals("Exchange", tx.hash.toHexString() + "_0", "toVolume", toVolume.toString());
+    assert.fieldEquals("Exchange", tx.hash.toHexString() + "_0", "usdVolume", expectedUSD.toString());
+    assert.fieldEquals("Exchange", tx.hash.toHexString() + "_0", "opening", "true");
+
+    assert.fieldEquals(
+      "Position",
+      sender.toHexString() + toToken.toHexString() + "0",
+      "totalPositionOpenVolume",
+      toVolume.toString()
+    );
+    assert.fieldEquals(
+      "Position",
+      sender.toHexString() + toToken.toHexString() + "0",
+      "totalBaseOpenVolume",
+      fromVolume.toString()
+    );
+  });
+
+  test("should handle PositionClosed event", () => {
+    getTraderPool(
+      sender,
+      "BASIC_TRADER_POOL",
+      baseToken,
+      "tiker",
+      "name",
+      "url",
+      block.timestamp,
+      block.number,
+      Address.zero(),
+      BigInt.fromI32(30)
+    ).save();
+
+    let user = Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670");
+    let fromToken = baseToken;
+    let toToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181979");
+    let fromVolume = BigInt.fromI32(10).pow(18);
+    let toVolume = BigInt.fromI32(10).pow(19);
+
+    let exchangeEvent = createExchanged(user, fromToken, toToken, fromVolume, toVolume, sender, block, tx);
+
+    onExchange(exchangeEvent);
+
+    let nextBlock = getNextBlock(block);
+    let nextTx = getNextTx(tx);
+
+    let event = createClosed(toToken, sender, nextBlock, nextTx);
+
+    onClose(event);
+
+    assert.fieldEquals("Position", sender.toHexString() + toToken.toHexString() + "0", "closed", "true");
+    assert.fieldEquals("Position", sender.toHexString() + toToken.toHexString() + "0", "liveTime", "1");
+
+    assert.fieldEquals("TraderPool", sender.toHexString(), "averagePositionTime", "1");
+    assert.fieldEquals("TraderPool", sender.toHexString(), "totalClosedPositions", "1");
+    assert.fieldEquals("TraderPool", sender.toHexString(), "maxLoss", "0");
   });
 });

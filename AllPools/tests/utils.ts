@@ -69,5 +69,5 @@ export function getNextTx(prevTx: ethereum.Transaction): ethereum.Transaction {
 }
 
 function nextHash(prevHash: Bytes): Bytes {
-  return <Bytes>Bytes.fromU64(prevHash.toU64() + 1);
+  return Bytes.fromI32(prevHash.toI32() + 1);
 }
