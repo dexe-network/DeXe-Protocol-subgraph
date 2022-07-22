@@ -283,7 +283,7 @@ describe("TraderPool", () => {
       sender,
       "BASIC_TRADER_POOL",
       baseToken,
-      "tiker",
+      "Ticker",
       "name",
       "url",
       block.timestamp,
