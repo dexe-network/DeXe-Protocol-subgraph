@@ -48,7 +48,13 @@ describe("UserRegistry", () => {
 
     onAgreed(event);
 
-    assertTransaction(tx.hash, event.params.user, block, TransactionType.USER_AGREED_TO_PRIVACY_POLICY);
+    assertTransaction(
+      tx.hash,
+      event.params.user,
+      block,
+      "[" + TransactionType.USER_AGREED_TO_PRIVACY_POLICY.toString() + "]",
+      BigInt.fromI32(1)
+    );
   });
 
   test("should handle UpdatedProfile event", () => {
@@ -59,6 +65,16 @@ describe("UserRegistry", () => {
 
     onUpdatedProfile(event);
 
-    assertTransaction(tx.hash, event.params.user, block, TransactionType.UPDATED_USER_CREDENTIALS);
+    assertTransaction(
+      tx.hash,
+      event.params.user,
+      block,
+      "[" +
+        TransactionType.USER_AGREED_TO_PRIVACY_POLICY.toString() +
+        ", " +
+        TransactionType.UPDATED_USER_CREDENTIALS.toString() +
+        "]",
+      BigInt.fromI32(2)
+    );
   });
 });

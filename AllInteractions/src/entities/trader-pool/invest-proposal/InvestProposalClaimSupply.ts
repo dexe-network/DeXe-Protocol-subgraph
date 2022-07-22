@@ -6,12 +6,14 @@ export function getInvestProposalClaimOrSupply(
   pool: Bytes,
   proposalId: BigInt,
   tokens: Array<Bytes>,
-  amounts: Array<BigInt>
+  amounts: Array<BigInt>,
+  count: BigInt
 ): InvestProposalClaimOrSupply {
-  let claimSupply = InvestProposalClaimOrSupply.load(hash);
+  let id = hash.concatI32(count.toI32());
+  let claimSupply = InvestProposalClaimOrSupply.load(id);
 
   if (claimSupply == null) {
-    claimSupply = new InvestProposalClaimOrSupply(hash);
+    claimSupply = new InvestProposalClaimOrSupply(id);
 
     claimSupply.pool = pool;
     claimSupply.proposalId = proposalId;

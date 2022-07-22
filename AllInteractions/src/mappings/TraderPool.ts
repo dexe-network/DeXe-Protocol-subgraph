@@ -17,6 +17,7 @@ import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTy
 import { getOnlyPool } from "../entities/transaction/OnlyPool";
 import { getProposalVest } from "../entities/trader-pool/risky-proposal/ProposalVest";
 import { getGetPerfomaneFee } from "../entities/transaction/GetPerfomanceFee";
+import { extendArray } from "../helpers/ArrayHelper";
 
 export function onExchange(event: Exchanged): void {
   let transaction = getTransaction(
@@ -31,10 +32,12 @@ export function onExchange(event: Exchanged): void {
     event.params.fromToken,
     event.params.toToken,
     event.params.fromVolume,
-    event.params.toVolume
+    event.params.toVolume,
+    transaction.interactionsCount
   );
 
-  transaction.type = getEnumBigInt(TransactionType.SWAP);
+  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.SWAP)]);
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   exchange.transaction = transaction.id;
 
   transaction.save();
@@ -54,7 +57,8 @@ export function onInvest(event: Invested): void {
     event.params.receivedLP,
     event.transaction.hash,
     getEnumBigInt(TransactionType.INVEST),
-    event.address
+    event.address,
+    transaction.interactionsCount
   );
 }
 
@@ -71,7 +75,8 @@ export function onDivest(event: Divested): void {
     event.params.divestedLP,
     event.transaction.hash,
     getEnumBigInt(TransactionType.DIVEST),
-    event.address
+    event.address,
+    transaction.interactionsCount
   );
 }
 
@@ -83,11 +88,11 @@ export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
     event.params.sender
   );
 
-  let onlyPool = getOnlyPool(event.transaction.hash, event.address);
+  let onlyPool = getOnlyPool(event.transaction.hash, event.address, transaction.interactionsCount);
 
   onlyPool.transaction = transaction.id;
-  transaction.type = getEnumBigInt(TransactionType.POOL_EDIT);
-
+  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.POOL_EDIT)]);
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   transaction.save();
   onlyPool.save();
 }
@@ -105,11 +110,12 @@ export function onProposalDivest(event: ProposalDivested): void {
     event.address,
     event.params.proposalId,
     event.params.receivedBase,
-    event.params.divestedLP2
+    event.params.divestedLP2,
+    transaction.interactionsCount
   );
   proposalVest.transaction = transaction.id;
-  transaction.type = getEnumBigInt(TransactionType.RISKY_PROPOSAL_DIVEST);
-
+  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.RISKY_PROPOSAL_DIVEST)]);
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   proposalVest.save();
   transaction.save();
 }
@@ -122,11 +128,11 @@ export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): voi
     event.params.sender
   );
 
-  let onlyPool = getOnlyPool(event.transaction.hash, event.address);
+  let onlyPool = getOnlyPool(event.transaction.hash, event.address, transaction.interactionsCount);
 
   onlyPool.transaction = transaction.id;
-  transaction.type = getEnumBigInt(TransactionType.POOL_UPDATE_INVESTORS);
-
+  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.POOL_UPDATE_INVESTORS)]);
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   transaction.save();
   onlyPool.save();
 }
@@ -139,11 +145,11 @@ export function onModifiedAdmins(event: ModifiedAdmins): void {
     event.params.sender
   );
 
-  let onlyPool = getOnlyPool(event.transaction.hash, event.address);
+  let onlyPool = getOnlyPool(event.transaction.hash, event.address, transaction.interactionsCount);
 
   onlyPool.transaction = transaction.id;
-  transaction.type = getEnumBigInt(TransactionType.POOL_UPDATE_MANAGERS);
-
+  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.POOL_UPDATE_MANAGERS)]);
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   transaction.save();
   onlyPool.save();
 }
@@ -159,12 +165,13 @@ export function onCommissionClaimed(event: CommissionClaimed): void {
   let perfomanceFee = getGetPerfomaneFee(
     event.transaction.hash,
     event.params.traderBaseClaimed,
-    event.params.traderLpClaimed
+    event.params.traderLpClaimed,
+    transaction.interactionsCount
   );
 
   perfomanceFee.transaction = transaction.id;
-  transaction.type = getEnumBigInt(TransactionType.TRADER_GET_PERFOMANCE_FEE);
-
+  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.TRADER_GET_PERFOMANCE_FEE)]);
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   transaction.save();
   perfomanceFee.save();
 }
@@ -175,11 +182,13 @@ function setupVest(
   lpAmount: BigInt,
   hash: Bytes,
   type: BigInt,
-  pool: Address
+  pool: Address,
+  count: BigInt
 ): void {
-  let vest = getVest(hash, baseAmount, lpAmount, pool);
+  let vest = getVest(hash, baseAmount, lpAmount, pool, count);
 
-  transaction.type = type;
+  transaction.type = extendArray<BigInt>(transaction.type, [type]);
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   vest.transaction = transaction.id;
 
   transaction.save();

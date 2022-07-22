@@ -6,12 +6,14 @@ export function getProposalVest(
   pool: Bytes,
   proposalId: BigInt,
   baseAmount: BigInt,
-  lp2Amount: BigInt
+  lp2Amount: BigInt,
+  count: BigInt
 ): ProposalVest {
-  let vest = ProposalVest.load(hash);
+  let id = hash.concatI32(count.toI32());
+  let vest = ProposalVest.load(id);
 
   if (vest == null) {
-    vest = new ProposalVest(hash);
+    vest = new ProposalVest(id);
     vest.pool = pool;
     vest.proposalId = proposalId;
     vest.baseAmount = baseAmount;

@@ -70,10 +70,16 @@ describe("Insurance", () => {
 
     onDeposit(event);
 
-    assert.fieldEquals("InsuranceStake", tx.hash.toHexString(), "amount", expectedAmount.toString());
-    assert.fieldEquals("InsuranceStake", tx.hash.toHexString(), "transaction", tx.hash.toHexString());
+    assert.fieldEquals("InsuranceStake", tx.hash.concatI32(0).toHexString(), "amount", expectedAmount.toString());
+    assert.fieldEquals("InsuranceStake", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(tx.hash, event.params.investor, block, TransactionType.INSURANCE_STAKE);
+    assertTransaction(
+      tx.hash,
+      event.params.investor,
+      block,
+      "[" + TransactionType.INSURANCE_STAKE.toString() + "]",
+      BigInt.fromI32(1)
+    );
   });
 
   test("should handle withdraw event", () => {
@@ -84,10 +90,16 @@ describe("Insurance", () => {
 
     onWithdraw(event);
 
-    assert.fieldEquals("InsuranceStake", tx.hash.toHexString(), "amount", expectedAmount.toString());
-    assert.fieldEquals("InsuranceStake", tx.hash.toHexString(), "transaction", tx.hash.toHexString());
+    assert.fieldEquals("InsuranceStake", tx.hash.concatI32(0).toHexString(), "amount", expectedAmount.toString());
+    assert.fieldEquals("InsuranceStake", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(tx.hash, event.params.investor, block, TransactionType.INSURANCE_UNSTAKE);
+    assertTransaction(
+      tx.hash,
+      event.params.investor,
+      block,
+      "[" + TransactionType.INSURANCE_UNSTAKE.toString() + "]",
+      BigInt.fromI32(1)
+    );
   });
 
   test("should handle proposeClaim event", () => {
@@ -96,6 +108,12 @@ describe("Insurance", () => {
 
     onProposedClaim(event);
 
-    assertTransaction(tx.hash, event.params.sender, block, TransactionType.INSURANCE_REGISTER_PROPOSAL_CLAIM);
+    assertTransaction(
+      tx.hash,
+      event.params.sender,
+      block,
+      "[" + TransactionType.INSURANCE_REGISTER_PROPOSAL_CLAIM.toString() + "]",
+      BigInt.fromI32(1)
+    );
   });
 });

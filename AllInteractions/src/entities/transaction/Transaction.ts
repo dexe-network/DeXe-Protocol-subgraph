@@ -8,8 +8,9 @@ export function getTransaction(hash: Bytes, block: BigInt, timestamp: BigInt, in
     transaction = new Transaction(hash);
     transaction.block = block;
     transaction.timestamp = timestamp;
-    transaction.type = BigInt.zero();
+    transaction.type = new Array<BigInt>();
     transaction.user = investor;
+    transaction.interactionsCount = BigInt.zero();
   }
 
   return transaction;

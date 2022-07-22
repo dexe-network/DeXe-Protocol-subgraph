@@ -8,12 +8,14 @@ export function getRiskyProposalExchange(
   fromToken: Address,
   toToken: Address,
   fromVolume: BigInt,
-  toVolume: BigInt
+  toVolume: BigInt,
+  count: BigInt
 ): RiskyProposalExchange {
-  let exchange = RiskyProposalExchange.load(hash);
+  let id = hash.concatI32(count.toI32());
+  let exchange = RiskyProposalExchange.load(id);
 
   if (exchange == null) {
-    exchange = new RiskyProposalExchange(hash);
+    exchange = new RiskyProposalExchange(id);
 
     exchange.pool = pool;
     exchange.proposalId = proposalId;

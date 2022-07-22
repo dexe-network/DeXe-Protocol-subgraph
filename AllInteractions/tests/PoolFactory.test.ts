@@ -72,10 +72,16 @@ describe("PoolFactory", () => {
 
     onDeployed(event);
 
-    assert.fieldEquals("PoolCreate", tx.hash.toHexString(), "pool", expectedAt.toHexString());
-    assert.fieldEquals("PoolCreate", tx.hash.toHexString(), "symbol", expectedSymbol);
-    assert.fieldEquals("PoolCreate", tx.hash.toHexString(), "transaction", tx.hash.toHexString());
+    assert.fieldEquals("PoolCreate", tx.hash.concatI32(0).toHexString(), "pool", expectedAt.toHexString());
+    assert.fieldEquals("PoolCreate", tx.hash.concatI32(0).toHexString(), "symbol", expectedSymbol);
+    assert.fieldEquals("PoolCreate", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(tx.hash, event.params.trader, block, TransactionType.POOL_CREATE);
+    assertTransaction(
+      tx.hash,
+      event.params.trader,
+      block,
+      "[" + TransactionType.POOL_CREATE.toString() + "]",
+      BigInt.fromI32(1)
+    );
   });
 });
