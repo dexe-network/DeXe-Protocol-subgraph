@@ -193,12 +193,12 @@ describe("TraderPoolRiskyProposal", () => {
 
     onProposalExchange(event);
 
-    assert.fieldEquals("ProposalExchange", tx.hash.toHexString(), "fromToken", fromToken.toHexString());
-    assert.fieldEquals("ProposalExchange", tx.hash.toHexString(), "toToken", toToken.toHexString());
-    assert.fieldEquals("ProposalExchange", tx.hash.toHexString(), "fromVolume", fromVolume.toString());
-    assert.fieldEquals("ProposalExchange", tx.hash.toHexString(), "toVolume", toVolume.toString());
-    assert.fieldEquals("ProposalExchange", tx.hash.toHexString(), "usdVolume", expectedUSD.toString());
-    assert.fieldEquals("ProposalExchange", tx.hash.toHexString(), "timestamp", block.timestamp.toString());
+    assert.fieldEquals("ProposalExchange", tx.hash.concatI32(0).toHexString(), "fromToken", fromToken.toHexString());
+    assert.fieldEquals("ProposalExchange", tx.hash.concatI32(0).toHexString(), "toToken", toToken.toHexString());
+    assert.fieldEquals("ProposalExchange", tx.hash.concatI32(0).toHexString(), "fromVolume", fromVolume.toString());
+    assert.fieldEquals("ProposalExchange", tx.hash.concatI32(0).toHexString(), "toVolume", toVolume.toString());
+    assert.fieldEquals("ProposalExchange", tx.hash.concatI32(0).toHexString(), "usdVolume", expectedUSD.toString());
+    assert.fieldEquals("ProposalExchange", tx.hash.concatI32(0).toHexString(), "timestamp", block.timestamp.toString());
 
     assert.fieldEquals(
       "ProposalPosition",
@@ -218,6 +218,7 @@ describe("TraderPoolRiskyProposal", () => {
       "totalUSDCloseVolume",
       expectedUSD.toString()
     );
+    assert.fieldEquals("InteractionCount", tx.hash.toHexString(), "count", "1");
   });
 
   test("should handle ProposalPositionClosed event", () => {

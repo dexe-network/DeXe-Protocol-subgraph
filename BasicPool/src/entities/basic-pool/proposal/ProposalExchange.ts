@@ -1,5 +1,6 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { ProposalExchange } from "../../../../generated/schema";
+import { getInteractionCount } from "../../global/InteractionCount";
 
 export function getProposalExchange(
   hash: Bytes,
@@ -10,10 +11,12 @@ export function getProposalExchange(
   usdVolume: BigInt = BigInt.zero(),
   timestamp: BigInt = BigInt.zero()
 ): ProposalExchange {
-  let exchange = ProposalExchange.load(hash);
+  let counter = getInteractionCount(hash);
+  let id = hash.concatI32(counter.count.toI32());
+  let exchange = ProposalExchange.load(id);
 
   if (exchange == null) {
-    exchange = new ProposalExchange(hash);
+    exchange = new ProposalExchange(id);
 
     exchange.fromToken = fromToken;
     exchange.toToken = toToken;
@@ -22,6 +25,9 @@ export function getProposalExchange(
     exchange.usdVolume = usdVolume;
     exchange.day = "";
     exchange.timestamp = timestamp;
+
+    counter.count = counter.count.plus(BigInt.fromI32(1));
+    counter.save();
   }
 
   return exchange;

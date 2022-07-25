@@ -111,3 +111,10 @@ type ProposalPosition @entity {
 
   proposal: Proposal!
 }
+
+# @notice The entity counts interactions in single tx
+# @param count the counter of interactions in single tx
+type InteractionCount @entity {
+  id: Bytes!
+  count: BigInt!
+}
