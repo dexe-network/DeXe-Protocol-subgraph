@@ -306,7 +306,6 @@ function exchangeSetup(
     trade = getExchange(
       event.transaction.hash,
       position.id,
-      pool,
       Address.fromString(pool.baseToken.toHexString()),
       event.params.toToken,
       volume,
@@ -321,7 +320,6 @@ function exchangeSetup(
     trade = getExchange(
       event.transaction.hash,
       position.id,
-      pool,
       event.params.fromToken,
       Address.fromString(pool.baseToken.toHexString()),
       event.params.fromVolume,
@@ -342,9 +340,6 @@ function exchangeSetup(
   trade.day = history.id;
   history.save();
   trade.save();
-
-  pool.totalTrades = pool.totalTrades.plus(BigInt.fromI32(1));
-  pool.interactionCount = pool.interactionCount.plus(BigInt.fromI32(1));
 
   position.save();
 }

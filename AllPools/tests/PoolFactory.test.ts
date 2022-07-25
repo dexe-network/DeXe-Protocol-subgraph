@@ -93,6 +93,5 @@ describe("PoolFactory", () => {
     assert.fieldEquals("TraderPool", expectedAt.toHexString(), "privateInvestorsCount", BigInt.zero().toString());
     assert.fieldEquals("TraderPool", expectedAt.toHexString(), "orderSize", BigInt.zero().toString());
     assert.fieldEquals("TraderPool", expectedAt.toHexString(), "priceHistoryCount", BigInt.zero().toString());
-    assert.fieldEquals("TraderPool", expectedAt.toHexString(), "interactionCount", BigInt.zero().toString());
   });
 });

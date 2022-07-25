@@ -48,8 +48,6 @@ export function getTraderPool(
     traderPool.commission = commission;
 
     traderPool.orderSize = BigInt.zero();
-
-    traderPool.interactionCount = BigInt.zero();
   }
 
   return traderPool;

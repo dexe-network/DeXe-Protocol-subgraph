@@ -302,12 +302,12 @@ describe("TraderPool", () => {
 
     onExchange(event);
 
-    assert.fieldEquals("Exchange", tx.hash.toHexString() + "0" + "_0", "fromToken", fromToken.toHexString());
-    assert.fieldEquals("Exchange", tx.hash.toHexString() + "0" + "_0", "toToken", toToken.toHexString());
-    assert.fieldEquals("Exchange", tx.hash.toHexString() + "0" + "_0", "fromVolume", fromVolume.toString());
-    assert.fieldEquals("Exchange", tx.hash.toHexString() + "0" + "_0", "toVolume", toVolume.toString());
-    assert.fieldEquals("Exchange", tx.hash.toHexString() + "0" + "_0", "usdVolume", expectedUSD.toString());
-    assert.fieldEquals("Exchange", tx.hash.toHexString() + "0" + "_0", "opening", "true");
+    assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString() + "_0", "fromToken", fromToken.toHexString());
+    assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString() + "_0", "toToken", toToken.toHexString());
+    assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString() + "_0", "fromVolume", fromVolume.toString());
+    assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString() + "_0", "toVolume", toVolume.toString());
+    assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString() + "_0", "usdVolume", expectedUSD.toString());
+    assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString() + "_0", "opening", "true");
 
     assert.fieldEquals(
       "Position",
@@ -321,7 +321,7 @@ describe("TraderPool", () => {
       "totalBaseOpenVolume",
       fromVolume.toString()
     );
-    assert.fieldEquals("TraderPool", sender.toHexString(), "interactionCount", "1");
+    assert.fieldEquals("InteractionCount", tx.hash.toHexString(), "count", "1");
   });
 
   test("should handle PositionClosed event", () => {

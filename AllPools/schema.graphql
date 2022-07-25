@@ -60,8 +60,6 @@ type TraderPool @entity {
 
   orderSize: BigInt!
 
-  interactionCount: BigInt!
-
   positions: [Position!]! @derivedFrom(field: "traderPool")
 
   priceHistory: [TraderPoolPriceHistory!]! @derivedFrom(field: "pool")
@@ -205,4 +203,11 @@ type FeeHistory @entity {
   fundProfit: BigInt!
   perfomanceFee: BigInt!
   prevHistory: FeeHistory!
+}
+
+# @notice The entity counts interactions in single tx
+# @param count the counter of interactions in single tx
+type InteractionCount @entity {
+  id: Bytes!
+  count: BigInt!
 }
