@@ -192,8 +192,8 @@ describe("TraderPool", () => {
 
     onInvest(event);
 
-    assert.fieldEquals("Vest", tx.hash.toHexString(), "volumeBase", investedBase.toString());
-    assert.fieldEquals("Vest", tx.hash.toHexString(), "volumeLP", receivedLP.toString());
+    assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "volumeBase", investedBase.toString());
+    assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "volumeLP", receivedLP.toString());
 
     assert.fieldEquals(
       "InvestorPoolPosition",
@@ -224,8 +224,8 @@ describe("TraderPool", () => {
 
     onDivest(event);
 
-    assert.fieldEquals("Vest", tx.hash.toHexString(), "volumeBase", receivedBase.toString());
-    assert.fieldEquals("Vest", tx.hash.toHexString(), "volumeLP", divestedLP.toString());
+    assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "volumeBase", receivedBase.toString());
+    assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "volumeLP", divestedLP.toString());
 
     assert.fieldEquals(
       "InvestorPoolPosition",
@@ -259,12 +259,12 @@ describe("TraderPool", () => {
     onProposalDivest(event);
 
     let proposalEntityId = Address.zero().toHexString() + user.toHexString() + proposalId.toString() + "_" + "0";
-    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "baseVolume", baseAmount.toString());
-    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "lp2Volume", lp2Amount.toString());
-    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "lpVolume", lpAmount.toString());
-    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "usdVolume", expectedUSD.toString());
-    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "isInvest", "false");
-    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "proposal", proposalEntityId);
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "baseVolume", baseAmount.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "lp2Volume", lp2Amount.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "lpVolume", lpAmount.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "usdVolume", expectedUSD.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "isInvest", "false");
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "proposal", proposalEntityId);
 
     assert.fieldEquals("ProposalPosition", proposalEntityId, "totalBaseCloseVolume", baseAmount.toString());
     assert.fieldEquals("ProposalPosition", proposalEntityId, "totalLPCloseVolume", lpAmount.toString());

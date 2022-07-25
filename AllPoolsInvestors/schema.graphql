@@ -189,3 +189,10 @@ type ProposalVest @entity(immutable: true) {
 
   proposal: ProposalPosition!
 }
+
+# @notice The entity counts interactions in single tx
+# @param count the counter of interactions in single tx
+type InteractionCount @entity {
+  id: Bytes!
+  count: BigInt!
+}
