@@ -213,6 +213,8 @@ describe("TraderPool", () => {
       "totalUSDInvestVolume",
       expectedUSD.toString()
     );
+
+    assert.fieldEquals("InteractionCount", tx.hash.toHexString(), "count", "1");
   });
 
   test("should handle divested event", () => {
@@ -245,6 +247,8 @@ describe("TraderPool", () => {
       "totalUSDDivestVolume",
       expectedUSD.toString()
     );
+
+    assert.fieldEquals("InteractionCount", tx.hash.toHexString(), "count", "1");
   });
 
   test("should handle ProposalDivested event", () => {
@@ -270,6 +274,8 @@ describe("TraderPool", () => {
     assert.fieldEquals("ProposalPosition", proposalEntityId, "totalLPCloseVolume", lpAmount.toString());
     assert.fieldEquals("ProposalPosition", proposalEntityId, "totalLP2CloseVolume", lp2Amount.toString());
     assert.fieldEquals("ProposalPosition", proposalEntityId, "totalUSDCloseVolume", expectedUSD.toString());
+
+    assert.fieldEquals("InteractionCount", tx.hash.toHexString(), "count", "1");
   });
 
   test("should handle ModifiedPrivateInvestors event", () => {
