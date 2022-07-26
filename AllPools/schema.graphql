@@ -134,7 +134,7 @@ type Position @entity {
 }
 
 # @notice The entity holds information about exchange in pool's position
-# @param id forms from transaction hash + suffix, _0 - single exchange, _1 - first in pair, _2 - second in pair
+# @param id forms from transaction hash + interactionCount + suffix, _0 - single exchange, _1 - first in pair, _2 - second in pair
 # @param hash the transaction hash
 # @param timestamp the block timestamp
 # @param fromToken the address of in token
@@ -146,7 +146,7 @@ type Position @entity {
 # @param opening the boolean flag, if true exchange opening position, else - closing
 # @param day the history id (pool address + timestamp / 86400), for reverse lookup
 type Exchange @entity(immutable: true) {
-  id: ID! # tx hash + suffix
+  id: ID! # tx hash + interactionCount + suffix
   hash: Bytes! # tx hash
   timestamp: BigInt!
   fromToken: Bytes!
@@ -203,4 +203,11 @@ type FeeHistory @entity {
   fundProfit: BigInt!
   perfomanceFee: BigInt!
   prevHistory: FeeHistory!
+}
+
+# @notice The entity counts interactions in single tx
+# @param count the counter of interactions in single tx
+type InteractionCount @entity {
+  id: Bytes!
+  count: BigInt!
 }

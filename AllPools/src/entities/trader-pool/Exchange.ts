@@ -1,5 +1,7 @@
 import { BigInt, Address, Bytes } from "@graphprotocol/graph-ts";
-import { Exchange } from "../../../generated/schema";
+import { Exchange, TraderPool } from "../../../generated/schema";
+import { increaseCounter } from "../../helpers/IncreaseCounter";
+import { getInteractionCount } from "../global/InteractionCount";
 
 export function getExchange(
   txHash: Bytes,
@@ -13,7 +15,9 @@ export function getExchange(
   suffix: string = "_0",
   timestamp: BigInt = BigInt.zero()
 ): Exchange {
-  let id = txHash.toHexString() + suffix;
+  let counter = getInteractionCount(txHash);
+
+  let id = txHash.concatI32(counter.count.toI32()).toHexString() + suffix;
   let trade = Exchange.load(id);
 
   if (trade == null) {
@@ -28,6 +32,8 @@ export function getExchange(
     trade.opening = opening;
     trade.day = "";
     trade.timestamp = timestamp;
+
+    increaseCounter(counter);
   }
 
   return trade;
