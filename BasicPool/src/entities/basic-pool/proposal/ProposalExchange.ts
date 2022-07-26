@@ -1,5 +1,6 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { ProposalExchange } from "../../../../generated/schema";
+import { increaseCounter } from "../../../helpers/IncreaseCounter";
 import { getInteractionCount } from "../../global/InteractionCount";
 
 export function getProposalExchange(
@@ -27,8 +28,7 @@ export function getProposalExchange(
     exchange.day = "";
     exchange.timestamp = timestamp;
 
-    counter.count = counter.count.plus(BigInt.fromI32(1));
-    counter.save();
+    increaseCounter(counter);
   }
 
   return exchange;
