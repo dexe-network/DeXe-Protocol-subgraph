@@ -17,6 +17,7 @@ export function getProposalVest(
 
   if (vest == null) {
     vest = new ProposalVest(hash.concatI32(counter.count.toI32()));
+    vest.hash = hash;
     vest.isInvest = isInvest;
     vest.baseVolume = volumeBase;
     vest.lpVolume = volumeLP;

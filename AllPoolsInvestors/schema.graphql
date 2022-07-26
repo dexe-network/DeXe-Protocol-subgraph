@@ -101,6 +101,7 @@ type InvestorPoolPosition @entity {
 # @param volumeUSD the volume of operaion in USD
 type Vest @entity(immutable: true) {
   id: Bytes!
+  hash: Bytes!
   isInvest: Boolean!
   timestamp: BigInt!
   investorPoolPosition: InvestorPoolPosition!
@@ -179,6 +180,7 @@ type ProposalPosition @entity {
 # @param proposal the proposal entity
 type ProposalVest @entity(immutable: true) {
   id: Bytes! # tx hash
+  hash: Bytes!
   isInvest: Boolean!
   timestamp: BigInt!
 

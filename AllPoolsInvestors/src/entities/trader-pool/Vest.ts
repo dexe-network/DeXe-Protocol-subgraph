@@ -16,6 +16,7 @@ export function getVest(
 
   if (vest == null) {
     vest = new Vest(hash.concatI32(counter.count.toI32()));
+    vest.hash = hash;
     vest.investorPoolPosition = investorPoolPosition.id;
     vest.isInvest = isInvest;
     vest.volumeBase = volumeBase;
