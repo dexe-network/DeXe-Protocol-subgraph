@@ -341,6 +341,8 @@ function exchangeSetup(
   history.save();
   trade.save();
 
+  pool.totalTrades = pool.totalTrades.plus(BigInt.fromI32(1));
+
   position.save();
 }
 

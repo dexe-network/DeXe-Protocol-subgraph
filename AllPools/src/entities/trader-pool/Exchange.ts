@@ -1,5 +1,6 @@
 import { BigInt, Address, Bytes } from "@graphprotocol/graph-ts";
 import { Exchange, TraderPool } from "../../../generated/schema";
+import { increaseCounter } from "../../helpers/IncreaseCounter";
 import { getInteractionCount } from "../global/InteractionCount";
 
 export function getExchange(
@@ -32,8 +33,7 @@ export function getExchange(
     trade.day = "";
     trade.timestamp = timestamp;
 
-    counter.count = counter.count.plus(BigInt.fromI32(1));
-    counter.save();
+    increaseCounter(counter);
   }
 
   return trade;
