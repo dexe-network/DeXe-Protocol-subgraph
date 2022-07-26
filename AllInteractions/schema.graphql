@@ -26,7 +26,7 @@ type ProposalContract @entity(immutable: true) {
 # @param type the number associated with enum of interactions type
 # @param user the address of sender
 # @param interactionsCount the interactions count
-type Transaction @entity(immutable: true) {
+type Transaction @entity {
   id: Bytes! # tx hash
   timestamp: BigInt!
   block: BigInt!
