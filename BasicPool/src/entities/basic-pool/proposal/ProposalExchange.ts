@@ -19,6 +19,7 @@ export function getProposalExchange(
     exchange = new ProposalExchange(id);
 
     exchange.fromToken = fromToken;
+    exchange.hash = hash;
     exchange.toToken = toToken;
     exchange.fromVolume = fromVolume;
     exchange.toVolume = toVolume;

@@ -57,6 +57,7 @@ type Proposal @entity {
 # @param day the history id (proposal id + timestamp / 86400), for reverse lookup
 type ProposalExchange @entity(immutable: true) {
   id: Bytes! # tx hash
+  hash: Bytes!
   timestamp: BigInt!
   fromToken: Bytes!
   toToken: Bytes!

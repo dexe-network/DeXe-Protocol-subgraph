@@ -199,6 +199,7 @@ describe("TraderPoolRiskyProposal", () => {
     assert.fieldEquals("ProposalExchange", tx.hash.concatI32(0).toHexString(), "toVolume", toVolume.toString());
     assert.fieldEquals("ProposalExchange", tx.hash.concatI32(0).toHexString(), "usdVolume", expectedUSD.toString());
     assert.fieldEquals("ProposalExchange", tx.hash.concatI32(0).toHexString(), "timestamp", block.timestamp.toString());
+    assert.fieldEquals("ProposalExchange", tx.hash.concatI32(0).toHexString(), "hash", tx.hash.toHexString());
 
     assert.fieldEquals(
       "ProposalPosition",
