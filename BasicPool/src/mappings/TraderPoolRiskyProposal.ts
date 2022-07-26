@@ -8,7 +8,7 @@ import {
   ProposalPositionClosed,
 } from "../../generated/templates/RiskyProposal/RiskyProposal";
 import { PriceFeed } from "../../generated/templates/RiskyProposal/PriceFeed";
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { getProposalContract } from "../entities/basic-pool/proposal/ProposalContract";
 import { getPositionOffset } from "../entities/global/PositionOffset";
@@ -117,10 +117,21 @@ export function onProposalActivePortfolioExchanged(event: ProposalActivePortfoli
 
 function getUSDPrice(token: Address, amount: BigInt): BigInt {
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-  let resp = pfPrototype.try_getNormalizedPriceInUSD(token, amount);
+
+  let resp = pfPrototype.try_getNormalizedPriceOutUSD(token, amount);
   if (resp.reverted) {
+    log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
+      token.toHexString(),
+      amount.toString(),
+    ]);
     return BigInt.zero();
   } else {
+    if (resp.value.value1.length == 0) {
+      log.warning("try_getNormalizedPriceOutUSD returned 0 length path. FromToken: {}, Amount:{}", [
+        token.toHexString(),
+        amount.toString(),
+      ]);
+    }
     return resp.value.value0;
   }
 }

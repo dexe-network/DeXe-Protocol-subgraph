@@ -2,3 +2,6 @@ node_modules
 package-lock.json
 generated/*
 build
+tests/.bin
+tests/.latest.json
+tests/.docker

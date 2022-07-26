@@ -14,9 +14,9 @@ export function getTraderPool(
     traderPool.proposalContract = proposalContract;
     traderPool.type = type;
     traderPool.token = baseToken;
-    traderPool.investors = new Array<string>();
+    traderPool.investors = new Array<Bytes>();
     traderPool.investorsCount = BigInt.zero();
-    traderPool.privateInvestors = new Array<string>();
+    traderPool.privateInvestors = new Array<Bytes>();
     traderPool.privateInvestorsCount = BigInt.zero();
   }
 

@@ -47,7 +47,8 @@ type Proposal @entity {
 }
 
 # @notice The entity holds information about exchange in proposal
-# @param id forms from transaction hash, useless
+# @param id forms from transaction hash + interactionCount
+# @param hash the tx hash
 # @param timestamp the block timestamp
 # @param fromToken the address of in token
 # @param toToken the address of out token
@@ -56,7 +57,8 @@ type Proposal @entity {
 # @param usdVolume the exchange volume in usd
 # @param day the history id (proposal id + timestamp / 86400), for reverse lookup
 type ProposalExchange @entity(immutable: true) {
-  id: Bytes! # tx hash
+  id: Bytes! # tx hash + interactionCount
+  hash: Bytes!
   timestamp: BigInt!
   fromToken: Bytes!
   toToken: Bytes!
@@ -89,7 +91,7 @@ type ProposalPositionOffset @entity {
 }
 
 # @notice entity holds information about proposal position
-# @param id forms from proposal address + proposal position + _ + proposal offset
+# @param id forms from proposal address + proposal id + _ + proposal offset
 # @param isClosed the boolean flag, if true -> position closed
 # @param totalBaseOpenVolume the total open volume of proposal in base token
 # @param totalBaseCloseVolume the total close volume of proposal in base token
@@ -99,7 +101,7 @@ type ProposalPositionOffset @entity {
 # @param totalUSDCloseVolume the total close volume of proposal in usd
 # @param proposal the proposal entity
 type ProposalPosition @entity {
-  id: ID! # proposal address + proposal position + _ + proposal offset
+  id: ID! # proposal address + proposal id + _ + proposal offset
   isClosed: Boolean
 
   totalBaseOpenVolume: BigInt!
@@ -110,4 +112,11 @@ type ProposalPosition @entity {
   totalUSDCloseVolume: BigInt!
 
   proposal: Proposal!
+}
+
+# @notice The entity counts interactions in single tx
+# @param count the counter of interactions in single tx
+type InteractionCount @entity {
+  id: Bytes!
+  count: BigInt!
 }

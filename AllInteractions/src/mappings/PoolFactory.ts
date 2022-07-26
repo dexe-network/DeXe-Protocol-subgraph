@@ -1,3 +1,4 @@
+import { BigInt } from "@graphprotocol/graph-ts";
 import { TraderPoolDeployed } from "../../generated/PoolFactory/PoolFactory";
 import { TraderPool, TraderPoolInvestProposal } from "../../generated/templates";
 import { TraderPoolRiskyProposal } from "../../generated/templates";
@@ -7,6 +8,7 @@ import { getPoolCreate } from "../entities/trader-pool/PoolCreate";
 import { getProposalContract } from "../entities/trader-pool/ProposalContract";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getTransaction } from "../entities/transaction/Transaction";
+import { extendArray } from "../helpers/ArrayHelper";
 
 export function onDeployed(event: TraderPoolDeployed): void {
   getTraderPool(event.params.at, event.params.proposalContract, event.params.trader).save();
@@ -26,9 +28,16 @@ export function onDeployed(event: TraderPoolDeployed): void {
     event.block.timestamp,
     event.params.trader
   );
-  let create = getPoolCreate(event.transaction.hash, event.address, event.params.symbol);
+  let create = getPoolCreate(
+    event.transaction.hash,
+    event.params.at,
+    event.params.symbol,
+    transaction.interactionsCount
+  );
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
-  transaction.type = getEnumBigInt(TransactionType.POOL_CREATE);
+  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.POOL_CREATE)]);
+
   create.transaction = transaction.id;
 
   transaction.save();

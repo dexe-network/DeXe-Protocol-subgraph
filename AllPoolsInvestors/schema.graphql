@@ -92,7 +92,8 @@ type InvestorPoolPosition @entity {
 }
 
 # @notice The entity holds information about invest and divest operations
-# @param id forms from tx hash
+# @param id forms from tx hash + interactionCounter
+# @param hash the tx hash
 # @param isInvest the bool flag, if true => invest
 # @param timestamp the timestamp of tx
 # @param investorPosition the id of investorPosition entity
@@ -100,7 +101,8 @@ type InvestorPoolPosition @entity {
 # @param volumeLP the volume of operaion in lp token
 # @param volumeUSD the volume of operaion in USD
 type Vest @entity(immutable: true) {
-  id: Bytes!
+  id: Bytes! # tx hash + interactionCounter
+  hash: Bytes!
   isInvest: Boolean!
   timestamp: BigInt!
   investorPoolPosition: InvestorPoolPosition!
@@ -169,7 +171,8 @@ type ProposalPosition @entity {
 }
 
 # @notice The entity holds information about invest/divest in proposal
-# @param id forms from tx hash
+# @param id forms from tx hash + interactionCounter
+# @param hash the tx hash
 # @param isInvest the booleand flag, if true -> invest
 # @param timestamp the timestamp of tx
 # @param baseVolume the volume of vest in base token
@@ -178,7 +181,8 @@ type ProposalPosition @entity {
 # @param usdVolume the volume of vest in usdVolume token
 # @param proposal the proposal entity
 type ProposalVest @entity(immutable: true) {
-  id: Bytes! # tx hash
+  id: Bytes! # tx hash + interactionCounter
+  hash: Bytes!
   isInvest: Boolean!
   timestamp: BigInt!
 
@@ -188,4 +192,11 @@ type ProposalVest @entity(immutable: true) {
   usdVolume: BigInt!
 
   proposal: ProposalPosition!
+}
+
+# @notice The entity counts interactions in single tx
+# @param count the counter of interactions in single tx
+type InteractionCount @entity {
+  id: Bytes!
+  count: BigInt!
 }

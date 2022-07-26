@@ -5,12 +5,14 @@ export function getRiskyProposalCreate(
   hash: Bytes,
   pool: Bytes,
   proposalId: BigInt,
-  token: Address
+  token: Address,
+  count: BigInt
 ): RiskyProposalCreate {
-  let riskyProposalCreate = RiskyProposalCreate.load(hash);
+  let id = hash.concatI32(count.toI32());
+  let riskyProposalCreate = RiskyProposalCreate.load(id);
 
   if (riskyProposalCreate == null) {
-    riskyProposalCreate = new RiskyProposalCreate(hash);
+    riskyProposalCreate = new RiskyProposalCreate(id);
 
     riskyProposalCreate.pool = pool;
     riskyProposalCreate.proposalId = proposalId;

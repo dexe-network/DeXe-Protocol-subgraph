@@ -25,13 +25,16 @@ type ProposalContract @entity(immutable: true) {
 # @param block the number of block
 # @param type the number associated with enum of interactions type
 # @param user the address of sender
-type Transaction @entity(immutable: true) {
+# @param interactionsCount the interactions count
+type Transaction @entity {
   id: Bytes! # tx hash
   timestamp: BigInt!
   block: BigInt!
-  type: BigInt!
+  type: [BigInt!]!
 
   user: Bytes!
+
+  interactionsCount: BigInt!
 
   exchange: [Exchange!]! @derivedFrom(field: "transaction")
   vest: [Vest!]! @derivedFrom(field: "transaction")
@@ -41,7 +44,7 @@ type Transaction @entity(immutable: true) {
 
   riskyProposalCreate: [RiskyProposalCreate!]! @derivedFrom(field: "transaction")
   riskyProposalExchange: [RiskyProposalExchange!]! @derivedFrom(field: "transaction")
-  riskyProposalVest: [RiskyProposalVest!]! @derivedFrom(field: "transaction")
+  riskyProposalVest: [ProposalVest!]! @derivedFrom(field: "transaction")
 
   investProposalClaimSupply: [InvestProposalClaimOrSupply!]! @derivedFrom(field: "transaction")
   investProposalCreate: [InvestProposalCreate!]! @derivedFrom(field: "transaction")
@@ -55,7 +58,7 @@ type Transaction @entity(immutable: true) {
 }
 
 # @notice The entity holds information about exchange
-# @param id forms from tx hash
+# @param id forms from tx hash + interactionCount
 # @param pool the address of pool
 # @param fromToken the address of from token
 # @param toToken the address of to token
@@ -63,7 +66,7 @@ type Transaction @entity(immutable: true) {
 # @param toVolume the volume of to token
 # @param transaction the transaction entity id
 type Exchange @entity(immutable: true) {
-  id: Bytes! # tx hash
+  id: Bytes! # tx hash + interactionCount
   pool: Bytes!
 
   fromToken: Bytes!
@@ -76,13 +79,13 @@ type Exchange @entity(immutable: true) {
 }
 
 # @notice The entity holds information about invest/divest in pool
-# @param id forms from tx hash
+# @param id forms from tx hash + interactionCount
 # @param pool the address of pool
 # @param baseAmount the amount in base token
 # @param lpAmount the amount in lp token
 # @param transaction the transaction entity id
 type Vest @entity(immutable: true) {
-  id: Bytes! # tx hash
+  id: Bytes! # tx hash + interactionCount
   pool: Bytes!
   baseAmount: BigInt!
   lpAmount: BigInt!
@@ -91,25 +94,25 @@ type Vest @entity(immutable: true) {
 }
 
 # @notice The entity holds information about pool creation
-# @param id forms from tx hash
+# @param id forms from tx hash + interactionCount
 # @param pool the address of pool
 # @param symbol the string with pool's symbol
 # @param transaction the transaction entity id
 type PoolCreate @entity(immutable: true) {
-  id: Bytes! # tx hash
+  id: Bytes! # tx hash + interactionCount
   pool: Bytes!
   symbol: String!
 
   transaction: Transaction!
 }
 # @notice The entity holds information about creation of risky proposal
-# @param id forms from tx hash
+# @param id forms from tx hash + interactionCount
 # @param pool the address of pool
 # @param proposalId the internal id of proposal
 # @param token the address of token
 # @param transaction the transaction entity id
 type RiskyProposalCreate @entity(immutable: true) {
-  id: Bytes! # tx hash
+  id: Bytes! # tx hash + interactionCount
   pool: Bytes!
   proposalId: BigInt!
   token: Bytes!
@@ -118,12 +121,12 @@ type RiskyProposalCreate @entity(immutable: true) {
 }
 
 # @notice The entity holds information about changes in pool
-# @param id forms from tx hash
+# @param id forms from tx hash + interactionCount
 # @param pool the address of pool
 # @param proposalId the internal id of proposal
 # @param transaction the transaction entity id
 type ProposalEdit @entity(immutable: true) {
-  id: Bytes! # tx hash
+  id: Bytes! # tx hash + interactionCount
   pool: Bytes!
   proposalId: BigInt!
 
@@ -131,14 +134,14 @@ type ProposalEdit @entity(immutable: true) {
 }
 
 # @notice The entity holds information about invest/divest in proposal
-# @param id forms from tx hash
+# @param id forms from tx hash + interactionCount
 # @param pool the address of pool
 # @param proposalId the internal id of proposal
 # @param baseAmount the amount in base token
 # @param lp2Amount the amount in lp2 token
 # @param transaction the transaction entity id
-type RiskyProposalVest @entity(immutable: true) {
-  id: Bytes! # tx hash
+type ProposalVest @entity(immutable: true) {
+  id: Bytes! # tx hash + interactionCount
   pool: Bytes!
   proposalId: BigInt!
 
@@ -149,7 +152,7 @@ type RiskyProposalVest @entity(immutable: true) {
 }
 
 # @notice The entity holds information about exchange in risky proposal
-# @param id forms from tx hash
+# @param id forms from tx hash + interactionCount
 # @param pool the address of pool
 # @param proposalId the internal id of proposal
 # @param fromToken the address of from token
@@ -158,7 +161,7 @@ type RiskyProposalVest @entity(immutable: true) {
 # @param toVolume the volume of to token
 # @param transaction the transaction entity id
 type RiskyProposalExchange @entity(immutable: true) {
-  id: Bytes! # tx hash
+  id: Bytes! # tx hash + interactionCount
   pool: Bytes!
   proposalId: BigInt!
 
@@ -172,12 +175,12 @@ type RiskyProposalExchange @entity(immutable: true) {
 }
 
 # @notice The entity holds information about creation of invest proposal
-# @param id forms from tx hash
+# @param id forms from tx hash + interactionCount
 # @param pool the address of pool
 # @param proposalId the internal id of proposal
 # @param transaction the transaction entity id
 type InvestProposalCreate @entity(immutable: true) {
-  id: Bytes! # tx hash
+  id: Bytes! # tx hash + interactionCount
   pool: Bytes!
   proposalId: BigInt!
 
@@ -185,13 +188,13 @@ type InvestProposalCreate @entity(immutable: true) {
 }
 
 # @notice The entity holds information about withdraw in invest proposal
-# @param id forms from tx hash
+# @param id forms from tx hash + interactionCount
 # @param pool the address of pool
 # @param proposalId the internal id of proposal
 # @param amount the amount of withdraw
 # @param transaction the transaction entity id
 type InvestProposalWithdraw @entity(immutable: true) {
-  id: Bytes! # tx hash
+  id: Bytes! # tx hash + interactionCount
   pool: Bytes!
   proposalId: BigInt!
 
@@ -201,14 +204,14 @@ type InvestProposalWithdraw @entity(immutable: true) {
 }
 
 # @notice The entity holds information about claim/supply in invest proposal
-# @param id forms from tx hash
+# @param id forms from tx hash + interactionCount
 # @param pool the address of pool
 # @param proposalId the internal id of proposal
 # @param tokens the tokens of claim/supply
 # @param amounts the amounts of claim/supply
 # @param transaction the transaction entity id
 type InvestProposalClaimOrSupply @entity(immutable: true) {
-  id: Bytes! # tx hash
+  id: Bytes! # tx hash + interactionCount
   pool: Bytes!
   proposalId: BigInt!
 
@@ -219,23 +222,23 @@ type InvestProposalClaimOrSupply @entity(immutable: true) {
 }
 
 # @notice The entity holds information about stake/unstake in insurance
-# @param id forms from tx hash
+# @param id forms from tx hash + interactionCount
 # @param amount the amount of stake
 # @param transaction the transaction entity id
 type InsuranceStake @entity(immutable: true) {
-  id: Bytes! # tx hash
+  id: Bytes! # tx hash + interactionCount
   amount: BigInt!
 
   transaction: Transaction!
 }
 
 # @notice The entity holds information about getting performance fee
-# @param id forms from tx hash
+# @param id forms from tx hash + interactionCount
 # @param baseAmount the amount in base token
 # @param lpAmount the amount in lp token
 # @param transaction the transaction entity id
 type GetPerfomanceFee @entity(immutable: true) {
-  id: Bytes! # tx hash
+  id: Bytes! # tx hash + interactionCount
   baseAmount: BigInt!
   lpAmount: BigInt!
 
@@ -243,11 +246,11 @@ type GetPerfomanceFee @entity(immutable: true) {
 }
 
 # @notice The entity holds inforamtion about pool address of transaction
-# @param id forms from tx hash
+# @param id forms from tx hash + interactionCount
 # @param pool the pool address
 # @param transaction the transaction entity id
 type OnlyPool @entity(immutable: true) {
-  id: Bytes! # tx hash
+  id: Bytes! # tx hash + interactionCount
   pool: Bytes!
 
   transaction: Transaction!
