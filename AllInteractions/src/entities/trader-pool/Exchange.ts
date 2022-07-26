@@ -7,12 +7,14 @@ export function getExchange(
   fromToken: Bytes,
   toToken: Bytes,
   fromVolume: BigInt,
-  toVolume: BigInt
+  toVolume: BigInt,
+  count: BigInt
 ): Exchange {
-  let exchange = Exchange.load(hash);
+  let id = hash.concatI32(count.toI32());
+  let exchange = Exchange.load(id);
 
   if (exchange == null) {
-    exchange = new Exchange(hash);
+    exchange = new Exchange(id);
     exchange.pool = pool;
     exchange.fromToken = fromToken;
     exchange.toToken = toToken;

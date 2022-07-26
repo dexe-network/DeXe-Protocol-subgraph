@@ -5,12 +5,14 @@ export function getInvestProposalWithdraw(
   hash: Bytes,
   pool: Bytes,
   proposalId: BigInt,
-  amount: BigInt
+  amount: BigInt,
+  count: BigInt
 ): InvestProposalWithdraw {
-  let withdraw = InvestProposalWithdraw.load(hash);
+  let id = hash.concatI32(count.toI32());
+  let withdraw = InvestProposalWithdraw.load(id);
 
   if (withdraw == null) {
-    withdraw = new InvestProposalWithdraw(hash);
+    withdraw = new InvestProposalWithdraw(id);
 
     withdraw.pool = pool;
     withdraw.proposalId = proposalId;

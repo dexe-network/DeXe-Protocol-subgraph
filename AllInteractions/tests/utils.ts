@@ -78,10 +78,12 @@ export function assertTransaction(
   hash: Bytes,
   sender: Address,
   block: ethereum.Block,
-  transactionType: TransactionType
+  transactionType: string,
+  interactionsCount: BigInt
 ): void {
   assert.fieldEquals("Transaction", hash.toHexString(), "block", block.number.toString());
   assert.fieldEquals("Transaction", hash.toHexString(), "timestamp", block.timestamp.toString());
-  assert.fieldEquals("Transaction", hash.toHexString(), "type", transactionType.toString());
+  assert.fieldEquals("Transaction", hash.toHexString(), "type", transactionType);
   assert.fieldEquals("Transaction", hash.toHexString(), "user", sender.toHexString());
+  assert.fieldEquals("Transaction", hash.toHexString(), "interactionsCount", interactionsCount.toString());
 }

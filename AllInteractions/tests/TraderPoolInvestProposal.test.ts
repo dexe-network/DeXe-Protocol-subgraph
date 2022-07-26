@@ -184,11 +184,22 @@ describe("TraderPoolInvestProposal", () => {
 
     onProposalCreated(event);
 
-    assert.fieldEquals("InvestProposalCreate", tx.hash.toHexString(), "pool", pool.toHexString());
-    assert.fieldEquals("InvestProposalCreate", tx.hash.toHexString(), "proposalId", proposalId.toString());
-    assert.fieldEquals("InvestProposalCreate", tx.hash.toHexString(), "transaction", tx.hash.toHexString());
+    assert.fieldEquals("InvestProposalCreate", tx.hash.concatI32(0).toHexString(), "pool", pool.toHexString());
+    assert.fieldEquals("InvestProposalCreate", tx.hash.concatI32(0).toHexString(), "proposalId", proposalId.toString());
+    assert.fieldEquals(
+      "InvestProposalCreate",
+      tx.hash.concatI32(0).toHexString(),
+      "transaction",
+      tx.hash.toHexString()
+    );
 
-    assertTransaction(tx.hash, trader, block, TransactionType.INVEST_PROPOSAL_CREATE);
+    assertTransaction(
+      tx.hash,
+      trader,
+      block,
+      "[" + TransactionType.INVEST_PROPOSAL_CREATE.toString() + "]",
+      BigInt.fromI32(1)
+    );
   });
 
   test("should handle ProposalWithdrawn event", () => {
@@ -199,12 +210,28 @@ describe("TraderPoolInvestProposal", () => {
 
     onProposalWithdrawn(event);
 
-    assert.fieldEquals("InvestProposalWithdraw", tx.hash.toHexString(), "pool", pool.toHexString());
-    assert.fieldEquals("InvestProposalWithdraw", tx.hash.toHexString(), "proposalId", proposalId.toString());
-    assert.fieldEquals("InvestProposalWithdraw", tx.hash.toHexString(), "amount", amount.toString());
-    assert.fieldEquals("InvestProposalWithdraw", tx.hash.toHexString(), "transaction", tx.hash.toHexString());
+    assert.fieldEquals("InvestProposalWithdraw", tx.hash.concatI32(0).toHexString(), "pool", pool.toHexString());
+    assert.fieldEquals(
+      "InvestProposalWithdraw",
+      tx.hash.concatI32(0).toHexString(),
+      "proposalId",
+      proposalId.toString()
+    );
+    assert.fieldEquals("InvestProposalWithdraw", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
+    assert.fieldEquals(
+      "InvestProposalWithdraw",
+      tx.hash.concatI32(0).toHexString(),
+      "transaction",
+      tx.hash.toHexString()
+    );
 
-    assertTransaction(tx.hash, event.params.sender, block, TransactionType.INVEST_PROPOSAL_WITHDRAW);
+    assertTransaction(
+      tx.hash,
+      event.params.sender,
+      block,
+      "[" + TransactionType.INVEST_PROPOSAL_WITHDRAW.toString() + "]",
+      BigInt.fromI32(1)
+    );
   });
 
   test("should handle ProposalSupplied event", () => {
@@ -216,18 +243,39 @@ describe("TraderPoolInvestProposal", () => {
 
     onProposalSupplied(event);
 
-    assert.fieldEquals("InvestProposalClaimOrSupply", tx.hash.toHexString(), "pool", pool.toHexString());
-    assert.fieldEquals("InvestProposalClaimOrSupply", tx.hash.toHexString(), "proposalId", proposalId.toString());
-    assert.fieldEquals("InvestProposalClaimOrSupply", tx.hash.toHexString(), "amounts", "[" + amounts.toString() + "]");
+    assert.fieldEquals("InvestProposalClaimOrSupply", tx.hash.concatI32(0).toHexString(), "pool", pool.toHexString());
     assert.fieldEquals(
       "InvestProposalClaimOrSupply",
-      tx.hash.toHexString(),
+      tx.hash.concatI32(0).toHexString(),
+      "proposalId",
+      proposalId.toString()
+    );
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      tx.hash.concatI32(0).toHexString(),
+      "amounts",
+      "[" + amounts.toString() + "]"
+    );
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      tx.hash.concatI32(0).toHexString(),
       "tokens",
       "[" + tokens[0].toHexString() + "]"
     );
-    assert.fieldEquals("InvestProposalClaimOrSupply", tx.hash.toHexString(), "transaction", tx.hash.toHexString());
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      tx.hash.concatI32(0).toHexString(),
+      "transaction",
+      tx.hash.toHexString()
+    );
 
-    assertTransaction(tx.hash, event.params.sender, block, TransactionType.INVEST_PROPOSAL_SUPPLY);
+    assertTransaction(
+      tx.hash,
+      event.params.sender,
+      block,
+      "[" + TransactionType.INVEST_PROPOSAL_SUPPLY.toString() + "]",
+      BigInt.fromI32(1)
+    );
   });
 
   test("should handle ProposalClaimed event", () => {
@@ -239,18 +287,39 @@ describe("TraderPoolInvestProposal", () => {
 
     onProposalClaimed(event);
 
-    assert.fieldEquals("InvestProposalClaimOrSupply", tx.hash.toHexString(), "pool", pool.toHexString());
-    assert.fieldEquals("InvestProposalClaimOrSupply", tx.hash.toHexString(), "proposalId", proposalId.toString());
-    assert.fieldEquals("InvestProposalClaimOrSupply", tx.hash.toHexString(), "amounts", "[" + amounts.toString() + "]");
+    assert.fieldEquals("InvestProposalClaimOrSupply", tx.hash.concatI32(0).toHexString(), "pool", pool.toHexString());
     assert.fieldEquals(
       "InvestProposalClaimOrSupply",
-      tx.hash.toHexString(),
+      tx.hash.concatI32(0).toHexString(),
+      "proposalId",
+      proposalId.toString()
+    );
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      tx.hash.concatI32(0).toHexString(),
+      "amounts",
+      "[" + amounts.toString() + "]"
+    );
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      tx.hash.concatI32(0).toHexString(),
       "tokens",
       "[" + tokens[0].toHexString() + "]"
     );
-    assert.fieldEquals("InvestProposalClaimOrSupply", tx.hash.toHexString(), "transaction", tx.hash.toHexString());
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      tx.hash.concatI32(0).toHexString(),
+      "transaction",
+      tx.hash.toHexString()
+    );
 
-    assertTransaction(tx.hash, event.params.user, block, TransactionType.INVEST_PROPOSAL_CLAIM);
+    assertTransaction(
+      tx.hash,
+      event.params.user,
+      block,
+      "[" + TransactionType.INVEST_PROPOSAL_CLAIM.toString() + "]",
+      BigInt.fromI32(1)
+    );
   });
 
   test("should handle ProposalInvested", () => {
@@ -263,13 +332,19 @@ describe("TraderPoolInvestProposal", () => {
 
     onProposalInvest(event);
 
-    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "proposalId", proposalId.toString());
-    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "pool", pool.toHexString());
-    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "baseAmount", investedBase.toString());
-    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "lp2Amount", receivedLP2.toString());
-    assert.fieldEquals("ProposalVest", tx.hash.toHexString(), "transaction", tx.hash.toHexString());
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "proposalId", proposalId.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "pool", pool.toHexString());
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "baseAmount", investedBase.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "lp2Amount", receivedLP2.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(tx.hash, event.params.user, block, TransactionType.INVEST_PROPOSAL_INVEST);
+    assertTransaction(
+      tx.hash,
+      event.params.user,
+      block,
+      "[" + TransactionType.INVEST_PROPOSAL_INVEST.toString() + "]",
+      BigInt.fromI32(1)
+    );
   });
 
   test("should handle ProposalRestrictionsChanged", () => {
@@ -279,10 +354,16 @@ describe("TraderPoolInvestProposal", () => {
 
     onProposalRestrictionsChanged(event);
 
-    assert.fieldEquals("ProposalEdit", tx.hash.toHexString(), "proposalId", proposalId.toString());
-    assert.fieldEquals("ProposalEdit", tx.hash.toHexString(), "pool", pool.toHexString());
-    assert.fieldEquals("ProposalEdit", tx.hash.toHexString(), "transaction", tx.hash.toHexString());
+    assert.fieldEquals("ProposalEdit", tx.hash.concatI32(0).toHexString(), "proposalId", proposalId.toString());
+    assert.fieldEquals("ProposalEdit", tx.hash.concatI32(0).toHexString(), "pool", pool.toHexString());
+    assert.fieldEquals("ProposalEdit", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(tx.hash, event.params.sender, block, TransactionType.INVEST_PROPOSAL_EDIT);
+    assertTransaction(
+      tx.hash,
+      event.params.sender,
+      block,
+      "[" + TransactionType.INVEST_PROPOSAL_EDIT.toString() + "]",
+      BigInt.fromI32(1)
+    );
   });
 });

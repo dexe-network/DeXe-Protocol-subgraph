@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 import {
   ProposalCreated,
   ProposalExchanged,
@@ -14,15 +14,11 @@ import { getRiskyProposalExchange } from "../entities/trader-pool/risky-proposal
 import { getProposalVest } from "../entities/trader-pool/risky-proposal/ProposalVest";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getTransaction } from "../entities/transaction/Transaction";
+import { extendArray } from "../helpers/ArrayHelper";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let proposalContract = getProposalContract(event.address);
-  let proposalCreate = getRiskyProposalCreate(
-    event.transaction.hash,
-    proposalContract.pool,
-    event.params.proposalId,
-    event.params.token
-  );
+
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
@@ -30,8 +26,17 @@ export function onProposalCreated(event: ProposalCreated): void {
     getTraderPool(Address.fromString(proposalContract.pool.toHexString())).trader
   );
 
+  let proposalCreate = getRiskyProposalCreate(
+    event.transaction.hash,
+    proposalContract.pool,
+    event.params.proposalId,
+    event.params.token,
+    transaction.interactionsCount
+  );
+
   proposalCreate.transaction = transaction.id;
-  transaction.type = getEnumBigInt(TransactionType.RISKY_PROPOSAL_CREATE);
+  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.RISKY_PROPOSAL_CREATE)]);
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   proposalCreate.save();
   transaction.save();
@@ -39,6 +44,12 @@ export function onProposalCreated(event: ProposalCreated): void {
 
 export function onProposalExchange(event: ProposalExchanged): void {
   let pool = getProposalContract(event.address).pool;
+  let transaction = getTransaction(
+    event.transaction.hash,
+    event.block.number,
+    event.block.timestamp,
+    event.params.sender
+  );
   let exchange = getRiskyProposalExchange(
     event.transaction.hash,
     pool,
@@ -46,17 +57,13 @@ export function onProposalExchange(event: ProposalExchanged): void {
     event.params.fromToken,
     event.params.toToken,
     event.params.fromVolume,
-    event.params.toVolume
-  );
-  let transaction = getTransaction(
-    event.transaction.hash,
-    event.block.number,
-    event.block.timestamp,
-    event.params.sender
+    event.params.toVolume,
+    transaction.interactionsCount
   );
 
   exchange.transaction = transaction.id;
-  transaction.type = getEnumBigInt(TransactionType.RISKY_PROPOSAL_SWAP);
+  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.RISKY_PROPOSAL_SWAP)]);
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   exchange.save();
   transaction.save();
@@ -64,22 +71,24 @@ export function onProposalExchange(event: ProposalExchanged): void {
 
 export function onProposalInvest(event: ProposalInvested): void {
   let pool = getProposalContract(event.address).pool;
-  let vest = getProposalVest(
-    event.transaction.hash,
-    pool,
-    event.params.proposalId,
-    event.params.investedBase,
-    event.params.receivedLP2
-  );
+
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
     event.params.user
   );
-
+  let vest = getProposalVest(
+    event.transaction.hash,
+    pool,
+    event.params.proposalId,
+    event.params.investedBase,
+    event.params.receivedLP2,
+    transaction.interactionsCount
+  );
   vest.transaction = transaction.id;
-  transaction.type = getEnumBigInt(TransactionType.RISKY_PROPOSAL_INVEST);
+  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.RISKY_PROPOSAL_INVEST)]);
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   vest.save();
   transaction.save();
@@ -87,22 +96,25 @@ export function onProposalInvest(event: ProposalInvested): void {
 
 export function onProposalDivest(event: ProposalDivested): void {
   let pool = getProposalContract(event.address).pool;
-  let vest = getProposalVest(
-    event.transaction.hash,
-    pool,
-    event.params.proposalId,
-    event.params.receivedBase,
-    event.params.divestedLP2
-  );
+
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
     event.params.user
   );
+  let vest = getProposalVest(
+    event.transaction.hash,
+    pool,
+    event.params.proposalId,
+    event.params.receivedBase,
+    event.params.divestedLP2,
+    transaction.interactionsCount
+  );
 
   vest.transaction = transaction.id;
-  transaction.type = getEnumBigInt(TransactionType.RISKY_PROPOSAL_DIVEST);
+  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.RISKY_PROPOSAL_DIVEST)]);
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   vest.save();
   transaction.save();
@@ -110,7 +122,6 @@ export function onProposalDivest(event: ProposalDivested): void {
 
 export function onProposalRestrictionsChanged(event: ProposalRestrictionsChanged): void {
   let pool = getProposalContract(event.address).pool;
-  let edit = getRiskyProposalEdited(event.transaction.hash, event.params.proposalId, pool);
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
@@ -118,8 +129,16 @@ export function onProposalRestrictionsChanged(event: ProposalRestrictionsChanged
     event.params.sender
   );
 
+  let edit = getRiskyProposalEdited(
+    event.transaction.hash,
+    event.params.proposalId,
+    pool,
+    transaction.interactionsCount
+  );
+
   edit.transaction = transaction.id;
-  transaction.type = getEnumBigInt(TransactionType.RISKY_PROPOSAL_EDIT);
+  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.RISKY_PROPOSAL_EDIT)]);
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   edit.save();
   transaction.save();
