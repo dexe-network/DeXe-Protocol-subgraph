@@ -1,5 +1,6 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { ProposalPosition, ProposalVest } from "../../../../generated/schema";
+import { increaseCounter } from "../../../helpers/IncreaseCounter";
 import { getInteractionCount } from "../../global/InteractionCount";
 
 export function getProposalVest(
@@ -26,8 +27,7 @@ export function getProposalVest(
     vest.timestamp = timestamp;
     vest.proposal = proposal.id;
 
-    counter.count = counter.count.plus(BigInt.fromI32(1));
-    counter.save();
+    increaseCounter(counter);
   }
 
   return vest;

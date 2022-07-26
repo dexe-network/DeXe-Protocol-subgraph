@@ -1,6 +1,7 @@
 import { InvestorPoolPosition, Vest } from "../../../generated/schema";
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { getInteractionCount } from "../global/InteractionCount";
+import { increaseCounter } from "../../helpers/IncreaseCounter";
 
 export function getVest(
   hash: Bytes,
@@ -24,8 +25,7 @@ export function getVest(
     vest.volumeUSD = volumeUSD;
     vest.timestamp = timestamp;
 
-    counter.count = counter.count.plus(BigInt.fromI32(1));
-    counter.save();
+    increaseCounter(counter);
   }
 
   return vest;
