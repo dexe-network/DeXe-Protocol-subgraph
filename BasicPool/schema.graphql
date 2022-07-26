@@ -47,7 +47,8 @@ type Proposal @entity {
 }
 
 # @notice The entity holds information about exchange in proposal
-# @param id forms from transaction hash, useless
+# @param id forms from transaction hash + interactionCount
+# @param hash the tx hash
 # @param timestamp the block timestamp
 # @param fromToken the address of in token
 # @param toToken the address of out token
@@ -56,7 +57,7 @@ type Proposal @entity {
 # @param usdVolume the exchange volume in usd
 # @param day the history id (proposal id + timestamp / 86400), for reverse lookup
 type ProposalExchange @entity(immutable: true) {
-  id: Bytes! # tx hash
+  id: Bytes! # tx hash + interactionCount
   hash: Bytes!
   timestamp: BigInt!
   fromToken: Bytes!
