@@ -42,7 +42,7 @@ export function getTraderPoolPriceHistory(
     );
 
     if (prevBlock.notEqual(roundCheckUp(pool.creationBlock))) {
-      history.APY = history.percPNL.minus(getTraderPoolPriceHistory(pool, prevBlock).percPNL); //here
+      history.APY = history.percPNL.minus(getTraderPoolPriceHistory(pool, prevBlock).percPNL);
     } else {
       history.APY = history.percPNL;
     }

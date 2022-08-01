@@ -167,7 +167,7 @@ describe("TraderPoolRegistry", () => {
     });
 
     test("should handle day block range", () => {
-      for (let i = BigInt.fromI32(1).toU64(); i <= BigInt.fromI32(288).toU64(); i++) {
+      for (let i = 1; i <= 288; i++) {
         block = getBlock(BigInt.fromU64(i * 100), BigInt.fromU64(i * 1000));
         handl(block);
       }
