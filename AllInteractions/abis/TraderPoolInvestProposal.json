@@ -769,6 +769,11 @@
           },
           {
             "internalType": "uint256",
+            "name": "lp2Supply",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "totalInvestors",
             "type": "uint256"
           }

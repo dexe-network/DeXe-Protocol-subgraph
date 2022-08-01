@@ -1,218 +1,218 @@
 [
     {
-        "anonymous": false,
-        "inputs": [
+      "anonymous": false,
+      "inputs": [
         {
-            "indexed": false,
-            "internalType": "address",
-            "name": "user",
-            "type": "address"
+          "indexed": false,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
         },
         {
-            "indexed": false,
-            "internalType": "bytes32",
-            "name": "documentHash",
-            "type": "bytes32"
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "documentHash",
+          "type": "bytes32"
         }
-        ],
-        "name": "Agreed",
-        "type": "event"
+      ],
+      "name": "Agreed",
+      "type": "event"
     },
     {
-        "anonymous": false,
-        "inputs": [
+      "anonymous": false,
+      "inputs": [
         {
-            "indexed": true,
-            "internalType": "address",
-            "name": "previousOwner",
-            "type": "address"
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
         },
         {
-            "indexed": true,
-            "internalType": "address",
-            "name": "newOwner",
-            "type": "address"
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
         }
-        ],
-        "name": "OwnershipTransferred",
-        "type": "event"
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
     },
     {
-        "anonymous": false,
-        "inputs": [
+      "anonymous": false,
+      "inputs": [
         {
-            "indexed": false,
-            "internalType": "address",
-            "name": "user",
-            "type": "address"
+          "indexed": false,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
         },
         {
-            "indexed": false,
-            "internalType": "string",
-            "name": "url",
-            "type": "string"
+          "indexed": false,
+          "internalType": "string",
+          "name": "url",
+          "type": "string"
         }
-        ],
-        "name": "UpdatedProfile",
-        "type": "event"
+      ],
+      "name": "UpdatedProfile",
+      "type": "event"
     },
     {
-        "inputs": [
+      "inputs": [
         {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
         }
-        ],
-        "name": "__UserRegistry_init",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+      ],
+      "name": "__UserRegistry_init",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-        "inputs": [
+      "inputs": [
         {
-            "internalType": "bytes",
-            "name": "signature",
-            "type": "bytes"
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
         }
-        ],
-        "name": "agreeToPrivacyPolicy",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+      ],
+      "name": "agreeToPrivacyPolicy",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-        "inputs": [
+      "inputs": [
         {
-            "internalType": "address",
-            "name": "user",
-            "type": "address"
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
         }
-        ],
-        "name": "agreed",
-        "outputs": [
+      ],
+      "name": "agreed",
+      "outputs": [
         {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
-        ],
-        "stateMutability": "view",
-        "type": "function"
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-        "inputs": [
+      "inputs": [
         {
-            "internalType": "string",
-            "name": "url",
-            "type": "string"
+          "internalType": "string",
+          "name": "url",
+          "type": "string"
         }
-        ],
-        "name": "changeProfile",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+      ],
+      "name": "changeProfile",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-        "inputs": [
+      "inputs": [
         {
-            "internalType": "string",
-            "name": "url",
-            "type": "string"
+          "internalType": "string",
+          "name": "url",
+          "type": "string"
         },
         {
-            "internalType": "bytes",
-            "name": "signature",
-            "type": "bytes"
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
         }
-        ],
-        "name": "changeProfileAndAgreeToPrivacyPolicy",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+      ],
+      "name": "changeProfileAndAgreeToPrivacyPolicy",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-        "inputs": [],
-        "name": "documentHash",
-        "outputs": [
+      "inputs": [],
+      "name": "documentHash",
+      "outputs": [
         {
-            "internalType": "bytes32",
-            "name": "",
-            "type": "bytes32"
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
         }
-        ],
-        "stateMutability": "view",
-        "type": "function"
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-        "inputs": [],
-        "name": "owner",
-        "outputs": [
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
         {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
+          "internalType": "address",
+          "name": "",
+          "type": "address"
         }
-        ],
-        "stateMutability": "view",
-        "type": "function"
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-        "inputs": [],
-        "name": "renounceOwnership",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-        "inputs": [
+      "inputs": [
         {
-            "internalType": "bytes32",
-            "name": "hash",
-            "type": "bytes32"
+          "internalType": "bytes32",
+          "name": "hash",
+          "type": "bytes32"
         }
-        ],
-        "name": "setPrivacyPolicyDocumentHash",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+      ],
+      "name": "setPrivacyPolicyDocumentHash",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-        "inputs": [
+      "inputs": [
         {
-            "internalType": "address",
-            "name": "newOwner",
-            "type": "address"
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
         }
-        ],
-        "name": "transferOwnership",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-        "inputs": [
+      "inputs": [
         {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
+          "internalType": "address",
+          "name": "",
+          "type": "address"
         }
-        ],
-        "name": "userInfos",
-        "outputs": [
+      ],
+      "name": "userInfos",
+      "outputs": [
         {
-            "internalType": "string",
-            "name": "profileURL",
-            "type": "string"
+          "internalType": "string",
+          "name": "profileURL",
+          "type": "string"
         },
         {
-            "internalType": "bytes32",
-            "name": "signatureHash",
-            "type": "bytes32"
+          "internalType": "bytes32",
+          "name": "signatureHash",
+          "type": "bytes32"
         }
-        ],
-        "stateMutability": "view",
-        "type": "function"
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
-]
+  ]

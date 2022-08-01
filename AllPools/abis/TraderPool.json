@@ -390,6 +390,25 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "investor",
+        "type": "address"
+      }
+    ],
+    "name": "canRemovePrivateInvestor",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "string",
         "name": "descriptionURL",
         "type": "string"
@@ -905,14 +924,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "offset",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "limit",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "offsetLimits",
+        "type": "uint256[]"
       }
     ],
     "name": "getReinvestCommissions",
@@ -966,6 +980,11 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "offset",
         "type": "uint256"
@@ -1003,6 +1022,16 @@
           {
             "internalType": "uint256",
             "name": "poolBaseShare",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "owedBaseCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "owedLPCommission",
             "type": "uint256"
           }
         ],
@@ -1228,14 +1257,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "offset",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "limit",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "offsetLimits",
+        "type": "uint256[]"
       },
       {
         "internalType": "uint256",
@@ -1379,7 +1403,7 @@
     "stateMutability": "nonpayable",
     "type": "function"
   },
-  
+
   {
     "anonymous": false,
     "inputs": [

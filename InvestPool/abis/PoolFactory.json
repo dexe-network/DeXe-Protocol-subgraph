@@ -128,6 +128,11 @@
   {
     "inputs": [
       {
+        "internalType": "bool",
+        "name": "withValidators",
+        "type": "bool"
+      },
+      {
         "components": [
           {
             "components": [
@@ -136,6 +141,11 @@
                   {
                     "internalType": "bool",
                     "name": "earlyCompletion",
+                    "type": "bool"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "delegatedVotingAllowed",
                     "type": "bool"
                   },
                   {
@@ -178,6 +188,11 @@
                   {
                     "internalType": "bool",
                     "name": "earlyCompletion",
+                    "type": "bool"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "delegatedVotingAllowed",
                     "type": "bool"
                   },
                   {
@@ -298,6 +313,11 @@
             "internalType": "uint256",
             "name": "feePercentage",
             "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "descriptionURL",
+            "type": "string"
           }
         ],
         "internalType": "struct IPoolFactory.GovPoolDeployParams",
