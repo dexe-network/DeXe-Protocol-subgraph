@@ -35,7 +35,6 @@ const CODES = [
 ];
 
 function updatePools(block: ethereum.Block, type: string): void {
-  let aggregationType = 0;
   let tprPrototype = TraderPoolRegistry.bind(Address.fromString(POOL_REGISTRY_ADDRESS));
   let poolCount = tprPrototype.try_countPools(type);
 
@@ -54,15 +53,16 @@ function updatePools(block: ethereum.Block, type: string): void {
     );
 
     if (!poolInfo.reverted) {
-      for (let pool = 0; pool < poolInfo.value.value0.length; pool++) {
-        let traderPool = getTraderPool(poolInfo.value.value0[pool]);
+      for (let j = 0; j < poolInfo.value.value0.length; j++) {
+        let aggregationType = 0;
+        let traderPool = getTraderPool(poolInfo.value.value0[j]);
         let creationBlock = traderPool.creationBlock.plus(
           block.number.minus(traderPool.creationBlock).mod(BLOCK_PER_5MIN)
         );
 
-        for (let i = 0; i < BLOCK_INTERVALS.length; i++) {
-          if (block.number.minus(creationBlock).mod(BLOCK_INTERVALS[i]).equals(BigInt.zero())) {
-            aggregationType += CODES[i];
+        for (let k = 0; k < BLOCK_INTERVALS.length; k++) {
+          if (block.number.minus(creationBlock).mod(BLOCK_INTERVALS[k]).equals(BigInt.zero())) {
+            aggregationType += CODES[k];
           }
         }
 
@@ -70,11 +70,11 @@ function updatePools(block: ethereum.Block, type: string): void {
           traderPool,
           block.number,
           block.timestamp,
-          poolInfo.value.value1[pool].totalPoolUSD,
-          poolInfo.value.value1[pool].totalPoolBase,
-          poolInfo.value.value1[pool].lpSupply,
-          poolInfo.value.value1[pool].traderUSD,
-          poolInfo.value.value1[pool].traderBase,
+          poolInfo.value.value1[j].totalPoolUSD,
+          poolInfo.value.value1[j].totalPoolBase,
+          poolInfo.value.value1[j].lpSupply,
+          poolInfo.value.value1[j].traderUSD,
+          poolInfo.value.value1[j].traderBase,
           BigInt.fromI32(aggregationType)
         );
 
