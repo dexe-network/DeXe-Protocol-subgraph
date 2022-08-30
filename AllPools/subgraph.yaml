@@ -78,6 +78,6 @@ templates:
         - event: ModifiedPrivateInvestors(address,address[],bool)
           handler: onModifiedPrivateInvestors
         - event: CommissionClaimed(address,uint256,uint256)
-          handler: onCommissionClaimed
+          handler: onTraderCommissionMinted
         - event: ActivePortfolioExchanged(address,address,uint256,uint256)
           handler: onActivePortfolioExchanged
