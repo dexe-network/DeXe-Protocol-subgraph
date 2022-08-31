@@ -95,7 +95,7 @@ type SuppliesHistory @entity {
 type ClaimsHistory @entity {
   id: ID! # proposal entity id + day
   proposal: Proposal!
-  supplies: [Claim!]! @derivedFrom(field: "history")
+  claims: [Claim!]! @derivedFrom(field: "history")
   day: BigInt!
 }
 
