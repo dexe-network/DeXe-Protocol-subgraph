@@ -37,8 +37,8 @@ type Proposal @entity {
   firstSupplyTimestamp: BigInt!
   APR: BigInt!
 
-  lastSupply: LastSupply!
-  lastWithdraw: LastWithdraw!
+  lastSupply: Supply!
+  lastWithdraw: Withdraw!
 
   investPool: InvestPool!
 }
@@ -49,10 +49,11 @@ type Proposal @entity {
 # @param amountBase the amount of withdraw in base token
 # @param amountDividendsToken the anount of withdraw in dividends token
 # @param proposal the proposal entity
-type LastWithdraw @entity {
-  id: ID! # proposal entity id
+type Withdraw @entity {
+  id: Bytes! # proposal entity id
   timestamp: BigInt!
   amountBase: BigInt!
+  history: WithdrawalHistory!
 }
 
 # @notice The entity holds information about last supply in proposal
@@ -61,9 +62,46 @@ type LastWithdraw @entity {
 # @param amountBase the amount of supply in base token
 # @param amountDividendsToken the anount of supply in dividends token
 # @param proposal the proposal entity
-type LastSupply @entity {
-  id: ID! # proposal entity id
+type Supply @entity {
+  id: Bytes! # proposal entity id
   timestamp: BigInt!
   dividendsTokens: [Bytes!]!
   amountDividendsTokens: [BigInt!]!
+  history: SuppliesHistory!
+}
+
+type Claim @entity {
+  id: Bytes! # proposal entity id
+  timestamp: BigInt!
+  claimTokens: [Bytes!]!
+  amountClaimTokens: [BigInt!]!
+  history: ClaimsHistory!
+}
+
+type WithdrawalHistory @entity {
+  id: ID! # proposal entity id + day
+  proposal: Proposal!
+  withdrawals: [Withdraw!]! @derivedFrom(field: "history")
+  day: BigInt!
+}
+
+type SuppliesHistory @entity {
+  id: ID! # proposal entity id + day
+  proposal: Proposal!
+  supplies: [Supply!]! @derivedFrom(field: "history")
+  day: BigInt!
+}
+
+type ClaimsHistory @entity {
+  id: ID! # proposal entity id + day
+  proposal: Proposal!
+  supplies: [Claim!]! @derivedFrom(field: "history")
+  day: BigInt!
+}
+
+# @notice The entity counts interactions in single tx
+# @param count the counter of interactions in single tx
+type InteractionCount @entity {
+  id: Bytes!
+  count: BigInt!
 }
