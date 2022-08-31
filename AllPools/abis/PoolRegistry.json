@@ -33,6 +33,32 @@
   },
   {
     "inputs": [],
+    "name": "DISTRIBUTION_PROPOSAL_NAME",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "GOV_POOL_NAME",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "INVEST_POOL_NAME",
     "outputs": [
       {
@@ -72,7 +98,46 @@
   },
   {
     "inputs": [],
-    "name": "__PoolContractsRegistry_init",
+    "name": "SETTINGS_NAME",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "USER_KEEPER_NAME",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "VALIDATORS_NAME",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "__OwnablePoolContractsRegistry_init",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -90,7 +155,7 @@
         "type": "address"
       }
     ],
-    "name": "addPool",
+    "name": "addProxyPool",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -121,12 +186,17 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
         "internalType": "string",
         "name": "name",
         "type": "string"
       }
     ],
-    "name": "countPools",
+    "name": "countAssociatedPools",
     "outputs": [
       {
         "internalType": "uint256",
@@ -140,17 +210,12 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
         "internalType": "string",
         "name": "name",
         "type": "string"
       }
     ],
-    "name": "countTraderPools",
+    "name": "countPools",
     "outputs": [
       {
         "internalType": "uint256",
@@ -281,12 +346,46 @@
         "type": "address"
       }
     ],
-    "name": "isPool",
+    "name": "isTraderPool",
     "outputs": [
       {
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "offset",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "limit",
+        "type": "uint256"
+      }
+    ],
+    "name": "listAssociatedPools",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "pools",
+        "type": "address[]"
       }
     ],
     "stateMutability": "view",
@@ -339,7 +438,7 @@
         "type": "uint256"
       }
     ],
-    "name": "listPoolsWithInfo",
+    "name": "listTraderPoolsWithInfo",
     "outputs": [
       {
         "internalType": "address[]",
@@ -496,40 +595,6 @@
         "internalType": "struct ITraderPool.LeverageInfo[]",
         "name": "leverageInfos",
         "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "offset",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "limit",
-        "type": "uint256"
-      }
-    ],
-    "name": "listTraderPools",
-    "outputs": [
-      {
-        "internalType": "address[]",
-        "name": "pools",
-        "type": "address[]"
       }
     ],
     "stateMutability": "view",

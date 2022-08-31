@@ -6,9 +6,9 @@ dataSources:
     name: PoolFactory
     network: chapel
     source:
-      address: "0xA24DB2099010E009dCfa5c21D718Cc698AE82C86"
+      address: "0x3dDEE623b19843AA80c6D6AD0304d9b45299Dd29"
       abi: PoolFactory
-      startBlock: 21572754
+      startBlock: 22428998
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
