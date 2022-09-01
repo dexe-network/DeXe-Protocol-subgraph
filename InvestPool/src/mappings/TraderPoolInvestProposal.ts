@@ -1,5 +1,4 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
-import { WithdrawalHistory } from "../../generated/schema";
 import {
   ProposalCreated,
   ProposalWithdrawn,
@@ -10,11 +9,7 @@ import { InvestProposal } from "../../generated/templates/InvestProposal/InvestP
 import { PriceFeed } from "../../generated/templates/InvestProposal/PriceFeed";
 import { DAY, PERCENTAGE_PRECISION, PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { getInvestTraderPool } from "../entities/invest-pool/InvestTraderPool";
-import { getClaimsHistory } from "../entities/invest-pool/proposal/history/ClaimsHistory";
-import { getSuppliesHistory } from "../entities/invest-pool/proposal/history/SuppliesHistory";
-import { getWithdrawHistory } from "../entities/invest-pool/proposal/history/WithdrawalHistory";
 import { getProposal } from "../entities/invest-pool/proposal/Proposal";
-import { getClaim } from "../entities/invest-pool/proposal/ProposalClaim";
 import { getProposalContract } from "../entities/invest-pool/proposal/ProposalContract";
 import { getSupply } from "../entities/invest-pool/proposal/ProposalSupply";
 import { getWithdraw } from "../entities/invest-pool/proposal/ProposalWithdraw";
@@ -35,13 +30,10 @@ export function onProposalCreated(event: ProposalCreated): void {
 export function onProposalWithdrawn(event: ProposalWithdrawn): void {
   let proposalContract = getProposalContract(event.address);
   let proposal = getProposal(event.params.proposalId, proposalContract);
-  let withdraw = getWithdraw(event.transaction.hash, event.params.amount, event.block.timestamp);
-  let history = getWithdrawHistory(proposal, event.block.timestamp);
+  let withdraw = getWithdraw(event.transaction.hash, proposal, event.params.amount, event.block.timestamp);
 
   proposal.lastWithdraw = withdraw.id;
-  withdraw.history = history.id;
 
-  history.save();
   withdraw.save();
   proposal.save();
   proposalContract.save();
@@ -50,11 +42,14 @@ export function onProposalWithdrawn(event: ProposalWithdrawn): void {
 export function onProposalSupplied(event: ProposalSupplied): void {
   let proposalContract = getProposalContract(event.address);
   let proposal = getProposal(event.params.proposalId, proposalContract);
-  let supply = getSupply(event.transaction.hash, upcastCopy<Address, Bytes>(event.params.tokens), event.params.amounts);
-  let history = getSuppliesHistory(proposal, event.block.timestamp);
+  let supply = getSupply(
+    event.transaction.hash,
+    proposal,
+    upcastCopy<Address, Bytes>(event.params.tokens),
+    event.params.amounts
+  );
   let pool = getInvestTraderPool(Address.fromString(proposalContract.investPool.toHexString()));
 
-  supply.history = history.id;
   proposal.lastSupply = supply.id;
   proposal.totalUSDSupply = proposal.totalUSDSupply.plus(totalTokenUSDCost(event.params.tokens, event.params.amounts));
 
@@ -91,7 +86,6 @@ export function onProposalSupplied(event: ProposalSupplied): void {
   proposal.leftTokens = extendTokens;
   proposal.leftAmounts = extendAmount;
 
-  history.save();
   supply.save();
   proposal.save();
   proposalContract.save();
@@ -100,15 +94,6 @@ export function onProposalSupplied(event: ProposalSupplied): void {
 export function onProposalClaimed(event: ProposalClaimed): void {
   let proposalContract = getProposalContract(event.address);
   let proposal = getProposal(event.params.proposalId, proposalContract);
-  let claim = getClaim(
-    event.transaction.hash,
-    upcastCopy<Address, Bytes>(event.params.tokens),
-    event.params.amounts,
-    event.block.timestamp
-  );
-  let history = getClaimsHistory(proposal, event.block.timestamp);
-
-  claim.history = history.id;
 
   let tokens = proposal.leftTokens;
   let amounts = proposal.leftAmounts;
@@ -137,8 +122,6 @@ export function onProposalClaimed(event: ProposalClaimed): void {
   proposal.leftTokens = tokens;
   proposal.leftAmounts = amounts;
 
-  claim.save();
-  history.save();
   proposal.save();
   proposalContract.save();
 }

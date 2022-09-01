@@ -253,6 +253,12 @@ describe("TraderPoolInvestProposal", () => {
     onProposalWithdrawn(event);
 
     assert.fieldEquals("Withdraw", event.transaction.hash.concatI32(0).toHexString(), "amountBase", amount.toString());
+    assert.fieldEquals(
+      "Withdraw",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "proposal",
+      sender.toHexString() + proposalId.toString()
+    );
 
     assert.fieldEquals(
       "Proposal",
@@ -265,19 +271,6 @@ describe("TraderPoolInvestProposal", () => {
       sender.toHexString() + proposalId.toString(),
       "lastWithdraw",
       tx.hash.concatI32(0).toHexString()
-    );
-
-    assert.fieldEquals(
-      "WithdrawalHistory",
-      sender.toHexString() + proposalId.toString() + "0",
-      "withdrawals",
-      "[" + tx.hash.concatI32(0).toHexString() + "]"
-    );
-    assert.fieldEquals(
-      "WithdrawalHistory",
-      sender.toHexString() + proposalId.toString() + "0",
-      "proposal",
-      sender.toHexString() + proposalId.toString()
     );
   });
 
@@ -306,6 +299,12 @@ describe("TraderPoolInvestProposal", () => {
       "[" + amounts[0].toString() + ", " + amounts[1].toString() + "]"
     );
     assert.fieldEquals("Supply", event.transaction.hash.concatI32(0).toHexString(), "timestamp", "0");
+    assert.fieldEquals(
+      "Supply",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "proposal",
+      sender.toHexString() + proposalId.toString()
+    );
 
     assert.fieldEquals(
       "Proposal",
@@ -340,19 +339,6 @@ describe("TraderPoolInvestProposal", () => {
       "lastWithdraw",
       Bytes.empty().toHexString()
     );
-
-    assert.fieldEquals(
-      "SuppliesHistory",
-      sender.toHexString() + proposalId.toString() + "0",
-      "supplies",
-      "[" + tx.hash.concatI32(0).toHexString() + "]"
-    );
-    assert.fieldEquals(
-      "SuppliesHistory",
-      sender.toHexString() + proposalId.toString() + "0",
-      "proposal",
-      sender.toHexString() + proposalId.toString()
-    );
   });
 
   test("should handle ProposalClaimed event", () => {
@@ -382,32 +368,6 @@ describe("TraderPoolInvestProposal", () => {
       sender.toHexString() + proposalId.toString(),
       "leftAmounts",
       "[" + amountsToClaim[0].toString() + "]"
-    );
-
-    assert.fieldEquals(
-      "Claim",
-      claimEvent.transaction.hash.concatI32(1).toHexString(),
-      "claimTokens",
-      "[" + tokens[0].toHexString() + ", " + tokens[1].toHexString() + "]"
-    );
-    assert.fieldEquals(
-      "Claim",
-      claimEvent.transaction.hash.concatI32(1).toHexString(),
-      "amountClaimTokens",
-      "[" + amountsToClaim[0].toString() + ", " + amountsToClaim[1].toString() + "]"
-    );
-    assert.fieldEquals("Claim", claimEvent.transaction.hash.concatI32(1).toHexString(), "timestamp", "1");
-    assert.fieldEquals(
-      "ClaimsHistory",
-      sender.toHexString() + proposalId.toString() + "0",
-      "proposal",
-      sender.toHexString() + proposalId.toString()
-    );
-    assert.fieldEquals(
-      "ClaimsHistory",
-      sender.toHexString() + proposalId.toString() + "0",
-      "claims",
-      "[" + tx.hash.concatI32(1).toHexString() + "]"
     );
   });
 });

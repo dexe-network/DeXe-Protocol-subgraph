@@ -1,10 +1,11 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { Withdraw } from "../../../../generated/schema";
+import { Proposal, Withdraw } from "../../../../generated/schema";
 import { increaseCounter } from "../../../helpers/IncreaseCounter";
 import { getInteractionCount } from "../../global/InteractionCount";
 
 export function getWithdraw(
   hash: Bytes,
+  proposal: Proposal,
   amountBase: BigInt = BigInt.zero(),
   timestamp: BigInt = BigInt.zero()
 ): Withdraw {
@@ -14,6 +15,7 @@ export function getWithdraw(
 
   if (withdraw == null) {
     withdraw = new Withdraw(id);
+    withdraw.proposal = proposal.id;
     withdraw.amountBase = amountBase;
     withdraw.timestamp = timestamp;
 
