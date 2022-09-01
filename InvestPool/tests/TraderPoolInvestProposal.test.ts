@@ -180,7 +180,7 @@ describe("TraderPoolInvestProposal", () => {
     createMockedFunction(
       Address.fromString(sender.toHexString()),
       "getProposalInfos",
-      "getProposalInfos(uint256,uint256):(((string,(uint256,uint256),uint256,uint256,uint256),uint256)[])"
+      "getProposalInfos(uint256,uint256):(((string,(uint256,uint256),uint256,uint256,uint256),uint256,uint256)[])"
     )
       .withArgs([
         ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(1)),
