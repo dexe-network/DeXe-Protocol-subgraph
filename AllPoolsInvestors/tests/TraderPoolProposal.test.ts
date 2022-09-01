@@ -238,6 +238,21 @@ describe("TraderPoolProposal", () => {
       "lastAmountsClaimed",
       "[" + amounts[0].toString() + ", " + amounts[1].toString() + "]"
     );
+    assert.fieldEquals("ProposalClaim", tx.hash.concatI32(0).toHexString(), "hash", tx.hash.toHexString());
+    assert.fieldEquals("ProposalClaim", tx.hash.concatI32(0).toHexString(), "timestamp", "1");
+    assert.fieldEquals("ProposalClaim", tx.hash.concatI32(0).toHexString(), "proposal", proposalEntityId);
+    assert.fieldEquals(
+      "ProposalClaim",
+      tx.hash.concatI32(0).toHexString(),
+      "dividendsTokens",
+      "[" + tokens[0].toHexString() + ", " + tokens[1].toHexString() + "]"
+    );
+    assert.fieldEquals(
+      "ProposalClaim",
+      tx.hash.concatI32(0).toHexString(),
+      "amountDividendsTokens",
+      "[" + amounts[0].toString() + ", " + amounts[1].toString() + "]"
+    );
   });
 
   test("should handle ProposalInvestorAdded event", () => {

@@ -194,6 +194,15 @@ type ProposalVest @entity(immutable: true) {
   proposal: ProposalPosition!
 }
 
+type ProposalClaim @entity(immutable: true) {
+  id: Bytes!
+  hash: Bytes!
+  timestamp: BigInt!
+  dividendsTokens: [Bytes!]!
+  amountDividendsTokens: [BigInt!]!
+  proposal: ProposalPosition!
+}
+
 # @notice The entity counts interactions in single tx
 # @param count the counter of interactions in single tx
 type InteractionCount @entity {
