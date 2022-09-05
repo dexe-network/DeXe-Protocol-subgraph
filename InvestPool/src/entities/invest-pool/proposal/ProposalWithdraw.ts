@@ -15,6 +15,7 @@ export function getWithdraw(
 
   if (withdraw == null) {
     withdraw = new Withdraw(id);
+    withdraw.hash = hash;
     withdraw.proposal = proposal.id;
     withdraw.amountBase = amountBase;
     withdraw.timestamp = timestamp;

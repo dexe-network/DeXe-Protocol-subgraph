@@ -107,9 +107,6 @@ export function onProposalClaimed(event: ProposalClaimed): void {
     event.block.timestamp
   );
 
-  proposal.lastTokensClaimed = upcastCopy<Address, Bytes>(event.params.tokens);
-  proposal.lastAmountsClaimed = event.params.amounts;
-
   claim.save();
   investor.save();
   pool.save();

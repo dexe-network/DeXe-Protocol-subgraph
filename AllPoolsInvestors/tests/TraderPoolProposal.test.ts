@@ -226,18 +226,6 @@ describe("TraderPoolProposal", () => {
 
     let proposalEntityId = sender.toHexString() + user.toHexString() + proposalId.toString() + "_" + "0";
 
-    assert.fieldEquals(
-      "ProposalPosition",
-      proposalEntityId,
-      "lastTokensClaimed",
-      "[" + tokens[0].toHexString() + ", " + tokens[1].toHexString() + "]"
-    );
-    assert.fieldEquals(
-      "ProposalPosition",
-      proposalEntityId,
-      "lastAmountsClaimed",
-      "[" + amounts[0].toString() + ", " + amounts[1].toString() + "]"
-    );
     assert.fieldEquals("ProposalClaim", tx.hash.concatI32(0).toHexString(), "hash", tx.hash.toHexString());
     assert.fieldEquals("ProposalClaim", tx.hash.concatI32(0).toHexString(), "timestamp", "1");
     assert.fieldEquals("ProposalClaim", tx.hash.concatI32(0).toHexString(), "proposal", proposalEntityId);

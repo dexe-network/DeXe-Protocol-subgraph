@@ -32,8 +32,6 @@ export function onProposalWithdrawn(event: ProposalWithdrawn): void {
   let proposal = getProposal(event.params.proposalId, proposalContract);
   let withdraw = getWithdraw(event.transaction.hash, proposal, event.params.amount, event.block.timestamp);
 
-  proposal.lastWithdraw = withdraw.id;
-
   withdraw.save();
   proposal.save();
   proposalContract.save();
@@ -50,7 +48,6 @@ export function onProposalSupplied(event: ProposalSupplied): void {
   );
   let pool = getInvestTraderPool(Address.fromString(proposalContract.investPool.toHexString()));
 
-  proposal.lastSupply = supply.id;
   proposal.totalUSDSupply = proposal.totalUSDSupply.plus(totalTokenUSDCost(event.params.tokens, event.params.amounts));
 
   if (proposal.firstSupplyTimestamp.equals(BigInt.zero())) {

@@ -37,9 +37,6 @@ type Proposal @entity {
   firstSupplyTimestamp: BigInt!
   APR: BigInt!
 
-  lastSupply: Supply!
-  lastWithdraw: Withdraw!
-
   investPool: InvestPool!
 
   withdraws: [Withdraw!]! @derivedFrom(field: "proposal")
@@ -54,6 +51,7 @@ type Proposal @entity {
 # @param proposal the proposal entity
 type Withdraw @entity {
   id: Bytes! # proposal entity id
+  hash: Bytes!
   timestamp: BigInt!
   amountBase: BigInt!
   proposal: Proposal!
@@ -67,6 +65,7 @@ type Withdraw @entity {
 # @param proposal the proposal entity
 type Supply @entity {
   id: Bytes! # proposal entity id
+  hash: Bytes!
   timestamp: BigInt!
   dividendsTokens: [Bytes!]!
   amountDividendsTokens: [BigInt!]!

@@ -229,19 +229,6 @@ describe("TraderPoolInvestProposal", () => {
     assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "totalUSDSupply", "0");
     assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "firstSupplyTimestamp", "0");
     assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "APR", "0");
-
-    assert.fieldEquals(
-      "Proposal",
-      sender.toHexString() + proposalId.toString(),
-      "lastSupply",
-      Bytes.empty().toHexString()
-    );
-    assert.fieldEquals(
-      "Proposal",
-      sender.toHexString() + proposalId.toString(),
-      "lastWithdraw",
-      Bytes.empty().toHexString()
-    );
   });
 
   test("should handle ProposalWithdrawn event", () => {
@@ -259,18 +246,11 @@ describe("TraderPoolInvestProposal", () => {
       "proposal",
       sender.toHexString() + proposalId.toString()
     );
-
     assert.fieldEquals(
-      "Proposal",
-      sender.toHexString() + proposalId.toString(),
-      "lastSupply",
-      Bytes.empty().toHexString()
-    );
-    assert.fieldEquals(
-      "Proposal",
-      sender.toHexString() + proposalId.toString(),
-      "lastWithdraw",
-      tx.hash.concatI32(0).toHexString()
+      "Withdraw",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "hash",
+      event.transaction.hash.toHexString()
     );
   });
 
@@ -305,6 +285,12 @@ describe("TraderPoolInvestProposal", () => {
       "proposal",
       sender.toHexString() + proposalId.toString()
     );
+    assert.fieldEquals(
+      "Supply",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "hash",
+      event.transaction.hash.toHexString()
+    );
 
     assert.fieldEquals(
       "Proposal",
@@ -325,19 +311,6 @@ describe("TraderPoolInvestProposal", () => {
       sender.toHexString() + proposalId.toString(),
       "leftAmounts",
       "[" + amounts[0].toString() + ", " + amounts[1].toString() + "]"
-    );
-
-    assert.fieldEquals(
-      "Proposal",
-      sender.toHexString() + proposalId.toString(),
-      "lastSupply",
-      tx.hash.concatI32(0).toHexString()
-    );
-    assert.fieldEquals(
-      "Proposal",
-      sender.toHexString() + proposalId.toString(),
-      "lastWithdraw",
-      Bytes.empty().toHexString()
     );
   });
 

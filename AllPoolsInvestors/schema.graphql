@@ -163,11 +163,9 @@ type ProposalPosition @entity {
   totalUSDOpenVolume: BigInt!
   totalUSDCloseVolume: BigInt!
 
-  lastTokensClaimed: [Bytes!]!
-  lastAmountsClaimed: [BigInt!]!
-
   proposalContract: ProposalContract!
   vests: [ProposalVest!]! @derivedFrom(field: "proposal")
+  claims: [ProposalClaim!]! @derivedFrom(field: "proposal")
 }
 
 # @notice The entity holds information about invest/divest in proposal

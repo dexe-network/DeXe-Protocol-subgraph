@@ -16,8 +16,6 @@ export function getProposal(
     proposal.timestampLimit = timestampLimit;
     proposal.investLPLimit = investLPLimit;
     proposal.investPool = proposalContract.investPool;
-    proposal.lastSupply = Bytes.empty();
-    proposal.lastWithdraw = Bytes.empty();
 
     proposal.leftTokens = new Array<Bytes>();
     proposal.leftAmounts = new Array<BigInt>();

@@ -16,6 +16,7 @@ export function getSupply(
 
   if (supply == null) {
     supply = new Supply(id);
+    supply.hash = hash;
     supply.proposal = proposal.id;
     supply.dividendsTokens = dividendsTokens;
     supply.amountDividendsTokens = amountDividendsTokens;
