@@ -15,6 +15,7 @@ import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { getInvestor } from "../entities/trader-pool/Investor";
 import { getProposalPositionOffset } from "../entities/global/ProposalPositionOffset";
 import { upcastCopy } from "../helpers/ArrayHelper";
+import { getProposalClaim } from "../entities/trader-pool/proposal/ProposalClaim";
 
 export function onProposalInvest(event: ProposalInvested): void {
   let proposalContract = getProposalContract(event.address);
@@ -98,10 +99,15 @@ export function onProposalClaimed(event: ProposalClaimed): void {
   let pool = getTraderPool(Address.fromString(proposalContract.traderPool.toHexString()));
   let proposalOffset = getProposalPositionOffset(pool, investor, event.params.proposalId);
   let proposal = getProposalPosition(event.params.proposalId, proposalContract, investor, proposalOffset);
+  let claim = getProposalClaim(
+    event.transaction.hash,
+    proposal,
+    upcastCopy<Address, Bytes>(event.params.tokens),
+    event.params.amounts,
+    event.block.timestamp
+  );
 
-  proposal.lastTokensClaimed = upcastCopy<Address, Bytes>(event.params.tokens);
-  proposal.lastAmountsClaimed = event.params.amounts;
-
+  claim.save();
   investor.save();
   pool.save();
   proposalOffset.save();

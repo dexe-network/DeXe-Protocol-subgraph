@@ -4,6 +4,8 @@
 # @param token the address of base token
 # @param investors the array with Investor entities
 # @param investorsCount the number of investors
+# @param privateInvestors the array with Investor entities
+# @param privateInvestorsCount the number of private investors
 type TraderPool @entity {
   id: Bytes! # pool address
   proposalContract: Bytes!
@@ -145,8 +147,10 @@ type ProposalPositionOffset @entity {
 # @param isClosed the boolean flag, if true -> position closed
 # @param totalBaseOpenVolume the total open volume of proposal in base token
 # @param totalBaseCloseVolume the total close volume of proposal in base token
-# @param totalPositionOpenVolume the total open volume of proposal in proposal token
-# @param totalPositionCloseVolume the total close volume of proposal in proposal token
+# @param totalLPOpenVolume the total open volume of proposal in lp token
+# @param totalLPCloseVolume the total close volume of proposal in lp token
+# @param totalLP2OpenVolume the total open volume of proposal in lp2 token
+# @param totalLP2CloseVolume the total close volume of proposal in lp2 token
 # @param totalUSDOpenVolume the total open volume of proposal in usd
 # @param totalUSDCloseVolume the total close volume of proposal in usd
 # @param proposalContract the proposalContract entity
@@ -163,11 +167,9 @@ type ProposalPosition @entity {
   totalUSDOpenVolume: BigInt!
   totalUSDCloseVolume: BigInt!
 
-  lastTokensClaimed: [Bytes!]!
-  lastAmountsClaimed: [BigInt!]!
-
   proposalContract: ProposalContract!
   vests: [ProposalVest!]! @derivedFrom(field: "proposal")
+  claims: [ProposalClaim!]! @derivedFrom(field: "proposal")
 }
 
 # @notice The entity holds information about invest/divest in proposal
@@ -194,7 +196,24 @@ type ProposalVest @entity(immutable: true) {
   proposal: ProposalPosition!
 }
 
+# @notice The entity holds information about claim in proposal
+# @param id forms from tx hash + interactionCounter
+# @param hash the tx hash
+# @param timestamp the timestamp of tx
+# @param dividendsTokens the array of claimed tokens
+# @param amountDividendsTokens the array of claimed amounts
+# @param proposal the proposal entity
+type ProposalClaim @entity(immutable: true) {
+  id: Bytes! # tx hash + interactionCounter
+  hash: Bytes!
+  timestamp: BigInt!
+  dividendsTokens: [Bytes!]!
+  amountDividendsTokens: [BigInt!]!
+  proposal: ProposalPosition!
+}
+
 # @notice The entity counts interactions in single tx
+# @param id forms from tx hash
 # @param count the counter of interactions in single tx
 type InteractionCount @entity {
   id: Bytes!

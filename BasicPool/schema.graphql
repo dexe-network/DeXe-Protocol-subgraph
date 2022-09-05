@@ -26,12 +26,6 @@ type ProposalContract @entity(immutable: true) {
 # @param timestampLimit the timestamp from contract after which the investment into proposal closes
 # @param investLPLimit the maximal number of invested LP tokens from contract after which the investment into the proposal closes
 # @param maxTokenPriceLimit the maximal price of the proposal token from contract after which the investment into the proposal closes
-# @param totalBaseOpenVolume the total open volume of proposal in base token
-# @param totalBaseCloseVolume the total close volume of proposal in base token
-# @param totalPositionOpenVolume the total open volume of proposal in proposal token
-# @param totalPositionCloseVolume the total close volume of proposal in proposal token
-# @param totalUSDOpenVolume the total open volume of proposal in usd
-# @param totalUSDCloseVolume the total close volume of proposal in usd
 # @param basicPool the basicPool id (address), for reverse lookup
 type Proposal @entity {
   id: ID! # proposal address + proposal index
@@ -115,6 +109,7 @@ type ProposalPosition @entity {
 }
 
 # @notice The entity counts interactions in single tx
+# @param id forms from tx hash
 # @param count the counter of interactions in single tx
 type InteractionCount @entity {
   id: Bytes!

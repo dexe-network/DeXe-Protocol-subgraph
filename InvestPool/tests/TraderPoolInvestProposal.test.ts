@@ -26,7 +26,7 @@ import {
   onProposalSupplied,
   onProposalWithdrawn,
 } from "../src/mappings/TraderPoolInvestProposal";
-import { PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
+import { DAY, PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
 
 function createProposalCreated(
   proposalId: BigInt,
@@ -229,19 +229,6 @@ describe("TraderPoolInvestProposal", () => {
     assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "totalUSDSupply", "0");
     assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "firstSupplyTimestamp", "0");
     assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "APR", "0");
-
-    assert.fieldEquals(
-      "Proposal",
-      sender.toHexString() + proposalId.toString(),
-      "lastSupply",
-      sender.toHexString() + proposalId.toString()
-    );
-    assert.fieldEquals(
-      "Proposal",
-      sender.toHexString() + proposalId.toString(),
-      "lastWithdraw",
-      sender.toHexString() + proposalId.toString()
-    );
   });
 
   test("should handle ProposalWithdrawn event", () => {
@@ -252,7 +239,19 @@ describe("TraderPoolInvestProposal", () => {
 
     onProposalWithdrawn(event);
 
-    assert.fieldEquals("LastWithdraw", sender.toHexString() + proposalId.toString(), "amountBase", amount.toString());
+    assert.fieldEquals("Withdraw", event.transaction.hash.concatI32(0).toHexString(), "amountBase", amount.toString());
+    assert.fieldEquals(
+      "Withdraw",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "proposal",
+      sender.toHexString() + proposalId.toString()
+    );
+    assert.fieldEquals(
+      "Withdraw",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "hash",
+      event.transaction.hash.toHexString()
+    );
   });
 
   test("should handle ProposalSupplied event", () => {
@@ -268,18 +267,30 @@ describe("TraderPoolInvestProposal", () => {
     onProposalSupplied(event);
 
     assert.fieldEquals(
-      "LastSupply",
-      sender.toHexString() + proposalId.toString(),
+      "Supply",
+      event.transaction.hash.concatI32(0).toHexString(),
       "dividendsTokens",
       "[" + tokens[0].toHexString() + ", " + tokens[1].toHexString() + "]"
     );
     assert.fieldEquals(
-      "LastSupply",
-      sender.toHexString() + proposalId.toString(),
+      "Supply",
+      event.transaction.hash.concatI32(0).toHexString(),
       "amountDividendsTokens",
       "[" + amounts[0].toString() + ", " + amounts[1].toString() + "]"
     );
-    assert.fieldEquals("LastSupply", sender.toHexString() + proposalId.toString(), "timestamp", "0");
+    assert.fieldEquals("Supply", event.transaction.hash.concatI32(0).toHexString(), "timestamp", "0");
+    assert.fieldEquals(
+      "Supply",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "proposal",
+      sender.toHexString() + proposalId.toString()
+    );
+    assert.fieldEquals(
+      "Supply",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "hash",
+      event.transaction.hash.toHexString()
+    );
 
     assert.fieldEquals(
       "Proposal",
@@ -300,19 +311,6 @@ describe("TraderPoolInvestProposal", () => {
       sender.toHexString() + proposalId.toString(),
       "leftAmounts",
       "[" + amounts[0].toString() + ", " + amounts[1].toString() + "]"
-    );
-
-    assert.fieldEquals(
-      "Proposal",
-      sender.toHexString() + proposalId.toString(),
-      "lastSupply",
-      sender.toHexString() + proposalId.toString()
-    );
-    assert.fieldEquals(
-      "Proposal",
-      sender.toHexString() + proposalId.toString(),
-      "lastWithdraw",
-      sender.toHexString() + proposalId.toString()
     );
   });
 
