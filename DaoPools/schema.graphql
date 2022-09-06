@@ -1,0 +1,77 @@
+type DaoPool @entity {
+  id: Bytes! # pool address
+  users: [UserInPool!]! @derivedFrom(field: "pool")
+  proposals: [Proposal!]! @derivedFrom(field: "pool")
+}
+
+type User @entity {
+  id: Bytes! # user address
+  pools: [UserInPool!]! @derivedFrom(field: "user")
+  proposals: [UserInProposal!]! @derivedFrom(field: "user")
+}
+
+type Proposal @entity {
+  id: Bytes! # pool address + porposalId
+  proposalId: BigInt!
+
+  creator: User!
+
+  executor: User!
+  executionTimestamp: BigInt!
+
+  acceptedTimestamp: BigInt!
+
+  currentVotes: BigInt!
+  totalNeeded: BigInt!
+
+  usersVoted: BigInt! # кол-во адресов с которых вотили
+  pool: DaoPool!
+}
+
+type UserInPool @entity {
+  id: Bytes! # user address + pool address
+  deligated: BigInt!
+
+  pool: DaoPool!
+  user: User!
+}
+
+type ProposalVote @entity {
+  id: Bytes! # tx hash + counter
+  hash: Bytes!
+  timestamp: BigInt!
+  proposalId: BigInt!
+
+  personalAmount: BigInt!
+  deligatedAmount: BigInt!
+
+  voter: UserInProposal!
+}
+
+type UserInProposal @entity {
+  id: Bytes! # user address + proposal entity id
+  pool: DaoPool!
+  proposal: Proposal!
+  user: User!
+
+  totalVoteAmount: BigInt!
+  totalDeligatedVoteAmount: BigInt!
+
+  votes: [ProposalVote!]! @derivedFrom(field: "voter")
+}
+
+type DistributionProposal @entity {
+  id: Bytes! # proposal entity id
+  proposalId: BigInt!
+
+  token: Bytes!
+  amount: BigInt!
+}
+
+# @notice The entity counts interactions in single tx
+# @param id forms from tx hash
+# @param count the counter of interactions in single tx
+type InteractionCount @entity {
+  id: Bytes!
+  count: BigInt!
+}
