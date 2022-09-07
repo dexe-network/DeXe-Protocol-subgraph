@@ -1,40 +1,45 @@
 type DaoPool @entity {
   id: Bytes! # pool address
-  users: [UserInPool!]! @derivedFrom(field: "pool")
+  votersCount: BigInt!
+
+  voters: [VoterInPool!]! @derivedFrom(field: "pool")
   proposals: [Proposal!]! @derivedFrom(field: "pool")
 }
 
-type User @entity {
-  id: Bytes! # user address
-  pools: [UserInPool!]! @derivedFrom(field: "user")
-  proposals: [UserInProposal!]! @derivedFrom(field: "user")
+type Voter @entity {
+  id: Bytes! # voter address
+  pools: [VoterInPool!]! @derivedFrom(field: "voter")
 }
 
 type Proposal @entity {
   id: Bytes! # pool address + porposalId
   proposalId: BigInt!
 
-  creator: User!
+  creator: Voter!
 
-  executor: User!
+  executor: Voter!
   executionTimestamp: BigInt!
 
-  acceptedTimestamp: BigInt!
+  # acceptedTimestamp: BigInt!
 
   currentVotes: BigInt!
-  totalNeeded: BigInt!
+  quorum: BigInt!
 
-  usersVoted: BigInt! # кол-во адресов с которых вотили
+  votersVoted: BigInt! # кол-во адресов с которых вотили
   pool: DaoPool!
 }
 
-type UserInPool @entity {
-  id: Bytes! # user address + pool address
-  deligated: BigInt!
+type VoterInPool @entity {
+  id: Bytes! # voter address + pool address
+  receivedDelegation: BigInt!
   totalRewardClaimed: BigInt!
+  totalDPClaimed: BigInt!
 
   pool: DaoPool!
-  user: User!
+  voter: Voter!
+
+  proposals: [VoterInProposal!]! @derivedFrom(field: "voter")
+  claimedDPs: [DistributionProposal!]!
 }
 
 type ProposalVote @entity {
@@ -44,16 +49,16 @@ type ProposalVote @entity {
   proposalId: BigInt!
 
   personalAmount: BigInt!
-  deligatedAmount: BigInt!
+  delegatedAmount: BigInt!
 
-  voter: UserInProposal!
+  voter: VoterInProposal!
 }
 
-type UserInProposal @entity {
-  id: Bytes! # user address + proposal entity id
+type VoterInProposal @entity {
+  id: Bytes! # voter address + proposal entity id
   pool: DaoPool!
   proposal: Proposal!
-  user: User!
+  voter: VoterInPool!
 
   totalVoteAmount: BigInt!
   totalDeligatedVoteAmount: BigInt!
@@ -68,6 +73,17 @@ type DistributionProposal @entity {
   proposalId: BigInt!
 
   token: Bytes!
+  amount: BigInt!
+}
+
+type DelegationHistory @entity {
+  id: Bytes! # tx hash + counter
+  pool: DaoPool!
+  timestamp: BigInt!
+
+  from: Voter!
+  to: Voter!
+
   amount: BigInt!
 }
 

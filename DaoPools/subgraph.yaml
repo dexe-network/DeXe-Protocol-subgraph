@@ -20,7 +20,7 @@ dataSources:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
       eventHandlers:
-        - event: DaoDeploied()
+        - event: DaoDeployed()
           handler: onDeployed
 
 templates:
@@ -40,7 +40,7 @@ templates:
         - name: DaoPool
           file: ./abis/DaoPool.json
       eventHandlers:
-        - event: ProposalCreated(uint256,address,uint256) # id, msg.sender, totalNeededVotes,
+        - event: ProposalCreated(uint256,address,uint256) # id, msg.sender, quorum,
           handler: onProposalCreated
         - event: Deligated(address,uint256) # to, amount
           handler: onDeligated
@@ -54,3 +54,21 @@ templates:
           handler: onProposalExecuted
         - event: RewardClaimed(uint256,address,uint256) # id, msg.sender, amount
           handler: onRewardClaimed
+  - kind: ethereum/contract
+    name: DistributonProposal
+    network: chapel
+    source:
+      abi: DistributonProposal
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/DistributonProposal.ts
+      entities:
+        - DistributonProposal
+      abis:
+        - name: DistributonProposal
+          file: ./abis/DistributonProposal.json
+      eventHandlers:
+        - event: DistributonProposalClaimed(uint256,address,uint256) # id, msg.sender, amount
+          handler: onDistributonProposalClaimed
