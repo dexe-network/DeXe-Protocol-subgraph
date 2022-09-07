@@ -52,3 +52,5 @@ templates:
           handler: onProposalAccepted
         - event: ProposalExecuted(uint256,address) # id, msg.sender
           handler: onProposalExecuted
+        - event: RewardClaimed(uint256,address,uint256) # id, msg.sender, amount
+          handler: onRewardClaimed

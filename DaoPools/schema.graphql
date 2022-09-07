@@ -31,6 +31,7 @@ type Proposal @entity {
 type UserInPool @entity {
   id: Bytes! # user address + pool address
   deligated: BigInt!
+  totalRewardClaimed: BigInt!
 
   pool: DaoPool!
   user: User!
@@ -56,6 +57,8 @@ type UserInProposal @entity {
 
   totalVoteAmount: BigInt!
   totalDeligatedVoteAmount: BigInt!
+
+  claimedReward: BigInt!
 
   votes: [ProposalVote!]! @derivedFrom(field: "voter")
 }
