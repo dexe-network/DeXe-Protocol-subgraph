@@ -10,7 +10,7 @@ type ValidatorInPool @entity {
   pool: DaoPool!
 }
 
-type ProposalVote @entity {
+type ProposalVote @entity(immutable: true) {
   id: Bytes! # tx hash + counter
   hash: Bytes!
   timestamp: BigInt!

@@ -43,7 +43,7 @@ type VoterInPool @entity {
   claimedDPs: [DistributionProposal!]!
 }
 
-type ProposalVote @entity {
+type ProposalVote @entity(immutable: true) {
   id: Bytes! # tx hash + counter
   hash: Bytes!
   timestamp: BigInt!
@@ -77,7 +77,7 @@ type DistributionProposal @entity {
   amount: BigInt!
 }
 
-type DelegationHistory @entity {
+type DelegationHistory @entity(immutable: true) {
   id: Bytes! # tx hash + counter
   pool: DaoPool!
   timestamp: BigInt!
