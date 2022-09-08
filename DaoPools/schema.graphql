@@ -61,7 +61,7 @@ type VoterInProposal @entity {
   voter: VoterInPool!
 
   totalVoteAmount: BigInt!
-  totalDeligatedVoteAmount: BigInt!
+  totalDelegatedVoteAmount: BigInt!
 
   claimedReward: BigInt!
 
