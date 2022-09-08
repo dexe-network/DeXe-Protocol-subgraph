@@ -34,6 +34,7 @@ type VoterInPool @entity {
   receivedDelegation: BigInt!
   totalRewardClaimed: BigInt!
   totalDPClaimed: BigInt!
+  totalClaimedUSD: BigInt!
 
   pool: DaoPool!
   voter: Voter!
@@ -83,6 +84,7 @@ type DelegationHistory @entity {
 
   from: Voter!
   to: Voter!
+  isDelegate: Boolean!
 
   amount: BigInt!
 }
