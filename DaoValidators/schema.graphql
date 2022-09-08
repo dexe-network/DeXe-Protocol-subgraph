@@ -1,6 +1,13 @@
 type DaoPool @entity {
   id: Bytes! # pool address
-  validators: [Bytes!]!
+  validators: [ValidatorInPool!]! @derivedFrom(field: "pool")
+}
+
+type ValidatorInPool @entity {
+  id: Bytes! # validator address + pool address
+  balance: BigInt!
+
+  pool: DaoPool!
 }
 
 type ProposalVote @entity {
@@ -18,7 +25,7 @@ type ValidatorInProposal @entity {
   id: Bytes! # user address + pool address + proposal id
   pool: DaoPool!
   proposalId: BigInt!
-  validator: Bytes!
+  validator: ValidatorInPool!
 
   totalVote: BigInt!
 
