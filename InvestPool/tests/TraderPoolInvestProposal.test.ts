@@ -183,7 +183,7 @@ describe("TraderPoolInvestProposal", () => {
       "getProposalInfos(uint256,uint256):(((string,(uint256,uint256),uint256,uint256,uint256),uint256,uint256)[])"
     )
       .withArgs([
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(1)),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
         ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(1)),
       ])
       .returns([ethereum.Value.fromTupleArray([mainTuple])]);

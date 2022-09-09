@@ -136,7 +136,7 @@ function totalTokenUSDCost(tokens: Array<Address>, volumes: Array<BigInt>): BigI
 
 function getInvestedBaseInUSD(proposalAddress: Address, proposalId: BigInt, baseToken: Address): BigInt {
   let proposalPrototype = InvestProposal.bind(proposalAddress);
-  let resp = proposalPrototype.try_getProposalInfos(proposalId, BigInt.fromI32(1));
+  let resp = proposalPrototype.try_getProposalInfos(proposalId.minus(BigInt.fromI32(1)), BigInt.fromI32(1));
 
   if (resp.reverted) {
     return BigInt.fromI32(1);
