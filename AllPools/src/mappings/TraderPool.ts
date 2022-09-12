@@ -21,6 +21,7 @@ import {
   PERCENTAGE_100,
   PRICE_FEED_ADDRESS,
   PERCENTAGE_DENOMINATOR,
+  PERCENTAGE_NUMERATOR,
 } from "../entities/global/globals";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { Exchange, FeeHistory, Position, TraderPool, TraderPoolPriceHistory } from "../../generated/schema";
@@ -357,7 +358,7 @@ function recalculateOrderSize(baseVolume: BigInt, pool: TraderPool, block: BigIn
   if (lastHistory == null) {
     currentPercentage = BigInt.zero();
   } else {
-    currentPercentage = baseVolume.times(BigInt.fromU64(PERCENTAGE_DENOMINATOR)).div(lastHistory.baseTVL);
+    currentPercentage = baseVolume.times(BigInt.fromU64(PERCENTAGE_NUMERATOR)).div(lastHistory.baseTVL);
   }
 
   pool.orderSize = pool.totalTrades

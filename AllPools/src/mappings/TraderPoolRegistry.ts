@@ -1,7 +1,7 @@
 import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getTraderPoolPriceHistory } from "../entities/trader-pool/TraderPoolPriceHistory";
-import { TraderPoolRegistry } from "../../generated/TraderPoolRegistry/TraderPoolRegistry";
+import { PoolRegistry } from "../../generated/PoolRegistry/PoolRegistry";
 import {
   BASIC_POOL_NAME,
   CHECK_PER_BLOCK,
@@ -35,7 +35,7 @@ const CODES = [
 ];
 
 function updatePools(block: ethereum.Block, type: string): void {
-  let tprPrototype = TraderPoolRegistry.bind(Address.fromString(POOL_REGISTRY_ADDRESS));
+  let tprPrototype = PoolRegistry.bind(Address.fromString(POOL_REGISTRY_ADDRESS));
   let poolCount = tprPrototype.try_countPools(type);
 
   if (poolCount.reverted) {
@@ -46,7 +46,7 @@ function updatePools(block: ethereum.Block, type: string): void {
   let iters = Math.ceil(F64.parseFloat(poolCount.value.toI64().toString()) / POOL_OFFSET);
 
   for (let i = 0; i < iters; i++) {
-    let poolInfo = tprPrototype.try_listPoolsWithInfo(
+    let poolInfo = tprPrototype.try_listTraderPoolsWithInfo(
       type,
       BigInt.fromI32(POOL_OFFSET * i),
       BigInt.fromI32(POOL_OFFSET)

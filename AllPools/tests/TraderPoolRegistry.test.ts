@@ -52,8 +52,8 @@ describe("TraderPoolRegistry", () => {
 
     createMockedFunction(
       Address.fromString(POOL_REGISTRY_ADDRESS),
-      "listPoolsWithInfo",
-      "listPoolsWithInfo(string,uint256,uint256):(address[],(string,string,(string,address,bool,uint256,address,uint256,uint256,uint8,uint256),address[],uint256[],uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)[],(uint256,uint256,uint256,uint256)[])"
+      "listTraderPoolsWithInfo",
+      "listTraderPoolsWithInfo(string,uint256,uint256):(address[],(string,string,(string,address,bool,uint256,address,uint256,uint256,uint8,uint256),address[],uint256[],uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)[],(uint256,uint256,uint256,uint256)[])"
     )
       .withArgs([
         ethereum.Value.fromString(BASIC_POOL_NAME),
@@ -63,8 +63,8 @@ describe("TraderPoolRegistry", () => {
       .returns(returnData);
     createMockedFunction(
       Address.fromString(POOL_REGISTRY_ADDRESS),
-      "listPoolsWithInfo",
-      "listPoolsWithInfo(string,uint256,uint256):(address[],(string,string,(string,address,bool,uint256,address,uint256,uint256,uint8,uint256),address[],uint256[],uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)[],(uint256,uint256,uint256,uint256)[])"
+      "listTraderPoolsWithInfo",
+      "listTraderPoolsWithInfo(string,uint256,uint256):(address[],(string,string,(string,address,bool,uint256,address,uint256,uint256,uint8,uint256),address[],uint256[],uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)[],(uint256,uint256,uint256,uint256)[])"
     )
       .withArgs([
         ethereum.Value.fromString(INVEST_POOL_NAME),

@@ -177,8 +177,6 @@ type ExchangeHistory @entity(immutable: true) {
 
 # @notice The entity holds information about Investor
 # @param id the investor address
-# @param insurance the bought insurance amount
-# @param claimedAmount the paid insurance amount
 # @param activePools the array with pools with investor's invests
 # @param allPools the array with pools where the  investor has ever invested
 type Investor @entity {
@@ -206,6 +204,7 @@ type FeeHistory @entity {
 }
 
 # @notice The entity counts interactions in single tx
+# @param id forms from tx hash
 # @param count the counter of interactions in single tx
 type InteractionCount @entity {
   id: Bytes!
