@@ -1,0 +1,74 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: PoolFactory
+    network: chapel
+    source:
+      address: ""
+      abi: PoolFactory
+      startBlock:
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/PoolFactory.ts
+      entities:
+        - PoolFactory
+      abis:
+        - name: PoolFactory
+          file: ./abis/PoolFactory.json
+      eventHandlers:
+        - event: DaoDeployed()
+          handler: onDeployed
+
+templates:
+  - kind: ethereum/contract
+    name: DaoPool
+    network: chapel
+    source:
+      abi: DaoPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/DaoPool.ts
+      entities:
+        - DaoPool
+      abis:
+        - name: DaoPool
+          file: ./abis/DaoPool.json
+      eventHandlers:
+        - event: ProposalCreated(uint256,address,uint256) # id, msg.sender, quorum,
+          handler: onProposalCreated
+        - event: Delegated(address,uint256) # to, amount
+          handler: onDelegated
+        - event: Vote(uint256,address,uint256,uint256) # id, msg.sender, personalVote, delegatedVote
+          handler: onVote
+        - event: DPCreated(uint256,address,address,uint256) # id, msg.sender, token, amount
+          handler: onDPCreated
+        - event: ProposalAccepted(uint256) # id
+          handler: onProposalAccepted
+        - event: ProposalExecuted(uint256,address) # id, msg.sender
+          handler: onProposalExecuted
+        - event: RewardClaimed(uint256,address,uint256) # id, msg.sender, amount
+          handler: onRewardClaimed
+  - kind: ethereum/contract
+    name: DistributonProposal
+    network: chapel
+    source:
+      abi: DistributonProposal
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/DistributonProposal.ts
+      entities:
+        - DistributonProposal
+      abis:
+        - name: DistributonProposal
+          file: ./abis/DistributonProposal.json
+      eventHandlers:
+        - event: DistributonProposalClaimed(uint256,address,uint256) # id, msg.sender, amount
+          handler: onDistributonProposalClaimed

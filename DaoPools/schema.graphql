@@ -1,0 +1,98 @@
+type DaoPool @entity {
+  id: Bytes! # pool address
+  votersCount: BigInt!
+
+  voters: [VoterInPool!]! @derivedFrom(field: "pool")
+  proposals: [Proposal!]! @derivedFrom(field: "pool")
+}
+
+type Voter @entity {
+  id: Bytes! # voter address
+  pools: [VoterInPool!]! @derivedFrom(field: "voter")
+}
+
+type Proposal @entity {
+  id: Bytes! # pool address + porposalId
+  proposalId: BigInt!
+
+  creator: Voter!
+
+  executor: Voter!
+  executionTimestamp: BigInt!
+
+  # acceptedTimestamp: BigInt!
+
+  currentVotes: BigInt!
+  quorum: BigInt!
+
+  votersVoted: BigInt! # кол-во адресов с которых вотили
+  pool: DaoPool!
+}
+
+type VoterInPool @entity {
+  id: Bytes! # voter address + pool address
+  receivedDelegation: BigInt!
+  totalRewardClaimed: BigInt!
+  totalDPClaimed: BigInt!
+  totalClaimedUSD: BigInt!
+
+  pool: DaoPool!
+  voter: Voter!
+
+  proposals: [VoterInProposal!]! @derivedFrom(field: "voter")
+  claimedDPs: [DistributionProposal!]!
+}
+
+type ProposalVote @entity(immutable: true) {
+  id: Bytes! # tx hash + counter
+  hash: Bytes!
+  timestamp: BigInt!
+  proposalId: BigInt!
+
+  personalAmount: BigInt!
+  delegatedAmount: BigInt!
+
+  voter: VoterInProposal!
+}
+
+type VoterInProposal @entity {
+  id: Bytes! # voter address + proposal entity id
+  pool: DaoPool!
+  proposal: Proposal!
+  voter: VoterInPool!
+
+  totalVoteAmount: BigInt!
+  totalDelegatedVoteAmount: BigInt!
+
+  claimedReward: BigInt!
+
+  votes: [ProposalVote!]! @derivedFrom(field: "voter")
+}
+
+type DistributionProposal @entity {
+  id: Bytes! # proposal entity id
+  proposalId: BigInt!
+
+  token: Bytes!
+  amount: BigInt!
+}
+
+type DelegationHistory @entity(immutable: true) {
+  id: Bytes! # tx hash + counter
+  pool: DaoPool!
+  timestamp: BigInt!
+
+  from: Voter!
+  to: Voter!
+  isDelegate: Boolean!
+
+  amount: BigInt!
+}
+
+# @notice The entity counts interactions in single tx
+# @param id forms from tx hash
+# @param count the counter of interactions in single tx
+type InteractionCount @entity {
+  id: Bytes!
+  count: BigInt!
+}
