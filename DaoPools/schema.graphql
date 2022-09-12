@@ -15,6 +15,8 @@ type Proposal @entity {
   id: Bytes! # pool address + porposalId
   proposalId: BigInt!
 
+  proposalType: BigInt!
+
   creator: Voter!
 
   executor: Voter!
@@ -27,6 +29,10 @@ type Proposal @entity {
 
   votersVoted: BigInt! # кол-во адресов с которых вотили
   pool: DaoPool!
+
+  distributionProposal: DistributionProposal!
+
+  votes: [ProposalVote!]! @derivedFrom(field: "proposal")
 }
 
 type VoterInPool @entity {
@@ -47,12 +53,12 @@ type ProposalVote @entity(immutable: true) {
   id: Bytes! # tx hash + counter
   hash: Bytes!
   timestamp: BigInt!
-  proposalId: BigInt!
 
   personalAmount: BigInt!
   delegatedAmount: BigInt!
 
   voter: VoterInProposal!
+  proposal: Proposal!
 }
 
 type VoterInProposal @entity {
@@ -71,8 +77,6 @@ type VoterInProposal @entity {
 
 type DistributionProposal @entity {
   id: Bytes! # proposal entity id
-  proposalId: BigInt!
-
   token: Bytes!
   amount: BigInt!
 }

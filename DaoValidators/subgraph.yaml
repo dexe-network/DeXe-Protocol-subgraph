@@ -20,7 +20,7 @@ dataSources:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
       eventHandlers:
-        - event: DaoDeploied()
+        - event: DaoDeploied(address,address,address)
           handler: onDeployed
 
 templates:
@@ -43,4 +43,4 @@ templates:
         - event: Vote(uint256,address,uint256) # id, msg.sender, vote
           handler: onVote
         - event: ChangedValidatorsBalances(address[],uint256[]) # validators[], newBalances[]
-          handler: onVote
+          handler: onChangedValidatorsBalances
