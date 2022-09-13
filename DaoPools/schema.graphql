@@ -38,7 +38,7 @@ type Proposal @entity {
 type VoterInPool @entity {
   id: Bytes! # voter address + pool address
   receivedDelegation: BigInt!
-  totalRewardClaimed: BigInt!
+  # totalRewardClaimed: BigInt!
   totalDPClaimed: BigInt!
   totalClaimedUSD: BigInt!
 
@@ -62,7 +62,7 @@ type ProposalVote @entity(immutable: true) {
 }
 
 type VoterInProposal @entity {
-  id: Bytes! # voter address + proposal entity id
+  id: Bytes! # voter in pool address + proposal entity id
   pool: DaoPool!
   proposal: Proposal!
   voter: VoterInPool!

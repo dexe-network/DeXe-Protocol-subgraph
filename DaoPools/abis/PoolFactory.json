@@ -21,7 +21,7 @@
         "type": "address"
       }
     ],
-    "name": "DaoDeployed",
+    "name": "DaoPoolDeployed",
     "type": "event"
   },
   {

@@ -20,7 +20,7 @@ dataSources:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
       eventHandlers:
-        - event: DaoDeployed(address,address,address)
+        - event: DaoPoolDeployed(address,address,address)
           handler: onDeployed
 
 templates:
@@ -39,21 +39,26 @@ templates:
       abis:
         - name: DaoPool
           file: ./abis/DaoPool.json
+        - name: PriceFeed
+          file: ./abis/PriceFeed.json
       eventHandlers:
         - event: ProposalCreated(uint256,address,uint256) # id, msg.sender, quorum,
           handler: onProposalCreated
-        - event: Delegated(address,uint256) # to, amount
+        - event: Delegated(address,address,uint256) # from, to, amount
           handler: onDelegated
-        - event: Vote(uint256,address,uint256,uint256) # id, msg.sender, personalVote, delegatedVote
-          handler: onVote
+        - event: Undelegated(address,address,uint256) # from, to, amount
+          handler: onUndelegeted
+        - event: Voted(uint256,address,uint256,uint256) # id, msg.sender, personalVote, delegatedVote
+          handler: onVoted
         - event: DPCreated(uint256,address,address,uint256) # id, msg.sender, token, amount
           handler: onDPCreated
-        - event: ProposalAccepted(uint256) # id
-          handler: onProposalAccepted
+        # - event: ProposalAccepted(uint256) # id
+        #   handler: onProposalAccepted
         - event: ProposalExecuted(uint256,address) # id, msg.sender
           handler: onProposalExecuted
-        - event: RewardClaimed(uint256,address,uint256) # id, msg.sender, amount
+        - event: RewardClaimed(uint256,address,address[],uint256[]) # id, msg.sender, tokens, amounts
           handler: onRewardClaimed
+
   - kind: ethereum/contract
     name: DistributionProposal
     network: chapel

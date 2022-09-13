@@ -9,7 +9,7 @@ export function getVoterInPool(pool: DaoPool, voter: Voter): VoterInPool {
     voterInPool = new VoterInPool(id);
 
     voterInPool.receivedDelegation = BigInt.zero();
-    voterInPool.totalRewardClaimed = BigInt.zero();
+    // voterInPool.totalRewardClaimed = BigInt.zero();
     voterInPool.totalDPClaimed = BigInt.zero();
     voterInPool.totalClaimedUSD = BigInt.zero();
 
