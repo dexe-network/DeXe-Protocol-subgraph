@@ -3,6 +3,11 @@ type DaoPool @entity {
   validators: [ValidatorInPool!]! @derivedFrom(field: "pool")
 }
 
+type ValidatorsContract @entity(immutable: true) {
+  id: Bytes! # validators contract address
+  pool: Bytes!
+}
+
 type ValidatorInPool @entity {
   id: Bytes! # validator address + pool address
   balance: BigInt!

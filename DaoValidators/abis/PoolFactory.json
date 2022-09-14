@@ -4,6 +4,31 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "govPool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "DP",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "validators",
+        "type": "address"
+      }
+    ],
+    "name": "DaoPoolDeployed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "string",
         "name": "poolType",
         "type": "string"
@@ -128,11 +153,6 @@
   {
     "inputs": [
       {
-        "internalType": "bool",
-        "name": "withDistributionProposal",
-        "type": "bool"
-      },
-      {
         "components": [
           {
             "components": [
@@ -175,12 +195,12 @@
                   },
                   {
                     "internalType": "uint256",
-                    "name": "minTokenBalance",
+                    "name": "minVotesForVoting",
                     "type": "uint256"
                   },
                   {
                     "internalType": "uint256",
-                    "name": "minNftBalance",
+                    "name": "minVotesForCreating",
                     "type": "uint256"
                   },
                   {
@@ -190,7 +210,7 @@
                   },
                   {
                     "internalType": "uint256",
-                    "name": "creationRewards",
+                    "name": "creationReward",
                     "type": "uint256"
                   },
                   {
@@ -202,10 +222,15 @@
                     "internalType": "uint256",
                     "name": "voteRewardsCoefficient",
                     "type": "uint256"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "executorDescription",
+                    "type": "string"
                   }
                 ],
                 "internalType": "struct IGovSettings.ProposalSettings",
-                "name": "internalProposalSetting",
+                "name": "internalProposalSettings",
                 "type": "tuple"
               },
               {
@@ -247,12 +272,12 @@
                   },
                   {
                     "internalType": "uint256",
-                    "name": "minTokenBalance",
+                    "name": "minVotesForVoting",
                     "type": "uint256"
                   },
                   {
                     "internalType": "uint256",
-                    "name": "minNftBalance",
+                    "name": "minVotesForCreating",
                     "type": "uint256"
                   },
                   {
@@ -262,7 +287,7 @@
                   },
                   {
                     "internalType": "uint256",
-                    "name": "creationRewards",
+                    "name": "creationReward",
                     "type": "uint256"
                   },
                   {
@@ -274,6 +299,11 @@
                     "internalType": "uint256",
                     "name": "voteRewardsCoefficient",
                     "type": "uint256"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "executorDescription",
+                    "type": "string"
                   }
                 ],
                 "internalType": "struct IGovSettings.ProposalSettings",
@@ -319,12 +349,12 @@
                   },
                   {
                     "internalType": "uint256",
-                    "name": "minTokenBalance",
+                    "name": "minVotesForVoting",
                     "type": "uint256"
                   },
                   {
                     "internalType": "uint256",
-                    "name": "minNftBalance",
+                    "name": "minVotesForCreating",
                     "type": "uint256"
                   },
                   {
@@ -334,7 +364,7 @@
                   },
                   {
                     "internalType": "uint256",
-                    "name": "creationRewards",
+                    "name": "creationReward",
                     "type": "uint256"
                   },
                   {
@@ -346,6 +376,11 @@
                     "internalType": "uint256",
                     "name": "voteRewardsCoefficient",
                     "type": "uint256"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "executorDescription",
+                    "type": "string"
                   }
                 ],
                 "internalType": "struct IGovSettings.ProposalSettings",
@@ -391,12 +426,12 @@
                   },
                   {
                     "internalType": "uint256",
-                    "name": "minTokenBalance",
+                    "name": "minVotesForVoting",
                     "type": "uint256"
                   },
                   {
                     "internalType": "uint256",
-                    "name": "minNftBalance",
+                    "name": "minVotesForCreating",
                     "type": "uint256"
                   },
                   {
@@ -406,7 +441,7 @@
                   },
                   {
                     "internalType": "uint256",
-                    "name": "creationRewards",
+                    "name": "creationReward",
                     "type": "uint256"
                   },
                   {
@@ -418,15 +453,20 @@
                     "internalType": "uint256",
                     "name": "voteRewardsCoefficient",
                     "type": "uint256"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "executorDescription",
+                    "type": "string"
                   }
                 ],
                 "internalType": "struct IGovSettings.ProposalSettings",
-                "name": "defaultProposalSetting",
+                "name": "defaultProposalSettings",
                 "type": "tuple"
               }
             ],
             "internalType": "struct IPoolFactory.SettingsDeployParams",
-            "name": "seetingsParams",
+            "name": "settingsParams",
             "type": "tuple"
           },
           {
@@ -492,21 +532,6 @@
             "internalType": "struct IPoolFactory.UserKeeperDeployParams",
             "name": "userKeeperParams",
             "type": "tuple"
-          },
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "votesLimit",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "feePercentage",
-            "type": "uint256"
           },
           {
             "internalType": "string",
