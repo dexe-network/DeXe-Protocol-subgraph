@@ -56,7 +56,7 @@ templates:
         #   handler: onProposalAccepted
         - event: ProposalExecuted(uint256,address) # id, msg.sender
           handler: onProposalExecuted
-        - event: RewardClaimed(uint256,address,address[],uint256[]) # id, msg.sender, tokens, amounts
+        - event: RewardClaimed(uint256[],address,address[],uint256[]) # ids, msg.sender, tokens, amounts
           handler: onRewardClaimed
 
   - kind: ethereum/contract

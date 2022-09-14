@@ -19,6 +19,7 @@ import { getVoterInPool } from "../entities/Voters/VoterInPool";
 import { getVoterInProposal } from "../entities/Voters/VoterInProposal";
 import { PriceFeed } from "../../generated/templates/DaoPool/PriceFeed";
 import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { Proposal, VoterInProposal } from "../../generated/schema";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let pool = getDaoPool(event.address);
@@ -131,6 +132,15 @@ export function onRewardClaimed(event: RewardClaimed): void {
   let pool = getDaoPool(event.address);
   let voter = getVoter(event.params.sender);
   let voterInPool = getVoterInPool(pool, voter);
+  let proposal: Proposal;
+  let voterInProposal: VoterInProposal;
+
+  for (let i = 0; i < event.params.proposalIds.length; i++) {
+    proposal = getProposal(pool, event.params.proposalIds[i]);
+    voterInProposal = getVoterInProposal(proposal, voterInPool);
+
+    voterInProposal.claimedReward = event.params.amounts[i];
+  }
 
   voterInPool.totalClaimedUSD = totalTokenUSDCost(event.params.tokens, event.params.amounts);
 

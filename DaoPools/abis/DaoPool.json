@@ -104,9 +104,9 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "proposalId",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "proposalIds",
+        "type": "uint256[]"
       },
       {
         "indexed": false,
