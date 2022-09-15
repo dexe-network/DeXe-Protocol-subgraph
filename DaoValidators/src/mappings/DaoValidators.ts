@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { ValidatorInPool } from "../../generated/schema";
 import { ChangedValidatorsBalances, Voted } from "../../generated/templates/DaoValidators/DaoValidators";
 import { getDaoPool } from "../entities/DaoPool";
@@ -34,6 +34,11 @@ export function onChangedValidatorsBalances(event: ChangedValidatorsBalances): v
   for (let i = 0; i < event.params.validators.length; i++) {
     validatorInPool = getValidatorInPool(pool, event.params.validators[i]);
     validatorInPool.balance = event.params.newBalance[i];
+
+    if (validatorInPool.balance.equals(BigInt.zero())) {
+      validatorInPool.pool = Bytes.empty();
+    }
+
     validatorInPool.save();
   }
   pool.save();
