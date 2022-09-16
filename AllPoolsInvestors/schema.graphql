@@ -48,6 +48,14 @@ type InsuranceHistory @entity {
   prevHistory: InsuranceHistory!
 }
 
+type LpHistory @entity {
+  id: ID!
+  currentLpAmount: BigInt!
+
+  investorPoolPosition: InvestorPoolPosition!
+  day: BigInt!
+}
+
 # @notice The entity holds historical information about pool
 # @param id the pool address + day
 # @param investors the array of current investors
@@ -91,6 +99,7 @@ type InvestorPoolPosition @entity {
   totalUSDDivestVolume: BigInt!
 
   vest: [Vest!]! @derivedFrom(field: "investorPoolPosition")
+  lpHistory: [LpHistory!]! @derivedFrom(field: "investorPoolPosition")
 }
 
 # @notice The entity holds information about invest and divest operations

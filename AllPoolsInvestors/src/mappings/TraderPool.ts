@@ -23,6 +23,7 @@ import { getProposalContract } from "../entities/trader-pool/proposal/ProposalCo
 import { getProposalPosition } from "../entities/trader-pool/proposal/ProposalPosition";
 import { getProposalVest } from "../entities/trader-pool/proposal/ProposalVest";
 import { getProposalPositionOffset } from "../entities/global/ProposalPositionOffset";
+import { getLpHistory } from "../entities/trader-pool/history/LpHistory";
 
 export function onInvestorAdded(event: InvestorAdded): void {
   let pool = getTraderPool(event.address);
@@ -123,6 +124,8 @@ export function onInvest(event: Invested): void {
   );
   investorPoolPosition.totalLPInvestVolume = investorPoolPosition.totalLPInvestVolume.plus(event.params.receivedLP);
   investorPoolPosition.totalUSDInvestVolume = investorPoolPosition.totalUSDInvestVolume.plus(usdValue);
+
+  getLpHistory(investorPoolPosition, event.block.timestamp, getLPBalanceOf(pool, investor)).save();
 
   investor.save();
   pool.save();
