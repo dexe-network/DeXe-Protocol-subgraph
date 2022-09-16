@@ -54,6 +54,7 @@ type LpHistory @entity {
 
   investorPoolPosition: InvestorPoolPosition!
   day: BigInt!
+  prevHistory: LpHistory!
 }
 
 # @notice The entity holds historical information about pool

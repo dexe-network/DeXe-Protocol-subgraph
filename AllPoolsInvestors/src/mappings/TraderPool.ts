@@ -6,6 +6,7 @@ import {
   ModifiedPrivateInvestors,
   TraderPool,
   ProposalDivested,
+  Transfer,
 } from "../../generated/templates/TraderPool/TraderPool";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
@@ -17,13 +18,13 @@ import { getInvestorPoolPosition } from "../entities/trader-pool/InvestorPoolPos
 import { getVest } from "../entities/trader-pool/Vest";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
-import { Investor } from "../../generated/schema";
-import { TraderPool as TRP } from "../../generated/schema";
+import { Investor, InvestorPoolPosition, LpHistory } from "../../generated/schema";
 import { getProposalContract } from "../entities/trader-pool/proposal/ProposalContract";
 import { getProposalPosition } from "../entities/trader-pool/proposal/ProposalPosition";
 import { getProposalVest } from "../entities/trader-pool/proposal/ProposalVest";
 import { getProposalPositionOffset } from "../entities/global/ProposalPositionOffset";
 import { getLpHistory } from "../entities/trader-pool/history/LpHistory";
+import { findPrevHistory } from "../helpers/HistorySearcher";
 
 export function onInvestorAdded(event: InvestorAdded): void {
   let pool = getTraderPool(event.address);
@@ -125,8 +126,13 @@ export function onInvest(event: Invested): void {
   investorPoolPosition.totalLPInvestVolume = investorPoolPosition.totalLPInvestVolume.plus(event.params.receivedLP);
   investorPoolPosition.totalUSDInvestVolume = investorPoolPosition.totalUSDInvestVolume.plus(usdValue);
 
-  getLpHistory(investorPoolPosition, event.block.timestamp, getLPBalanceOf(pool, investor)).save();
+  let lpHistory = getLpHistory(investorPoolPosition, event.block.timestamp);
 
+  injectPrevLPHistory(lpHistory, investorPoolPosition);
+
+  lpHistory.currentLpAmount = lpHistory.currentLpAmount.plus(event.params.receivedLP);
+
+  lpHistory.save();
   investor.save();
   pool.save();
   positionOffset.save();
@@ -156,6 +162,13 @@ export function onDivest(event: Divested): void {
   investorPoolPosition.totalLPDivestVolume = investorPoolPosition.totalLPDivestVolume.plus(event.params.divestedLP);
   investorPoolPosition.totalUSDDivestVolume = investorPoolPosition.totalUSDDivestVolume.plus(usdValue);
 
+  let lpHistory = getLpHistory(investorPoolPosition, event.block.timestamp);
+
+  injectPrevLPHistory(lpHistory, investorPoolPosition);
+
+  lpHistory.currentLpAmount = lpHistory.currentLpAmount.minus(event.params.divestedLP);
+
+  lpHistory.save();
   investor.save();
   pool.save();
   positionOffset.save();
@@ -194,6 +207,36 @@ export function onProposalDivest(event: ProposalDivested): void {
   divest.save();
 }
 
+export function onTransfer(event: Transfer): void {
+  let from = getInvestor(event.params.from);
+  let to = getInvestor(event.params.to);
+  let pool = getTraderPool(event.address);
+  let positionOffsetFrom = getPositionOffset(pool, from);
+  let positionOffsetTo = getPositionOffset(pool, to);
+  let investorPoolPositionFrom = getInvestorPoolPosition(from, pool, positionOffsetFrom);
+  let investorPoolPositionTo = getInvestorPoolPosition(from, pool, positionOffsetTo);
+
+  let lpHistoryFrom = getLpHistory(investorPoolPositionFrom, event.block.timestamp);
+  let lpHistoryTo = getLpHistory(investorPoolPositionTo, event.block.timestamp);
+
+  injectPrevLPHistory(lpHistoryFrom, investorPoolPositionFrom);
+  injectPrevLPHistory(lpHistoryTo, investorPoolPositionTo);
+
+  lpHistoryFrom.currentLpAmount = lpHistoryFrom.currentLpAmount.minus(event.params.value);
+  lpHistoryTo.currentLpAmount = lpHistoryTo.currentLpAmount.plus(event.params.value);
+
+  lpHistoryTo.save();
+  lpHistoryFrom.save();
+
+  investorPoolPositionTo.save();
+  investorPoolPositionFrom.save();
+  positionOffsetTo.save();
+  positionOffsetFrom.save();
+  pool.save();
+  to.save();
+  from.save();
+}
+
 function getUSDValue(token: Bytes, amount: BigInt): BigInt {
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
 
@@ -215,13 +258,18 @@ function getUSDValue(token: Bytes, amount: BigInt): BigInt {
   }
 }
 
-function getLPBalanceOf(pool: TRP, investor: Investor): BigInt {
-  let poolPrototype = TraderPool.bind(Address.fromString(pool.id.toHexString()));
-  let LPvalue = poolPrototype.try_balanceOf(Address.fromString(investor.id.toHexString()));
-
-  if (!LPvalue.reverted) {
-    return LPvalue.value;
+function injectPrevLPHistory(history: LpHistory, investorPoolPosition: InvestorPoolPosition): void {
+  let prevHistory: LpHistory | null;
+  if (history.prevHistory == "") {
+    prevHistory = findPrevHistory<LpHistory>(
+      LpHistory.load,
+      investorPoolPosition.id.toString(),
+      history.day,
+      BigInt.fromI32(1)
+    );
+    if (prevHistory != null) {
+      history.prevHistory = prevHistory.id;
+      history.currentLpAmount = prevHistory.currentLpAmount;
+    }
   }
-
-  return BigInt.zero();
 }
