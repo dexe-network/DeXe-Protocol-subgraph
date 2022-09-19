@@ -1,5 +1,15 @@
 import { Address, ethereum, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { afterEach, assert, clearStore, describe, newMockEvent, test } from "matchstick-as/assembly/index";
+import {
+  afterEach,
+  assert,
+  beforeAll,
+  beforeEach,
+  clearStore,
+  createMockedFunction,
+  describe,
+  newMockEvent,
+  test,
+} from "matchstick-as/assembly/index";
 import { getBlock, getTransaction } from "./utils";
 import {
   Delegated,
@@ -10,8 +20,17 @@ import {
   Undelegated,
   Voted,
 } from "../generated/templates/DaoPool/DaoPool";
-import { onDelegated, onDPCreated, onProposalCreated, onUndelegeted, onVoted } from "../src/mappings/DaoPool";
+import {
+  onDelegated,
+  onDPCreated,
+  onProposalCreated,
+  onProposalExecuted,
+  onUndelegeted,
+  onVoted,
+  onRewardClaimed,
+} from "../src/mappings/DaoPool";
 import { ProposalType } from "../src/entities/global/ProposalTypes";
+import { PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
 
 function createProposalCreated(
   proposalId: BigInt,
@@ -176,6 +195,36 @@ const tx = getTransaction(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromI32(1)
 const contractSender = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181670");
 
 describe("DaoPool", () => {
+  beforeAll(() => {
+    createMockedFunction(
+      Address.fromString(PRICE_FEED_ADDRESS),
+      "getNormalizedPriceOutUSD",
+      "getNormalizedPriceOutUSD(address,uint256):(uint256,address[])"
+    )
+      .withArgs([
+        ethereum.Value.fromAddress(Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181672")),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(1000000000000000000)),
+      ])
+      .returns([
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(1000000000000000000)),
+        ethereum.Value.fromAddressArray([contractSender, contractSender]),
+      ]);
+
+    createMockedFunction(
+      Address.fromString(PRICE_FEED_ADDRESS),
+      "getNormalizedPriceOutUSD",
+      "getNormalizedPriceOutUSD(address,uint256):(uint256,address[])"
+    )
+      .withArgs([
+        ethereum.Value.fromAddress(Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181673")),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(2000000000000000000)),
+      ])
+      .returns([
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(2000000000000000000)),
+        ethereum.Value.fromAddressArray([contractSender, contractSender]),
+      ]);
+  });
+
   afterEach(() => {
     clearStore();
   });
@@ -381,5 +430,58 @@ describe("DaoPool", () => {
     );
   });
 
-  test("should handle ProposalExecuted", () => {});
+  test("should handle ProposalExecuted", () => {
+    let proposalId = BigInt.fromI32(1);
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+
+    let event = createProposalExecuted(proposalId, sender, contractSender, block, tx);
+
+    onProposalExecuted(event);
+
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "executor",
+      sender.toHexString()
+    );
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "executionTimestamp",
+      block.timestamp.toString()
+    );
+  });
+
+  test("should handle RewardClaimed", () => {
+    let proposalIds = [BigInt.fromI32(1), BigInt.fromI32(2)];
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let tokens = [
+      Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672"),
+      Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181673"),
+    ];
+    let amounts = [BigInt.fromI32(10).pow(18), BigInt.fromI32(10).pow(18).times(BigInt.fromI32(2))];
+
+    let event = createRewardClaimed(proposalIds, sender, tokens, amounts, contractSender, block, tx);
+
+    onRewardClaimed(event);
+
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
+      "claimedReward",
+      amounts[0].toString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),
+      "claimedReward",
+      amounts[1].toString()
+    );
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "totalClaimedUSD",
+      amounts[0].plus(amounts[1]).toString()
+    );
+  });
 });

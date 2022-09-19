@@ -140,6 +140,8 @@ export function onRewardClaimed(event: RewardClaimed): void {
     voterInProposal = getVoterInProposal(proposal, voterInPool);
 
     voterInProposal.claimedReward = event.params.amounts[i];
+
+    voterInProposal.save();
   }
 
   voterInPool.totalClaimedUSD = totalTokenUSDCost(event.params.tokens, event.params.amounts);
