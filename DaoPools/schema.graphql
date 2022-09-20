@@ -38,7 +38,6 @@ type Proposal @entity {
 type VoterInPool @entity {
   id: Bytes! # voter address + pool address
   receivedDelegation: BigInt!
-  # totalRewardClaimed: BigInt!
   totalDPClaimed: BigInt!
   totalClaimedUSD: BigInt!
 
