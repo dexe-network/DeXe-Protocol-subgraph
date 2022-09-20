@@ -10,6 +10,7 @@ export function getDelegationHistory(
   from: Voter,
   to: Voter,
   amount: BigInt,
+  nfts: Array<BigInt>,
   isDelegate: boolean
 ): DelegationHistory {
   let counter = getInteractionCount(hash);
@@ -23,6 +24,7 @@ export function getDelegationHistory(
     history.to = to.id;
     history.isDelegate = isDelegate;
     history.timestamp = timestamp;
+    history.nfts = nfts;
 
     history.pool = pool.id;
 

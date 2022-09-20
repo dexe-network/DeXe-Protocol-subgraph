@@ -22,8 +22,6 @@ type Proposal @entity {
   executor: Voter!
   executionTimestamp: BigInt!
 
-  # acceptedTimestamp: BigInt!
-
   currentVotes: BigInt!
   quorum: BigInt!
 
@@ -38,6 +36,7 @@ type Proposal @entity {
 type VoterInPool @entity {
   id: Bytes! # voter address + pool address
   receivedDelegation: BigInt!
+  receivedNFTDelegation: [BigInt!]!
   totalDPClaimed: BigInt!
   totalClaimedUSD: BigInt!
 
@@ -90,6 +89,7 @@ type DelegationHistory @entity(immutable: true) {
   isDelegate: Boolean!
 
   amount: BigInt!
+  nfts: [BigInt!]!
 }
 
 # @notice The entity counts interactions in single tx

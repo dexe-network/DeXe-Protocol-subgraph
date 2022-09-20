@@ -3,7 +3,6 @@ import {
   afterEach,
   assert,
   beforeAll,
-  beforeEach,
   clearStore,
   createMockedFunction,
   describe,
@@ -16,7 +15,7 @@ import {
   DPCreated,
   ProposalCreated,
   ProposalExecuted,
-  RewardClaimed,
+  RewardsClaimed,
   Undelegated,
   Voted,
 } from "../generated/templates/DaoPool/DaoPool";
@@ -27,7 +26,7 @@ import {
   onProposalExecuted,
   onUndelegeted,
   onVoted,
-  onRewardClaimed,
+  onRewardsClaimed,
 } from "../src/mappings/DaoPool";
 import { ProposalType } from "../src/entities/global/ProposalTypes";
 import { PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
@@ -58,6 +57,7 @@ function createDelegated(
   from: Address,
   to: Address,
   amount: BigInt,
+  nfts: Array<BigInt>,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
@@ -68,6 +68,7 @@ function createDelegated(
   event.parameters.push(new ethereum.EventParam("from", ethereum.Value.fromAddress(from)));
   event.parameters.push(new ethereum.EventParam("to", ethereum.Value.fromAddress(to)));
   event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("nfts", ethereum.Value.fromUnsignedBigIntArray(nfts)));
 
   event.block = block;
   event.transaction = tx;
@@ -80,6 +81,7 @@ function createUndelegated(
   from: Address,
   to: Address,
   amount: BigInt,
+  nfts: Array<BigInt>,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
@@ -90,6 +92,7 @@ function createUndelegated(
   event.parameters.push(new ethereum.EventParam("from", ethereum.Value.fromAddress(from)));
   event.parameters.push(new ethereum.EventParam("to", ethereum.Value.fromAddress(to)));
   event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("nfts", ethereum.Value.fromUnsignedBigIntArray(nfts)));
 
   event.block = block;
   event.transaction = tx;
@@ -174,8 +177,8 @@ function createRewardClaimed(
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
-): RewardClaimed {
-  let event = changetype<RewardClaimed>(newMockEvent());
+): RewardsClaimed {
+  let event = changetype<RewardsClaimed>(newMockEvent());
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("proposalIds", ethereum.Value.fromUnsignedBigIntArray(proposalIds)));
@@ -285,8 +288,9 @@ describe("DaoPool", () => {
     let from = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
     let to = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
     let amount = BigInt.fromI32(100).pow(18);
+    let nfts = [BigInt.fromI32(1), BigInt.fromI32(2)];
 
-    let event = createDelegated(from, to, amount, contractSender, block, tx);
+    let event = createDelegated(from, to, amount, nfts, contractSender, block, tx);
 
     onDelegated(event);
 
@@ -294,6 +298,12 @@ describe("DaoPool", () => {
     assert.fieldEquals("Voter", to.toHexString(), "id", to.toHexString());
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "votersCount", "1");
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedDelegation", amount.toString());
+    assert.fieldEquals(
+      "VoterInPool",
+      to.concat(contractSender).toHexString(),
+      "receivedNFTDelegation",
+      "[" + nfts[0].toString() + ", " + nfts[1].toString() + "]"
+    );
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals(
       "DelegationHistory",
@@ -304,6 +314,12 @@ describe("DaoPool", () => {
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "from", from.toHexString());
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "to", to.toHexString());
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
+    assert.fieldEquals(
+      "DelegationHistory",
+      tx.hash.concatI32(0).toHexString(),
+      "nfts",
+      "[" + nfts[0].toString() + ", " + nfts[1].toString() + "]"
+    );
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "isDelegate", "true");
   });
 
@@ -312,9 +328,11 @@ describe("DaoPool", () => {
     let to = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
     let amount1 = BigInt.fromI32(100).pow(18);
     let amount2 = BigInt.fromI32(50).pow(18);
+    let nfts1 = [BigInt.fromI32(1), BigInt.fromI32(2)];
+    let nfts2 = [BigInt.fromI32(1)];
 
-    let event1 = createDelegated(from, to, amount1, contractSender, block, tx);
-    let event2 = createUndelegated(from, to, amount2, contractSender, block, tx);
+    let event1 = createDelegated(from, to, amount1, nfts1, contractSender, block, tx);
+    let event2 = createUndelegated(from, to, amount2, nfts2, contractSender, block, tx);
 
     onDelegated(event1);
     onUndelegeted(event2);
@@ -324,6 +342,12 @@ describe("DaoPool", () => {
       to.concat(contractSender).toHexString(),
       "receivedDelegation",
       amount1.minus(amount2).toString()
+    );
+    assert.fieldEquals(
+      "VoterInPool",
+      to.concat(contractSender).toHexString(),
+      "receivedNFTDelegation",
+      "[" + nfts1[1].toString() + "]"
     );
 
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "pool", contractSender.toHexString());
@@ -336,6 +360,12 @@ describe("DaoPool", () => {
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "from", from.toHexString());
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "to", to.toHexString());
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "amount", amount2.toString());
+    assert.fieldEquals(
+      "DelegationHistory",
+      tx.hash.concatI32(1).toHexString(),
+      "nfts",
+      "[" + nfts2[0].toString() + "]"
+    );
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "isDelegate", "false");
   });
 
@@ -463,7 +493,7 @@ describe("DaoPool", () => {
 
     let event = createRewardClaimed(proposalIds, sender, tokens, amounts, contractSender, block, tx);
 
-    onRewardClaimed(event);
+    onRewardsClaimed(event);
 
     assert.fieldEquals(
       "VoterInProposal",

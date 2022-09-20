@@ -4,7 +4,7 @@ import {
   DPCreated,
   ProposalCreated,
   ProposalExecuted,
-  RewardClaimed,
+  RewardsClaimed,
   Undelegated,
   Voted,
 } from "../../generated/templates/DaoPool/DaoPool";
@@ -20,6 +20,7 @@ import { getVoterInProposal } from "../entities/Voters/VoterInProposal";
 import { PriceFeed } from "../../generated/templates/DaoPool/PriceFeed";
 import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { Proposal, VoterInProposal } from "../../generated/schema";
+import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let pool = getDaoPool(event.address);
@@ -40,11 +41,13 @@ export function onDelegated(event: Delegated): void {
     from,
     to,
     event.params.amount,
+    event.params.nfts,
     true
   );
   let voterInPool = getVoterInPool(pool, to);
 
   voterInPool.receivedDelegation = voterInPool.receivedDelegation.plus(event.params.amount);
+  voterInPool.receivedNFTDelegation = extendArray<BigInt>(voterInPool.receivedNFTDelegation, event.params.nfts);
 
   voterInPool.save();
   delegateHistory.save();
@@ -64,11 +67,13 @@ export function onUndelegeted(event: Undelegated): void {
     from,
     to,
     event.params.amount,
+    event.params.nfts,
     false
   );
   let voterInPool = getVoterInPool(pool, to);
 
   voterInPool.receivedDelegation = voterInPool.receivedDelegation.minus(event.params.amount);
+  voterInPool.receivedNFTDelegation = reduceArray<BigInt>(voterInPool.receivedNFTDelegation, event.params.nfts);
 
   voterInPool.save();
   delegateHistory.save();
@@ -128,7 +133,7 @@ export function onProposalExecuted(event: ProposalExecuted): void {
   pool.save();
 }
 
-export function onRewardClaimed(event: RewardClaimed): void {
+export function onRewardsClaimed(event: RewardsClaimed): void {
   let pool = getDaoPool(event.address);
   let voter = getVoter(event.params.sender);
   let voterInPool = getVoterInPool(pool, voter);
