@@ -216,6 +216,12 @@ describe("TraderPool", () => {
     );
 
     assert.fieldEquals("InteractionCount", tx.hash.toHexString(), "count", "1");
+    assert.fieldEquals(
+      "LpHistory",
+      user.toHexString() + sender.toHexString() + "0" + "0",
+      "currentLpAmount",
+      receivedLP.toString()
+    );
   });
 
   test("should handle divested event", () => {
@@ -251,6 +257,12 @@ describe("TraderPool", () => {
     );
 
     assert.fieldEquals("InteractionCount", tx.hash.toHexString(), "count", "1");
+    assert.fieldEquals(
+      "LpHistory",
+      user.toHexString() + sender.toHexString() + "0" + "0",
+      "currentLpAmount",
+      "-" + divestedLP.toString()
+    );
   });
 
   test("should handle ProposalDivested event", () => {

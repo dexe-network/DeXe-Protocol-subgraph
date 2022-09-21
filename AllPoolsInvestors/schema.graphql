@@ -37,7 +37,7 @@ type Investor @entity {
 # @param claimedAmount the total amount of claims
 # @param investor the investor entity id
 # @param day the timestamp / 86400
-# @param prevHistory the id of previos history
+# @param prevHistory the id of previous history
 type InsuranceHistory @entity {
   id: ID! # investor address + timestamp / 86400
   stake: BigInt!
@@ -46,6 +46,21 @@ type InsuranceHistory @entity {
   investor: Investor!
   day: BigInt!
   prevHistory: InsuranceHistory!
+}
+
+# @notice The entity holds historical information about investor's lp balance
+# @param id the InvestorPoolPosition entity id + day
+# @param currentLpAmount the current lp balance of investor
+# @param investorPoolPosition the InvestorPoolPosition entity id
+# @param day the timestamp / 86400
+# @param prevHistory the id of previous history
+type LpHistory @entity {
+  id: ID!
+  currentLpAmount: BigInt!
+
+  investorPoolPosition: InvestorPoolPosition!
+  day: BigInt!
+  prevHistory: LpHistory!
 }
 
 # @notice The entity holds historical information about pool
@@ -91,6 +106,7 @@ type InvestorPoolPosition @entity {
   totalUSDDivestVolume: BigInt!
 
   vest: [Vest!]! @derivedFrom(field: "investorPoolPosition")
+  lpHistory: [LpHistory!]! @derivedFrom(field: "investorPoolPosition")
 }
 
 # @notice The entity holds information about invest and divest operations
