@@ -37,7 +37,7 @@ type Investor @entity {
 # @param claimedAmount the total amount of claims
 # @param investor the investor entity id
 # @param day the timestamp / 86400
-# @param prevHistory the id of previos history
+# @param prevHistory the id of previous history
 type InsuranceHistory @entity {
   id: ID! # investor address + timestamp / 86400
   stake: BigInt!
@@ -53,7 +53,7 @@ type InsuranceHistory @entity {
 # @param currentLpAmount the current lp balance of investor
 # @param investorPoolPosition the InvestorPoolPosition entity id
 # @param day the timestamp / 86400
-# @param prevHistory the id of previos history
+# @param prevHistory the id of previous history
 type LpHistory @entity {
   id: ID!
   currentLpAmount: BigInt!
