@@ -15,24 +15,28 @@ type Proposal @entity {
   id: Bytes! # pool address + porposalId
   proposalId: BigInt!
 
+  proposalType: BigInt!
+
   creator: Voter!
 
   executor: Voter!
   executionTimestamp: BigInt!
-
-  # acceptedTimestamp: BigInt!
 
   currentVotes: BigInt!
   quorum: BigInt!
 
   votersVoted: BigInt! # кол-во адресов с которых вотили
   pool: DaoPool!
+
+  distributionProposal: DistributionProposal!
+
+  votes: [ProposalVote!]! @derivedFrom(field: "proposal")
 }
 
 type VoterInPool @entity {
   id: Bytes! # voter address + pool address
   receivedDelegation: BigInt!
-  totalRewardClaimed: BigInt!
+  receivedNFTDelegation: [BigInt!]!
   totalDPClaimed: BigInt!
   totalClaimedUSD: BigInt!
 
@@ -47,16 +51,16 @@ type ProposalVote @entity(immutable: true) {
   id: Bytes! # tx hash + counter
   hash: Bytes!
   timestamp: BigInt!
-  proposalId: BigInt!
 
   personalAmount: BigInt!
   delegatedAmount: BigInt!
 
   voter: VoterInProposal!
+  proposal: Proposal!
 }
 
 type VoterInProposal @entity {
-  id: Bytes! # voter address + proposal entity id
+  id: Bytes! # voter in pool address + proposal entity id
   pool: DaoPool!
   proposal: Proposal!
   voter: VoterInPool!
@@ -71,8 +75,6 @@ type VoterInProposal @entity {
 
 type DistributionProposal @entity {
   id: Bytes! # proposal entity id
-  proposalId: BigInt!
-
   token: Bytes!
   amount: BigInt!
 }
@@ -87,6 +89,7 @@ type DelegationHistory @entity(immutable: true) {
   isDelegate: Boolean!
 
   amount: BigInt!
+  nfts: [BigInt!]!
 }
 
 # @notice The entity counts interactions in single tx

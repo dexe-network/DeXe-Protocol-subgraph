@@ -6,7 +6,7 @@ dataSources:
     name: PoolFactory
     network: chapel
     source:
-      address: ""
+      address: "0x76e98f7d84603AEb97cd1c89A80A9e914f181679"
       abi: PoolFactory
       startBlock:
     mapping:
@@ -20,7 +20,7 @@ dataSources:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
       eventHandlers:
-        - event: DaoDeployed()
+        - event: DaoPoolDeployed(address,address,address)
           handler: onDeployed
 
 templates:
@@ -39,36 +39,39 @@ templates:
       abis:
         - name: DaoPool
           file: ./abis/DaoPool.json
+        - name: PriceFeed
+          file: ./abis/PriceFeed.json
       eventHandlers:
         - event: ProposalCreated(uint256,address,uint256) # id, msg.sender, quorum,
           handler: onProposalCreated
-        - event: Delegated(address,uint256) # to, amount
+        - event: Delegated(address,address,uint256,uint256[]) # from, to, amount, nfts
           handler: onDelegated
-        - event: Vote(uint256,address,uint256,uint256) # id, msg.sender, personalVote, delegatedVote
-          handler: onVote
+        - event: Undelegated(address,address,uint256,uint256[]) # from, to, amount, nfts
+          handler: onUndelegeted
+        - event: Voted(uint256,address,uint256,uint256) # id, msg.sender, personalVote, delegatedVote
+          handler: onVoted
         - event: DPCreated(uint256,address,address,uint256) # id, msg.sender, token, amount
           handler: onDPCreated
-        - event: ProposalAccepted(uint256) # id
-          handler: onProposalAccepted
         - event: ProposalExecuted(uint256,address) # id, msg.sender
           handler: onProposalExecuted
-        - event: RewardClaimed(uint256,address,uint256) # id, msg.sender, amount
-          handler: onRewardClaimed
+        - event: RewardsClaimed(uint256[],address,address[],uint256[]) # ids, msg.sender, tokens, amounts
+          handler: onRewardsClaimed
+
   - kind: ethereum/contract
-    name: DistributonProposal
+    name: DistributionProposal
     network: chapel
     source:
-      abi: DistributonProposal
+      abi: DistributionProposal
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
-      file: ./src/mappings/DistributonProposal.ts
+      file: ./src/mappings/DistributionProposal.ts
       entities:
-        - DistributonProposal
+        - DistributionProposal
       abis:
-        - name: DistributonProposal
-          file: ./abis/DistributonProposal.json
+        - name: DistributionProposal
+          file: ./abis/DistributionProposal.json
       eventHandlers:
-        - event: DistributonProposalClaimed(uint256,address,uint256) # id, msg.sender, amount
-          handler: onDistributonProposalClaimed
+        - event: DistributionProposalClaimed(uint256,address,uint256) # id, msg.sender, amount
+          handler: onDistributionProposalClaimed
