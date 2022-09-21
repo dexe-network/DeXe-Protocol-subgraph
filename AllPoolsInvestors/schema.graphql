@@ -48,6 +48,12 @@ type InsuranceHistory @entity {
   prevHistory: InsuranceHistory!
 }
 
+# @notice The entity holds historical information about investor's lp balance
+# @param id the InvestorPoolPosition entity id + day
+# @param currentLpAmount the current lp balance of investor
+# @param investorPoolPosition the InvestorPoolPosition entity id
+# @param day the timestamp / 86400
+# @param prevHistory the id of previos history
 type LpHistory @entity {
   id: ID!
   currentLpAmount: BigInt!

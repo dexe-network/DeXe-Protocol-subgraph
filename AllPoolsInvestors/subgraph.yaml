@@ -79,8 +79,6 @@ templates:
           handler: onDivest
         - event: ProposalDivested(uint256,address,uint256,uint256,uint256)
           handler: onProposalDivest
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: onTransfer
 
   - kind: ethereum/contract
     name: Proposal

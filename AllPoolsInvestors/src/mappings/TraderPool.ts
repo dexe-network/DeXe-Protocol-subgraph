@@ -207,36 +207,6 @@ export function onProposalDivest(event: ProposalDivested): void {
   divest.save();
 }
 
-export function onTransfer(event: Transfer): void {
-  let from = getInvestor(event.params.from);
-  let to = getInvestor(event.params.to);
-  let pool = getTraderPool(event.address);
-  let positionOffsetFrom = getPositionOffset(pool, from);
-  let positionOffsetTo = getPositionOffset(pool, to);
-  let investorPoolPositionFrom = getInvestorPoolPosition(from, pool, positionOffsetFrom);
-  let investorPoolPositionTo = getInvestorPoolPosition(from, pool, positionOffsetTo);
-
-  let lpHistoryFrom = getLpHistory(investorPoolPositionFrom, event.block.timestamp);
-  let lpHistoryTo = getLpHistory(investorPoolPositionTo, event.block.timestamp);
-
-  injectPrevLPHistory(lpHistoryFrom, investorPoolPositionFrom);
-  injectPrevLPHistory(lpHistoryTo, investorPoolPositionTo);
-
-  lpHistoryFrom.currentLpAmount = lpHistoryFrom.currentLpAmount.minus(event.params.value);
-  lpHistoryTo.currentLpAmount = lpHistoryTo.currentLpAmount.plus(event.params.value);
-
-  lpHistoryTo.save();
-  lpHistoryFrom.save();
-
-  investorPoolPositionTo.save();
-  investorPoolPositionFrom.save();
-  positionOffsetTo.save();
-  positionOffsetFrom.save();
-  pool.save();
-  to.save();
-  from.save();
-}
-
 function getUSDValue(token: Bytes, amount: BigInt): BigInt {
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
 
@@ -259,11 +229,10 @@ function getUSDValue(token: Bytes, amount: BigInt): BigInt {
 }
 
 function injectPrevLPHistory(history: LpHistory, investorPoolPosition: InvestorPoolPosition): void {
-  let prevHistory: LpHistory | null;
   if (history.prevHistory == "") {
-    prevHistory = findPrevHistory<LpHistory>(
+    let prevHistory = findPrevHistory<LpHistory>(
       LpHistory.load,
-      investorPoolPosition.id.toString(),
+      investorPoolPosition.id,
       history.day,
       BigInt.fromI32(1)
     );

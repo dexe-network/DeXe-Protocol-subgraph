@@ -1,4 +1,4 @@
-import { BigInt } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { InvestorPoolPosition, LpHistory } from "../../../../generated/schema";
 import { DAY } from "../../global/globals";
 
@@ -12,6 +12,7 @@ export function getLpHistory(investorPoolPosition: InvestorPoolPosition, timesta
     history.currentLpAmount = BigInt.zero();
 
     history.investorPoolPosition = investorPoolPosition.id;
+    history.prevHistory = "";
     history.day = day;
   }
 
