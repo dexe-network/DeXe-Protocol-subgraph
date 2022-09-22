@@ -44,7 +44,8 @@ export function onProposalSupplied(event: ProposalSupplied): void {
     event.transaction.hash,
     proposal,
     upcastCopy<Address, Bytes>(event.params.tokens),
-    event.params.amounts
+    event.params.amounts,
+    event.block.timestamp
   );
   let pool = getInvestTraderPool(Address.fromString(proposalContract.investPool.toHexString()));
 

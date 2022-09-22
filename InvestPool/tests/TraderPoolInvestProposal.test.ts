@@ -278,7 +278,7 @@ describe("TraderPoolInvestProposal", () => {
       "amountDividendsTokens",
       "[" + amounts[0].toString() + ", " + amounts[1].toString() + "]"
     );
-    assert.fieldEquals("Supply", event.transaction.hash.concatI32(0).toHexString(), "timestamp", "0");
+    assert.fieldEquals("Supply", event.transaction.hash.concatI32(0).toHexString(), "timestamp", "1");
     assert.fieldEquals(
       "Supply",
       event.transaction.hash.concatI32(0).toHexString(),

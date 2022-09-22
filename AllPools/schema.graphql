@@ -192,7 +192,7 @@ type Investor @entity {
 # @param day the timestamp / 86400
 # @param fundProfit the profit between fee payouts
 # @param perfomanceFee the pefomance fee
-# @param prevHistory the id of previos history entity
+# @param prevHistory the id of previous history entity
 type FeeHistory @entity {
   id: ID! # pool address + timestamp / 86400
   traderPool: TraderPool!

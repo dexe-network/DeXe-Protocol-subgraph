@@ -1,0 +1,46 @@
+type DaoPool @entity {
+  id: Bytes! # pool address
+  validators: [ValidatorInPool!]! @derivedFrom(field: "pool")
+}
+
+type ValidatorsContract @entity(immutable: true) {
+  id: Bytes! # validators contract address
+  pool: Bytes!
+}
+
+type ValidatorInPool @entity {
+  id: Bytes! # validator address + pool address
+  balance: BigInt!
+
+  pool: DaoPool!
+}
+
+type ProposalVote @entity(immutable: true) {
+  id: Bytes! # tx hash + counter
+  hash: Bytes!
+  timestamp: BigInt!
+  proposalId: BigInt!
+
+  amount: BigInt!
+
+  voter: ValidatorInProposal!
+}
+
+type ValidatorInProposal @entity {
+  id: Bytes! # user address + pool address + proposal id
+  pool: DaoPool!
+  proposalId: BigInt!
+  validator: ValidatorInPool!
+
+  totalVote: BigInt!
+
+  votes: [ProposalVote!]! @derivedFrom(field: "voter")
+}
+
+# @notice The entity counts interactions in single tx
+# @param id forms from tx hash
+# @param count the counter of interactions in single tx
+type InteractionCount @entity {
+  id: Bytes!
+  count: BigInt!
+}
