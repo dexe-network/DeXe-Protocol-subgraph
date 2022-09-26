@@ -56,6 +56,12 @@
         "internalType": "uint256[]",
         "name": "nfts",
         "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isDelegate",
+        "type": "bool"
       }
     ],
     "name": "Delegated",
@@ -110,9 +116,9 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint256[]",
-        "name": "proposalIds",
-        "type": "uint256[]"
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
       },
       {
         "indexed": false,
@@ -122,33 +128,8 @@
       },
       {
         "indexed": false,
-        "internalType": "address[]",
-        "name": "tokens",
-        "type": "address[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "amounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "RewardsClaimed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
         "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "to",
+        "name": "token",
         "type": "address"
       },
       {
@@ -156,15 +137,9 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "nfts",
-        "type": "uint256[]"
       }
     ],
-    "name": "Undelegated",
+    "name": "RewardClaimed",
     "type": "event"
   },
   {

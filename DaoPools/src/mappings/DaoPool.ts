@@ -4,8 +4,7 @@ import {
   DPCreated,
   ProposalCreated,
   ProposalExecuted,
-  RewardsClaimed,
-  Undelegated,
+  RewardClaimed,
   Voted,
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPool } from "../entities/DaoPool";
@@ -48,32 +47,6 @@ export function onDelegated(event: Delegated): void {
 
   voterInPool.receivedDelegation = voterInPool.receivedDelegation.plus(event.params.amount);
   voterInPool.receivedNFTDelegation = extendArray<BigInt>(voterInPool.receivedNFTDelegation, event.params.nfts);
-
-  voterInPool.save();
-  delegateHistory.save();
-  pool.save();
-  to.save();
-  from.save();
-}
-
-export function onUndelegeted(event: Undelegated): void {
-  let from = getVoter(event.params.from);
-  let to = getVoter(event.params.to);
-  let pool = getDaoPool(event.address);
-  let delegateHistory = getDelegationHistory(
-    event.transaction.hash,
-    pool,
-    event.block.timestamp,
-    from,
-    to,
-    event.params.amount,
-    event.params.nfts,
-    false
-  );
-  let voterInPool = getVoterInPool(pool, to);
-
-  voterInPool.receivedDelegation = voterInPool.receivedDelegation.minus(event.params.amount);
-  voterInPool.receivedNFTDelegation = reduceArray<BigInt>(voterInPool.receivedNFTDelegation, event.params.nfts);
 
   voterInPool.save();
   delegateHistory.save();
@@ -133,41 +106,31 @@ export function onProposalExecuted(event: ProposalExecuted): void {
   pool.save();
 }
 
-export function onRewardsClaimed(event: RewardsClaimed): void {
+export function onRewardClaimed(event: RewardClaimed): void {
   let pool = getDaoPool(event.address);
   let voter = getVoter(event.params.sender);
   let voterInPool = getVoterInPool(pool, voter);
   let proposal: Proposal;
   let voterInProposal: VoterInProposal;
 
-  for (let i = 0; i < event.params.proposalIds.length; i++) {
-    proposal = getProposal(pool, event.params.proposalIds[i]);
-    voterInProposal = getVoterInProposal(proposal, voterInPool);
+  proposal = getProposal(pool, event.params.proposalId);
+  voterInProposal = getVoterInProposal(proposal, voterInPool);
 
-    voterInProposal.claimedReward = event.params.amounts[i];
+  voterInProposal.claimedReward = event.params.amount;
 
-    voterInProposal.save();
-  }
+  voterInProposal.save();
 
-  voterInPool.totalClaimedUSD = totalTokenUSDCost(event.params.tokens, event.params.amounts);
+  voterInPool.totalClaimedUSD = voterInPool.totalClaimedUSD.plus(
+    getUSDFromPriceFeed(event.params.token, event.params.amount)
+  );
 
   voterInPool.save();
   voter.save();
   pool.save();
 }
 
-function totalTokenUSDCost(tokens: Array<Address>, volumes: Array<BigInt>): BigInt {
-  let totalCost = BigInt.zero();
+function getUSDFromPriceFeed(baseTokenAddress: Address, fromBaseVolume: BigInt): BigInt {
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-
-  for (let i = 0; i < tokens.length; i++) {
-    totalCost = totalCost.plus(getUSDFromPriceFeed(pfPrototype, tokens[i], volumes[i]));
-  }
-
-  return totalCost;
-}
-
-function getUSDFromPriceFeed(pfPrototype: PriceFeed, baseTokenAddress: Address, fromBaseVolume: BigInt): BigInt {
   let resp = pfPrototype.try_getNormalizedPriceOutUSD(baseTokenAddress, fromBaseVolume);
   if (resp.reverted) {
     log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
