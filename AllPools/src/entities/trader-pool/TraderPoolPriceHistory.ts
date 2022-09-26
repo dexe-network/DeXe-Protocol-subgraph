@@ -1,6 +1,8 @@
-import { BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { TraderPool, TraderPoolPriceHistory } from "../../../generated/schema";
+import { findPrevHistory } from "../../helpers/HistorySearcher";
 import { BLOCK_PER_YEAR, CHECK_PER_BLOCK, DECIMAL, PERCENTAGE_DENOMINATOR } from "../global/globals";
+import { getTraderPool } from "./TraderPool";
 
 export function getTraderPoolPriceHistory(
   pool: TraderPool,
@@ -37,12 +39,10 @@ export function getTraderPoolPriceHistory(
 
     history.aggregationType = aggregationType;
 
-    let prevBlock = roundCheckUp(
-      BigInt.fromI64(max(blockNumber.minus(BigInt.fromU64(BLOCK_PER_YEAR)).toI64(), pool.creationBlock.toI64()))
-    );
+    let prevHistory = getPrevPriceHistory(history);
 
-    if (prevBlock.notEqual(roundCheckUp(pool.creationBlock))) {
-      history.APY = history.percPNL.minus(getTraderPoolPriceHistory(pool, prevBlock).percPNL);
+    if (prevHistory.block.notEqual(history.block)) {
+      history.APY = history.percPNL.minus(prevHistory.percPNL);
     } else {
       history.APY = history.percPNL;
     }
@@ -53,4 +53,17 @@ export function getTraderPoolPriceHistory(
 export function roundCheckUp(block: BigInt): BigInt {
   let mod = block.mod(BigInt.fromU64(CHECK_PER_BLOCK));
   return block.plus(BigInt.fromU64(CHECK_PER_BLOCK).minus(mod));
+}
+
+export function getPrevPriceHistory(currentPH: TraderPoolPriceHistory): TraderPoolPriceHistory {
+  let pool = getTraderPool(Address.fromString(currentPH.pool));
+  let prevHistory = findPrevHistory<TraderPoolPriceHistory>(
+    TraderPoolPriceHistory.load,
+    currentPH.pool,
+    currentPH.block,
+    BigInt.fromI32(100),
+    pool.creationBlock
+  );
+
+  return prevHistory == null ? currentPH : prevHistory;
 }
