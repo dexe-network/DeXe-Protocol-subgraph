@@ -25,6 +25,11 @@ export function onProposalCreated(event: ProposalCreated): void {
   let pool = getDaoPool(event.address);
   let proposal = getProposal(pool, event.params.proposalId, event.params.sender, event.params.quorum);
 
+  if (proposal.creator != event.params.sender) {
+    proposal.creator = event.params.sender;
+    proposal.quorum = event.params.quorum;
+  }
+
   pool.save();
   proposal.save();
 }
@@ -41,12 +46,17 @@ export function onDelegated(event: Delegated): void {
     to,
     event.params.amount,
     event.params.nfts,
-    true
+    event.params.isDelegate
   );
   let voterInPool = getVoterInPool(pool, to);
 
-  voterInPool.receivedDelegation = voterInPool.receivedDelegation.plus(event.params.amount);
-  voterInPool.receivedNFTDelegation = extendArray<BigInt>(voterInPool.receivedNFTDelegation, event.params.nfts);
+  if (event.params.isDelegate) {
+    voterInPool.receivedDelegation = voterInPool.receivedDelegation.plus(event.params.amount);
+    voterInPool.receivedNFTDelegation = extendArray<BigInt>(voterInPool.receivedNFTDelegation, event.params.nfts);
+  } else {
+    voterInPool.receivedDelegation = voterInPool.receivedDelegation.minus(event.params.amount);
+    voterInPool.receivedNFTDelegation = reduceArray<BigInt>(voterInPool.receivedNFTDelegation, event.params.nfts);
+  }
 
   voterInPool.save();
   delegateHistory.save();
