@@ -1,5 +1,15 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
-import { assert, beforeAll, beforeEach, createMockedFunction, describe, logStore, test } from "matchstick-as";
+import {
+  afterEach,
+  assert,
+  beforeAll,
+  beforeEach,
+  clearStore,
+  createMockedFunction,
+  describe,
+  logStore,
+  test,
+} from "matchstick-as";
 import { getBlock, getNextBlock, getTransaction } from "./utils";
 import { getTraderPool } from "../src/entities/trader-pool/TraderPool";
 import { handl } from "../src/mappings/TraderPoolRegistry";
@@ -72,6 +82,10 @@ describe("TraderPoolRegistry", () => {
         ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(40)),
       ])
       .returns(returnData);
+  });
+
+  afterEach(() => {
+    clearStore();
   });
 
   describe("block handler", () => {
@@ -172,7 +186,7 @@ describe("TraderPoolRegistry", () => {
         handl(block);
       }
 
-      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "100", "timestamp", "100000");
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "100", "timestamp", "1000");
       assert.fieldEquals(
         "TraderPoolPriceHistory",
         pools[0].toHexString() + "100",
@@ -344,6 +358,229 @@ describe("TraderPoolRegistry", () => {
       assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "28800", "APY", "0");
       assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "28800", "isLast", "true");
       assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "28800", "aggregationType", "0");
+    });
+
+    test("should handle every 200th block in range 1000", () => {
+      block = getBlock(BigInt.fromU64(200), BigInt.fromU64(2 * 1000));
+      handl(block);
+      block = getBlock(BigInt.fromU64(400), BigInt.fromU64(4 * 1000));
+      handl(block);
+      block = getBlock(BigInt.fromU64(600), BigInt.fromU64(6 * 1000));
+      handl(block);
+      block = getBlock(BigInt.fromU64(800), BigInt.fromU64(8 * 1000));
+      handl(block);
+      block = getBlock(BigInt.fromU64(1000), BigInt.fromU64(10 * 1000));
+      handl(block);
+
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "200", "timestamp", "2000");
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "200",
+        "usdTVL",
+        BigInt.fromI32(10).pow(19).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "200",
+        "supply",
+        BigInt.fromI32(10).pow(18).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "200",
+        "baseTVL",
+        BigInt.fromI32(10).pow(17).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "200",
+        "absPNL",
+        BigInt.fromI32(10).pow(18).times(BigInt.fromI32(9)).toString()
+      );
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "200", "percPNL", "90000");
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "200",
+        "traderUSD",
+        BigInt.fromI32(10).pow(18).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "200",
+        "traderBase",
+        BigInt.fromI32(10).pow(18).toString()
+      );
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "200", "APY", "90000");
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "200", "isLast", "false");
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "200", "aggregationType", "0");
+
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "400", "timestamp", "4000");
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "400",
+        "usdTVL",
+        BigInt.fromI32(10).pow(19).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "400",
+        "supply",
+        BigInt.fromI32(10).pow(18).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "400",
+        "baseTVL",
+        BigInt.fromI32(10).pow(17).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "400",
+        "absPNL",
+        BigInt.fromI32(10).pow(18).times(BigInt.fromI32(9)).toString()
+      );
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "400", "percPNL", "90000");
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "400",
+        "traderUSD",
+        BigInt.fromI32(10).pow(18).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "400",
+        "traderBase",
+        BigInt.fromI32(10).pow(18).toString()
+      );
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "400", "APY", "0");
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "400", "isLast", "false");
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "400", "aggregationType", "1");
+
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "600", "timestamp", "6000");
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "600",
+        "usdTVL",
+        BigInt.fromI32(10).pow(19).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "600",
+        "supply",
+        BigInt.fromI32(10).pow(18).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "600",
+        "baseTVL",
+        BigInt.fromI32(10).pow(17).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "600",
+        "absPNL",
+        BigInt.fromI32(10).pow(18).times(BigInt.fromI32(9)).toString()
+      );
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "600", "percPNL", "90000");
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "600",
+        "traderUSD",
+        BigInt.fromI32(10).pow(18).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "600",
+        "traderBase",
+        BigInt.fromI32(10).pow(18).toString()
+      );
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "600", "APY", "0");
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "600", "isLast", "false");
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "600", "aggregationType", "0");
+
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "800", "timestamp", "8000");
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "800",
+        "usdTVL",
+        BigInt.fromI32(10).pow(19).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "800",
+        "supply",
+        BigInt.fromI32(10).pow(18).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "800",
+        "baseTVL",
+        BigInt.fromI32(10).pow(17).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "800",
+        "absPNL",
+        BigInt.fromI32(10).pow(18).times(BigInt.fromI32(9)).toString()
+      );
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "800", "percPNL", "90000");
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "800",
+        "traderUSD",
+        BigInt.fromI32(10).pow(18).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "800",
+        "traderBase",
+        BigInt.fromI32(10).pow(18).toString()
+      );
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "800", "APY", "0");
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "800", "isLast", "false");
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "800", "aggregationType", "0");
+
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "1000", "timestamp", "10000");
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "1000",
+        "usdTVL",
+        BigInt.fromI32(10).pow(19).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "1000",
+        "supply",
+        BigInt.fromI32(10).pow(18).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "1000",
+        "baseTVL",
+        BigInt.fromI32(10).pow(17).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "1000",
+        "absPNL",
+        BigInt.fromI32(10).pow(18).times(BigInt.fromI32(9)).toString()
+      );
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "1000", "percPNL", "90000");
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "1000",
+        "traderUSD",
+        BigInt.fromI32(10).pow(18).toString()
+      );
+      assert.fieldEquals(
+        "TraderPoolPriceHistory",
+        pools[0].toHexString() + "1000",
+        "traderBase",
+        BigInt.fromI32(10).pow(18).toString()
+      );
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "1000", "APY", "0");
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "1000", "isLast", "true");
+      assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "1000", "aggregationType", "1");
     });
   });
 });
