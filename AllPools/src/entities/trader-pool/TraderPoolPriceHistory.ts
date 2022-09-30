@@ -43,6 +43,8 @@ export function getTraderPoolPriceHistory(
       BigInt.fromI64(max(blockNumber.minus(BigInt.fromU64(BLOCK_PER_YEAR)).toI64(), pool.creationBlock.toI64()))
     );
 
+    history.APY = history.percPNL;
+
     if (prevBlock.notEqual(roundCheckUp(pool.creationBlock))) {
       let lastYearHistory = findPrevHistory<TraderPoolPriceHistory>(
         TraderPoolPriceHistory.load,
@@ -54,11 +56,7 @@ export function getTraderPoolPriceHistory(
 
       if (lastYearHistory != null) {
         history.APY = history.percPNL.minus(lastYearHistory.percPNL);
-      } else {
-        history.APY = history.percPNL;
       }
-    } else {
-      history.APY = history.percPNL;
     }
   }
   return history;
