@@ -48,11 +48,14 @@ export function getTraderPoolPriceHistory(
         TraderPoolPriceHistory.load,
         pool.id,
         prevBlock,
+        BigInt.fromI32(CHECK_PER_BLOCK),
         pool.creationBlock
       );
 
       if (lastYearHistory != null) {
         history.APY = history.percPNL.minus(lastYearHistory.percPNL);
+      } else {
+        history.APY = history.percPNL;
       }
     } else {
       history.APY = history.percPNL;
@@ -72,7 +75,7 @@ export function getPrevPriceHistory(currentPH: TraderPoolPriceHistory): TraderPo
     TraderPoolPriceHistory.load,
     currentPH.pool,
     currentPH.block,
-    BigInt.fromI32(100),
+    BigInt.fromI32(CHECK_PER_BLOCK),
     pool.creationBlock
   );
 
