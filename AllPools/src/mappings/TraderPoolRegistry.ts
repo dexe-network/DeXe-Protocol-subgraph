@@ -1,6 +1,6 @@
 import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
-import { getTraderPoolPriceHistory } from "../entities/trader-pool/TraderPoolPriceHistory";
+import { getPrevPriceHistory, getTraderPoolPriceHistory } from "../entities/trader-pool/TraderPoolPriceHistory";
 import { PoolRegistry } from "../../generated/PoolRegistry/PoolRegistry";
 import {
   BASIC_POOL_NAME,
@@ -80,9 +80,11 @@ function updatePools(block: ethereum.Block, type: string): void {
 
         history.save();
 
-        let prevHistory = getTraderPoolPriceHistory(traderPool, block.number.minus(BigInt.fromI32(CHECK_PER_BLOCK)));
-        prevHistory.isLast = false;
-        prevHistory.save();
+        let prevHistory = getPrevPriceHistory(history);
+        if (prevHistory != null) {
+          prevHistory.isLast = false;
+          prevHistory.save();
+        }
 
         traderPool.priceHistoryCount = traderPool.priceHistoryCount.plus(BigInt.fromI32(1));
         traderPool.save();
