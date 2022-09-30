@@ -39,10 +39,21 @@ export function getTraderPoolPriceHistory(
 
     history.aggregationType = aggregationType;
 
-    let prevHistory = getPrevPriceHistory(history);
+    let prevBlock = roundCheckUp(
+      BigInt.fromI64(max(blockNumber.minus(BigInt.fromU64(BLOCK_PER_YEAR)).toI64(), pool.creationBlock.toI64()))
+    );
 
-    if (prevHistory.block.notEqual(history.block)) {
-      history.APY = history.percPNL.minus(prevHistory.percPNL);
+    if (prevBlock.notEqual(roundCheckUp(pool.creationBlock))) {
+      let lastYearHistory = findPrevHistory<TraderPoolPriceHistory>(
+        TraderPoolPriceHistory.load,
+        pool.id,
+        prevBlock,
+        pool.creationBlock
+      );
+
+      if (lastYearHistory != null) {
+        history.APY = history.percPNL.minus(lastYearHistory.percPNL);
+      }
     } else {
       history.APY = history.percPNL;
     }
@@ -55,7 +66,7 @@ export function roundCheckUp(block: BigInt): BigInt {
   return block.plus(BigInt.fromU64(CHECK_PER_BLOCK).minus(mod));
 }
 
-export function getPrevPriceHistory(currentPH: TraderPoolPriceHistory): TraderPoolPriceHistory {
+export function getPrevPriceHistory(currentPH: TraderPoolPriceHistory): TraderPoolPriceHistory | null {
   let pool = getTraderPool(Address.fromString(currentPH.pool));
   let prevHistory = findPrevHistory<TraderPoolPriceHistory>(
     TraderPoolPriceHistory.load,
@@ -65,5 +76,5 @@ export function getPrevPriceHistory(currentPH: TraderPoolPriceHistory): TraderPo
     pool.creationBlock
   );
 
-  return prevHistory == null ? currentPH : prevHistory;
+  return prevHistory;
 }

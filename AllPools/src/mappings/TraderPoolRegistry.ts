@@ -81,10 +81,10 @@ function updatePools(block: ethereum.Block, type: string): void {
         history.save();
 
         let prevHistory = getPrevPriceHistory(history);
-        if (prevHistory.block != history.block) {
+        if (prevHistory != null) {
           prevHistory.isLast = false;
+          prevHistory.save();
         }
-        prevHistory.save();
 
         traderPool.priceHistoryCount = traderPool.priceHistoryCount.plus(BigInt.fromI32(1));
         traderPool.save();
