@@ -12,6 +12,7 @@ import {
   ProposalClaimed,
   ProposalRestrictionsChanged,
   ProposalInvested,
+  ProposalConvertToDividends,
 } from "../generated/templates/TraderPoolInvestProposal/TraderPoolInvestProposal";
 import {
   onProposalClaimed,
@@ -20,6 +21,7 @@ import {
   onProposalSupplied,
   onProposalWithdrawn,
   onProposalInvest,
+  onProposalConvertToDividends,
 } from "../src/mappings/TraderPoolInvestProposal";
 
 function createProposalCreated(
@@ -130,6 +132,28 @@ function createProposalClaimed(
   event.parameters.push(new ethereum.EventParam("user", ethereum.Value.fromAddress(user)));
   event.parameters.push(new ethereum.EventParam("amounts", ethereum.Value.fromUnsignedBigIntArray(amounts)));
   event.parameters.push(new ethereum.EventParam("tokens", ethereum.Value.fromAddressArray(tokens)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = sender;
+
+  return event;
+}
+
+function createProposalConvertToDivivdends(
+  proposalId: BigInt,
+  user: Address,
+  amount: BigInt,
+  sender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): ProposalConvertToDividends {
+  let event = changetype<ProposalConvertToDividends>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
+  event.parameters.push(new ethereum.EventParam("user", ethereum.Value.fromAddress(user)));
+  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
 
   event.block = block;
   event.transaction = tx;
@@ -343,6 +367,48 @@ describe("TraderPoolInvestProposal", () => {
       event.params.user,
       block,
       "[" + TransactionType.INVEST_PROPOSAL_INVEST.toString() + "]",
+      BigInt.fromI32(1)
+    );
+  });
+
+  test("should handle ProposalConvertToDividends", () => {
+    let user = Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670");
+    let amount = BigInt.fromI32(10).pow(18);
+
+    let event = createProposalConvertToDivivdends(proposalId, user, amount, sender, block, tx);
+
+    onProposalConvertToDividends(event);
+
+    assert.fieldEquals(
+      "InvestProposalConvertToDividends",
+      tx.hash.concatI32(0).toHexString(),
+      "proposalId",
+      proposalId.toString()
+    );
+    assert.fieldEquals(
+      "InvestProposalConvertToDividends",
+      tx.hash.concatI32(0).toHexString(),
+      "pool",
+      pool.toHexString()
+    );
+    assert.fieldEquals(
+      "InvestProposalConvertToDividends",
+      tx.hash.concatI32(0).toHexString(),
+      "amount",
+      amount.toString()
+    );
+    assert.fieldEquals(
+      "InvestProposalConvertToDividends",
+      tx.hash.concatI32(0).toHexString(),
+      "transaction",
+      tx.hash.toHexString()
+    );
+
+    assertTransaction(
+      tx.hash,
+      event.params.user,
+      block,
+      "[" + TransactionType.INVEST_PROPOSAL_CONVERT_TO_DIVIDENDS.toString() + "]",
       BigInt.fromI32(1)
     );
   });
