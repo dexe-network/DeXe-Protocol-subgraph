@@ -87,6 +87,12 @@
         "internalType": "uint256",
         "name": "quorum",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum IGovSettings.ExecutorType",
+        "name": "executorType",
+        "type": "uint8"
       }
     ],
     "name": "ProposalCreated",

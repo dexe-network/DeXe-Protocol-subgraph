@@ -5,7 +5,8 @@ export function getProposal(
   pool: DaoPool,
   proposalId: BigInt,
   creator: Address = Address.zero(),
-  quorum: BigInt = BigInt.zero()
+  quorum: BigInt = BigInt.zero(),
+  executorType: i32 = 0
 ): Proposal {
   let id = pool.id.concatI32(proposalId.toI32());
   let proposal = Proposal.load(id);
@@ -22,6 +23,7 @@ export function getProposal(
     proposal.votersVoted = BigInt.zero();
     proposal.proposalType = BigInt.zero();
     proposal.distributionProposal = Bytes.empty();
+    proposal.executorType = BigInt.fromI32(executorType);
 
     proposal.pool = pool.id;
   }
