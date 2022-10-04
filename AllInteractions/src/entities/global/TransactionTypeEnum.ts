@@ -32,6 +32,8 @@ export enum TransactionType {
 
   TRADER_GET_PERFOMANCE_FEE = 23,
   USER_AGREED_TO_PRIVACY_POLICY = 24,
+
+  INVEST_PROPOSAL_CONVERT_TO_DIVIDENDS = 26,
 }
 
 export function getEnumBigInt(operation: TransactionType): BigInt {
