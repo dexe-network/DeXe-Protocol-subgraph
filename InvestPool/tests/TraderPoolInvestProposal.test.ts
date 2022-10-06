@@ -13,6 +13,7 @@ import { getBlock, getTransaction } from "./utils";
 import { Address, ethereum, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   ProposalClaimed,
+  ProposalConverted,
   ProposalCreated,
   ProposalCreatedProposalLimitsStruct,
   ProposalSupplied,
@@ -25,6 +26,7 @@ import {
   onProposalClaimed,
   onProposalSupplied,
   onProposalWithdrawn,
+  onProposalConverted,
 } from "../src/mappings/TraderPoolInvestProposal";
 import { DAY, PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
 
@@ -110,6 +112,30 @@ function createProposalClaimed(
   event.parameters.push(new ethereum.EventParam("user", ethereum.Value.fromAddress(user)));
   event.parameters.push(new ethereum.EventParam("amounts", ethereum.Value.fromUnsignedBigIntArray(amounts)));
   event.parameters.push(new ethereum.EventParam("tokens", ethereum.Value.fromAddressArray(tokens)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = sender;
+
+  return event;
+}
+
+function createProposalConverted(
+  proposalId: BigInt,
+  user: Address,
+  amount: BigInt,
+  baseToken: Address,
+  sender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): ProposalConverted {
+  let event = changetype<ProposalConverted>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
+  event.parameters.push(new ethereum.EventParam("user", ethereum.Value.fromAddress(user)));
+  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("baseToken", ethereum.Value.fromAddress(baseToken)));
 
   event.block = block;
   event.transaction = tx;
@@ -341,6 +367,56 @@ describe("TraderPoolInvestProposal", () => {
       sender.toHexString() + proposalId.toString(),
       "leftAmounts",
       "[" + amountsToClaim[0].toString() + "]"
+    );
+  });
+
+  test("should handle ProposalConverted", () => {
+    let user = Address.fromString("0x86e08f7d84603AEb97cd1c89A85A9e914f181679");
+    let amount = BigInt.fromI32(10).pow(18);
+    let baseToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A85A9e914f181670");
+
+    let event = createProposalConverted(proposalId, user, amount, baseToken, sender, block, tx);
+
+    onProposalConverted(event);
+
+    assert.fieldEquals("Withdraw", event.transaction.hash.concatI32(0).toHexString(), "amountBase", amount.toString());
+    assert.fieldEquals(
+      "Withdraw",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "proposal",
+      sender.toHexString() + proposalId.toString()
+    );
+    assert.fieldEquals(
+      "Withdraw",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "hash",
+      event.transaction.hash.toHexString()
+    );
+
+    assert.fieldEquals(
+      "Supply",
+      event.transaction.hash.concatI32(1).toHexString(),
+      "dividendsTokens",
+      "[" + baseToken.toHexString() + "]"
+    );
+    assert.fieldEquals(
+      "Supply",
+      event.transaction.hash.concatI32(1).toHexString(),
+      "amountDividendsTokens",
+      "[" + amount.toString() + "]"
+    );
+    assert.fieldEquals("Supply", event.transaction.hash.concatI32(1).toHexString(), "timestamp", "1");
+    assert.fieldEquals(
+      "Supply",
+      event.transaction.hash.concatI32(1).toHexString(),
+      "proposal",
+      sender.toHexString() + proposalId.toString()
+    );
+    assert.fieldEquals(
+      "Supply",
+      event.transaction.hash.concatI32(1).toHexString(),
+      "hash",
+      event.transaction.hash.toHexString()
     );
   });
 });

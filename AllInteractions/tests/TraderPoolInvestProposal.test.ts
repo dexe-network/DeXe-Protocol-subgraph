@@ -12,7 +12,7 @@ import {
   ProposalClaimed,
   ProposalRestrictionsChanged,
   ProposalInvested,
-  ProposalConvertToDividends,
+  ProposalConverted,
 } from "../generated/templates/TraderPoolInvestProposal/TraderPoolInvestProposal";
 import {
   onProposalClaimed,
@@ -21,7 +21,7 @@ import {
   onProposalSupplied,
   onProposalWithdrawn,
   onProposalInvest,
-  onProposalConvertToDividends,
+  onProposalConverted,
 } from "../src/mappings/TraderPoolInvestProposal";
 
 function createProposalCreated(
@@ -140,20 +140,22 @@ function createProposalClaimed(
   return event;
 }
 
-function createProposalConvertToDivivdends(
+function createProposalConverted(
   proposalId: BigInt,
   user: Address,
   amount: BigInt,
+  baseToken: Address,
   sender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
-): ProposalConvertToDividends {
-  let event = changetype<ProposalConvertToDividends>(newMockEvent());
+): ProposalConverted {
+  let event = changetype<ProposalConverted>(newMockEvent());
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
   event.parameters.push(new ethereum.EventParam("user", ethereum.Value.fromAddress(user)));
   event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("baseToken", ethereum.Value.fromAddress(baseToken)));
 
   event.block = block;
   event.transaction = tx;
@@ -371,13 +373,14 @@ describe("TraderPoolInvestProposal", () => {
     );
   });
 
-  test("should handle ProposalConvertToDividends", () => {
+  test("should handle ProposalConverted", () => {
     let user = Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670");
     let amount = BigInt.fromI32(10).pow(18);
+    let baseToken = Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670");
 
-    let event = createProposalConvertToDivivdends(proposalId, user, amount, sender, block, tx);
+    let event = createProposalConverted(proposalId, user, amount, baseToken, sender, block, tx);
 
-    onProposalConvertToDividends(event);
+    onProposalConverted(event);
 
     assert.fieldEquals(
       "InvestProposalConvertToDividends",
@@ -396,6 +399,12 @@ describe("TraderPoolInvestProposal", () => {
       tx.hash.concatI32(0).toHexString(),
       "amount",
       amount.toString()
+    );
+    assert.fieldEquals(
+      "InvestProposalConvertToDividends",
+      tx.hash.concatI32(0).toHexString(),
+      "token",
+      baseToken.toHexString()
     );
     assert.fieldEquals(
       "InvestProposalConvertToDividends",

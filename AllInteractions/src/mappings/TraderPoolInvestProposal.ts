@@ -1,7 +1,7 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   ProposalClaimed,
-  ProposalConvertToDividends,
+  ProposalConverted,
   ProposalCreated,
   ProposalInvested,
   ProposalRestrictionsChanged,
@@ -169,7 +169,7 @@ export function onProposalInvest(event: ProposalInvested): void {
   transaction.save();
 }
 
-export function onProposalConvertToDividends(event: ProposalConvertToDividends): void {
+export function onProposalConverted(event: ProposalConverted): void {
   let pool = getProposalContract(event.address).pool;
 
   let transaction = getTransaction(
@@ -184,6 +184,7 @@ export function onProposalConvertToDividends(event: ProposalConvertToDividends):
     pool,
     event.params.proposalId,
     event.params.amount,
+    event.params.baseToken,
     transaction.interactionsCount
   );
 

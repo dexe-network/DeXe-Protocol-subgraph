@@ -234,6 +234,7 @@ type InvestProposalConvertToDividends @entity(immutable: true) {
   proposalId: BigInt!
 
   amount: BigInt!
+  token: Bytes!
 
   transaction: Transaction!
 }
