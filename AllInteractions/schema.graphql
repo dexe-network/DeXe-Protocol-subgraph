@@ -227,6 +227,7 @@ type InvestProposalClaimOrSupply @entity(immutable: true) {
 # @param pool the address of pool
 # @param proposalId the internal id of proposal
 # @param amount the new invested amount
+# @param token the address of base token
 # @param transaction the transaction entity id
 type InvestProposalConvertToDividends @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
