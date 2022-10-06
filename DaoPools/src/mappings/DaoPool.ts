@@ -23,7 +23,13 @@ import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let pool = getDaoPool(event.address);
-  let proposal = getProposal(pool, event.params.proposalId, event.params.sender, event.params.quorum);
+  let proposal = getProposal(
+    pool,
+    event.params.proposalId,
+    event.params.sender,
+    event.params.quorum,
+    event.params.mainExecutor
+  );
 
   if (proposal.creator != event.params.sender) {
     proposal.creator = event.params.sender;

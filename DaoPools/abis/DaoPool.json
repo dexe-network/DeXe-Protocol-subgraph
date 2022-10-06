@@ -87,6 +87,12 @@
         "internalType": "uint256",
         "name": "quorum",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "mainExecutor",
+        "type": "address"
       }
     ],
     "name": "ProposalCreated",

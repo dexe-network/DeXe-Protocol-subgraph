@@ -27,6 +27,7 @@ type Proposal @entity {
 
   votersVoted: BigInt! # кол-во адресов с которых вотили
   pool: DaoPool!
+  mainExecutor: Bytes!
 
   distributionProposal: DistributionProposal!
 
