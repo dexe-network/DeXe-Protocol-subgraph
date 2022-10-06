@@ -90,9 +90,9 @@
       },
       {
         "indexed": false,
-        "internalType": "enum IGovSettings.ExecutorType",
-        "name": "executorType",
-        "type": "uint8"
+        "internalType": "address",
+        "name": "mainExecutor",
+        "type": "address"
       }
     ],
     "name": "ProposalCreated",

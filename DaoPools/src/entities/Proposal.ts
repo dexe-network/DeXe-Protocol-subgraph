@@ -6,7 +6,7 @@ export function getProposal(
   proposalId: BigInt,
   creator: Address = Address.zero(),
   quorum: BigInt = BigInt.zero(),
-  executorType: i32 = 0
+  mainExecutor: Bytes = Bytes.empty()
 ): Proposal {
   let id = pool.id.concatI32(proposalId.toI32());
   let proposal = Proposal.load(id);
@@ -23,7 +23,7 @@ export function getProposal(
     proposal.votersVoted = BigInt.zero();
     proposal.proposalType = BigInt.zero();
     proposal.distributionProposal = Bytes.empty();
-    proposal.executorType = BigInt.fromI32(executorType);
+    proposal.mainExecutor = mainExecutor;
 
     proposal.pool = pool.id;
   }

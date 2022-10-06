@@ -28,7 +28,7 @@ export function onProposalCreated(event: ProposalCreated): void {
     event.params.proposalId,
     event.params.sender,
     event.params.quorum,
-    event.params.executorType
+    event.params.mainExecutor
   );
 
   if (proposal.creator != event.params.sender) {
