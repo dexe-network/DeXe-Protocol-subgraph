@@ -1,6 +1,7 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   ProposalClaimed,
+  ProposalConverted,
   ProposalCreated,
   ProposalInvested,
   ProposalRestrictionsChanged,
@@ -9,6 +10,7 @@ import {
 } from "../../generated/templates/TraderPoolInvestProposal/TraderPoolInvestProposal";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getInvestProposalClaimOrSupply } from "../entities/trader-pool/invest-proposal/InvestProposalClaimSupply";
+import { getInvestProposalConvertToDividends } from "../entities/trader-pool/invest-proposal/InvestProposalConvertToDividends";
 import { getInvestProposalCreate } from "../entities/trader-pool/invest-proposal/InvestProposalCreate";
 import { getInvestProposalEdited } from "../entities/trader-pool/invest-proposal/InvestProposalEdited";
 import { getInvestProposalWithdraw } from "../entities/trader-pool/invest-proposal/InvestProposalWithdraw";
@@ -164,5 +166,34 @@ export function onProposalInvest(event: ProposalInvested): void {
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   vest.save();
+  transaction.save();
+}
+
+export function onProposalConverted(event: ProposalConverted): void {
+  let pool = getProposalContract(event.address).pool;
+
+  let transaction = getTransaction(
+    event.transaction.hash,
+    event.block.number,
+    event.block.timestamp,
+    event.params.user
+  );
+
+  let convertToDividends = getInvestProposalConvertToDividends(
+    event.transaction.hash,
+    pool,
+    event.params.proposalId,
+    event.params.amount,
+    event.params.baseToken,
+    transaction.interactionsCount
+  );
+
+  convertToDividends.transaction = transaction.id;
+  transaction.type = extendArray<BigInt>(transaction.type, [
+    getEnumBigInt(TransactionType.INVEST_PROPOSAL_CONVERT_TO_DIVIDENDS),
+  ]);
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
+
+  convertToDividends.save();
   transaction.save();
 }

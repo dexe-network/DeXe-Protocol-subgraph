@@ -12,6 +12,7 @@ import {
   ProposalClaimed,
   ProposalRestrictionsChanged,
   ProposalInvested,
+  ProposalConverted,
 } from "../generated/templates/TraderPoolInvestProposal/TraderPoolInvestProposal";
 import {
   onProposalClaimed,
@@ -20,6 +21,7 @@ import {
   onProposalSupplied,
   onProposalWithdrawn,
   onProposalInvest,
+  onProposalConverted,
 } from "../src/mappings/TraderPoolInvestProposal";
 
 function createProposalCreated(
@@ -130,6 +132,30 @@ function createProposalClaimed(
   event.parameters.push(new ethereum.EventParam("user", ethereum.Value.fromAddress(user)));
   event.parameters.push(new ethereum.EventParam("amounts", ethereum.Value.fromUnsignedBigIntArray(amounts)));
   event.parameters.push(new ethereum.EventParam("tokens", ethereum.Value.fromAddressArray(tokens)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = sender;
+
+  return event;
+}
+
+function createProposalConverted(
+  proposalId: BigInt,
+  user: Address,
+  amount: BigInt,
+  baseToken: Address,
+  sender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): ProposalConverted {
+  let event = changetype<ProposalConverted>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
+  event.parameters.push(new ethereum.EventParam("user", ethereum.Value.fromAddress(user)));
+  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("baseToken", ethereum.Value.fromAddress(baseToken)));
 
   event.block = block;
   event.transaction = tx;
@@ -343,6 +369,55 @@ describe("TraderPoolInvestProposal", () => {
       event.params.user,
       block,
       "[" + TransactionType.INVEST_PROPOSAL_INVEST.toString() + "]",
+      BigInt.fromI32(1)
+    );
+  });
+
+  test("should handle ProposalConverted", () => {
+    let user = Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670");
+    let amount = BigInt.fromI32(10).pow(18);
+    let baseToken = Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670");
+
+    let event = createProposalConverted(proposalId, user, amount, baseToken, sender, block, tx);
+
+    onProposalConverted(event);
+
+    assert.fieldEquals(
+      "InvestProposalConvertToDividends",
+      tx.hash.concatI32(0).toHexString(),
+      "proposalId",
+      proposalId.toString()
+    );
+    assert.fieldEquals(
+      "InvestProposalConvertToDividends",
+      tx.hash.concatI32(0).toHexString(),
+      "pool",
+      pool.toHexString()
+    );
+    assert.fieldEquals(
+      "InvestProposalConvertToDividends",
+      tx.hash.concatI32(0).toHexString(),
+      "amount",
+      amount.toString()
+    );
+    assert.fieldEquals(
+      "InvestProposalConvertToDividends",
+      tx.hash.concatI32(0).toHexString(),
+      "token",
+      baseToken.toHexString()
+    );
+    assert.fieldEquals(
+      "InvestProposalConvertToDividends",
+      tx.hash.concatI32(0).toHexString(),
+      "transaction",
+      tx.hash.toHexString()
+    );
+
+    assertTransaction(
+      tx.hash,
+      event.params.user,
+      block,
+      "[" + TransactionType.INVEST_PROPOSAL_CONVERT_TO_DIVIDENDS.toString() + "]",
       BigInt.fromI32(1)
     );
   });

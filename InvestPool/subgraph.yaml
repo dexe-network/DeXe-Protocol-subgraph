@@ -50,3 +50,5 @@ templates:
           handler: onProposalSupplied
         - event: ProposalClaimed(uint256,address,uint256[],address[])
           handler: onProposalClaimed
+        - event: ProposalConverted(uint256,address,uint256,address)
+          handler: onProposalConverted
