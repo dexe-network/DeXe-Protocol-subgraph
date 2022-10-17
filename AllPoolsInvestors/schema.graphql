@@ -173,6 +173,7 @@ type ProposalPositionOffset @entity {
 type ProposalPosition @entity {
   id: ID! # proposal address + investor address + proposal index + "_" + position proposal offset
   isClosed: Boolean!
+  proposalId: BigInt!
 
   totalBaseOpenVolume: BigInt!
   totalBaseCloseVolume: BigInt!
