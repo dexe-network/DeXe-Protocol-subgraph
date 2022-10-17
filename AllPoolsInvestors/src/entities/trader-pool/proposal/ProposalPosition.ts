@@ -19,6 +19,7 @@ export function getProposalPosition(
     proposal = new ProposalPosition(id);
 
     proposal.proposalContract = proposalContract.id;
+    proposal.investor = investor.id;
     proposal.totalBaseOpenVolume = BigInt.zero();
     proposal.totalBaseCloseVolume = BigInt.zero();
     proposal.totalUSDOpenVolume = BigInt.zero();

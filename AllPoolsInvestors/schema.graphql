@@ -184,6 +184,7 @@ type ProposalPosition @entity {
   totalUSDCloseVolume: BigInt!
 
   proposalContract: ProposalContract!
+  investor: Investor!
   vests: [ProposalVest!]! @derivedFrom(field: "proposal")
   claims: [ProposalClaim!]! @derivedFrom(field: "proposal")
 }
