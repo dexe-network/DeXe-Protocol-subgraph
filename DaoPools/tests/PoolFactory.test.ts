@@ -42,5 +42,7 @@ describe("PoolFactory", () => {
     onDeployed(event);
 
     assert.fieldEquals("DaoPool", govPool.toHexString(), "votersCount", BigInt.zero().toString());
+    assert.fieldEquals("DaoPool", govPool.toHexString(), "creationTime", block.timestamp.toString());
+    assert.fieldEquals("DaoPool", govPool.toHexString(), "creationBlock", block.number.toString());
   });
 });

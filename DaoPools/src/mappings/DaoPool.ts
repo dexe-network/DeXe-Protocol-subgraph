@@ -22,7 +22,7 @@ import { Proposal, VoterInProposal } from "../../generated/schema";
 import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 
 export function onProposalCreated(event: ProposalCreated): void {
-  let pool = getDaoPool(event.address);
+  let pool = getDaoPool(event.address, event.block.timestamp, event.block.number);
   let proposal = getProposal(
     pool,
     event.params.proposalId,
@@ -43,7 +43,7 @@ export function onProposalCreated(event: ProposalCreated): void {
 export function onDelegated(event: Delegated): void {
   let from = getVoter(event.params.from);
   let to = getVoter(event.params.to);
-  let pool = getDaoPool(event.address);
+  let pool = getDaoPool(event.address, event.block.timestamp, event.block.number);
   let delegateHistory = getDelegationHistory(
     event.transaction.hash,
     pool,
@@ -73,7 +73,7 @@ export function onDelegated(event: Delegated): void {
 
 export function onVoted(event: Voted): void {
   let voter = getVoter(event.params.sender);
-  let pool = getDaoPool(event.address);
+  let pool = getDaoPool(event.address, event.block.timestamp, event.block.number);
   let proposal = getProposal(pool, event.params.proposalId);
   let voterInPool = getVoterInPool(pool, voter);
   let voterInProposal = getVoterInProposal(proposal, voterInPool);
@@ -99,7 +99,7 @@ export function onVoted(event: Voted): void {
 }
 
 export function onDPCreated(event: DPCreated): void {
-  let pool = getDaoPool(event.address);
+  let pool = getDaoPool(event.address, event.block.timestamp, event.block.number);
   let proposal = getProposal(pool, event.params.proposalId);
   let dp = getDistributionProposal(proposal, event.params.token, event.params.amount);
 
@@ -111,7 +111,7 @@ export function onDPCreated(event: DPCreated): void {
 }
 
 export function onProposalExecuted(event: ProposalExecuted): void {
-  let pool = getDaoPool(event.address);
+  let pool = getDaoPool(event.address, event.block.timestamp, event.block.number);
   let proposal = getProposal(pool, event.params.proposalId);
 
   proposal.executor = event.params.sender;
@@ -122,7 +122,7 @@ export function onProposalExecuted(event: ProposalExecuted): void {
 }
 
 export function onRewardClaimed(event: RewardClaimed): void {
-  let pool = getDaoPool(event.address);
+  let pool = getDaoPool(event.address, event.block.timestamp, event.block.number);
   let voter = getVoter(event.params.sender);
   let voterInPool = getVoterInPool(pool, voter);
   let proposal: Proposal;
