@@ -248,7 +248,6 @@ describe("DaoPool", () => {
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "currentVotes", "0");
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "quorum", "100");
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "votersVoted", "0");
-    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "proposalType", "0");
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
@@ -418,12 +417,6 @@ describe("DaoPool", () => {
 
     onDPCreated(event);
 
-    assert.fieldEquals(
-      "Proposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "proposalType",
-      ProposalType.DISTRIBUTION.toString()
-    );
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),

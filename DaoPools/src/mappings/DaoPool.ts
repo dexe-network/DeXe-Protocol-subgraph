@@ -103,7 +103,6 @@ export function onDPCreated(event: DPCreated): void {
   let proposal = getProposal(pool, event.params.proposalId);
   let dp = getDistributionProposal(proposal, event.params.token, event.params.amount);
 
-  proposal.proposalType = getEnumBigInt(ProposalType.DISTRIBUTION);
   proposal.distributionProposal = dp.id;
 
   dp.save();

@@ -15,8 +15,6 @@ type Proposal @entity {
   id: Bytes! # pool address + porposalId
   proposalId: BigInt!
 
-  proposalType: BigInt!
-
   creator: Voter!
 
   executor: Voter!
