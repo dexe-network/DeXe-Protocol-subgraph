@@ -4,6 +4,8 @@ type DaoPool @entity {
 
   voters: [VoterInPool!]! @derivedFrom(field: "pool")
   proposals: [Proposal!]! @derivedFrom(field: "pool")
+  settings: [ProposalSettings!]! @derivedFrom(field: "pool")
+  executors: [Executor!]! @derivedFrom(field: "pool")
 }
 
 type Voter @entity {
@@ -27,7 +29,7 @@ type Proposal @entity {
 
   votersVoted: BigInt! # кол-во адресов с которых вотили
   pool: DaoPool!
-  mainExecutor: Bytes!
+  mainExecutor: Executor!
 
   distributionProposal: DistributionProposal!
 
@@ -91,6 +93,35 @@ type DelegationHistory @entity(immutable: true) {
 
   amount: BigInt!
   nfts: [BigInt!]!
+}
+
+type ProposalSettings @entity {
+  id: Bytes! # pool address + settingsId
+  settingsId: BigInt!
+
+  earlyCompletion: Boolean!
+  delegatedVotingAllowed: Boolean!
+  validatorsVote: Boolean!
+  duration: BigInt!
+  durationValidators: BigInt!
+  quorum: BigInt!
+  quorumValidators: BigInt!
+  minVotesForVoting: BigInt!
+  minVotesForCreating: BigInt!
+  rewardToken: Bytes!
+  creationReward: BigInt!
+  executionReward: BigInt!
+  voteRewardsCoefficient: BigInt!
+  executorDescription: String!
+
+  pool: DaoPool!
+}
+
+type Executor @entity {
+  id: Bytes! # dao pool + executor address
+  settings: ProposalSettings!
+
+  pool: DaoPool!
 }
 
 # @notice The entity counts interactions in single tx
