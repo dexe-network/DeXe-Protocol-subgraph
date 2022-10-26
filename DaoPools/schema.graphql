@@ -99,26 +99,16 @@ type ProposalSettings @entity {
   id: Bytes! # pool address + settingsId
   settingsId: BigInt!
 
-  earlyCompletion: Boolean!
-  delegatedVotingAllowed: Boolean!
-  validatorsVote: Boolean!
-  duration: BigInt!
-  durationValidators: BigInt!
-  quorum: BigInt!
-  quorumValidators: BigInt!
-  minVotesForVoting: BigInt!
-  minVotesForCreating: BigInt!
-  rewardToken: Bytes!
-  creationReward: BigInt!
-  executionReward: BigInt!
-  voteRewardsCoefficient: BigInt!
   executorDescription: String!
 
+  executors: [Executor!]! @derivedFrom(field: "settings")
   pool: DaoPool!
 }
 
 type Executor @entity {
-  id: Bytes! # dao pool + executor address
+  id: Bytes! # dao pool address + executor address
+  executorAddress: Bytes!
+
   settings: ProposalSettings!
 
   pool: DaoPool!

@@ -89,7 +89,7 @@ templates:
         - name: DaoSettings
           file: ./abis/DaoSettings.json
       eventHandlers:
-        - event: SettingsChanged(uint256[2],(bool,bool,bool,uint64,uint64,uint128,uint128,uint256,uint256,address,uint256,uint256,uint256,string)[])
+        - event: SettingsChanged(uint256,string)
           handler: onSettingsChanged
-        - event: ExecutorChanged(uint256[2],address[])
+        - event: ExecutorChanged(uint256,address)
           handler: onExecutorChanged
