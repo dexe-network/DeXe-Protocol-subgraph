@@ -23,6 +23,7 @@ export function getProposal(
     proposal.votersVoted = BigInt.zero();
     proposal.distributionProposal = Bytes.empty();
     proposal.mainExecutor = mainExecutor;
+    proposal.voters = new Array<Bytes>();
 
     proposal.pool = pool.id;
   }

@@ -31,6 +31,8 @@ type Proposal @entity {
 
   distributionProposal: DistributionProposal!
 
+  voters: [Voter!]!
+
   votes: [ProposalVote!]! @derivedFrom(field: "proposal")
 }
 

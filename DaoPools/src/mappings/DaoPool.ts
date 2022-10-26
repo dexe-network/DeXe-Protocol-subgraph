@@ -1,4 +1,4 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import {
   Delegated,
   DPCreated,
@@ -89,6 +89,7 @@ export function onVoted(event: Voted): void {
   voterInProposal.totalVoteAmount = voterInProposal.totalVoteAmount.plus(event.params.personalVote);
 
   proposal.currentVotes = proposal.currentVotes.plus(event.params.personalVote).plus(event.params.delegatedVote);
+  proposal.voters = extendArray<Bytes>(proposal.voters, [voter.id]);
 
   proposalVote.save();
   voterInProposal.save();
