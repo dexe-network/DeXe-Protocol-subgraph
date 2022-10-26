@@ -8,6 +8,14 @@ type ValidatorsContract @entity(immutable: true) {
   pool: Bytes!
 }
 
+type Proposal @entity {
+  id: Bytes! # pool address + proposalId
+  proposalId: BigInt!
+  totalVote: BigInt!
+
+  voters: [ValidatorInProposal!]! @derivedFrom(field: "proposal")
+}
+
 type ValidatorInPool @entity {
   id: Bytes! # validator address + pool address
   balance: BigInt!
@@ -19,7 +27,7 @@ type ProposalVote @entity(immutable: true) {
   id: Bytes! # tx hash + counter
   hash: Bytes!
   timestamp: BigInt!
-  proposalId: BigInt!
+  proposal: Proposal!
 
   amount: BigInt!
 
@@ -29,7 +37,7 @@ type ProposalVote @entity(immutable: true) {
 type ValidatorInProposal @entity {
   id: Bytes! # user address + pool address + proposal id
   pool: DaoPool!
-  proposalId: BigInt!
+  proposal: Proposal!
   validator: ValidatorInPool!
 
   totalVote: BigInt!
