@@ -93,6 +93,12 @@
         "internalType": "address",
         "name": "mainExecutor",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "proposalDescription",
+        "type": "string"
       }
     ],
     "name": "ProposalCreated",
@@ -313,19 +319,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "distributionProposal",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "string",
@@ -366,36 +359,25 @@
   },
   {
     "inputs": [],
-    "name": "getInjector",
+    "name": "getHelperContracts",
     "outputs": [
       {
-        "internalType": "address",
-        "name": "_injector",
-        "type": "address"
+        "internalType": "address[4]",
+        "name": "",
+        "type": "address[4]"
       }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "proposalId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getProposalInfo",
+    "inputs": [],
+    "name": "getInjector",
     "outputs": [
       {
-        "internalType": "address[]",
-        "name": "",
-        "type": "address[]"
-      },
-      {
-        "internalType": "bytes[]",
-        "name": "",
-        "type": "bytes[]"
+        "internalType": "address",
+        "name": "_injector",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -467,141 +449,11 @@
         "type": "address"
       }
     ],
-    "name": "getUndelegateableAssets",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "undelegateableTokens",
-        "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "values",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "length",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ShrinkableArray.UintArray",
-        "name": "undelegateableNfts",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "values",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "length",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ShrinkableArray.UintArray",
-        "name": "unlockedIds",
-        "type": "tuple"
-      },
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
-      }
-    ],
-    "name": "getUnlockedNfts",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "unlockedNfts",
-        "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
-      }
-    ],
-    "name": "getUserProposals",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "values",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "length",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ShrinkableArray.UintArray",
-        "name": "unlockedIds",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "values",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "length",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ShrinkableArray.UintArray",
-        "name": "lockedIds",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
     "name": "getWithdrawableAssets",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "withdrawableTokens",
+        "name": "tokens",
         "type": "uint256"
       },
       {
@@ -618,47 +470,8 @@
           }
         ],
         "internalType": "struct ShrinkableArray.UintArray",
-        "name": "withdrawableNfts",
+        "name": "nfts",
         "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "govSetting",
-    "outputs": [
-      {
-        "internalType": "contract IGovSettings",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "govUserKeeper",
-    "outputs": [
-      {
-        "internalType": "contract IGovUserKeeper",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "govValidators",
-    "outputs": [
-      {
-        "internalType": "contract IGovValidators",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
