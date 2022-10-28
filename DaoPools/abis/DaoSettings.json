@@ -1,0 +1,687 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "settingsId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "executor",
+        "type": "address"
+      }
+    ],
+    "name": "ExecutorChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "settingsId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "description",
+        "type": "string"
+      }
+    ],
+    "name": "SettingsChanged",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "govPoolAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "distributionProposalAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "validatorsAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "govUserKeeperAddress",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "earlyCompletion",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "delegatedVotingAllowed",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "validatorsVote",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "duration",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "durationValidators",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint128",
+            "name": "quorum",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "quorumValidators",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minVotesForVoting",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minVotesForCreating",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "rewardToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "creationReward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "executionReward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "voteRewardsCoefficient",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "executorDescription",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct IGovSettings.ProposalSettings[]",
+        "name": "proposalSettings",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "additionalProposalExecutors",
+        "type": "address[]"
+      }
+    ],
+    "name": "__GovSettings_init",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "earlyCompletion",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "delegatedVotingAllowed",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "validatorsVote",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "duration",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "durationValidators",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint128",
+            "name": "quorum",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "quorumValidators",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minVotesForVoting",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minVotesForCreating",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "rewardToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "creationReward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "executionReward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "voteRewardsCoefficient",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "executorDescription",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct IGovSettings.ProposalSettings[]",
+        "name": "_settings",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addSettings",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "executors",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "settingsIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "changeExecutors",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "settingsIds",
+        "type": "uint256[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "earlyCompletion",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "delegatedVotingAllowed",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "validatorsVote",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "duration",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "durationValidators",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint128",
+            "name": "quorum",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "quorumValidators",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minVotesForVoting",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minVotesForCreating",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "rewardToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "creationReward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "executionReward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "voteRewardsCoefficient",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "executorDescription",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct IGovSettings.ProposalSettings[]",
+        "name": "_settings",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "editSettings",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "executorToSettings",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getDefaultSettings",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "earlyCompletion",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "delegatedVotingAllowed",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "validatorsVote",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "duration",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "durationValidators",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint128",
+            "name": "quorum",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "quorumValidators",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minVotesForVoting",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minVotesForCreating",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "rewardToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "creationReward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "executionReward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "voteRewardsCoefficient",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "executorDescription",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct IGovSettings.ProposalSettings",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "executor",
+        "type": "address"
+      }
+    ],
+    "name": "getSettings",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "earlyCompletion",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "delegatedVotingAllowed",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "validatorsVote",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "duration",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "durationValidators",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint128",
+            "name": "quorum",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "quorumValidators",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minVotesForVoting",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minVotesForCreating",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "rewardToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "creationReward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "executionReward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "voteRewardsCoefficient",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "executorDescription",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct IGovSettings.ProposalSettings",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "newSettingsId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "settings",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "earlyCompletion",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "delegatedVotingAllowed",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "validatorsVote",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint64",
+        "name": "duration",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "durationValidators",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint128",
+        "name": "quorum",
+        "type": "uint128"
+      },
+      {
+        "internalType": "uint128",
+        "name": "quorumValidators",
+        "type": "uint128"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minVotesForVoting",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minVotesForCreating",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "rewardToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "creationReward",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "executionReward",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "voteRewardsCoefficient",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "executorDescription",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
