@@ -27,9 +27,9 @@ type Proposal @entity {
   currentVotes: BigInt!
   quorum: BigInt!
 
-  votersVoted: BigInt! # кол-во адресов с которых вотили
+  votersVoted: BigInt!
   pool: DaoPool!
-  mainExecutor: Executor!
+  mainExecutor: Bytes!
 
   distributionProposal: DistributionProposal!
 
