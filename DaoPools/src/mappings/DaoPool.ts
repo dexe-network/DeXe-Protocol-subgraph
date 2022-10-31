@@ -37,6 +37,8 @@ export function onProposalCreated(event: ProposalCreated): void {
     proposal.quorum = event.params.quorum;
   }
 
+  pool.proposalCount = pool.proposalCount.plus(BigInt.fromI32(1));
+
   pool.save();
   proposal.save();
 }

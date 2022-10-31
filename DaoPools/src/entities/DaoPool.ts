@@ -13,6 +13,7 @@ export function getDaoPool(
     pool = new DaoPool(poolAddress);
     pool.name = name;
     pool.votersCount = BigInt.zero();
+    pool.proposalCount = BigInt.zero();
     pool.creationTime = timestamp;
     pool.creationBlock = blockNumber;
   }

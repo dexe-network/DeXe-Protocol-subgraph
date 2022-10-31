@@ -6,6 +6,8 @@ type DaoPool @entity {
   creationTime: BigInt!
   creationBlock: BigInt!
 
+  proposalCount: BigInt!
+
   voters: [VoterInPool!]! @derivedFrom(field: "pool")
   proposals: [Proposal!]! @derivedFrom(field: "pool")
 }
