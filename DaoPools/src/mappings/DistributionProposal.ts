@@ -8,7 +8,7 @@ import { extendArray } from "../helpers/ArrayHelper";
 
 export function onDistributionProposalClaimed(event: DistributionProposalClaimed): void {
   let voter = getVoter(event.params.sender);
-  let pool = getDaoPool(event.address, event.block.timestamp, event.block.number);
+  let pool = getDaoPool(event.address);
   let voterInPool = getVoterInPool(pool, voter);
   let proposal = getProposal(pool, event.params.proposalId);
 

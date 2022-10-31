@@ -1,5 +1,7 @@
 type DaoPool @entity {
   id: Bytes! # pool address
+  name: String!
+
   votersCount: BigInt!
   creationTime: BigInt!
   creationBlock: BigInt!
