@@ -1,3 +1,13 @@
+type DPContract @entity(immutable: true) {
+  id: Bytes! # DP contract address
+  daoPool: Bytes!
+}
+
+type SettingsContract @entity(immutable: true) {
+  id: Bytes! # settings contract address
+  daoPool: Bytes!
+}
+
 type DaoPool @entity {
   id: Bytes! # pool address
   votersCount: BigInt!

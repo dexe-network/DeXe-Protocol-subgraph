@@ -1,5 +1,5 @@
 import { DaoPoolDeployed } from "../../generated/PoolFactory/PoolFactory";
-import { DaoPool, DistributionProposal } from "../../generated/templates";
+import { DaoPool, DaoSettings, DistributionProposal } from "../../generated/templates";
 import { getDaoPool } from "../entities/DaoPool";
 
 export function onDeployed(event: DaoPoolDeployed): void {
@@ -7,4 +7,5 @@ export function onDeployed(event: DaoPoolDeployed): void {
 
   DaoPool.create(event.params.govPool);
   DistributionProposal.create(event.params.DP);
+  // DaoSettings.create(event.params.);
 }
