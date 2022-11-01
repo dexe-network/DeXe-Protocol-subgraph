@@ -7,5 +7,5 @@ export function onDeployed(event: DaoPoolDeployed): void {
 
   DaoPool.create(event.params.govPool);
   DistributionProposal.create(event.params.DP);
-  // DaoSettings.create(event.params.);
+  DaoSettings.create(event.params.settings);
 }
