@@ -4,6 +4,12 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "govPool",
         "type": "address"
@@ -18,6 +24,12 @@
         "indexed": false,
         "internalType": "address",
         "name": "validators",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "settings",
         "type": "address"
       }
     ],
@@ -310,6 +322,11 @@
           {
             "internalType": "string",
             "name": "descriptionURL",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
             "type": "string"
           }
         ],

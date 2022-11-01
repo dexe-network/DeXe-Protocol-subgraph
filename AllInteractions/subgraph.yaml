@@ -68,8 +68,6 @@ dataSources:
           handler: onDeposit
         - event: Withdrawn(uint256,address)
           handler: onWithdraw
-        - event: ProposedClaim(address,string)
-          handler: onProposedClaim
 
 templates:
   - kind: ethereum/contract

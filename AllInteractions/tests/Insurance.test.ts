@@ -1,8 +1,8 @@
-import { Deposited, ProposedClaim, Withdrawn } from "../generated/Insurance/Insurance";
+import { Deposited, Withdrawn } from "../generated/Insurance/Insurance";
 import { afterEach, assert, clearStore, describe, newMockEvent, test } from "matchstick-as/assembly/index";
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { assertTransaction, getBlock, getTransaction } from "./utils";
-import { onDeposit, onProposedClaim, onWithdraw } from "../src/mappings/Insurance";
+import { onDeposit, onWithdraw } from "../src/mappings/Insurance";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
 
 function createDepositEvent(
@@ -39,17 +39,6 @@ function createWithdrawEvent(
   event.block = block;
   event.transaction = tx;
   event.address = sender;
-
-  return event;
-}
-
-function createProposedClaimEvent(sender: Address, block: ethereum.Block, tx: ethereum.Transaction): ProposedClaim {
-  let event = changetype<ProposedClaim>(newMockEvent());
-  event.parameters = new Array();
-  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
-
-  event.block = block;
-  event.transaction = tx;
 
   return event;
 }
@@ -98,21 +87,6 @@ describe("Insurance", () => {
       event.params.investor,
       block,
       "[" + TransactionType.INSURANCE_UNSTAKE.toString() + "]",
-      BigInt.fromI32(1)
-    );
-  });
-
-  test("should handle proposeClaim event", () => {
-    let expectedSender = Address.fromString("0x86e98f7d84603AEb97cd1c89A80A9e914f181679");
-    let event = createProposedClaimEvent(expectedSender, block, tx);
-
-    onProposedClaim(event);
-
-    assertTransaction(
-      tx.hash,
-      event.params.sender,
-      block,
-      "[" + TransactionType.INSURANCE_REGISTER_PROPOSAL_CLAIM.toString() + "]",
       BigInt.fromI32(1)
     );
   });
