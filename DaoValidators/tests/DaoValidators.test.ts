@@ -59,8 +59,8 @@ function createChangedValidatorsBalances(
 
   return event;
 }
-
 function createDaoPoolDeployed(
+  name: string,
   govPool: Address,
   dp: Address,
   validators: Address,
@@ -70,6 +70,7 @@ function createDaoPoolDeployed(
   let event = changetype<DaoPoolDeployed>(newMockEvent());
   event.parameters = new Array();
 
+  event.parameters.push(new ethereum.EventParam("name", ethereum.Value.fromString(name)));
   event.parameters.push(new ethereum.EventParam("govPool", ethereum.Value.fromAddress(govPool)));
   event.parameters.push(new ethereum.EventParam("DP", ethereum.Value.fromAddress(dp)));
   event.parameters.push(new ethereum.EventParam("validators", ethereum.Value.fromAddress(validators)));
@@ -84,6 +85,7 @@ const block = getBlock(BigInt.fromI32(1), BigInt.fromI32(1));
 const tx = getTransaction(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromI32(1))));
 const poolAddress = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181680");
 const contractSender = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181670");
+const name = "name";
 
 describe("DaoValidators", () => {
   afterEach(() => {
@@ -92,6 +94,7 @@ describe("DaoValidators", () => {
 
   test("should handle Voted", () => {
     let poolCreate = createDaoPoolDeployed(
+      name,
       poolAddress,
       Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181670"),
       contractSender,
@@ -129,6 +132,7 @@ describe("DaoValidators", () => {
 
   test("should handle ChangedValidatorsBalances", () => {
     let poolCreate = createDaoPoolDeployed(
+      name,
       poolAddress,
       Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181670"),
       contractSender,
