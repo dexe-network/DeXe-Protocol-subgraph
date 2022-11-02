@@ -1,4 +1,4 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import {
   Delegated,
   DPCreated,
@@ -28,13 +28,16 @@ export function onProposalCreated(event: ProposalCreated): void {
     event.params.proposalId,
     event.params.sender,
     event.params.quorum,
-    event.params.mainExecutor
+    event.params.mainExecutor,
+    event.params.proposalDescription
   );
 
   if (proposal.creator != event.params.sender) {
     proposal.creator = event.params.sender;
     proposal.quorum = event.params.quorum;
   }
+
+  pool.proposalCount = pool.proposalCount.plus(BigInt.fromI32(1));
 
   pool.save();
   proposal.save();
@@ -89,6 +92,7 @@ export function onVoted(event: Voted): void {
   voterInProposal.totalVoteAmount = voterInProposal.totalVoteAmount.plus(event.params.personalVote);
 
   proposal.currentVotes = proposal.currentVotes.plus(event.params.personalVote).plus(event.params.delegatedVote);
+  proposal.voters = extendArray<Bytes>(proposal.voters, [voter.id]);
 
   proposalVote.save();
   voterInProposal.save();
@@ -103,7 +107,6 @@ export function onDPCreated(event: DPCreated): void {
   let proposal = getProposal(pool, event.params.proposalId);
   let dp = getDistributionProposal(proposal, event.params.token, event.params.amount);
 
-  proposal.proposalType = getEnumBigInt(ProposalType.DISTRIBUTION);
   proposal.distributionProposal = dp.id;
 
   dp.save();

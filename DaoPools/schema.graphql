@@ -1,6 +1,12 @@
 type DaoPool @entity {
   id: Bytes! # pool address
+  name: String!
+
   votersCount: BigInt!
+  creationTime: BigInt!
+  creationBlock: BigInt!
+
+  proposalCount: BigInt!
 
   voters: [VoterInPool!]! @derivedFrom(field: "pool")
   proposals: [Proposal!]! @derivedFrom(field: "pool")
@@ -17,21 +23,22 @@ type Proposal @entity {
   id: Bytes! # pool address + porposalId
   proposalId: BigInt!
 
-  proposalType: BigInt!
+  creator: Bytes!
 
-  creator: Voter!
-
-  executor: Voter!
+  executor: Bytes!
   executionTimestamp: BigInt!
 
   currentVotes: BigInt!
   quorum: BigInt!
+  description: String!
 
   votersVoted: BigInt!
   pool: DaoPool!
   mainExecutor: Bytes!
 
   distributionProposal: DistributionProposal!
+
+  voters: [Voter!]!
 
   votes: [ProposalVote!]! @derivedFrom(field: "proposal")
 }
