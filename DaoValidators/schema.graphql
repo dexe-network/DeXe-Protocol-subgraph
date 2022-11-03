@@ -9,9 +9,16 @@ type ValidatorsContract @entity(immutable: true) {
 }
 
 type Proposal @entity {
-  id: Bytes! # pool address + proposalId
+  id: ID! # pool address + proposalId + isInternal
   proposalId: BigInt!
+  isInternal: Boolean!
+  quorum: BigInt!
   totalVote: BigInt!
+
+  # only internal values
+  description: String!
+  creator: Bytes!
+  executor: Bytes!
 
   voters: [ValidatorInProposal!]! @derivedFrom(field: "proposal")
 }
