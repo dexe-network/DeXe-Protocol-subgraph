@@ -6,6 +6,7 @@ import {
   clearStore,
   createMockedFunction,
   describe,
+  logStore,
   newMockEvent,
   test,
 } from "matchstick-as/assembly/index";
@@ -28,12 +29,13 @@ import {
 } from "../src/mappings/DaoPool";
 import { ProposalType } from "../src/entities/global/ProposalTypes";
 import { PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
+import { ProposalSettings } from "../generated/schema";
 
 function createProposalCreated(
   proposalId: BigInt,
   sender: Address,
   quorum: BigInt,
-  mainExecutor: Address,
+  settingsId: BigInt,
   description: string,
   contractSender: Address,
   block: ethereum.Block,
@@ -43,10 +45,10 @@ function createProposalCreated(
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
-  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
+  event.parameters.push(new ethereum.EventParam("proposalDescription", ethereum.Value.fromString(description)));
   event.parameters.push(new ethereum.EventParam("quorum", ethereum.Value.fromUnsignedBigInt(quorum)));
-  event.parameters.push(new ethereum.EventParam("mainExecutor", ethereum.Value.fromAddress(mainExecutor)));
-  event.parameters.push(new ethereum.EventParam("description", ethereum.Value.fromString(description)));
+  event.parameters.push(new ethereum.EventParam("proposalSettings", ethereum.Value.fromUnsignedBigInt(settingsId)));
+  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
   event.block = block;
   event.transaction = tx;
@@ -176,6 +178,7 @@ function createRewardClaimed(
 const block = getBlock(BigInt.fromI32(1), BigInt.fromI32(1));
 const tx = getTransaction(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromI32(1))));
 const contractSender = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181670");
+const settingsId = BigInt.fromI32(2);
 
 describe("DaoPool", () => {
   beforeAll(() => {
@@ -206,6 +209,12 @@ describe("DaoPool", () => {
         ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(2000000000000000000)),
         ethereum.Value.fromAddressArray([contractSender, contractSender]),
       ]);
+
+    let settings = new ProposalSettings(contractSender.concatI32(settingsId.toI32()));
+    settings.settingsId = settingsId;
+    settings.pool = contractSender;
+    settings.executorDescription = "";
+    settings.save();
   });
 
   afterEach(() => {
@@ -216,18 +225,8 @@ describe("DaoPool", () => {
     let proposalId = BigInt.fromI32(1);
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181670");
     let quorum = BigInt.fromI32(100);
-    let mainExecutor = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181678");
 
-    let event = createProposalCreated(
-      proposalId,
-      sender,
-      quorum,
-      mainExecutor,
-      "description",
-      contractSender,
-      block,
-      tx
-    );
+    let event = createProposalCreated(proposalId, sender, quorum, settingsId, "description", contractSender, block, tx);
 
     onProposalCreated(event);
 
@@ -274,8 +273,8 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "mainExecutor",
-      mainExecutor.toHexString()
+      "settings",
+      contractSender.concatI32(settingsId.toI32()).toHexString()
     );
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "proposalCount", "1");
   });
