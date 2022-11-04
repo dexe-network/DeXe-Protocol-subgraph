@@ -270,12 +270,12 @@ describe("DaoPool", () => {
       "pool",
       contractSender.toHexString()
     );
-    // assert.fieldEquals(
-    //   "Proposal",
-    //   contractSender.concatI32(proposalId.toI32()).toHexString(),
-    //   "settigns",
-    //   Bytes.empty().concatI32(settingsId.toI32()).toHexString()
-    // );
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "settings",
+      contractSender.concatI32(settingsId.toI32()).toHexString()
+    );
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "proposalCount", "1");
   });
 

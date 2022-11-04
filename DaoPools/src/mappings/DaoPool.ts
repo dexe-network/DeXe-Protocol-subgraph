@@ -30,7 +30,7 @@ export function onProposalCreated(event: ProposalCreated): void {
     event.params.quorum,
     event.params.proposalDescription
   );
-  let settings = getProposalSettings(pool, event.params.proposalId);
+  let settings = getProposalSettings(pool, event.params.proposalSettings);
 
   if (proposal.creator != event.params.sender) {
     proposal.creator = event.params.sender;
