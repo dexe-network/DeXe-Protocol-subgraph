@@ -40,7 +40,13 @@ templates:
         - name: DaoValidators
           file: ./abis/DaoValidators.json
       eventHandlers:
-        - event: Voted(uint256,address,uint256) # id, msg.sender, vote
+        - event: Voted(uint256,address,uint256,bool) # id, msg.sender, vote
           handler: onVoted
         - event: ChangedValidatorsBalances(address[],uint256[]) # validators[], newBalances[]
           handler: onChangedValidatorsBalances
+        - event: ExternalProposalCreated(uint256,uint256)
+          handler: onExternalProposalCreated
+        - event: InternalProposalCreated(uint256,string,uint256,address)
+          handler: onInternalProposalCreated
+        - event: InternalProposalExecuted(uint256,address)
+          handler: onInternalProposalExecuted
