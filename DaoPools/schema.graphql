@@ -44,9 +44,10 @@ type Proposal @entity {
 
   votersVoted: BigInt!
   pool: DaoPool!
-  mainExecutor: Bytes!
 
   distributionProposal: DistributionProposal!
+
+  settings: ProposalSettings!
 
   voters: [Voter!]!
 

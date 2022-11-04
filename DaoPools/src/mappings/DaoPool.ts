@@ -10,7 +10,6 @@ import {
 import { getDaoPool } from "../entities/DaoPool";
 import { getDelegationHistory } from "../entities/DelegationHistory";
 import { getDistributionProposal } from "../entities/DistributionProposal";
-import { getEnumBigInt, ProposalType } from "../entities/global/ProposalTypes";
 import { getProposal } from "../entities/Proposal";
 import { getProposalVote } from "../entities/ProposalVote";
 import { getVoter } from "../entities/Voters/Voter";
@@ -20,6 +19,7 @@ import { PriceFeed } from "../../generated/templates/DaoPool/PriceFeed";
 import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { Proposal, VoterInProposal } from "../../generated/schema";
 import { extendArray, reduceArray } from "../helpers/ArrayHelper";
+import { getProposalSettings } from "../entities/Settings/ProposalSettings";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let pool = getDaoPool(event.address);
@@ -28,17 +28,21 @@ export function onProposalCreated(event: ProposalCreated): void {
     event.params.proposalId,
     event.params.sender,
     event.params.quorum,
-    event.params.mainExecutor,
     event.params.proposalDescription
   );
+  let settings = getProposalSettings(pool, event.params.proposalId);
 
   if (proposal.creator != event.params.sender) {
     proposal.creator = event.params.sender;
     proposal.quorum = event.params.quorum;
+    proposal.description = event.params.proposalDescription;
   }
+
+  proposal.settings = settings.id;
 
   pool.proposalCount = pool.proposalCount.plus(BigInt.fromI32(1));
 
+  settings.save();
   pool.save();
   proposal.save();
 }
