@@ -9,6 +9,7 @@ function createDaoPoolDeployed(
   govPool: Address,
   dp: Address,
   validators: Address,
+  settings: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
 ): DaoPoolDeployed {
@@ -19,6 +20,7 @@ function createDaoPoolDeployed(
   event.parameters.push(new ethereum.EventParam("govPool", ethereum.Value.fromAddress(govPool)));
   event.parameters.push(new ethereum.EventParam("DP", ethereum.Value.fromAddress(dp)));
   event.parameters.push(new ethereum.EventParam("validators", ethereum.Value.fromAddress(validators)));
+  event.parameters.push(new ethereum.EventParam("settings", ethereum.Value.fromAddress(settings)));
 
   event.block = block;
   event.transaction = tx;
@@ -39,8 +41,9 @@ describe("PoolFactory", () => {
     let govPool = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181679");
     let dp = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181670");
     let validators = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let settings = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
 
-    let event = createDaoPoolDeployed(name, govPool, dp, validators, block, tx);
+    let event = createDaoPoolDeployed(name, govPool, dp, validators, settings, block, tx);
 
     onDeployed(event);
 
