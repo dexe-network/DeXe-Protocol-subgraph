@@ -1,4 +1,5 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { PriceFeed } from "../../generated/templates/DistributionProposal/PriceFeed";
 import { DistributionProposalClaimed } from "../../generated/templates/DistributionProposal/DistributionProposal";
 import { getDaoPool } from "../entities/DaoPool";
 import { getDPContract } from "../entities/DPContract";
@@ -6,6 +7,8 @@ import { getProposal } from "../entities/Proposal";
 import { getVoter } from "../entities/Voters/Voter";
 import { getVoterInPool } from "../entities/Voters/VoterInPool";
 import { extendArray } from "../helpers/ArrayHelper";
+import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { getDistributionProposal } from "../entities/DistributionProposal";
 
 export function onDistributionProposalClaimed(event: DistributionProposalClaimed): void {
   let dpToPool = getDPContract(event.address);
@@ -13,11 +16,35 @@ export function onDistributionProposalClaimed(event: DistributionProposalClaimed
   let pool = getDaoPool(Address.fromString(dpToPool.daoPool.toHexString()));
   let voterInPool = getVoterInPool(pool, voter);
   let proposal = getProposal(pool, event.params.proposalId);
+  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
+  let dp = getDistributionProposal(proposal);
 
   voterInPool.claimedDPs = extendArray(voterInPool.claimedDPs, [proposal.id]);
+  voterInPool.totalDPClaimed = voterInPool.totalDPClaimed.plus(
+    getUSDFromPriceFeed(pfPrototype, Address.fromBytes(dp.token), event.params.amount)
+  );
 
   proposal.save();
   voterInPool.save();
   pool.save();
   voter.save();
+}
+
+function getUSDFromPriceFeed(pfPrototype: PriceFeed, baseTokenAddress: Address, fromBaseVolume: BigInt): BigInt {
+  let resp = pfPrototype.try_getNormalizedPriceOutUSD(baseTokenAddress, fromBaseVolume);
+  if (resp.reverted) {
+    log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
+      baseTokenAddress.toHexString(),
+      fromBaseVolume.toString(),
+    ]);
+    return BigInt.zero();
+  } else {
+    if (resp.value.value1.length == 0) {
+      log.warning("try_getNormalizedPriceOutUSD returned 0 length path. FromToken: {}, Amount:{}", [
+        baseTokenAddress.toHexString(),
+        fromBaseVolume.toString(),
+      ]);
+    }
+    return resp.value.value0;
+  }
 }
