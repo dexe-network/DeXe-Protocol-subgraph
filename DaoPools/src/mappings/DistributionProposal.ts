@@ -9,6 +9,7 @@ import { getVoterInPool } from "../entities/Voters/VoterInPool";
 import { extendArray } from "../helpers/ArrayHelper";
 import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { getDistributionProposal } from "../entities/DistributionProposal";
+import { getVoterInProposal } from "../entities/Voters/VoterInProposal";
 
 export function onDistributionProposalClaimed(event: DistributionProposalClaimed): void {
   let dpToPool = getDPContract(event.address);
@@ -17,13 +18,16 @@ export function onDistributionProposalClaimed(event: DistributionProposalClaimed
   let voterInPool = getVoterInPool(pool, voter);
   let proposal = getProposal(pool, event.params.proposalId);
   let dp = getDistributionProposal(proposal);
+  let voterInProposal = getVoterInProposal(proposal, voterInPool);
+
+  let usdAmount = getUSDFromPriceFeed(Address.fromBytes(dp.token), event.params.amount);
 
   voterInPool.claimedDPs = extendArray(voterInPool.claimedDPs, [proposal.id]);
-  voterInPool.totalDPClaimed = voterInPool.totalDPClaimed.plus(
-    getUSDFromPriceFeed(Address.fromBytes(dp.token), event.params.amount)
-  );
+  voterInPool.totalDPClaimed = voterInPool.totalDPClaimed.plus(usdAmount);
+  voterInProposal.claimedDpRewardUSD = usdAmount;
 
   proposal.save();
+  voterInProposal.save();
   voterInPool.save();
   pool.save();
   voter.save();

@@ -21,7 +21,7 @@ export function getProposal(
     proposal.currentVotes = BigInt.zero();
     proposal.quorum = quorum;
     proposal.votersVoted = BigInt.zero();
-    proposal.distributionProposal = Bytes.empty();
+    proposal.isDP = false;
     proposal.settings = Bytes.empty();
     proposal.voters = new Array<Bytes>();
     proposal.description = description;
