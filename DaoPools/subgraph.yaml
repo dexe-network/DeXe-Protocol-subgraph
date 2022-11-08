@@ -70,6 +70,8 @@ templates:
       abis:
         - name: DistributionProposal
           file: ./abis/DistributionProposal.json
+        - name: PriceFeed
+          file: ./abis/PriceFeed.json
       eventHandlers:
         - event: DistributionProposalClaimed(uint256,address,uint256) # id, msg.sender, amount
           handler: onDistributionProposalClaimed
