@@ -16,12 +16,11 @@ export function onDistributionProposalClaimed(event: DistributionProposalClaimed
   let pool = getDaoPool(Address.fromString(dpToPool.daoPool.toHexString()));
   let voterInPool = getVoterInPool(pool, voter);
   let proposal = getProposal(pool, event.params.proposalId);
-  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
   let dp = getDistributionProposal(proposal);
 
   voterInPool.claimedDPs = extendArray(voterInPool.claimedDPs, [proposal.id]);
   voterInPool.totalDPClaimed = voterInPool.totalDPClaimed.plus(
-    getUSDFromPriceFeed(pfPrototype, Address.fromBytes(dp.token), event.params.amount)
+    getUSDFromPriceFeed(Address.fromBytes(dp.token), event.params.amount)
   );
 
   proposal.save();
@@ -30,19 +29,20 @@ export function onDistributionProposalClaimed(event: DistributionProposalClaimed
   voter.save();
 }
 
-function getUSDFromPriceFeed(pfPrototype: PriceFeed, baseTokenAddress: Address, fromBaseVolume: BigInt): BigInt {
-  let resp = pfPrototype.try_getNormalizedPriceOutUSD(baseTokenAddress, fromBaseVolume);
+function getUSDFromPriceFeed(token: Address, amount: BigInt): BigInt {
+  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
+  let resp = pfPrototype.try_getNormalizedPriceOutUSD(token, amount);
   if (resp.reverted) {
     log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
-      baseTokenAddress.toHexString(),
-      fromBaseVolume.toString(),
+      token.toHexString(),
+      amount.toString(),
     ]);
     return BigInt.zero();
   } else {
     if (resp.value.value1.length == 0) {
       log.warning("try_getNormalizedPriceOutUSD returned 0 length path. FromToken: {}, Amount:{}", [
-        baseTokenAddress.toHexString(),
-        fromBaseVolume.toString(),
+        token.toHexString(),
+        amount.toString(),
       ]);
     }
     return resp.value.value0;
