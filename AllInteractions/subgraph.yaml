@@ -161,3 +161,30 @@ templates:
           handler: onProposalInvest
         - event: ProposalConverted(uint256,address,uint256,address)
           handler: onProposalConverted
+
+  - kind: ethereum/contract
+    name: DaoPool
+    network: chapel
+    source:
+      abi: DaoPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/DaoPool.ts
+      entities:
+        - DaoPool
+      abis:
+        - name: DaoPool
+          file: ./abis/DaoPool.json
+      eventHandlers:
+        - event: ProposalCreated(uint256,string,uint256,uint256,address)
+          handler: onProposalCreated
+        - event: Delegated(address,address,uint256,uint256[],bool)
+          handler: onDelegated
+        - event: Voted(uint256,address,uint256,uint256)
+          handler: onVoted
+        - event: ProposalExecuted(uint256,address)
+          handler: onProposalExecuted
+        - event: RewardClaimed(uint256,address,address,uint256)
+          handler: onRewardClaimed

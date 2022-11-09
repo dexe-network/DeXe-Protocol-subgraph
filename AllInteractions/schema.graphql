@@ -274,3 +274,56 @@ type OnlyPool @entity(immutable: true) {
 
   transaction: Transaction!
 }
+
+type DaoPoolCreate @entity(immutable: true) {
+  id: Bytes! # tx hash + interactionCount
+  pool: Bytes!
+  name: String!
+
+  transaction: Transaction!
+}
+
+type DaoPoolDelegate @entity(immutable: true) {
+  id: Bytes! # tx hash + interactionCount
+  pool: Bytes!
+
+  amount: BigInt!
+
+  transaction: Transaction!
+}
+
+type DaoPoolVote @entity(immutable: true) {
+  id: Bytes! # tx hash + interactionCount
+  pool: Bytes!
+
+  amount: BigInt!
+
+  transaction: Transaction!
+}
+
+type DaoProposalCreated @entity(immutable: true) {
+  id: Bytes! # tx hash + interactionCount
+  pool: Bytes!
+
+  proposalId: BigInt!
+
+  transaction: Transaction!
+}
+
+type DaoPoolProposalExecute @entity(immutable: true) {
+  id: Bytes! # tx hash + interactionCount
+  pool: Bytes!
+
+  proposalId: BigInt!
+
+  transaction: Transaction!
+}
+
+type DaoPoolRewardClaimed @entity(immutable: true) {
+  id: Bytes! # tx hash + interactionCount
+  pool: Bytes!
+
+  proposalId: BigInt!
+
+  transaction: Transaction!
+}
