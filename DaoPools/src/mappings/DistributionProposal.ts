@@ -7,7 +7,7 @@ import { getProposal } from "../entities/Proposal";
 import { getVoter } from "../entities/Voters/Voter";
 import { getVoterInPool } from "../entities/Voters/VoterInPool";
 import { extendArray } from "../helpers/ArrayHelper";
-import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { BNB_ADDRESS, PRICE_FEED_ADDRESS, WBNB_ADDRESS } from "../entities/global/globals";
 import { getDistributionProposal } from "../entities/DistributionProposal";
 
 export function onDistributionProposalClaimed(event: DistributionProposalClaimed): void {
@@ -31,6 +31,11 @@ export function onDistributionProposalClaimed(event: DistributionProposalClaimed
 
 function getUSDFromPriceFeed(token: Address, amount: BigInt): BigInt {
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
+
+  if (token.equals(Address.fromString(BNB_ADDRESS))) {
+    token = Address.fromString(WBNB_ADDRESS);
+  }
+
   let resp = pfPrototype.try_getNormalizedPriceOutUSD(token, amount);
   if (resp.reverted) {
     log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
