@@ -35,12 +35,6 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "govUserKeeper",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
         "name": "sender",
         "type": "address"
       }

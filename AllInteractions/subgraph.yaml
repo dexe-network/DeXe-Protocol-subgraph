@@ -21,7 +21,9 @@ dataSources:
           file: ./abis/PoolFactory.json
       eventHandlers:
         - event: TraderPoolDeployed(string,string,string,address,address,address,address,uint256,string)
-          handler: onDeployed
+          handler: onTraderPoolDeployed
+        - event: DaoPoolDeployed(string,address,address,address,address,address)
+          handler: onDaoPoolDeployed
 
   - kind: ethereum/contract
     name: UserRegistry
