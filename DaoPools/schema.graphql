@@ -61,6 +61,8 @@ type VoterInPool @entity {
   totalDPClaimed: BigInt!
   totalClaimedUSD: BigInt!
 
+  currentDelegatorsCount: BigInt!
+
   pool: DaoPool!
   voter: Voter!
 
@@ -111,6 +113,8 @@ type DelegationHistory @entity(immutable: true) {
 
   amount: BigInt!
   nfts: [BigInt!]!
+
+  pair: VoterInPoolPair!
 }
 
 type ProposalSettings @entity {
@@ -130,6 +134,18 @@ type Executor @entity {
   settings: ProposalSettings!
 
   pool: DaoPool!
+}
+
+type VoterInPoolPair @entity {
+  id: Bytes!
+
+  from: VoterInPool!
+  to: VoterInPool!
+
+  delegateAmount: BigInt!
+  delegateNfts: [BigInt!]!
+
+  history: [DelegationHistory!]! @derivedFrom(field: "pair")
 }
 
 # @notice The entity counts interactions in single tx
