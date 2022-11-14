@@ -7,7 +7,7 @@ import {
   Voted,
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPoolDelegate } from "../entities/dao-pool/DaoPoolDelegate";
-import { getDaoPoolProposalExecute } from "../entities/dao-pool/DaoPoolProposalExecute";
+import { getDaoPoolExecute } from "../entities/dao-pool/DaoPoolProposalExecute";
 import { getDaoPoolRewardClaimed } from "../entities/dao-pool/DaoPoolRewardClaimed";
 import { getDaoPoolVote } from "../entities/dao-pool/DaoPoolVote";
 import { getDaoProposalCreated } from "../entities/dao-pool/DaoProposalCreated";
@@ -85,7 +85,7 @@ export function onProposalExecuted(event: ProposalExecuted): void {
     event.block.timestamp,
     event.params.sender
   );
-  let executed = getDaoPoolProposalExecute(
+  let executed = getDaoPoolExecute(
     event.transaction.hash,
     event.address,
     event.params.proposalId,

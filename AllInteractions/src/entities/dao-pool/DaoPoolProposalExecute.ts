@@ -1,17 +1,12 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { DaoPoolProposalExecute } from "../../../generated/schema";
+import { DaoPoolExecute } from "../../../generated/schema";
 
-export function getDaoPoolProposalExecute(
-  hash: Bytes,
-  pool: Address,
-  proposalId: BigInt,
-  count: BigInt
-): DaoPoolProposalExecute {
+export function getDaoPoolExecute(hash: Bytes, pool: Address, proposalId: BigInt, count: BigInt): DaoPoolExecute {
   let id = hash.concatI32(count.toI32());
-  let proposalExecute = DaoPoolProposalExecute.load(id);
+  let proposalExecute = DaoPoolExecute.load(id);
 
   if (proposalExecute == null) {
-    proposalExecute = new DaoPoolProposalExecute(id);
+    proposalExecute = new DaoPoolExecute(id);
     proposalExecute.pool = pool;
     proposalExecute.proposalId = proposalId;
 

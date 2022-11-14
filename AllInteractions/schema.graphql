@@ -310,7 +310,7 @@ type DaoProposalCreated @entity(immutable: true) {
   transaction: Transaction!
 }
 
-type DaoPoolProposalExecute @entity(immutable: true) {
+type DaoPoolExecute @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
   pool: Bytes!
 
