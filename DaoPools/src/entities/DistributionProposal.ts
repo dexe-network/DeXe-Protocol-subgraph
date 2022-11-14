@@ -13,6 +13,8 @@ export function getDistributionProposal(
     dp = new DistributionProposal(id);
     dp.token = token;
     dp.amount = amount;
+
+    dp.proposal = proposal.id;
   }
 
   return dp;

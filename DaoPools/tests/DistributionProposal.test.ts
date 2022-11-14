@@ -66,6 +66,7 @@ describe("DistributionProposal", () => {
     let dp = new DistributionProposal(pool.concatI32(proposalId.toI32()));
     dp.amount = BigInt.fromI32(10).pow(18);
     dp.token = Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181672");
+    dp.proposal = pool.concatI32(proposalId.toI32());
     dp.save();
   });
 

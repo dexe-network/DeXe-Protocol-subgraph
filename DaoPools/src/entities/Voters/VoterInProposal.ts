@@ -15,6 +15,7 @@ export function getVoterInProposal(proposal: Proposal, voterInPool: VoterInPool)
     voterInProposal.totalDelegatedVoteAmount = BigInt.zero();
 
     voterInProposal.claimedReward = BigInt.zero();
+    voterInProposal.claimedDpRewardUSD = BigInt.zero();
   }
 
   return voterInProposal;

@@ -261,12 +261,6 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "distributionProposal",
-      Bytes.empty().toHexString()
-    );
-    assert.fieldEquals(
-      "Proposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString(),
       "pool",
       contractSender.toHexString()
     );
@@ -482,13 +476,6 @@ describe("DaoPool", () => {
     onDPCreated(event);
 
     assert.fieldEquals(
-      "Proposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "distributionProposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString()
-    );
-
-    assert.fieldEquals(
       "DistributionProposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
       "token",
@@ -500,6 +487,13 @@ describe("DaoPool", () => {
       "amount",
       amount.toString()
     );
+    assert.fieldEquals(
+      "DistributionProposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString()
+    );
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "isDP", "true");
   });
 
   test("should handle ProposalExecuted", () => {
