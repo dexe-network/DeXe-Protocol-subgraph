@@ -62,7 +62,7 @@ type Voter @entity {
 # @param executor the address of executor
 # @param executionTimestamp the timestamp of execution
 # @param currentVotes the current number of votes
-# @param quorum the number of required votes to confirm
+# @param quorum the percentage of total votes to confirm the proposal
 # @param description the url of description
 # @param votersVoted the number of voters addresses
 # @param pool the pool entity id
@@ -100,7 +100,7 @@ type Proposal @entity {
 # @param receivedNFTDelegation the ids of received erc721 as delegation in this pool
 # @param totalDPClaimed the total usd amount claimed from DPs
 # @param totalClaimedUSD the total usd amount claimed from rewards
-# @param currentDelegatorsCount the current numbers of delegations
+# @param currentDelegatorsCount the current numbers of received delegations
 # @param pool the pool entity id
 # @param voter the voter entity id
 # @param claimedDPs the array of claimed dp ids
@@ -141,7 +141,7 @@ type ProposalVote @entity(immutable: true) {
 }
 
 # @notice The entity holds information about voter's actions in proposal
-# @param id forms from pool address + proposal entity id
+# @param id forms from voter address + proposal entity id
 # @param pool the pool entity id
 # @param proposal the proposal entity id
 # @param voter the VoterInPool entity id
@@ -150,7 +150,7 @@ type ProposalVote @entity(immutable: true) {
 # @param claimedReward the amount of claimed reward
 # @param claimedDpRewardUSD the amount of dp rewards in usd
 type VoterInProposal @entity {
-  id: Bytes! # voter in pool address + proposal entity id
+  id: Bytes! # voter in voter address + proposal entity id
   pool: DaoPool!
   proposal: Proposal!
   voter: VoterInPool!
@@ -235,8 +235,8 @@ type Executor @entity {
 # @param id forms from pool address + from address + to address
 # @param from the VoterInPool entity id
 # @param to the VoterInPool entity id
-# @param delegateAmount the current delegate amount
-# @param delegateNfts the current delegate nfts
+# @param delegateAmount the current delegated amount
+# @param delegateNfts the current delegated nfts
 type VoterInPoolPair @entity {
   id: Bytes! # pool address + from address + to address
   from: VoterInPool!
