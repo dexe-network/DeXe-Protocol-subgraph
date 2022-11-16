@@ -17,7 +17,7 @@ type ValidatorsContract @entity(immutable: true) {
 # @param id the pool address + proposalId + isInternal
 # @param proposalId the id of proposal
 # @param isInternal bool flag, if true - internal for validators
-# @param quorum the number of required votes to confirm
+# @param quorum the percentage of total votes to confirm the proposal
 # @param totalVote the current number of votes
 # @param description the url of description
 # @param creator the address of creator
@@ -71,7 +71,7 @@ type ProposalVote @entity(immutable: true) {
 # @param pool the pool entity id
 # @param proposal the proposal entity id
 # @param validator the ValidatorInPool entity id
-# @param totalVote the total amount of vote this proposal
+# @param totalVote the total amount of votes in this proposal
 type ValidatorInProposal @entity {
   id: Bytes! # user address + pool address + proposal id
   pool: DaoPool!
