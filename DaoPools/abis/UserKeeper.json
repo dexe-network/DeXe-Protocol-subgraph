@@ -28,7 +28,7 @@
           "type": "address"
         }
       ],
-      "name": "SettedERC20",
+      "name": "SetERC20",
       "type": "event"
     },
     {
@@ -41,7 +41,7 @@
           "type": "address"
         }
       ],
-      "name": "SettedERC721",
+      "name": "SetERC721",
       "type": "event"
     },
     {

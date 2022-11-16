@@ -8,6 +8,9 @@ type SettingsContract @entity(immutable: true) {
   daoPool: Bytes!
 }
 
+# @notice The entity holds information about user keeper contract
+# @param id forms from user keeper contract address
+# @param daoPool the daoPool address
 type UserKeeperContract @entity(immutable: true) {
   id: Bytes! # user keeper contract
   daoPool: Bytes!

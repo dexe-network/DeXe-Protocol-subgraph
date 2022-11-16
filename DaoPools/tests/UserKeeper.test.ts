@@ -1,17 +1,17 @@
 import { Address, ethereum, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { assert, beforeAll, describe, newMockEvent, test } from "matchstick-as";
-import { SettedERC20, SettedERC721 } from "../generated/templates/UserKeeper/UserKeeper";
+import { SetERC20, SetERC721 } from "../generated/templates/UserKeeper/UserKeeper";
 import { getBlock, getTransaction } from "./utils";
 import { getUserKeeperContract } from "../src/entities/UserKeeperContract";
-import { onSettedERC20, onSettedERC721 } from "../src/mappings/UserKeeper";
+import { onSetERC20, onSetERC721 } from "../src/mappings/UserKeeper";
 
-function createSettedERC20(
+function createSetERC20(
   token: Address,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
-): SettedERC20 {
-  let event = changetype<SettedERC20>(newMockEvent());
+): SetERC20 {
+  let event = changetype<SetERC20>(newMockEvent());
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("token", ethereum.Value.fromAddress(token)));
@@ -23,13 +23,13 @@ function createSettedERC20(
   return event;
 }
 
-function createSettedERC721(
+function createSetERC721(
   token: Address,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
-): SettedERC721 {
-  let event = changetype<SettedERC721>(newMockEvent());
+): SetERC721 {
+  let event = changetype<SetERC721>(newMockEvent());
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("token", ethereum.Value.fromAddress(token)));
@@ -51,20 +51,20 @@ describe("UserKeeper", () => {
     getUserKeeperContract(contractSender, poolAddress).save();
   });
 
-  test("should handle SettedERC20", () => {
+  test("should handle SetERC20", () => {
     let tokenAddress = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181679");
-    let event = createSettedERC20(tokenAddress, contractSender, block, tx);
+    let event = createSetERC20(tokenAddress, contractSender, block, tx);
 
-    onSettedERC20(event);
+    onSetERC20(event);
 
     assert.fieldEquals("DaoPool", poolAddress.toHexString(), "erc20Token", tokenAddress.toHexString());
   });
 
-  test("should handle SettedERC20", () => {
+  test("should handle SetERC721", () => {
     let tokenAddress = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181675");
-    let event = createSettedERC721(tokenAddress, contractSender, block, tx);
+    let event = createSetERC721(tokenAddress, contractSender, block, tx);
 
-    onSettedERC721(event);
+    onSetERC721(event);
 
     assert.fieldEquals("DaoPool", poolAddress.toHexString(), "erc721Token", tokenAddress.toHexString());
   });

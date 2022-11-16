@@ -111,7 +111,7 @@ templates:
         - name: UserKeeper
           file: ./abis/UserKeeper.json
       eventHandlers:
-        - event: SettedERC20(address)
-          handler: onSettedERC20
-        - event: SettedERC721(address)
-          handler: onSettedERC721
+        - event: SetERC20(address)
+          handler: onSetERC20
+        - event: SetERC721(address)
+          handler: onSetERC721
