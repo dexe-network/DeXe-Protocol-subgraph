@@ -8,9 +8,17 @@ type SettingsContract @entity(immutable: true) {
   daoPool: Bytes!
 }
 
+type UserKeeperContract @entity(immutable: true) {
+  id: Bytes! # user keeper contract
+  daoPool: Bytes!
+}
+
 type DaoPool @entity {
   id: Bytes! # pool address
   name: String!
+
+  erc20Token: Bytes!
+  erc721Token: Bytes!
 
   votersCount: BigInt!
   creationTime: BigInt!
