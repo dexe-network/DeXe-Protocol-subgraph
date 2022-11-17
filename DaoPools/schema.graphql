@@ -1,8 +1,14 @@
+# @notice The entity holds information about DP contract
+# @param id forms from DP contract address
+# @param daoPool the daoPool address
 type DPContract @entity(immutable: true) {
   id: Bytes! # DP contract address
   daoPool: Bytes!
 }
 
+# @notice The entity holds information about settings contract
+# @param id forms from settings contract address
+# @param daoPool the daoPool address
 type SettingsContract @entity(immutable: true) {
   id: Bytes! # settings contract address
   daoPool: Bytes!
@@ -16,6 +22,13 @@ type UserKeeperContract @entity(immutable: true) {
   daoPool: Bytes!
 }
 
+# @notice The entity holds information about dao pool
+# @param id forms from pool address
+# @param name the name of pool
+# @param votersCount the number of users, which voted
+# @param creationTime the timestamp of creation
+# @param creationBlock the block number of creation
+# @param proposalCount the number of proposals
 type DaoPool @entity {
   id: Bytes! # pool address
   name: String!
@@ -35,11 +48,26 @@ type DaoPool @entity {
   executors: [Executor!]! @derivedFrom(field: "pool")
 }
 
+# @notice The entity holds information about voter
+# @param id forms from user address
 type Voter @entity {
   id: Bytes! # voter address
   pools: [VoterInPool!]! @derivedFrom(field: "voter")
 }
 
+# @notice The entity holds information about proposal
+# @param id forms from pool address + proposalId
+# @param isDP the bool flag, if true proposal is DP
+# @param creator the address of creator
+# @param executor the address of executor
+# @param executionTimestamp the timestamp of execution
+# @param currentVotes the current number of votes
+# @param quorum the percentage of total votes to confirm the proposal
+# @param description the url of description
+# @param votersVoted the number of voters addresses
+# @param pool the pool entity id
+# @param settings the settings entity id
+# @param voters the array of voters, which voted for proposals
 type Proposal @entity {
   id: Bytes! # pool address + porposalId
   proposalId: BigInt!
@@ -66,6 +94,16 @@ type Proposal @entity {
   votes: [ProposalVote!]! @derivedFrom(field: "proposal")
 }
 
+# @notice The entity holds information about voter's actions in pool
+# @param id forms from voter address + pool address
+# @param receivedDelegation the amount of received erc20 as delegation in this pool
+# @param receivedNFTDelegation the ids of received erc721 as delegation in this pool
+# @param totalDPClaimed the total usd amount claimed from DPs
+# @param totalClaimedUSD the total usd amount claimed from rewards
+# @param currentDelegatorsCount the current numbers of received delegations
+# @param pool the pool entity id
+# @param voter the voter entity id
+# @param claimedDPs the array of claimed dp ids
 type VoterInPool @entity {
   id: Bytes! # voter address + pool address
   receivedDelegation: BigInt!
@@ -82,6 +120,14 @@ type VoterInPool @entity {
   claimedDPs: [DistributionProposal!]!
 }
 
+# @notice The entity holds information about vote
+# @param id forms from tx hash + counter
+# @param hash the tx hash
+# @param timestamp the timestamp of tx
+# @param personalAmount the personal amount of vote
+# @param delegatedAmount the delegated amount of vote
+# @param voter the VoterInProposal entity id
+# @param proposal the Proposal entity id
 type ProposalVote @entity(immutable: true) {
   id: Bytes! # tx hash + counter
   hash: Bytes!
@@ -94,8 +140,17 @@ type ProposalVote @entity(immutable: true) {
   proposal: Proposal!
 }
 
+# @notice The entity holds information about voter's actions in proposal
+# @param id forms from voter address + proposal entity id
+# @param pool the pool entity id
+# @param proposal the proposal entity id
+# @param voter the VoterInPool entity id
+# @param totalVoteAmount the total personal amount of vote for proposal
+# @param totalDelegatedVoteAmount the total delegated amount of vote for proposal
+# @param claimedReward the amount of claimed reward
+# @param claimedDpRewardUSD the amount of dp rewards in usd
 type VoterInProposal @entity {
-  id: Bytes! # voter in pool address + proposal entity id
+  id: Bytes! # voter in voter address + proposal entity id
   pool: DaoPool!
   proposal: Proposal!
   voter: VoterInPool!
@@ -109,6 +164,11 @@ type VoterInProposal @entity {
   votes: [ProposalVote!]! @derivedFrom(field: "voter")
 }
 
+# @notice The entity holds information about dp
+# @param id forms from proposal entity id
+# @param token the token address
+# @param amount the amount of reward
+# @param proposal the proposal entiy id
 type DistributionProposal @entity {
   id: Bytes! # proposal entity id
   token: Bytes!
@@ -117,6 +177,16 @@ type DistributionProposal @entity {
   proposal: Proposal!
 }
 
+# @notice The entity holds historical information about delegations
+# @param id forms from tx hash + counter
+# @param pool the pool entiy id
+# @param timestamp the timestamp of delegation
+# @param from the delegator address
+# @param to the delegatee address
+# @param isDelegate the bool flag, if true - delegate, false - undelegate
+# @param amount the amount of delegation
+# @param nfts the delegated nfts
+# @param pair the VoterInPoolPair entity id
 type DelegationHistory @entity(immutable: true) {
   id: Bytes! # tx hash + counter
   pool: DaoPool!
@@ -132,6 +202,11 @@ type DelegationHistory @entity(immutable: true) {
   pair: VoterInPoolPair!
 }
 
+# @notice The entity holds historical information proposal settings
+# @param id forms from pool address + settingsId
+# @param settingsId the settings id
+# @param executorDescription the url of description
+# @param pool the dao pool entity id
 type ProposalSettings @entity {
   id: Bytes! # pool address + settingsId
   settingsId: BigInt!
@@ -142,6 +217,11 @@ type ProposalSettings @entity {
   pool: DaoPool!
 }
 
+# @notice The entity holds information about executor
+# @param id forms from pool address + executor address
+# @param executorAddress the address of executor
+# @param settings the ProposalSettings entity id
+# @param pool the pool entity id
 type Executor @entity {
   id: Bytes! # dao pool address + executor address
   executorAddress: Bytes!
@@ -151,9 +231,14 @@ type Executor @entity {
   pool: DaoPool!
 }
 
+# @notice The entity holds information about current state of delegation
+# @param id forms from pool address + from address + to address
+# @param from the VoterInPool entity id
+# @param to the VoterInPool entity id
+# @param delegateAmount the current delegated amount
+# @param delegateNfts the current delegated nfts
 type VoterInPoolPair @entity {
-  id: Bytes!
-
+  id: Bytes! # pool address + from address + to address
   from: VoterInPool!
   to: VoterInPool!
 
