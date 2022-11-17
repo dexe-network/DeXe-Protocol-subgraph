@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { DaoPool } from "../../generated/schema";
 
 export function getDaoPool(
@@ -16,6 +16,9 @@ export function getDaoPool(
     pool.proposalCount = BigInt.zero();
     pool.creationTime = timestamp;
     pool.creationBlock = blockNumber;
+
+    pool.erc20Token = Bytes.empty();
+    pool.erc721Token = Bytes.empty();
   }
 
   return pool;

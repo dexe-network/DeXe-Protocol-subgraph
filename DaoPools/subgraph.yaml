@@ -20,7 +20,7 @@ dataSources:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
       eventHandlers:
-        - event: DaoPoolDeployed(string,address,address,address,address)
+        - event: DaoPoolDeployed(string,address,address,address,address,address,address)
           handler: onDeployed
 
 templates:
@@ -95,3 +95,23 @@ templates:
           handler: onSettingsChanged
         - event: ExecutorChanged(uint256,address)
           handler: onExecutorChanged
+  - kind: ethereum/contract
+    name: UserKeeper
+    network: chapel
+    source:
+      abi: UserKeeper
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/UserKeeper.ts
+      entities:
+        - UserKeeper
+      abis:
+        - name: UserKeeper
+          file: ./abis/UserKeeper.json
+      eventHandlers:
+        - event: SetERC20(address)
+          handler: onSetERC20
+        - event: SetERC721(address)
+          handler: onSetERC721
