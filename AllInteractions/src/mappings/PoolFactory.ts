@@ -2,7 +2,7 @@ import { BigInt } from "@graphprotocol/graph-ts";
 import { DaoPoolDeployed, TraderPoolDeployed } from "../../generated/PoolFactory/PoolFactory";
 import { DaoPool, TraderPool, TraderPoolInvestProposal } from "../../generated/templates";
 import { TraderPoolRiskyProposal } from "../../generated/templates";
-import { getDaoPoolCreated } from "../entities/dao-pool/DaoPoolCreated";
+import { getDaoPoolCreate } from "../entities/dao-pool/DaoPoolCreate";
 import { BASIC_POOL_NAME } from "../entities/global/globals";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getPoolCreate } from "../entities/trader-pool/PoolCreate";
@@ -55,7 +55,7 @@ export function onDaoPoolDeployed(event: DaoPoolDeployed): void {
     event.params.sender
   );
 
-  let daoCreate = getDaoPoolCreated(
+  let daoCreate = getDaoPoolCreate(
     event.transaction.hash,
     event.params.govPool,
     event.params.name,

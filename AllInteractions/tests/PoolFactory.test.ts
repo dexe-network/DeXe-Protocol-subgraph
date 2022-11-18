@@ -2,7 +2,7 @@ import { TraderPoolDeployed } from "../generated/PoolFactory/PoolFactory";
 import { afterEach, assert, clearStore, describe, newMockEvent, test } from "matchstick-as/assembly/index";
 import { assertTransaction, getBlock, getTransaction } from "./utils";
 import { Address, ethereum, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { onDeployed } from "../src/mappings/PoolFactory";
+import { onTraderPoolDeployed } from "../src/mappings/PoolFactory";
 import { BASIC_POOL_NAME } from "../src/entities/global/globals";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
 
@@ -70,7 +70,7 @@ describe("PoolFactory", () => {
       tx
     );
 
-    onDeployed(event);
+    onTraderPoolDeployed(event);
 
     assert.fieldEquals("PoolCreate", tx.hash.concatI32(0).toHexString(), "pool", expectedAt.toHexString());
     assert.fieldEquals("PoolCreate", tx.hash.concatI32(0).toHexString(), "symbol", expectedSymbol);

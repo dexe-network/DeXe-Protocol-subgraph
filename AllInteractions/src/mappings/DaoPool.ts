@@ -8,9 +8,9 @@ import {
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPoolDelegate } from "../entities/dao-pool/DaoPoolDelegate";
 import { getDaoPoolExecute } from "../entities/dao-pool/DaoPoolProposalExecute";
-import { getDaoPoolRewardClaimed } from "../entities/dao-pool/DaoPoolRewardClaimed";
+import { getDaoPoolRewardClaim } from "../entities/dao-pool/DaoPoolRewardClaim";
 import { getDaoPoolVote } from "../entities/dao-pool/DaoPoolVote";
-import { getDaoProposalCreated } from "../entities/dao-pool/DaoProposalCreated";
+import { getDaoProposalCreate } from "../entities/dao-pool/DaoProposalCreate";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getTransaction } from "../entities/transaction/Transaction";
 import { extendArray } from "../helpers/ArrayHelper";
@@ -22,7 +22,7 @@ export function onProposalCreated(event: ProposalCreated): void {
     event.block.timestamp,
     event.params.sender
   );
-  let proposalCreated = getDaoProposalCreated(
+  let proposalCreated = getDaoProposalCreate(
     event.transaction.hash,
     event.address,
     event.params.proposalId,
@@ -106,7 +106,7 @@ export function onRewardClaimed(event: RewardClaimed): void {
     event.block.timestamp,
     event.params.sender
   );
-  let claimed = getDaoPoolRewardClaimed(
+  let claimed = getDaoPoolRewardClaim(
     event.transaction.hash,
     event.address,
     event.params.proposalId,

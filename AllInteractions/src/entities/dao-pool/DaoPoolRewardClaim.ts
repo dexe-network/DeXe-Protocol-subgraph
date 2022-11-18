@@ -1,17 +1,17 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { DaoPoolRewardClaimed } from "../../../generated/schema";
+import { DaoPoolRewardClaim } from "../../../generated/schema";
 
-export function getDaoPoolRewardClaimed(
+export function getDaoPoolRewardClaim(
   hash: Bytes,
   pool: Address,
   proposalId: BigInt,
   count: BigInt
-): DaoPoolRewardClaimed {
+): DaoPoolRewardClaim {
   let id = hash.concatI32(count.toI32());
-  let claimed = DaoPoolRewardClaimed.load(id);
+  let claimed = DaoPoolRewardClaim.load(id);
 
   if (claimed == null) {
-    claimed = new DaoPoolRewardClaimed(id);
+    claimed = new DaoPoolRewardClaim(id);
     claimed.pool = pool;
     claimed.proposalId = proposalId;
 

@@ -301,7 +301,7 @@ type DaoPoolVote @entity(immutable: true) {
   transaction: Transaction!
 }
 
-type DaoProposalCreated @entity(immutable: true) {
+type DaoProposalCreate @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
   pool: Bytes!
 
@@ -319,7 +319,7 @@ type DaoPoolExecute @entity(immutable: true) {
   transaction: Transaction!
 }
 
-type DaoPoolRewardClaimed @entity(immutable: true) {
+type DaoPoolRewardClaim @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
   pool: Bytes!
 
