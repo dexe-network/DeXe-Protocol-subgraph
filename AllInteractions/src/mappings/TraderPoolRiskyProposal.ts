@@ -23,7 +23,7 @@ export function onProposalCreated(event: ProposalCreated): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    getTraderPool(Address.fromString(proposalContract.pool.toHexString())).trader
+    getTraderPool(Address.fromBytes(proposalContract.pool)).trader
   );
 
   let proposalCreate = getRiskyProposalCreate(

@@ -45,7 +45,7 @@ export function onExchange(event: Exchanged): void {
   let usdVolume = BigInt.zero();
 
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-  let baseTokenAddress = Address.fromString(pool.baseToken.toHexString());
+  let baseTokenAddress = Address.fromBytes(pool.baseToken);
 
   if (event.params.toToken != pool.baseToken) {
     // adding funds to the position
@@ -233,7 +233,7 @@ export function onActivePortfolioExchanged(event: ActivePortfolioExchanged): voi
   let usdVolume = BigInt.zero();
 
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-  let baseTokenAddress = Address.fromString(pool.baseToken.toHexString());
+  let baseTokenAddress = Address.fromBytes(pool.baseToken);
 
   if (event.params.toToken != pool.baseToken) {
     // adding funds to the position
@@ -307,7 +307,7 @@ function exchangeSetup(
     trade = getExchange(
       event.transaction.hash,
       position.id,
-      Address.fromString(pool.baseToken.toHexString()),
+      Address.fromBytes(pool.baseToken),
       event.params.toToken,
       volume,
       event.params.toVolume,

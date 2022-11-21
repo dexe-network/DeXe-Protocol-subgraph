@@ -7,7 +7,7 @@ import { getSettingsContract } from "../entities/SettingsContract";
 
 export function onSettingsChanged(event: SettingsChanged): void {
   let poolToSettings = getSettingsContract(event.address);
-  let pool = getDaoPool(Address.fromString(poolToSettings.daoPool.toHexString()));
+  let pool = getDaoPool(Address.fromBytes(poolToSettings.daoPool));
   let settings = getProposalSettings(pool, event.params.settingsId);
 
   settings.executorDescription = event.params.description;
@@ -18,7 +18,7 @@ export function onSettingsChanged(event: SettingsChanged): void {
 
 export function onExecutorChanged(event: ExecutorChanged): void {
   let poolToSettings = getSettingsContract(event.address);
-  let pool = getDaoPool(Address.fromString(poolToSettings.daoPool.toHexString()));
+  let pool = getDaoPool(Address.fromBytes(poolToSettings.daoPool));
   let settings = getProposalSettings(pool, event.params.settingsId);
   let executor = getExecutor(pool, event.params.executor);
 

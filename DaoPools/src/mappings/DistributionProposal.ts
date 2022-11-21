@@ -14,7 +14,7 @@ import { getVoterInProposal } from "../entities/Voters/VoterInProposal";
 export function onDistributionProposalClaimed(event: DistributionProposalClaimed): void {
   let dpToPool = getDPContract(event.address);
   let voter = getVoter(event.params.sender);
-  let pool = getDaoPool(Address.fromString(dpToPool.daoPool.toHexString()));
+  let pool = getDaoPool(Address.fromBytes(dpToPool.daoPool));
   let voterInPool = getVoterInPool(pool, voter);
   let proposal = getProposal(pool, event.params.proposalId);
   let dp = getDistributionProposal(proposal);
