@@ -427,6 +427,7 @@ describe("DaoPool", () => {
       "currentVotes",
       personalVote.plus(delegatedVote).toString()
     );
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "votersVoted", "1");
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),

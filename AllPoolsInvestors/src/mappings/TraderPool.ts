@@ -178,7 +178,7 @@ export function onDivest(event: Divested): void {
 
 export function onProposalDivest(event: ProposalDivested): void {
   let pool = getTraderPool(event.address);
-  let proposalContract = getProposalContract(Address.fromString(pool.proposalContract.toHexString()));
+  let proposalContract = getProposalContract(Address.fromBytes(pool.proposalContract));
   let investor = getInvestor(event.params.user);
   let proposalOffset = getProposalPositionOffset(pool, investor, event.params.proposalId);
   let proposal = getProposalPosition(event.params.proposalId, proposalContract, investor, proposalOffset);

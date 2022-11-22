@@ -20,7 +20,7 @@ import { getProposalClaim } from "../entities/trader-pool/proposal/ProposalClaim
 export function onProposalInvest(event: ProposalInvested): void {
   let proposalContract = getProposalContract(event.address);
   let investor = getInvestor(event.params.user);
-  let pool = getTraderPool(Address.fromString(proposalContract.traderPool.toHexString()));
+  let pool = getTraderPool(Address.fromBytes(proposalContract.traderPool));
   let proposalOffset = getProposalPositionOffset(pool, investor, event.params.proposalId);
   let proposal = getProposalPosition(event.params.proposalId, proposalContract, investor, proposalOffset);
 
@@ -50,12 +50,12 @@ export function onProposalInvest(event: ProposalInvested): void {
 export function onProposalDivest(event: ProposalDivested): void {
   let proposalContract = getProposalContract(event.address);
   let investor = getInvestor(event.params.user);
-  let pool = getTraderPool(Address.fromString(proposalContract.traderPool.toHexString()));
+  let pool = getTraderPool(Address.fromBytes(proposalContract.traderPool));
   let proposalOffset = getProposalPositionOffset(pool, investor, event.params.proposalId);
   let proposal = getProposalPosition(event.params.proposalId, proposalContract, investor, proposalOffset);
 
   let usdValue = getUSDValue(
-    getTraderPool(Address.fromString(proposalContract.traderPool.toHexString())).token,
+    getTraderPool(Address.fromBytes(proposalContract.traderPool)).token,
     event.params.receivedBase
   );
   let divest = getProposalVest(
@@ -83,7 +83,7 @@ export function onProposalDivest(event: ProposalDivested): void {
 export function onProposalInvestorAdded(event: ProposalInvestorAdded): void {
   let proposalContract = getProposalContract(event.address);
   let investor = getInvestor(event.params.investor);
-  let pool = getTraderPool(Address.fromString(proposalContract.traderPool.toHexString()));
+  let pool = getTraderPool(Address.fromBytes(proposalContract.traderPool));
   let proposalOffset = getProposalPositionOffset(pool, investor, event.params.proposalId);
   let proposal = getProposalPosition(event.params.proposalId, proposalContract, investor, proposalOffset);
 
@@ -96,7 +96,7 @@ export function onProposalInvestorAdded(event: ProposalInvestorAdded): void {
 export function onProposalClaimed(event: ProposalClaimed): void {
   let proposalContract = getProposalContract(event.address);
   let investor = getInvestor(event.params.user);
-  let pool = getTraderPool(Address.fromString(proposalContract.traderPool.toHexString()));
+  let pool = getTraderPool(Address.fromBytes(proposalContract.traderPool));
   let proposalOffset = getProposalPositionOffset(pool, investor, event.params.proposalId);
   let proposal = getProposalPosition(event.params.proposalId, proposalContract, investor, proposalOffset);
   let claim = getProposalClaim(
@@ -117,7 +117,7 @@ export function onProposalClaimed(event: ProposalClaimed): void {
 export function onProposalInvestorRemoved(event: ProposalInvestorRemoved): void {
   let proposalContract = getProposalContract(event.address);
   let investor = getInvestor(event.params.investor);
-  let pool = getTraderPool(Address.fromString(proposalContract.traderPool.toHexString()));
+  let pool = getTraderPool(Address.fromBytes(proposalContract.traderPool));
   let proposalOffset = getProposalPositionOffset(pool, investor, event.params.proposalId);
   let proposal = getProposalPosition(event.params.proposalId, proposalContract, investor, proposalOffset);
 
@@ -133,7 +133,7 @@ export function onProposalInvestorRemoved(event: ProposalInvestorRemoved): void 
 function getUSDValue(token: Bytes, amount: BigInt): BigInt {
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
 
-  let resp = pfPrototype.try_getNormalizedPriceOutUSD(Address.fromString(token.toHexString()), amount);
+  let resp = pfPrototype.try_getNormalizedPriceOutUSD(Address.fromBytes(token), amount);
   if (resp.reverted) {
     log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
       token.toHexString(),

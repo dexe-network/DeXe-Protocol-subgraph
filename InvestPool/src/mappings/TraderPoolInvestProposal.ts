@@ -172,7 +172,7 @@ function proposalSupplied(
   let proposalContract = getProposalContract(address);
   let proposal = getProposal(proposalId, proposalContract);
   let supply = getSupply(hash, proposal, upcastCopy<Address, Bytes>(tokens), amounts, timestamp);
-  let pool = getInvestTraderPool(Address.fromString(proposalContract.investPool.toHexString()));
+  let pool = getInvestTraderPool(Address.fromBytes(proposalContract.investPool));
 
   proposal.totalUSDSupply = proposal.totalUSDSupply.plus(totalTokenUSDCost(tokens, amounts));
 
@@ -185,7 +185,7 @@ function proposalSupplied(
     .times(BigInt.fromU64(PERCENTAGE_PRECISION))
     .times(BigInt.fromI32(365))
     .div(difference)
-    .div(getInvestedBaseInUSD(address, proposalId, Address.fromString(pool.baseToken.toHexString())));
+    .div(getInvestedBaseInUSD(address, proposalId, Address.fromBytes(pool.baseToken)));
 
   let extendTokens = proposal.leftTokens;
   let extendAmount = proposal.leftAmounts;

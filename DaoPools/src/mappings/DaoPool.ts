@@ -119,6 +119,7 @@ export function onVoted(event: Voted): void {
 
   proposal.currentVotes = proposal.currentVotes.plus(event.params.personalVote).plus(event.params.delegatedVote);
   proposal.voters = extendArray<Bytes>(proposal.voters, [voter.id]);
+  proposal.votersVoted = proposal.votersVoted.plus(BigInt.fromI32(1));
 
   proposalVote.save();
   voterInProposal.save();
