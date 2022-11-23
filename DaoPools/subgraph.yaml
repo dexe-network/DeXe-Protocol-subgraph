@@ -42,7 +42,7 @@ templates:
         - name: PriceFeed
           file: ./abis/PriceFeed.json
       eventHandlers:
-        - event: ProposalCreated(uint256,string,uint256,uint256,address) # id, msg.sender, quorum, mainExecutor, description
+        - event: ProposalCreated(uint256,string,uint256,uint256,address) # id, description, quorum, proposalSettings, msg.sender
           handler: onProposalCreated
         - event: Delegated(address,address,uint256,uint256[],bool) # from, to, amount, nfts, isDelegate
           handler: onDelegated
