@@ -357,61 +357,102 @@
       {
         "components": [
           {
-            "internalType": "enum IGovValidators.ProposalType",
-            "name": "proposalType",
-            "type": "uint8"
-          },
-          {
             "components": [
               {
-                "internalType": "bool",
-                "name": "executed",
-                "type": "bool"
+                "internalType": "enum IGovValidators.ProposalType",
+                "name": "proposalType",
+                "type": "uint8"
               },
               {
-                "internalType": "uint64",
-                "name": "voteEnd",
-                "type": "uint64"
+                "components": [
+                  {
+                    "internalType": "bool",
+                    "name": "executed",
+                    "type": "bool"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "voteEnd",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint128",
+                    "name": "quorum",
+                    "type": "uint128"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "votesFor",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "snapshotId",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct IGovValidators.ProposalCore",
+                "name": "core",
+                "type": "tuple"
               },
               {
-                "internalType": "uint128",
-                "name": "quorum",
-                "type": "uint128"
+                "internalType": "string",
+                "name": "descriptionURL",
+                "type": "string"
               },
               {
-                "internalType": "uint256",
-                "name": "votesFor",
-                "type": "uint256"
+                "internalType": "uint256[]",
+                "name": "newValues",
+                "type": "uint256[]"
               },
               {
-                "internalType": "uint256",
-                "name": "snapshotId",
-                "type": "uint256"
+                "internalType": "address[]",
+                "name": "userAddresses",
+                "type": "address[]"
               }
             ],
-            "internalType": "struct IGovValidators.ProposalCore",
-            "name": "core",
+            "internalType": "struct IGovValidators.InternalProposal",
+            "name": "proposal",
             "type": "tuple"
           },
           {
-            "internalType": "string",
-            "name": "descriptionURL",
-            "type": "string"
+            "internalType": "enum IGovValidators.ProposalState",
+            "name": "proposalState",
+            "type": "uint8"
           },
           {
-            "internalType": "uint256[]",
-            "name": "newValues",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "address[]",
-            "name": "userAddresses",
-            "type": "address[]"
+            "internalType": "uint256",
+            "name": "requiredQuorum",
+            "type": "uint256"
           }
         ],
-        "internalType": "struct IGovValidators.InternalProposal[]",
+        "internalType": "struct IGovValidators.InternalProposalView[]",
         "name": "internalProposals",
         "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isInternal",
+        "type": "bool"
+      }
+    ],
+    "name": "getProposalRequiredQuorum",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",

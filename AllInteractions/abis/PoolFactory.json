@@ -31,6 +31,18 @@
         "internalType": "address",
         "name": "settings",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "govUserKeeper",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
       }
     ],
     "name": "DaoPoolDeployed",
@@ -318,6 +330,11 @@
             "internalType": "struct IPoolFactory.UserKeeperDeployParams",
             "name": "userKeeperParams",
             "type": "tuple"
+          },
+          {
+            "internalType": "address",
+            "name": "nftMultiplierAddress",
+            "type": "address"
           },
           {
             "internalType": "string",
