@@ -275,6 +275,8 @@ type OnlyPool @entity(immutable: true) {
   transaction: Transaction!
 }
 
+#################################### DAO interactions ####################################
+
 type DaoPoolCreate @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
   pool: Bytes!
@@ -323,6 +325,42 @@ type DaoPoolRewardClaim @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
   pool: Bytes!
 
+  proposalId: BigInt!
+
+  transaction: Transaction!
+}
+
+type DaoPoolDeposit @entity(immutable: true) {
+  id: Bytes!
+  pool: Bytes!
+
+  nfts: [BigInt!]!
+  amount: BigInt!
+
+  transaction: Transaction!
+}
+
+type DaoValidatorProposalCreate @entity(immutable: true) {
+  id: Bytes!
+  pool: Bytes!
+  proposalId: BigInt!
+
+  transaction: Transaction!
+}
+
+type DaoVaildatorProposalVote @entity(immutable: true) {
+  id: Bytes!
+  pool: Bytes!
+  proposalId: BigInt!
+
+  amount: BigInt!
+
+  transaction: Transaction!
+}
+
+type DaoValidatorProposalExecute @entity(immutable: true) {
+  id: Bytes!
+  pool: Bytes!
   proposalId: BigInt!
 
   transaction: Transaction!

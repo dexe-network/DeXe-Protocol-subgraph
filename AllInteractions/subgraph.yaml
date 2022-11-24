@@ -190,3 +190,29 @@ templates:
           handler: onProposalExecuted
         - event: RewardClaimed(uint256,address,address,uint256)
           handler: onRewardClaimed
+        - event: Deposited(uint256,uint256[],address)
+          handler: onDeposited
+        - event: Withdrawn(uint256,uint256[],address)
+          handler: onWithdrawn
+  - kind: ethereum/contract
+    name: DaoValidators
+    network: chapel
+    source:
+      abi: DaoValidators
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/DaoValidators.ts
+      entities:
+        - DaoValidators
+      abis:
+        - name: DaoValidators
+          file: ./abis/DaoValidators.json
+      eventHandlers:
+        - event: Voted(uint256,address,uint256,bool) # id, msg.sender, vote
+          handler: onVoted
+        - event: InternalProposalCreated(uint256,string,uint256,address)
+          handler: onInternalProposalCreated
+        - event: InternalProposalExecuted(uint256,address)
+          handler: onInternalProposalExecuted
