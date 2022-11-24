@@ -91,6 +91,7 @@ type Proposal @entity {
 
   voters: [Voter!]!
 
+  votesCount: BigInt!
   votes: [ProposalVote!]! @derivedFrom(field: "proposal")
 }
 

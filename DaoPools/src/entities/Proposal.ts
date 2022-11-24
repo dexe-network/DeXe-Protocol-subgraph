@@ -25,6 +25,7 @@ export function getProposal(
     proposal.settings = Bytes.empty();
     proposal.voters = new Array<Bytes>();
     proposal.description = description;
+    proposal.votesCount = BigInt.zero();
 
     proposal.pool = pool.id;
   }

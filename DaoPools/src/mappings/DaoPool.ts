@@ -118,8 +118,14 @@ export function onVoted(event: Voted): void {
   voterInProposal.totalVoteAmount = voterInProposal.totalVoteAmount.plus(event.params.personalVote);
 
   proposal.currentVotes = proposal.currentVotes.plus(event.params.personalVote).plus(event.params.delegatedVote);
-  proposal.voters = extendArray<Bytes>(proposal.voters, [voter.id]);
-  proposal.votersVoted = proposal.votersVoted.plus(BigInt.fromI32(1));
+  let newVoters = extendArray<Bytes>(proposal.voters, [voter.id]);
+
+  if (proposal.voters.length < newVoters.length) {
+    proposal.voters = newVoters;
+    proposal.votersVoted = proposal.votersVoted.plus(BigInt.fromI32(1));
+  }
+
+  proposal.votesCount = proposal.votesCount.plus(BigInt.fromI32(1));
 
   proposalVote.save();
   voterInProposal.save();
