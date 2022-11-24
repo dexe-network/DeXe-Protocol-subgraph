@@ -1,12 +1,12 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { ProposalVote, ValidatorInProposal } from "../../generated/schema";
+import { Proposal, ProposalVote, ValidatorInProposal } from "../../generated/schema";
 import { increaseCounter } from "../helpers/IncreaseCounter";
 import { getInteractionCount } from "./global/InteractionCount";
 
 export function getProposalVote(
   hash: Bytes,
   timestamp: BigInt,
-  proposalId: BigInt,
+  proposal: Proposal,
   amount: BigInt,
   voter: ValidatorInProposal
 ): ProposalVote {
@@ -18,7 +18,7 @@ export function getProposalVote(
     vote = new ProposalVote(id);
     vote.hash = hash;
     vote.timestamp = timestamp;
-    vote.proposalId = proposalId;
+    vote.proposal = proposal.id;
     vote.amount = amount;
 
     vote.voter = voter.id;

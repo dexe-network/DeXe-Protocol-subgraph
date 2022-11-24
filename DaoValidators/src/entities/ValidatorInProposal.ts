@@ -1,14 +1,14 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { ValidatorInPool, ValidatorInProposal } from "../../generated/schema";
+import { Proposal, ValidatorInPool, ValidatorInProposal } from "../../generated/schema";
 
-export function getValidatorInProposal(validator: ValidatorInPool, proposalId: BigInt): ValidatorInProposal {
-  let id = validator.id.concatI32(proposalId.toI32());
+export function getValidatorInProposal(validator: ValidatorInPool, proposal: Proposal): ValidatorInProposal {
+  let id = validator.id.concatI32(proposal.proposalId.toI32());
   let validatorInProposal = ValidatorInProposal.load(id);
 
   if (validatorInProposal == null) {
     validatorInProposal = new ValidatorInProposal(id);
     validatorInProposal.pool = validator.pool;
-    validatorInProposal.proposalId = proposalId;
+    validatorInProposal.proposal = proposal.id;
     validatorInProposal.totalVote = BigInt.zero();
 
     validatorInProposal.validator = validator.id;

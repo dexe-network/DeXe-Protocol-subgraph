@@ -6,6 +6,7 @@ import {
   clearStore,
   createMockedFunction,
   describe,
+  logStore,
   newMockEvent,
   test,
 } from "matchstick-as/assembly/index";
@@ -28,12 +29,14 @@ import {
 } from "../src/mappings/DaoPool";
 import { ProposalType } from "../src/entities/global/ProposalTypes";
 import { PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
+import { ProposalSettings } from "../generated/schema";
 
 function createProposalCreated(
   proposalId: BigInt,
   sender: Address,
   quorum: BigInt,
-  mainExecutor: Address,
+  settingsId: BigInt,
+  description: string,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
@@ -42,9 +45,10 @@ function createProposalCreated(
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
-  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
+  event.parameters.push(new ethereum.EventParam("proposalDescription", ethereum.Value.fromString(description)));
   event.parameters.push(new ethereum.EventParam("quorum", ethereum.Value.fromUnsignedBigInt(quorum)));
-  event.parameters.push(new ethereum.EventParam("mainExecutor", ethereum.Value.fromAddress(mainExecutor)));
+  event.parameters.push(new ethereum.EventParam("proposalSettings", ethereum.Value.fromUnsignedBigInt(settingsId)));
+  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
   event.block = block;
   event.transaction = tx;
@@ -174,6 +178,7 @@ function createRewardClaimed(
 const block = getBlock(BigInt.fromI32(1), BigInt.fromI32(1));
 const tx = getTransaction(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromI32(1))));
 const contractSender = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181670");
+const settingsId = BigInt.fromI32(2);
 
 describe("DaoPool", () => {
   beforeAll(() => {
@@ -204,6 +209,12 @@ describe("DaoPool", () => {
         ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(2000000000000000000)),
         ethereum.Value.fromAddressArray([contractSender, contractSender]),
       ]);
+
+    let settings = new ProposalSettings(contractSender.concatI32(settingsId.toI32()));
+    settings.settingsId = settingsId;
+    settings.pool = contractSender;
+    settings.executorDescription = "";
+    settings.save();
   });
 
   afterEach(() => {
@@ -214,9 +225,8 @@ describe("DaoPool", () => {
     let proposalId = BigInt.fromI32(1);
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181670");
     let quorum = BigInt.fromI32(100);
-    let mainExecutor = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181678");
 
-    let event = createProposalCreated(proposalId, sender, quorum, mainExecutor, contractSender, block, tx);
+    let event = createProposalCreated(proposalId, sender, quorum, settingsId, "description", contractSender, block, tx);
 
     onProposalCreated(event);
 
@@ -248,13 +258,6 @@ describe("DaoPool", () => {
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "currentVotes", "0");
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "quorum", "100");
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "votersVoted", "0");
-    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "proposalType", "0");
-    assert.fieldEquals(
-      "Proposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "distributionProposal",
-      Bytes.empty().toHexString()
-    );
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
@@ -264,12 +267,13 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "mainExecutor",
-      mainExecutor.toHexString()
+      "settings",
+      contractSender.concatI32(settingsId.toI32()).toHexString()
     );
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "proposalCount", "1");
   });
 
-  test("should handle createDelegated", () => {
+  test("should handle Delegated", () => {
     let from = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
     let to = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
     let amount = BigInt.fromI32(100).pow(18);
@@ -281,7 +285,7 @@ describe("DaoPool", () => {
 
     assert.fieldEquals("Voter", from.toHexString(), "id", from.toHexString());
     assert.fieldEquals("Voter", to.toHexString(), "id", to.toHexString());
-    assert.fieldEquals("DaoPool", contractSender.toHexString(), "votersCount", "1");
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "votersCount", "2");
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedDelegation", amount.toString());
     assert.fieldEquals(
       "VoterInPool",
@@ -289,6 +293,8 @@ describe("DaoPool", () => {
       "receivedNFTDelegation",
       "[" + nfts[0].toString() + ", " + nfts[1].toString() + "]"
     );
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "currentDelegatorsCount", "1");
+
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals(
       "DelegationHistory",
@@ -306,6 +312,31 @@ describe("DaoPool", () => {
       "[" + nfts[0].toString() + ", " + nfts[1].toString() + "]"
     );
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "isDelegate", "true");
+
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "from",
+      from.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "to",
+      to.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "delegateAmount",
+      amount.toString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "delegateNfts",
+      "[" + nfts[0].toString() + ", " + nfts[1].toString() + "]"
+    );
   });
 
   test("should handle Undelegated", () => {
@@ -334,6 +365,7 @@ describe("DaoPool", () => {
       "receivedNFTDelegation",
       "[" + nfts1[1].toString() + "]"
     );
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "currentDelegatorsCount", "1");
 
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals(
@@ -352,6 +384,31 @@ describe("DaoPool", () => {
       "[" + nfts2[0].toString() + "]"
     );
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "isDelegate", "false");
+
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "from",
+      from.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "to",
+      to.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "delegateAmount",
+      amount1.minus(amount2).toString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "delegateNfts",
+      "[" + nfts1[1].toString() + "]"
+    );
   });
 
   test("should handle voted", () => {
@@ -370,6 +427,7 @@ describe("DaoPool", () => {
       "currentVotes",
       personalVote.plus(delegatedVote).toString()
     );
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "votersVoted", "1");
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
@@ -419,19 +477,6 @@ describe("DaoPool", () => {
     onDPCreated(event);
 
     assert.fieldEquals(
-      "Proposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "proposalType",
-      ProposalType.DISTRIBUTION.toString()
-    );
-    assert.fieldEquals(
-      "Proposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "distributionProposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString()
-    );
-
-    assert.fieldEquals(
       "DistributionProposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
       "token",
@@ -443,6 +488,13 @@ describe("DaoPool", () => {
       "amount",
       amount.toString()
     );
+    assert.fieldEquals(
+      "DistributionProposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString()
+    );
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "isDP", "true");
   });
 
   test("should handle ProposalExecuted", () => {

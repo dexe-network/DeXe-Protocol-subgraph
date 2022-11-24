@@ -253,6 +253,8 @@ describe("TraderPoolProposal", () => {
     let proposalEntityId = sender.toHexString() + user.toHexString() + proposalId.toString() + "_" + "0";
 
     assert.fieldEquals("ProposalPosition", proposalEntityId, "isClosed", "false");
+    assert.fieldEquals("ProposalPosition", proposalEntityId, "proposalId", proposalId.toString());
+    assert.fieldEquals("ProposalPosition", proposalEntityId, "investor", user.toHexString());
   });
 
   test("should handle ProposalInvestorRemoved event", () => {

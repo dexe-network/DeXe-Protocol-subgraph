@@ -1,5 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { Deposited, Paidout, ProposedClaim, Withdrawn } from "../../generated/Insurance/Insurance";
+import { Deposited, Paidout, Withdrawn } from "../../generated/Insurance/Insurance";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getInsuranceStake } from "../entities/insurance/InsuranceStake";
 import { getTransaction } from "../entities/transaction/Transaction";
@@ -35,19 +35,4 @@ export function onWithdraw(event: Withdrawn): void {
 
   transaction.save();
   stake.save();
-}
-
-export function onProposedClaim(event: ProposedClaim): void {
-  let transaction = getTransaction(
-    event.transaction.hash,
-    event.block.number,
-    event.block.timestamp,
-    event.params.sender
-  );
-
-  transaction.type = extendArray<BigInt>(transaction.type, [
-    getEnumBigInt(TransactionType.INSURANCE_REGISTER_PROPOSAL_CLAIM),
-  ]);
-  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.save();
 }

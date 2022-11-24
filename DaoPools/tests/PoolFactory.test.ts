@@ -5,18 +5,22 @@ import { getBlock, getTransaction } from "./utils";
 import { onDeployed } from "../src/mappings/PoolFactory";
 
 function createDaoPoolDeployed(
+  name: string,
   govPool: Address,
   dp: Address,
   validators: Address,
+  settings: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
 ): DaoPoolDeployed {
   let event = changetype<DaoPoolDeployed>(newMockEvent());
   event.parameters = new Array();
 
+  event.parameters.push(new ethereum.EventParam("name", ethereum.Value.fromString(name)));
   event.parameters.push(new ethereum.EventParam("govPool", ethereum.Value.fromAddress(govPool)));
   event.parameters.push(new ethereum.EventParam("DP", ethereum.Value.fromAddress(dp)));
   event.parameters.push(new ethereum.EventParam("validators", ethereum.Value.fromAddress(validators)));
+  event.parameters.push(new ethereum.EventParam("settings", ethereum.Value.fromAddress(settings)));
 
   event.block = block;
   event.transaction = tx;
@@ -33,14 +37,19 @@ describe("PoolFactory", () => {
   });
 
   test("should handle DaoPoolDeployed", () => {
+    let name = "name";
     let govPool = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181679");
     let dp = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181670");
     let validators = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let settings = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
 
-    let event = createDaoPoolDeployed(govPool, dp, validators, block, tx);
+    let event = createDaoPoolDeployed(name, govPool, dp, validators, settings, block, tx);
 
     onDeployed(event);
 
+    assert.fieldEquals("DaoPool", govPool.toHexString(), "name", name);
     assert.fieldEquals("DaoPool", govPool.toHexString(), "votersCount", BigInt.zero().toString());
+    assert.fieldEquals("DaoPool", govPool.toHexString(), "creationTime", block.timestamp.toString());
+    assert.fieldEquals("DaoPool", govPool.toHexString(), "creationBlock", block.number.toString());
   });
 });

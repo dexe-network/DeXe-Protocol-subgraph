@@ -9,12 +9,13 @@ export function getVoterInProposal(proposal: Proposal, voterInPool: VoterInPool)
     voterInProposal = new VoterInProposal(id);
     voterInProposal.pool = voterInPool.pool;
     voterInProposal.proposal = proposal.id;
-    voterInProposal.voter = voterInPool.voter;
+    voterInProposal.voter = voterInPool.id;
 
     voterInProposal.totalVoteAmount = BigInt.zero();
     voterInProposal.totalDelegatedVoteAmount = BigInt.zero();
 
     voterInProposal.claimedReward = BigInt.zero();
+    voterInProposal.claimedDpRewardUSD = BigInt.zero();
   }
 
   return voterInProposal;

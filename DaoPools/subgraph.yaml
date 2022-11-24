@@ -6,9 +6,9 @@ dataSources:
     name: PoolFactory
     network: chapel
     source:
-      address: "0xA947848914AFaCF5e41E4CE78b940164Ffc2ACC7"
+      address: "0x39C299E709028c2b96F0BD0d4A1B9D7Ad83a21C5"
       abi: PoolFactory
-      startBlock: 23497413
+      startBlock: 24825908
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -20,7 +20,7 @@ dataSources:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
       eventHandlers:
-        - event: DaoPoolDeployed(address,address,address)
+        - event: DaoPoolDeployed(string,address,address,address,address,address,address)
           handler: onDeployed
 
 templates:
@@ -42,7 +42,7 @@ templates:
         - name: PriceFeed
           file: ./abis/PriceFeed.json
       eventHandlers:
-        - event: ProposalCreated(uint256,address,uint256,address) # id, msg.sender, quorum, mainExecutor
+        - event: ProposalCreated(uint256,string,uint256,uint256,address) # id, description, quorum, proposalSettings, msg.sender
           handler: onProposalCreated
         - event: Delegated(address,address,uint256,uint256[],bool) # from, to, amount, nfts, isDelegate
           handler: onDelegated
@@ -70,6 +70,8 @@ templates:
       abis:
         - name: DistributionProposal
           file: ./abis/DistributionProposal.json
+        - name: PriceFeed
+          file: ./abis/PriceFeed.json
       eventHandlers:
         - event: DistributionProposalClaimed(uint256,address,uint256) # id, msg.sender, amount
           handler: onDistributionProposalClaimed
@@ -93,3 +95,23 @@ templates:
           handler: onSettingsChanged
         - event: ExecutorChanged(uint256,address)
           handler: onExecutorChanged
+  - kind: ethereum/contract
+    name: UserKeeper
+    network: chapel
+    source:
+      abi: UserKeeper
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/UserKeeper.ts
+      entities:
+        - UserKeeper
+      abis:
+        - name: UserKeeper
+          file: ./abis/UserKeeper.json
+      eventHandlers:
+        - event: SetERC20(address)
+          handler: onSetERC20
+        - event: SetERC721(address)
+          handler: onSetERC721

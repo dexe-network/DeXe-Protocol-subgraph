@@ -1,4 +1,4 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import {
   Delegated,
   DPCreated,
@@ -10,7 +10,6 @@ import {
 import { getDaoPool } from "../entities/DaoPool";
 import { getDelegationHistory } from "../entities/DelegationHistory";
 import { getDistributionProposal } from "../entities/DistributionProposal";
-import { getEnumBigInt, ProposalType } from "../entities/global/ProposalTypes";
 import { getProposal } from "../entities/Proposal";
 import { getProposalVote } from "../entities/ProposalVote";
 import { getVoter } from "../entities/Voters/Voter";
@@ -20,6 +19,8 @@ import { PriceFeed } from "../../generated/templates/DaoPool/PriceFeed";
 import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { Proposal, VoterInProposal } from "../../generated/schema";
 import { extendArray, reduceArray } from "../helpers/ArrayHelper";
+import { getProposalSettings } from "../entities/Settings/ProposalSettings";
+import { getVoterInPoolPair } from "../entities/Voters/VoterInPoolPair";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let pool = getDaoPool(event.address);
@@ -28,14 +29,21 @@ export function onProposalCreated(event: ProposalCreated): void {
     event.params.proposalId,
     event.params.sender,
     event.params.quorum,
-    event.params.mainExecutor
+    event.params.proposalDescription
   );
+  let settings = getProposalSettings(pool, event.params.proposalSettings);
 
   if (proposal.creator != event.params.sender) {
     proposal.creator = event.params.sender;
     proposal.quorum = event.params.quorum;
+    proposal.description = event.params.proposalDescription;
   }
 
+  proposal.settings = settings.id;
+
+  pool.proposalCount = pool.proposalCount.plus(BigInt.fromI32(1));
+
+  settings.save();
   pool.save();
   proposal.save();
 }
@@ -54,17 +62,38 @@ export function onDelegated(event: Delegated): void {
     event.params.nfts,
     event.params.isDelegate
   );
-  let voterInPool = getVoterInPool(pool, to);
+  let toVoterInPool = getVoterInPool(pool, to);
+  let fromVoterInPool = getVoterInPool(pool, from);
+
+  let pair = getVoterInPoolPair(fromVoterInPool, toVoterInPool);
+
+  delegateHistory.pair = pair.id;
 
   if (event.params.isDelegate) {
-    voterInPool.receivedDelegation = voterInPool.receivedDelegation.plus(event.params.amount);
-    voterInPool.receivedNFTDelegation = extendArray<BigInt>(voterInPool.receivedNFTDelegation, event.params.nfts);
+    toVoterInPool.receivedDelegation = toVoterInPool.receivedDelegation.plus(event.params.amount);
+    toVoterInPool.receivedNFTDelegation = extendArray<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
+
+    if (pair.delegateAmount.equals(BigInt.zero()) && pair.delegateNfts.length == 0) {
+      toVoterInPool.currentDelegatorsCount = toVoterInPool.currentDelegatorsCount.plus(BigInt.fromI32(1));
+    }
+
+    pair.delegateAmount = pair.delegateAmount.plus(event.params.amount);
+    pair.delegateNfts = extendArray<BigInt>(pair.delegateNfts, event.params.nfts);
   } else {
-    voterInPool.receivedDelegation = voterInPool.receivedDelegation.minus(event.params.amount);
-    voterInPool.receivedNFTDelegation = reduceArray<BigInt>(voterInPool.receivedNFTDelegation, event.params.nfts);
+    toVoterInPool.receivedDelegation = toVoterInPool.receivedDelegation.minus(event.params.amount);
+    toVoterInPool.receivedNFTDelegation = reduceArray<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
+
+    pair.delegateAmount = pair.delegateAmount.minus(event.params.amount);
+    pair.delegateNfts = reduceArray<BigInt>(pair.delegateNfts, event.params.nfts);
+
+    if (pair.delegateAmount.equals(BigInt.zero()) && pair.delegateNfts.length == 0) {
+      toVoterInPool.currentDelegatorsCount = toVoterInPool.currentDelegatorsCount.minus(BigInt.fromI32(1));
+    }
   }
 
-  voterInPool.save();
+  pair.save();
+  fromVoterInPool.save();
+  toVoterInPool.save();
   delegateHistory.save();
   pool.save();
   to.save();
@@ -89,6 +118,14 @@ export function onVoted(event: Voted): void {
   voterInProposal.totalVoteAmount = voterInProposal.totalVoteAmount.plus(event.params.personalVote);
 
   proposal.currentVotes = proposal.currentVotes.plus(event.params.personalVote).plus(event.params.delegatedVote);
+  let newVoters = extendArray<Bytes>(proposal.voters, [voter.id]);
+
+  if (proposal.voters.length < newVoters.length) {
+    proposal.voters = newVoters;
+    proposal.votersVoted = proposal.votersVoted.plus(BigInt.fromI32(1));
+  }
+
+  proposal.votesCount = proposal.votesCount.plus(BigInt.fromI32(1));
 
   proposalVote.save();
   voterInProposal.save();
@@ -103,8 +140,7 @@ export function onDPCreated(event: DPCreated): void {
   let proposal = getProposal(pool, event.params.proposalId);
   let dp = getDistributionProposal(proposal, event.params.token, event.params.amount);
 
-  proposal.proposalType = getEnumBigInt(ProposalType.DISTRIBUTION);
-  proposal.distributionProposal = dp.id;
+  proposal.isDP = true;
 
   dp.save();
   proposal.save();
