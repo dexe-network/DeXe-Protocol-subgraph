@@ -3,6 +3,7 @@ import { TraderPool, TraderPoolPriceHistory } from "../../../generated/schema";
 import { findPrevHistory } from "../../helpers/HistorySearcher";
 import { BLOCK_PER_YEAR, CHECK_PER_BLOCK, DECIMAL, PERCENTAGE_DENOMINATOR } from "../global/globals";
 import { getTraderPool } from "./TraderPool";
+import { PERCENTAGE_NUMERATOR } from "../global/globals";
 
 export function getTraderPoolPriceHistory(
   pool: TraderPool,
@@ -18,7 +19,11 @@ export function getTraderPoolPriceHistory(
   let id = pool.id + blockNumber.toString();
   let history = TraderPoolPriceHistory.load(id);
   if (history == null) {
-    let currentPrice = supply.equals(BigInt.zero())
+    let currentPriceBase = supply.equals(BigInt.zero())
+      ? BigInt.fromU64(DECIMAL)
+      : usdTVL.times(BigInt.fromU64(DECIMAL)).div(supply);
+
+    let currentPriceUSD = supply.equals(BigInt.zero())
       ? BigInt.fromU64(DECIMAL)
       : usdTVL.times(BigInt.fromU64(DECIMAL)).div(supply);
 
@@ -33,8 +38,33 @@ export function getTraderPoolPriceHistory(
     history.traderUSD = traderUSD;
     history.traderBase = traderBase;
 
-    history.absPNL = currentPrice.minus(BigInt.fromU64(DECIMAL)).times(supply).div(BigInt.fromU64(DECIMAL));
-    history.percPNL = currentPrice.minus(BigInt.fromU64(DECIMAL)).div(BigInt.fromU64(PERCENTAGE_DENOMINATOR));
+    history.absPNLBase = currentPriceBase.minus(BigInt.fromU64(DECIMAL)).times(supply).div(BigInt.fromU64(DECIMAL));
+    history.percPNLBase = currentPriceBase.minus(BigInt.fromU64(DECIMAL)).div(BigInt.fromU64(PERCENTAGE_DENOMINATOR));
+
+    let firstPrice = BigInt.zero();
+
+    if (blockNumber.equals(roundCheckUp(pool.creationBlock))) {
+      history.firstPrice = currentPriceUSD;
+      firstPrice = history.firstPrice;
+    } else {
+      let prevHistory = getPrevPriceHistory(history);
+      if (prevHistory != null) {
+        history.firstPrice = prevHistory.firstPrice;
+        firstPrice = prevHistory.firstPrice;
+      }
+    }
+
+    if (
+      blockNumber.notEqual(roundCheckUp(pool.creationBlock)) &&
+      firstPrice.isZero() &&
+      currentPriceUSD.notEqual(BigInt.zero())
+    ) {
+      history.firstPrice = currentPriceUSD;
+    }
+
+    history.absPNLUSD = currentPriceUSD.minus(firstPrice).times(supply).div(BigInt.fromU64(DECIMAL));
+    history.percPNLUSD = currentPriceUSD.times(BigInt.fromU64(PERCENTAGE_NUMERATOR)).div(firstPrice);
+
     history.isLast = true;
 
     history.aggregationType = aggregationType;
@@ -43,7 +73,7 @@ export function getTraderPoolPriceHistory(
       BigInt.fromI64(max(blockNumber.minus(BigInt.fromU64(BLOCK_PER_YEAR)).toI64(), pool.creationBlock.toI64()))
     );
 
-    history.APY = history.percPNL;
+    history.APY = history.percPNLUSD;
 
     if (prevBlock.notEqual(roundCheckUp(pool.creationBlock))) {
       let lastYearHistory = findPrevHistory<TraderPoolPriceHistory>(
@@ -55,7 +85,7 @@ export function getTraderPoolPriceHistory(
       );
 
       if (lastYearHistory != null) {
-        history.APY = history.percPNL.minus(lastYearHistory.percPNL);
+        history.APY = history.percPNLUSD.minus(lastYearHistory.percPNLUSD);
       }
     }
   }

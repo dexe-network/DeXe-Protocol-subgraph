@@ -193,7 +193,7 @@ export function onTraderCommissionMinted(event: CommissionClaimed): void {
     roundCheckUp(event.block.number),
     BigInt.fromI32(100)
   );
-  let currentPNL = priceHistory == null ? BigInt.zero() : priceHistory.percPNL;
+  let currentPNL = priceHistory == null ? BigInt.zero() : priceHistory.percPNLUSD;
   let currentLpCost = priceHistory == null ? BigInt.fromI32(1) : priceHistory.usdTVL.div(priceHistory.supply);
   let prevHistory: FeeHistory | null;
 
