@@ -42,6 +42,12 @@ export enum TransactionType {
 
   DAO_POOL_DELEGATED = 30,
   DAO_POOL_REWARD_CLAIMED = 31,
+  DAO_POOL_DEPOSITED = 32,
+  DAO_POOL_WITHDRAWN = 33,
+
+  DAO_VALIDATORS_VOTED = 34,
+  DAO_VALIDATORS_PROPOSAL_CREATE = 35,
+  DAO_VALIDATORS_PROPOSAL_EXECUTED = 36,
 }
 
 export function getEnumBigInt(operation: TransactionType): BigInt {

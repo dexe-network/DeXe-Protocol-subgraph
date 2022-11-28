@@ -5,7 +5,6 @@ export function getDaoValidatorProposalExecute(
   hash: Bytes,
   pool: Address,
   proposalId: BigInt,
-  amount: BigInt,
   count: BigInt
 ): DaoValidatorProposalExecute {
   let id = hash.concatI32(count.toI32());
