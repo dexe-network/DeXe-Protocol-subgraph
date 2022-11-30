@@ -21,7 +21,7 @@ export function getTraderPoolPriceHistory(
   if (history == null) {
     let currentPriceBase = supply.equals(BigInt.zero())
       ? BigInt.fromU64(DECIMAL)
-      : usdTVL.times(BigInt.fromU64(DECIMAL)).div(supply);
+      : poolBase.times(BigInt.fromU64(DECIMAL)).div(supply);
 
     let currentPriceUSD = supply.equals(BigInt.zero())
       ? BigInt.fromU64(DECIMAL)
