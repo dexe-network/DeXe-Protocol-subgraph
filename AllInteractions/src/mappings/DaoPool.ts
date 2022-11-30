@@ -53,7 +53,9 @@ export function onDelegated(event: Delegated): void {
     transaction.interactionsCount
   );
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_DELEGATED)]);
+  transaction.type = extendArray<BigInt>(transaction.type, [
+    getEnumBigInt(event.params.isDelegate ? TransactionType.DAO_POOL_DELEGATED : TransactionType.DAO_POOL_UNDELEGATED),
+  ]);
   delegated.transaction = transaction.id;
 
   transaction.save();
