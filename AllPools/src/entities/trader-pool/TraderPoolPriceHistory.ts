@@ -41,29 +41,32 @@ export function getTraderPoolPriceHistory(
     history.absPNLBase = currentPriceBase.minus(BigInt.fromU64(DECIMAL)).times(supply).div(BigInt.fromU64(DECIMAL));
     history.percPNLBase = currentPriceBase.minus(BigInt.fromU64(DECIMAL)).div(BigInt.fromU64(PERCENTAGE_DENOMINATOR));
 
-    let firstPrice = BigInt.zero();
+    history.firstPrice = BigInt.zero();
 
     if (blockNumber.equals(roundCheckUp(pool.creationBlock))) {
       history.firstPrice = currentPriceUSD;
-      firstPrice = history.firstPrice;
     } else {
       let prevHistory = getPrevPriceHistory(history);
       if (prevHistory != null) {
         history.firstPrice = prevHistory.firstPrice;
-        firstPrice = prevHistory.firstPrice;
       }
     }
 
     if (
       blockNumber.notEqual(roundCheckUp(pool.creationBlock)) &&
-      firstPrice.isZero() &&
+      history.firstPrice.isZero() &&
       currentPriceUSD.notEqual(BigInt.zero())
     ) {
       history.firstPrice = currentPriceUSD;
     }
 
-    history.absPNLUSD = currentPriceUSD.minus(firstPrice).times(supply).div(BigInt.fromU64(DECIMAL));
-    history.percPNLUSD = currentPriceUSD.times(BigInt.fromU64(PERCENTAGE_NUMERATOR)).div(firstPrice);
+    history.absPNLUSD = currentPriceUSD.minus(history.firstPrice).times(supply).div(BigInt.fromU64(DECIMAL));
+    history.percPNLUSD = currentPriceUSD
+      .times(BigInt.fromU64(DECIMAL))
+      .div(history.firstPrice)
+      .minus(BigInt.fromU64(DECIMAL))
+      .times(BigInt.fromU64(100))
+      .div(BigInt.fromU64(PERCENTAGE_DENOMINATOR));
 
     history.isLast = true;
 
