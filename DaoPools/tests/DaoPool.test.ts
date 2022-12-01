@@ -444,7 +444,7 @@ describe("DaoPool", () => {
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
       "voter",
-      sender.toHexString()
+      sender.concat(contractSender).toHexString()
     );
     assert.fieldEquals(
       "VoterInProposal",
