@@ -1,6 +1,6 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import { DaoPoolDeployed, TraderPoolDeployed } from "../../generated/PoolFactory/PoolFactory";
-import { DaoPool, TraderPool, TraderPoolInvestProposal } from "../../generated/templates";
+import { DaoPool, DaoValidators, TraderPool, TraderPoolInvestProposal } from "../../generated/templates";
 import { TraderPoolRiskyProposal } from "../../generated/templates";
 import { getDaoPoolCreate } from "../entities/dao-pool/DaoPoolCreate";
 import { BASIC_POOL_NAME } from "../entities/global/globals";
@@ -47,6 +47,7 @@ export function onTraderPoolDeployed(event: TraderPoolDeployed): void {
 
 export function onDaoPoolDeployed(event: DaoPoolDeployed): void {
   DaoPool.create(event.params.govPool);
+  DaoValidators.create(event.params.validators);
 
   let transaction = getTransaction(
     event.transaction.hash,
