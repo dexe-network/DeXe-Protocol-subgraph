@@ -348,7 +348,7 @@ type DaoValidatorProposalCreate @entity(immutable: true) {
   transaction: Transaction!
 }
 
-type DaoVaildatorProposalVote @entity(immutable: true) {
+type DaoValidatorProposalVote @entity(immutable: true) {
   id: Bytes!
   pool: Bytes!
   proposalId: BigInt!

@@ -4,7 +4,7 @@ import {
   InternalProposalCreated,
   InternalProposalExecuted,
 } from "../../generated/templates/DaoValidators/DaoValidators";
-import { getDaoVaildatorProposalVote } from "../entities/dao-pool/DaoVaildatorProposalVote";
+import { getDaoVaildatorProposalVote } from "../entities/dao-pool/DaoValidatorProposalVote";
 import { getDaoValidatorProposalCreate } from "../entities/dao-pool/DaoValidatorProposalCreate";
 import { getDaoValidatorProposalExecute } from "../entities/dao-pool/DaoValidatorProposalExecute";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
@@ -52,7 +52,7 @@ export function onInternalProposalCreated(event: InternalProposalCreated): void 
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   transaction.type = extendArray<BigInt>(transaction.type, [
-    getEnumBigInt(TransactionType.DAO_VALIDATORS_PROPOSAL_CREATE),
+    getEnumBigInt(TransactionType.DAO_VALIDATORS_PROPOSAL_CREATED),
   ]);
   created.transaction = transaction.id;
 

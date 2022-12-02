@@ -1,5 +1,5 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { DaoVaildatorProposalVote } from "../../../generated/schema";
+import { DaoValidatorProposalVote } from "../../../generated/schema";
 
 export function getDaoVaildatorProposalVote(
   hash: Bytes,
@@ -7,12 +7,12 @@ export function getDaoVaildatorProposalVote(
   proposalId: BigInt,
   amount: BigInt,
   count: BigInt
-): DaoVaildatorProposalVote {
+): DaoValidatorProposalVote {
   let id = hash.concatI32(count.toI32());
-  let proposalVote = DaoVaildatorProposalVote.load(id);
+  let proposalVote = DaoValidatorProposalVote.load(id);
 
   if (proposalVote == null) {
-    proposalVote = new DaoVaildatorProposalVote(id);
+    proposalVote = new DaoValidatorProposalVote(id);
     proposalVote.pool = pool;
     proposalVote.proposalId = proposalId;
 

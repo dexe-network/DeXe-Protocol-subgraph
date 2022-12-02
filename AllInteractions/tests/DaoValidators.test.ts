@@ -129,7 +129,7 @@ describe("DaoValidators", () => {
       tx.hash,
       event.params.sender,
       block,
-      "[" + TransactionType.DAO_VALIDATORS_PROPOSAL_CREATE.toString() + "]",
+      "[" + TransactionType.DAO_VALIDATORS_PROPOSAL_CREATED.toString() + "]",
       BigInt.fromI32(1)
     );
   });
@@ -168,7 +168,7 @@ describe("DaoValidators", () => {
       event.params.executor,
       block,
       "[" +
-        TransactionType.DAO_VALIDATORS_PROPOSAL_CREATE.toString() +
+        TransactionType.DAO_VALIDATORS_PROPOSAL_CREATED.toString() +
         ", " +
         TransactionType.DAO_VALIDATORS_PROPOSAL_EXECUTED.toString() +
         "]",
@@ -187,18 +187,18 @@ describe("DaoValidators", () => {
     onVoted(event);
 
     assert.fieldEquals(
-      "DaoVaildatorProposalVote",
+      "DaoValidatorProposalVote",
       tx.hash.concatI32(0).toHexString(),
       "pool",
       contractSender.toHexString()
     );
     assert.fieldEquals(
-      "DaoVaildatorProposalVote",
+      "DaoValidatorProposalVote",
       tx.hash.concatI32(0).toHexString(),
       "proposalId",
       proposalId.toString()
     );
-    assert.fieldEquals("DaoVaildatorProposalVote", tx.hash.concatI32(0).toHexString(), "amount", vote.toString());
+    assert.fieldEquals("DaoValidatorProposalVote", tx.hash.concatI32(0).toHexString(), "amount", vote.toString());
 
     assertTransaction(
       tx.hash,
