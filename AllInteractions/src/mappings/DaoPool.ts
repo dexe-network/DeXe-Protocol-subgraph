@@ -2,6 +2,7 @@ import { BigInt } from "@graphprotocol/graph-ts";
 import {
   Delegated,
   Deposited,
+  MovedToValidators,
   ProposalCreated,
   ProposalExecuted,
   RewardClaimed,
@@ -10,6 +11,7 @@ import {
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPoolDelegate } from "../entities/dao-pool/DaoPoolDelegate";
 import { getDaoPoolDeposit } from "../entities/dao-pool/DaoPoolDeposit";
+import { getDaoPoolMovedToValidators } from "../entities/dao-pool/DaoPoolMovedToValidators";
 import { getDaoPoolExecute } from "../entities/dao-pool/DaoPoolProposalExecute";
 import { getDaoPoolRewardClaim } from "../entities/dao-pool/DaoPoolRewardClaim";
 import { getDaoPoolVote } from "../entities/dao-pool/DaoPoolVote";
@@ -171,4 +173,29 @@ export function onWithdrawn(event: Withdrawn): void {
 
   transaction.save();
   withdrawn.save();
+}
+
+export function onMovedToValidators(event: MovedToValidators): void {
+  let transaction = getTransaction(
+    event.transaction.hash,
+    event.block.number,
+    event.block.timestamp,
+    event.params.sender
+  );
+
+  let moved = getDaoPoolMovedToValidators(
+    event.transaction.hash,
+    event.address,
+    event.params.proposalId,
+    transaction.interactionsCount
+  );
+
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
+  transaction.type = extendArray<BigInt>(transaction.type, [
+    getEnumBigInt(TransactionType.DAO_POOL_MOVED_TO_VALIDATORS),
+  ]);
+  moved.transaction = transaction.id;
+
+  transaction.save();
+  moved.save();
 }

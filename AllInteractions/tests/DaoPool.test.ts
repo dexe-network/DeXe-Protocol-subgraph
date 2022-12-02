@@ -14,6 +14,7 @@ import {
   Delegated,
   Deposited,
   DPCreated,
+  MovedToValidators,
   ProposalCreated,
   ProposalExecuted,
   RewardClaimed,
@@ -28,6 +29,7 @@ import {
   onRewardClaimed,
   onDeposited,
   onWithdrawn,
+  onMovedToValidators,
 } from "../src/mappings/DaoPool";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
 
@@ -187,6 +189,26 @@ function createWithdrawn(
   event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
   event.parameters.push(new ethereum.EventParam("nfts", ethereum.Value.fromUnsignedBigIntArray(nfts)));
   event.parameters.push(new ethereum.EventParam("to", ethereum.Value.fromAddress(to)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createMovedToValidators(
+  proposalId: BigInt,
+  sender: Address,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): MovedToValidators {
+  let event = changetype<MovedToValidators>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
+  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
   event.block = block;
   event.transaction = tx;
@@ -394,6 +416,36 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       "[" + TransactionType.DAO_POOL_WITHDRAWN.toString() + "]",
+      BigInt.fromI32(1)
+    );
+  });
+
+  test("should handle MovedToValidator", () => {
+    let proposalId = BigInt.fromI32(1);
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+
+    let event = createMovedToValidators(proposalId, sender, contractSender, block, tx);
+
+    onMovedToValidators(event);
+
+    assert.fieldEquals(
+      "DaoPoolMovedToValidators",
+      tx.hash.concatI32(0).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals(
+      "DaoPoolMovedToValidators",
+      tx.hash.concatI32(0).toHexString(),
+      "proposalId",
+      proposalId.toString()
+    );
+
+    assertTransaction(
+      tx.hash,
+      event.params.sender,
+      block,
+      "[" + TransactionType.DAO_POOL_MOVED_TO_VALIDATORS.toString() + "]",
       BigInt.fromI32(1)
     );
   });

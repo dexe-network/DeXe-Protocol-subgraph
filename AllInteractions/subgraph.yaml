@@ -194,6 +194,8 @@ templates:
           handler: onDeposited
         - event: Withdrawn(uint256,uint256[],address)
           handler: onWithdrawn
+        - event: MovedToValidators(uint256,address)
+          handler: onMovedToValidators
   - kind: ethereum/contract
     name: DaoValidators
     network: chapel

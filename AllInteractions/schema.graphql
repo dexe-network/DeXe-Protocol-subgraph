@@ -340,6 +340,15 @@ type DaoPoolDeposit @entity(immutable: true) {
   transaction: Transaction!
 }
 
+type DaoPoolMovedToValidators @entity(immutable: true) {
+  id: Bytes!
+  pool: Bytes!
+
+  proposalId: BigInt!
+
+  transaction: Transaction!
+}
+
 type DaoValidatorProposalCreate @entity(immutable: true) {
   id: Bytes!
   pool: Bytes!
