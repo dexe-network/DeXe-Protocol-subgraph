@@ -5,6 +5,7 @@ import {
   ProposalCreated,
   ProposalExecuted,
   RewardClaimed,
+  RewardCredited,
   Voted,
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPool } from "../entities/DaoPool";
@@ -162,11 +163,8 @@ export function onRewardClaimed(event: RewardClaimed): void {
   let pool = getDaoPool(event.address);
   let voter = getVoter(event.params.sender);
   let voterInPool = getVoterInPool(pool, voter);
-  let proposal: Proposal;
-  let voterInProposal: VoterInProposal;
-
-  proposal = getProposal(pool, event.params.proposalId);
-  voterInProposal = getVoterInProposal(proposal, voterInPool);
+  let proposal = getProposal(pool, event.params.proposalId);
+  let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
   voterInProposal.claimedReward = event.params.amount;
 
@@ -176,6 +174,21 @@ export function onRewardClaimed(event: RewardClaimed): void {
     getUSDFromPriceFeed(event.params.token, event.params.amount)
   );
 
+  voterInPool.save();
+  voter.save();
+  pool.save();
+}
+
+export function onRewardCredited(event: RewardCredited): void {
+  let pool = getDaoPool(event.address);
+  let voter = getVoter(event.params.sender);
+  let voterInPool = getVoterInPool(pool, voter);
+  let proposal = getProposal(pool, event.params.proposalId);
+  let voterInProposal = getVoterInProposal(proposal, voterInPool);
+
+  voterInProposal.unclamedReward = voterInProposal.unclamedReward.plus(event.params.amount);
+
+  voterInProposal.save();
   voterInPool.save();
   voter.save();
   pool.save();
