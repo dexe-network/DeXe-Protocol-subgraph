@@ -61,12 +61,15 @@ export function getTraderPoolPriceHistory(
     }
 
     history.absPNLUSD = currentPriceUSD.minus(history.firstPrice).times(supply).div(BigInt.fromU64(DECIMAL));
-    history.percPNLUSD = currentPriceUSD
-      .times(BigInt.fromU64(DECIMAL))
-      .div(history.firstPrice)
-      .minus(BigInt.fromU64(DECIMAL))
-      .times(BigInt.fromU64(100))
-      .div(BigInt.fromU64(PERCENTAGE_DENOMINATOR));
+    history.percPNLUSD = BigInt.zero();
+    if (history.firstPrice.notEqual(BigInt.zero())) {
+      history.percPNLUSD = currentPriceUSD
+        .times(BigInt.fromU64(DECIMAL))
+        .div(history.firstPrice)
+        .minus(BigInt.fromU64(DECIMAL))
+        .times(BigInt.fromU64(100))
+        .div(BigInt.fromU64(PERCENTAGE_DENOMINATOR));
+    }
 
     history.isLast = true;
 
