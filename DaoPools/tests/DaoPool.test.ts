@@ -38,6 +38,7 @@ function createProposalCreated(
   sender: Address,
   quorum: BigInt,
   settingsId: BigInt,
+  rewardToken: Address,
   description: string,
   contractSender: Address,
   block: ethereum.Block,
@@ -50,6 +51,7 @@ function createProposalCreated(
   event.parameters.push(new ethereum.EventParam("proposalDescription", ethereum.Value.fromString(description)));
   event.parameters.push(new ethereum.EventParam("quorum", ethereum.Value.fromUnsignedBigInt(quorum)));
   event.parameters.push(new ethereum.EventParam("proposalSettings", ethereum.Value.fromUnsignedBigInt(settingsId)));
+  event.parameters.push(new ethereum.EventParam("rewardToken", ethereum.Value.fromAddress(rewardToken)));
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
   event.block = block;
@@ -248,9 +250,20 @@ describe("DaoPool", () => {
   test("should handle ProposalCreated", () => {
     let proposalId = BigInt.fromI32(1);
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181670");
+    let rewardToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181676");
     let quorum = BigInt.fromI32(100);
 
-    let event = createProposalCreated(proposalId, sender, quorum, settingsId, "description", contractSender, block, tx);
+    let event = createProposalCreated(
+      proposalId,
+      sender,
+      quorum,
+      settingsId,
+      rewardToken,
+      "description",
+      contractSender,
+      block,
+      tx
+    );
 
     onProposalCreated(event);
 
@@ -293,6 +306,12 @@ describe("DaoPool", () => {
       contractSender.concatI32(proposalId.toI32()).toHexString(),
       "settings",
       contractSender.concatI32(settingsId.toI32()).toHexString()
+    );
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "rewardToken",
+      rewardToken.toHexString()
     );
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "proposalCount", "1");
   });
