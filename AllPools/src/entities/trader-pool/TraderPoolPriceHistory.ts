@@ -43,21 +43,16 @@ export function getTraderPoolPriceHistory(
 
     history.firstPrice = BigInt.zero();
 
-    if (blockNumber.equals(roundCheckUp(pool.creationBlock))) {
+    if (
+      blockNumber.equals(roundCheckUp(pool.creationBlock)) ||
+      (history.firstPrice.isZero() && currentPriceUSD.notEqual(BigInt.zero()))
+    ) {
       history.firstPrice = currentPriceUSD;
     } else {
       let prevHistory = getPrevPriceHistory(history);
       if (prevHistory != null) {
         history.firstPrice = prevHistory.firstPrice;
       }
-    }
-
-    if (
-      blockNumber.notEqual(roundCheckUp(pool.creationBlock)) &&
-      history.firstPrice.isZero() &&
-      currentPriceUSD.notEqual(BigInt.zero())
-    ) {
-      history.firstPrice = currentPriceUSD;
     }
 
     history.absPNLUSD = currentPriceUSD.minus(history.firstPrice).times(supply).div(BigInt.fromU64(DECIMAL));
