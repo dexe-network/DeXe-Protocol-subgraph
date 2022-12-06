@@ -1,7 +1,8 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { TraderPoolDeployed } from "../../generated/PoolFactory/PoolFactory";
-import { TraderPool, TraderPoolInvestProposal } from "../../generated/templates";
+import { DaoPoolDeployed, TraderPoolDeployed } from "../../generated/PoolFactory/PoolFactory";
+import { DaoPool, DaoValidators, TraderPool, TraderPoolInvestProposal } from "../../generated/templates";
 import { TraderPoolRiskyProposal } from "../../generated/templates";
+import { getDaoPoolCreate } from "../entities/dao-pool/DaoPoolCreate";
 import { BASIC_POOL_NAME } from "../entities/global/globals";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getPoolCreate } from "../entities/trader-pool/PoolCreate";
@@ -10,7 +11,7 @@ import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getTransaction } from "../entities/transaction/Transaction";
 import { extendArray } from "../helpers/ArrayHelper";
 
-export function onDeployed(event: TraderPoolDeployed): void {
+export function onTraderPoolDeployed(event: TraderPoolDeployed): void {
   getTraderPool(event.params.at, event.params.proposalContract, event.params.trader).save();
   TraderPool.create(event.params.at);
 
@@ -42,4 +43,30 @@ export function onDeployed(event: TraderPoolDeployed): void {
 
   transaction.save();
   create.save();
+}
+
+export function onDaoPoolDeployed(event: DaoPoolDeployed): void {
+  DaoPool.create(event.params.govPool);
+  DaoValidators.create(event.params.validators);
+
+  let transaction = getTransaction(
+    event.transaction.hash,
+    event.block.number,
+    event.block.timestamp,
+    event.params.sender
+  );
+
+  let daoCreate = getDaoPoolCreate(
+    event.transaction.hash,
+    event.params.govPool,
+    event.params.name,
+    transaction.interactionsCount
+  );
+
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
+  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_CREATED)]);
+  daoCreate.transaction = transaction.id;
+
+  transaction.save();
+  daoCreate.save();
 }

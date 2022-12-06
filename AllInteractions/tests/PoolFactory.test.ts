@@ -1,10 +1,11 @@
-import { TraderPoolDeployed } from "../generated/PoolFactory/PoolFactory";
+import { DaoPoolDeployed, TraderPoolDeployed } from "../generated/PoolFactory/PoolFactory";
 import { afterEach, assert, clearStore, describe, newMockEvent, test } from "matchstick-as/assembly/index";
 import { assertTransaction, getBlock, getTransaction } from "./utils";
 import { Address, ethereum, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { onDeployed } from "../src/mappings/PoolFactory";
+import { onDaoPoolDeployed, onTraderPoolDeployed } from "../src/mappings/PoolFactory";
 import { BASIC_POOL_NAME } from "../src/entities/global/globals";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
+import { DaoPool } from "../generated/templates";
 
 function createTraderPoolDeployed(
   poolType: string,
@@ -31,6 +32,34 @@ function createTraderPoolDeployed(
   event.parameters.push(new ethereum.EventParam("basicToken", ethereum.Value.fromAddress(basicToken)));
   event.parameters.push(new ethereum.EventParam("commission", ethereum.Value.fromUnsignedBigInt(commission)));
   event.parameters.push(new ethereum.EventParam("descriptionURL", ethereum.Value.fromString(descriptionURL)));
+
+  event.block = block;
+  event.transaction = tx;
+
+  return event;
+}
+
+function createDaoPoolDeployed(
+  name: string,
+  govPool: Address,
+  DP: Address,
+  validators: Address,
+  settings: Address,
+  govUserKeeper: Address,
+  sender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): DaoPoolDeployed {
+  let event = changetype<DaoPoolDeployed>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("name", ethereum.Value.fromString(name)));
+  event.parameters.push(new ethereum.EventParam("govPool", ethereum.Value.fromAddress(govPool)));
+  event.parameters.push(new ethereum.EventParam("DP", ethereum.Value.fromAddress(DP)));
+  event.parameters.push(new ethereum.EventParam("validators", ethereum.Value.fromAddress(validators)));
+  event.parameters.push(new ethereum.EventParam("settings", ethereum.Value.fromAddress(settings)));
+  event.parameters.push(new ethereum.EventParam("govUserKeeper", ethereum.Value.fromAddress(govUserKeeper)));
+  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
   event.block = block;
   event.transaction = tx;
@@ -70,7 +99,7 @@ describe("PoolFactory", () => {
       tx
     );
 
-    onDeployed(event);
+    onTraderPoolDeployed(event);
 
     assert.fieldEquals("PoolCreate", tx.hash.concatI32(0).toHexString(), "pool", expectedAt.toHexString());
     assert.fieldEquals("PoolCreate", tx.hash.concatI32(0).toHexString(), "symbol", expectedSymbol);
@@ -81,6 +110,31 @@ describe("PoolFactory", () => {
       event.params.trader,
       block,
       "[" + TransactionType.POOL_CREATE.toString() + "]",
+      BigInt.fromI32(1)
+    );
+  });
+
+  test("should handle DaoPoolDeployed event", () => {
+    let name = "DAO_POOL";
+    let govPool = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181619");
+    let DP = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181629");
+    let validators = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181639");
+    let settings = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181649");
+    let govUserKeeper = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181659");
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181669");
+
+    let event = createDaoPoolDeployed(name, govPool, DP, validators, settings, govUserKeeper, sender, block, tx);
+
+    onDaoPoolDeployed(event);
+
+    assert.fieldEquals("DaoPoolCreate", tx.hash.concatI32(0).toHexString(), "pool", govPool.toHexString());
+    assert.fieldEquals("DaoPoolCreate", tx.hash.concatI32(0).toHexString(), "name", name);
+
+    assertTransaction(
+      tx.hash,
+      event.params.sender,
+      block,
+      "[" + TransactionType.DAO_POOL_CREATED.toString() + "]",
       BigInt.fromI32(1)
     );
   });
