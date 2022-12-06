@@ -40,6 +40,7 @@ function createProposalCreated(
   settingsId: BigInt,
   rewardToken: Address,
   description: string,
+  misc: string,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
@@ -49,6 +50,7 @@ function createProposalCreated(
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
   event.parameters.push(new ethereum.EventParam("proposalDescription", ethereum.Value.fromString(description)));
+  event.parameters.push(new ethereum.EventParam("misc", ethereum.Value.fromString(misc)));
   event.parameters.push(new ethereum.EventParam("quorum", ethereum.Value.fromUnsignedBigInt(quorum)));
   event.parameters.push(new ethereum.EventParam("proposalSettings", ethereum.Value.fromUnsignedBigInt(settingsId)));
   event.parameters.push(new ethereum.EventParam("rewardToken", ethereum.Value.fromAddress(rewardToken)));
@@ -260,6 +262,7 @@ describe("DaoPool", () => {
       settingsId,
       rewardToken,
       "description",
+      "misc",
       contractSender,
       block,
       tx
@@ -313,6 +316,7 @@ describe("DaoPool", () => {
       "rewardToken",
       rewardToken.toHexString()
     );
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "misc", "misc");
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "proposalCount", "1");
   });
 

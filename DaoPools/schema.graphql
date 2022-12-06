@@ -82,6 +82,7 @@ type Proposal @entity {
   currentVotes: BigInt!
   quorum: BigInt!
   description: String!
+  misc: String!
 
   votersVoted: BigInt!
   pool: DaoPool!

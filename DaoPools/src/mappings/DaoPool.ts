@@ -31,7 +31,8 @@ export function onProposalCreated(event: ProposalCreated): void {
     event.params.sender,
     event.params.quorum,
     event.params.proposalDescription,
-    event.params.rewardToken
+    event.params.rewardToken,
+    event.params.misc
   );
   let settings = getProposalSettings(pool, event.params.proposalSettings);
 
