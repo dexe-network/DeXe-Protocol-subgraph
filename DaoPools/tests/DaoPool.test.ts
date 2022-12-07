@@ -617,7 +617,7 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "unclamedReward",
+      "unclaimedReward",
       amount.toString()
     );
   });

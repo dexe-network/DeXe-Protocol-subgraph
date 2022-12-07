@@ -187,7 +187,7 @@ export function onRewardCredited(event: RewardCredited): void {
   let proposal = getProposal(pool, event.params.proposalId);
   let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
-  voterInProposal.unclamedReward = voterInProposal.unclamedReward.plus(event.params.amount);
+  voterInProposal.unclaimedReward = voterInProposal.unclaimedReward.plus(event.params.amount);
 
   voterInProposal.save();
   voterInPool.save();

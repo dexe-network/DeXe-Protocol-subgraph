@@ -160,7 +160,7 @@ type VoterInProposal @entity {
   totalVoteAmount: BigInt!
   totalDelegatedVoteAmount: BigInt!
 
-  unclamedReward: BigInt!
+  unclaimedReward: BigInt!
   claimedReward: BigInt!
   claimedDpRewardUSD: BigInt!
 
