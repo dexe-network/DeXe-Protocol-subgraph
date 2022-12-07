@@ -6,7 +6,8 @@ export function getProposal(
   proposalId: BigInt,
   creator: Address = Address.zero(),
   quorum: BigInt = BigInt.zero(),
-  description: string = ""
+  description: string = "",
+  rewardToken: Address = Address.zero()
 ): Proposal {
   let id = pool.id.concatI32(proposalId.toI32());
   let proposal = Proposal.load(id);
@@ -26,6 +27,7 @@ export function getProposal(
     proposal.voters = new Array<Bytes>();
     proposal.description = description;
     proposal.votesCount = BigInt.zero();
+    proposal.rewardToken = rewardToken;
 
     proposal.pool = pool.id;
   }

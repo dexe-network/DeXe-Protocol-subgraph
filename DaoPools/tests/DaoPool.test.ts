@@ -17,6 +17,7 @@ import {
   ProposalCreated,
   ProposalExecuted,
   RewardClaimed,
+  RewardCredited,
   Voted,
 } from "../generated/templates/DaoPool/DaoPool";
 import {
@@ -26,6 +27,7 @@ import {
   onProposalExecuted,
   onVoted,
   onRewardClaimed,
+  onRewardCredited,
 } from "../src/mappings/DaoPool";
 import { ProposalType } from "../src/entities/global/ProposalTypes";
 import { PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
@@ -36,6 +38,7 @@ function createProposalCreated(
   sender: Address,
   quorum: BigInt,
   settingsId: BigInt,
+  rewardToken: Address,
   description: string,
   contractSender: Address,
   block: ethereum.Block,
@@ -48,6 +51,7 @@ function createProposalCreated(
   event.parameters.push(new ethereum.EventParam("proposalDescription", ethereum.Value.fromString(description)));
   event.parameters.push(new ethereum.EventParam("quorum", ethereum.Value.fromUnsignedBigInt(quorum)));
   event.parameters.push(new ethereum.EventParam("proposalSettings", ethereum.Value.fromUnsignedBigInt(settingsId)));
+  event.parameters.push(new ethereum.EventParam("rewardToken", ethereum.Value.fromAddress(rewardToken)));
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
   event.block = block;
@@ -175,6 +179,28 @@ function createRewardClaimed(
   return event;
 }
 
+function createRewardCredited(
+  proposalId: BigInt,
+  amount: BigInt,
+  sender: Address,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): RewardCredited {
+  let event = changetype<RewardCredited>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
+  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
 const block = getBlock(BigInt.fromI32(1), BigInt.fromI32(1));
 const tx = getTransaction(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromI32(1))));
 const contractSender = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181670");
@@ -224,9 +250,20 @@ describe("DaoPool", () => {
   test("should handle ProposalCreated", () => {
     let proposalId = BigInt.fromI32(1);
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181670");
+    let rewardToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181676");
     let quorum = BigInt.fromI32(100);
 
-    let event = createProposalCreated(proposalId, sender, quorum, settingsId, "description", contractSender, block, tx);
+    let event = createProposalCreated(
+      proposalId,
+      sender,
+      quorum,
+      settingsId,
+      rewardToken,
+      "description",
+      contractSender,
+      block,
+      tx
+    );
 
     onProposalCreated(event);
 
@@ -269,6 +306,12 @@ describe("DaoPool", () => {
       contractSender.concatI32(proposalId.toI32()).toHexString(),
       "settings",
       contractSender.concatI32(settingsId.toI32()).toHexString()
+    );
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "rewardToken",
+      rewardToken.toHexString()
     );
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "proposalCount", "1");
   });
@@ -559,6 +602,23 @@ describe("DaoPool", () => {
       sender.concat(contractSender).toHexString(),
       "totalClaimedUSD",
       amounts[0].plus(amounts[1]).toString()
+    );
+  });
+
+  test("should handle RewardCredited", () => {
+    let proposalId = BigInt.fromI32(1);
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let amount = BigInt.fromI32(1000);
+
+    let event = createRewardCredited(proposalId, amount, sender, contractSender, block, tx);
+
+    onRewardCredited(event);
+
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedReward",
+      amount.toString()
     );
   });
 });

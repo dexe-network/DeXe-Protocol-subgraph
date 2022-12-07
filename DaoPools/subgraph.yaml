@@ -42,7 +42,7 @@ templates:
         - name: PriceFeed
           file: ./abis/PriceFeed.json
       eventHandlers:
-        - event: ProposalCreated(uint256,string,uint256,uint256,address) # id, description, quorum, proposalSettings, msg.sender
+        - event: ProposalCreated(uint256,string,uint256,uint256,address,address) # id, description, quorum, proposalSettings, rewardToken, msg.sender
           handler: onProposalCreated
         - event: Delegated(address,address,uint256,uint256[],bool) # from, to, amount, nfts, isDelegate
           handler: onDelegated
@@ -54,6 +54,8 @@ templates:
           handler: onProposalExecuted
         - event: RewardClaimed(uint256,address,address,uint256) # id, msg.sender, token, amount
           handler: onRewardClaimed
+        - event: RewardCredited(uint256,uint256,address) # id, amount, to
+          handler: onRewardCredited
 
   - kind: ethereum/contract
     name: DistributionProposal

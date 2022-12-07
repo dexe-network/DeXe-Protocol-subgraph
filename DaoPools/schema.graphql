@@ -72,6 +72,7 @@ type Proposal @entity {
   id: Bytes! # pool address + porposalId
   proposalId: BigInt!
   isDP: Boolean!
+  rewardToken: Bytes!
 
   creator: Bytes!
 
@@ -159,6 +160,7 @@ type VoterInProposal @entity {
   totalVoteAmount: BigInt!
   totalDelegatedVoteAmount: BigInt!
 
+  unclaimedReward: BigInt!
   claimedReward: BigInt!
   claimedDpRewardUSD: BigInt!
 
