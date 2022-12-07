@@ -91,13 +91,16 @@ type TraderPoolPriceHistory @entity {
   supply: BigInt!
   pool: TraderPool!
   baseTVL: BigInt!
-  absPNL: BigInt!
-  percPNL: BigInt!
+  absPNLUSD: BigInt!
+  percPNLUSD: BigInt!
+  absPNLBase: BigInt!
+  percPNLBase: BigInt!
   traderUSD: BigInt!
   traderBase: BigInt!
   APY: BigInt!
   isLast: Boolean!
   aggregationType: BigInt!
+  firstPrice: BigInt!
 }
 
 # @notice The entity holds information about position in pool
