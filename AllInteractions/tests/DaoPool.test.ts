@@ -38,7 +38,9 @@ function createProposalCreated(
   sender: Address,
   quorum: BigInt,
   settingsId: BigInt,
+  rewardToken: Address,
   description: string,
+  misc: string,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
@@ -48,8 +50,10 @@ function createProposalCreated(
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
   event.parameters.push(new ethereum.EventParam("proposalDescription", ethereum.Value.fromString(description)));
+  event.parameters.push(new ethereum.EventParam("misc", ethereum.Value.fromString(misc)));
   event.parameters.push(new ethereum.EventParam("quorum", ethereum.Value.fromUnsignedBigInt(quorum)));
   event.parameters.push(new ethereum.EventParam("proposalSettings", ethereum.Value.fromUnsignedBigInt(settingsId)));
+  event.parameters.push(new ethereum.EventParam("rewardToken", ethereum.Value.fromAddress(rewardToken)));
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
   event.block = block;
@@ -232,7 +236,18 @@ describe("DaoPool", () => {
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181670");
     let quorum = BigInt.fromI32(100);
 
-    let event = createProposalCreated(proposalId, sender, quorum, settingsId, "description", contractSender, block, tx);
+    let event = createProposalCreated(
+      proposalId,
+      sender,
+      quorum,
+      settingsId,
+      Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181678"),
+      "description",
+      "misc",
+      contractSender,
+      block,
+      tx
+    );
 
     onProposalCreated(event);
 

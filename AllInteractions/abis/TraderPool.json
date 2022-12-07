@@ -1442,6 +1442,20 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "position",
+        "type": "address"
+      }
+    ],
+    "name": "PositionClosed",
+    "type": "event"
+  },
+
+  {
   "anonymous": false,
   "inputs": [
     {
