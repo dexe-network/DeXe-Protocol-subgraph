@@ -7,7 +7,7 @@ export function getProposal(
   creator: Address = Address.zero(),
   quorum: BigInt = BigInt.zero(),
   description: string = "",
-  rewardToken: Address = Address.zero()
+  rewardToken: Address = Address.zero(),
   misc: string = ""
 ): Proposal {
   let id = pool.id.concatI32(proposalId.toI32());
