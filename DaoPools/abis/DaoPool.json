@@ -1084,6 +1084,12 @@
       },
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "misc",
+        "type": "string"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "quorum",
         "type": "uint256"
