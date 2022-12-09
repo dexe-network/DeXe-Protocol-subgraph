@@ -318,7 +318,7 @@ type DaoPoolVote @entity(immutable: true) {
   transaction: Transaction!
 }
 
-# @notice The entity holds information about dao pool creating
+# @notice The entity holds information about dao pool creation
 # @param id forms from tx hash + interactionCount
 # @param pool the pool address
 # @param proposalId the id of proposal
