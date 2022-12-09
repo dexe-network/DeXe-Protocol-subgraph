@@ -7,6 +7,7 @@ export function getValidatorInPool(pool: DaoPool, validatorAddress: Address): Va
 
   if (validatorInPool == null) {
     validatorInPool = new ValidatorInPool(id);
+    validatorInPool.validatorAddress = validatorAddress;
     validatorInPool.balance = BigInt.zero();
 
     validatorInPool.pool = pool.id;
