@@ -39,10 +39,12 @@ type Proposal @entity {
 
 # @notice The entity that holds informations about validator's actions in pool
 # @param id the validator address + pool address
+# @param validatorAddress the address of validator
 # @param balance the amount of validators token
 # @param pool the pool entity id
 type ValidatorInPool @entity {
   id: Bytes! # validator address + pool address
+  validatorAddress: Bytes!
   balance: BigInt!
 
   pool: DaoPool!

@@ -349,6 +349,13 @@ describe("DaoValidators", () => {
         "pool",
         poolAddress.toHexString()
       );
+
+      assert.fieldEquals(
+        "ValidatorInPool",
+        validators[i].concat(poolAddress).toHexString(),
+        "validatorAddress",
+        validators[i].toHexString()
+      );
     }
 
     validators = [validators[0]];
@@ -362,6 +369,12 @@ describe("DaoValidators", () => {
       validators[0].concat(poolAddress).toHexString(),
       "balance",
       BigInt.zero().toString()
+    );
+    assert.fieldEquals(
+      "ValidatorInPool",
+      validators[0].concat(poolAddress).toHexString(),
+      "validatorAddress",
+      validators[0].toHexString()
     );
     assert.fieldEquals(
       "ValidatorInPool",
