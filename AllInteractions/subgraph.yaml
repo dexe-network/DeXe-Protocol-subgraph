@@ -22,7 +22,7 @@ dataSources:
       eventHandlers:
         - event: TraderPoolDeployed(string,string,string,address,address,address,address,uint256,string)
           handler: onTraderPoolDeployed
-        - event: DaoPoolDeployed(string,address,address,address,address,address)
+        - event: DaoPoolDeployed(string,address,address,address,address,address,address)
           handler: onDaoPoolDeployed
 
   - kind: ethereum/contract
@@ -180,7 +180,7 @@ templates:
         - name: DaoPool
           file: ./abis/DaoPool.json
       eventHandlers:
-        - event: ProposalCreated(uint256,string,uint256,uint256,address)
+        - event: ProposalCreated(uint256,string,string,uint256,uint256,address,address)
           handler: onProposalCreated
         - event: Delegated(address,address,uint256,uint256[],bool)
           handler: onDelegated
