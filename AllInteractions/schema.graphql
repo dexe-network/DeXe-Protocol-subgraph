@@ -403,7 +403,7 @@ type DaoValidatorProposalCreate @entity(immutable: true) {
   transaction: Transaction!
 }
 
-# @notice The entity holds information about vote in proposal
+# @notice The entity holds information about validators vote in proposal
 # @param id forms from tx hash + interactionCount
 # @param pool the pool address
 # @param proposalId the id of proposal
