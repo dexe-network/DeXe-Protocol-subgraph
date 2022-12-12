@@ -23,6 +23,13 @@ export function getInvestorPoolPosition(
 
     investorInfo.totalUSDInvestVolume = BigInt.zero();
     investorInfo.totalUSDDivestVolume = BigInt.zero();
+
+    investorInfo.totalNativeInvestVolume = BigInt.zero();
+    investorInfo.totalNativeDivestVolume = BigInt.zero();
+
+    investorInfo.totalBTCInvestVolume = BigInt.zero();
+    investorInfo.totalBTCDivestVolume = BigInt.zero();
   }
+
   return investorInfo;
 }

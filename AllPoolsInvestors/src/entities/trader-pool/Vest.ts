@@ -10,6 +10,8 @@ export function getVest(
   volumeBase: BigInt = BigInt.zero(),
   volumeLP: BigInt = BigInt.zero(),
   volumeUSD: BigInt = BigInt.zero(),
+  volumeNative: BigInt = BigInt.zero(),
+  volumeBTC: BigInt = BigInt.zero(),
   timestamp: BigInt = BigInt.zero()
 ): Vest {
   let counter = getInteractionCount(hash);
@@ -23,6 +25,8 @@ export function getVest(
     vest.volumeBase = volumeBase;
     vest.volumeLP = volumeLP;
     vest.volumeUSD = volumeUSD;
+    vest.volumeNative = volumeNative;
+    vest.volumeBTC = volumeBTC;
     vest.timestamp = timestamp;
 
     increaseCounter(counter);
