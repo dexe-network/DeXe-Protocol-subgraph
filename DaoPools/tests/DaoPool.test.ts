@@ -338,7 +338,7 @@ describe("DaoPool", () => {
       "DaoPool",
       contractSender.toHexString(),
       "totalCurrentNFTDelegated",
-      "[" + nfts[0].toString() + ", " + nfts[1].toString() + "]"
+      `[${nfts[0]}, ${nfts[1]}]`
     );
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedDelegation", amount.toString());
     assert.fieldEquals(
