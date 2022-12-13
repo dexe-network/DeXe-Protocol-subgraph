@@ -82,6 +82,9 @@ export function onDelegated(event: Delegated): void {
 
     pair.delegateAmount = pair.delegateAmount.plus(event.params.amount);
     pair.delegateNfts = extendArray<BigInt>(pair.delegateNfts, event.params.nfts);
+
+    pool.totalCurrentTokenDelegated = pool.totalCurrentTokenDelegated.plus(event.params.amount);
+    pool.totalCurrentNFTDelegated = extendArray<BigInt>(pool.totalCurrentNFTDelegated, event.params.nfts);
   } else {
     toVoterInPool.receivedDelegation = toVoterInPool.receivedDelegation.minus(event.params.amount);
     toVoterInPool.receivedNFTDelegation = reduceArray<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
@@ -92,6 +95,9 @@ export function onDelegated(event: Delegated): void {
     if (pair.delegateAmount.equals(BigInt.zero()) && pair.delegateNfts.length == 0) {
       toVoterInPool.currentDelegatorsCount = toVoterInPool.currentDelegatorsCount.minus(BigInt.fromI32(1));
     }
+
+    pool.totalCurrentTokenDelegated = pool.totalCurrentTokenDelegated.minus(event.params.amount);
+    pool.totalCurrentNFTDelegated = reduceArray<BigInt>(pool.totalCurrentNFTDelegated, event.params.nfts);
   }
 
   pair.save();
