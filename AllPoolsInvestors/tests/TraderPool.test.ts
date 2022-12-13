@@ -164,6 +164,8 @@ const block = getBlock(BigInt.fromI32(1), BigInt.fromI32(1));
 const tx = getTransaction(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromI32(1))));
 const sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181679");
 const expectedUSD = BigInt.fromI32(100).pow(18);
+const expectedNative = BigInt.fromI32(1000).pow(18);
+const expectedBTC = BigInt.fromI32(10000).pow(18);
 
 describe("TraderPool", () => {
   beforeAll(() => {
@@ -177,6 +179,30 @@ describe("TraderPool", () => {
         ethereum.Value.fromUnsignedBigInt(expectedUSD),
       ])
       .returns([ethereum.Value.fromUnsignedBigInt(expectedUSD), ethereum.Value.fromAddressArray([sender, sender])]);
+
+    createMockedFunction(
+      Address.fromString(PRICE_FEED_ADDRESS),
+      "getNormalizedPriceOut",
+      "getNormalizedPriceOut(address,address,uint256):(uint256,address[])"
+    )
+      .withArgs([
+        ethereum.Value.fromAddress(Address.fromString("0x0000000000000000000000000000000000000000")),
+        ethereum.Value.fromAddress(Address.fromString("0x094616f0bdfb0b526bd735bf66eca0ad254ca81f")),
+        ethereum.Value.fromUnsignedBigInt(expectedUSD),
+      ])
+      .returns([ethereum.Value.fromUnsignedBigInt(expectedNative), ethereum.Value.fromAddressArray([sender, sender])]);
+
+    createMockedFunction(
+      Address.fromString(PRICE_FEED_ADDRESS),
+      "getNormalizedPriceOut",
+      "getNormalizedPriceOut(address,address,uint256):(uint256,address[])"
+    )
+      .withArgs([
+        ethereum.Value.fromAddress(Address.fromString("0x0000000000000000000000000000000000000000")),
+        ethereum.Value.fromAddress(Address.fromString("0x34a601cb81ffe8941e24f303306b13a859ccee13")),
+        ethereum.Value.fromUnsignedBigInt(expectedUSD),
+      ])
+      .returns([ethereum.Value.fromUnsignedBigInt(expectedBTC), ethereum.Value.fromAddressArray([sender, sender])]);
   });
 
   afterEach(() => {
@@ -213,6 +239,18 @@ describe("TraderPool", () => {
       user.toHexString() + sender.toHexString() + "0",
       "totalUSDInvestVolume",
       expectedUSD.toString()
+    );
+    assert.fieldEquals(
+      "InvestorPoolPosition",
+      user.toHexString() + sender.toHexString() + "0",
+      "totalNativeInvestVolume",
+      expectedNative.toString()
+    );
+    assert.fieldEquals(
+      "InvestorPoolPosition",
+      user.toHexString() + sender.toHexString() + "0",
+      "totalBTCInvestVolume",
+      expectedBTC.toString()
     );
 
     assert.fieldEquals("InteractionCount", tx.hash.toHexString(), "count", "1");
@@ -254,6 +292,18 @@ describe("TraderPool", () => {
       user.toHexString() + sender.toHexString() + "0",
       "totalUSDDivestVolume",
       expectedUSD.toString()
+    );
+    assert.fieldEquals(
+      "InvestorPoolPosition",
+      user.toHexString() + sender.toHexString() + "0",
+      "totalNativeDivestVolume",
+      expectedNative.toString()
+    );
+    assert.fieldEquals(
+      "InvestorPoolPosition",
+      user.toHexString() + sender.toHexString() + "0",
+      "totalBTCDivestVolume",
+      expectedBTC.toString()
     );
 
     assert.fieldEquals("InteractionCount", tx.hash.toHexString(), "count", "1");

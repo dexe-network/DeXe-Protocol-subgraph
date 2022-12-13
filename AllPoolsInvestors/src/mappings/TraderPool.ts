@@ -175,11 +175,11 @@ function setupVest(vestInBase: BigInt, vestLp: BigInt, user: Address, isInvest: 
 
     lpHistory.currentLpAmount = lpHistory.currentLpAmount.plus(vestLp);
   } else {
-    investorPoolPosition.totalBaseInvestVolume = investorPoolPosition.totalBaseInvestVolume.minus(vestInBase);
-    investorPoolPosition.totalLPInvestVolume = investorPoolPosition.totalLPInvestVolume.minus(vestLp);
-    investorPoolPosition.totalUSDInvestVolume = investorPoolPosition.totalUSDInvestVolume.minus(usdValue);
-    investorPoolPosition.totalNativeInvestVolume = investorPoolPosition.totalNativeInvestVolume.minus(bnbValue);
-    investorPoolPosition.totalBTCInvestVolume = investorPoolPosition.totalBTCInvestVolume.minus(btcValue);
+    investorPoolPosition.totalBaseDivestVolume = investorPoolPosition.totalBaseDivestVolume.plus(vestInBase);
+    investorPoolPosition.totalLPDivestVolume = investorPoolPosition.totalLPDivestVolume.plus(vestLp);
+    investorPoolPosition.totalUSDDivestVolume = investorPoolPosition.totalUSDDivestVolume.plus(usdValue);
+    investorPoolPosition.totalNativeDivestVolume = investorPoolPosition.totalNativeDivestVolume.plus(bnbValue);
+    investorPoolPosition.totalBTCDivestVolume = investorPoolPosition.totalBTCDivestVolume.plus(btcValue);
 
     lpHistory.currentLpAmount = lpHistory.currentLpAmount.minus(vestLp);
   }
