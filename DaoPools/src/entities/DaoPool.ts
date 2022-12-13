@@ -19,6 +19,9 @@ export function getDaoPool(
 
     pool.erc20Token = Bytes.empty();
     pool.erc721Token = Bytes.empty();
+
+    pool.totalCurrentTokenDelegated = BigInt.zero();
+    pool.totalCurrentNFTDelegated = new Array<BigInt>();
   }
 
   return pool;

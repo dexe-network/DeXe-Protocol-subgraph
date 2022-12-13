@@ -333,6 +333,13 @@ describe("DaoPool", () => {
     assert.fieldEquals("Voter", from.toHexString(), "id", from.toHexString());
     assert.fieldEquals("Voter", to.toHexString(), "id", to.toHexString());
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "votersCount", "2");
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentTokenDelegated", amount.toString());
+    assert.fieldEquals(
+      "DaoPool",
+      contractSender.toHexString(),
+      "totalCurrentNFTDelegated",
+      "[" + nfts[0].toString() + ", " + nfts[1].toString() + "]"
+    );
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedDelegation", amount.toString());
     assert.fieldEquals(
       "VoterInPool",
@@ -399,6 +406,19 @@ describe("DaoPool", () => {
 
     onDelegated(event1);
     onDelegated(event2);
+
+    assert.fieldEquals(
+      "DaoPool",
+      contractSender.toHexString(),
+      "totalCurrentTokenDelegated",
+      amount1.minus(amount2).toString()
+    );
+    assert.fieldEquals(
+      "DaoPool",
+      contractSender.toHexString(),
+      "totalCurrentNFTDelegated",
+      "[" + nfts1[1].toString() + "]"
+    );
 
     assert.fieldEquals(
       "VoterInPool",
