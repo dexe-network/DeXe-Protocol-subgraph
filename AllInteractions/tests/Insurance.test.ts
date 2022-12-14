@@ -62,13 +62,7 @@ describe("Insurance", () => {
     assert.fieldEquals("InsuranceStake", tx.hash.concatI32(0).toHexString(), "amount", expectedAmount.toString());
     assert.fieldEquals("InsuranceStake", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(
-      tx.hash,
-      event.params.investor,
-      block,
-      "[" + TransactionType.INSURANCE_STAKE.toString() + "]",
-      BigInt.fromI32(1)
-    );
+    assertTransaction(tx.hash, event.params.investor, block, `[${TransactionType.INSURANCE_STAKE}]`, BigInt.fromI32(1));
   });
 
   test("should handle withdraw event", () => {
@@ -86,7 +80,7 @@ describe("Insurance", () => {
       tx.hash,
       event.params.investor,
       block,
-      "[" + TransactionType.INSURANCE_UNSTAKE.toString() + "]",
+      `[${TransactionType.INSURANCE_UNSTAKE}]`,
       BigInt.fromI32(1)
     );
   });

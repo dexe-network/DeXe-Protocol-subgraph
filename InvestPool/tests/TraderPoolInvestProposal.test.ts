@@ -296,13 +296,13 @@ describe("TraderPoolInvestProposal", () => {
       "Supply",
       event.transaction.hash.concatI32(0).toHexString(),
       "dividendsTokens",
-      "[" + tokens[0].toHexString() + ", " + tokens[1].toHexString() + "]"
+      `[${tokens[0].toHexString()}, ${tokens[1].toHexString()}]`
     );
     assert.fieldEquals(
       "Supply",
       event.transaction.hash.concatI32(0).toHexString(),
       "amountDividendsTokens",
-      "[" + amounts[0].toString() + ", " + amounts[1].toString() + "]"
+      `[${amounts[0]}, ${amounts[1]}]`
     );
     assert.fieldEquals("Supply", event.transaction.hash.concatI32(0).toHexString(), "timestamp", "1");
     assert.fieldEquals(
@@ -330,13 +330,13 @@ describe("TraderPoolInvestProposal", () => {
       "Proposal",
       sender.toHexString() + proposalId.toString(),
       "leftTokens",
-      "[" + tokens[0].toHexString() + ", " + tokens[1].toHexString() + "]"
+      `[${tokens[0].toHexString()}, ${tokens[1].toHexString()}]`
     );
     assert.fieldEquals(
       "Proposal",
       sender.toHexString() + proposalId.toString(),
       "leftAmounts",
-      "[" + amounts[0].toString() + ", " + amounts[1].toString() + "]"
+      `[${amounts[0]}, ${amounts[1]}]`
     );
   });
 
@@ -360,13 +360,13 @@ describe("TraderPoolInvestProposal", () => {
       "Proposal",
       sender.toHexString() + proposalId.toString(),
       "leftTokens",
-      "[" + tokens[0].toHexString() + "]"
+      `[${tokens[0].toHexString()}]`
     );
     assert.fieldEquals(
       "Proposal",
       sender.toHexString() + proposalId.toString(),
       "leftAmounts",
-      "[" + amountsToClaim[0].toString() + "]"
+      `[${amountsToClaim[0]}]`
     );
   });
 
@@ -397,13 +397,13 @@ describe("TraderPoolInvestProposal", () => {
       "Supply",
       event.transaction.hash.concatI32(1).toHexString(),
       "dividendsTokens",
-      "[" + baseToken.toHexString() + "]"
+      `[${baseToken.toHexString()}]`
     );
     assert.fieldEquals(
       "Supply",
       event.transaction.hash.concatI32(1).toHexString(),
       "amountDividendsTokens",
-      "[" + amount.toString() + "]"
+      `[${amount}]`
     );
     assert.fieldEquals("Supply", event.transaction.hash.concatI32(1).toHexString(), "timestamp", "1");
     assert.fieldEquals(

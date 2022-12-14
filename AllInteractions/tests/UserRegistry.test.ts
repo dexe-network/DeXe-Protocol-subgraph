@@ -52,7 +52,7 @@ describe("UserRegistry", () => {
       tx.hash,
       event.params.user,
       block,
-      "[" + TransactionType.USER_AGREED_TO_PRIVACY_POLICY.toString() + "]",
+      `[${TransactionType.USER_AGREED_TO_PRIVACY_POLICY}]`,
       BigInt.fromI32(1)
     );
   });
@@ -69,11 +69,7 @@ describe("UserRegistry", () => {
       tx.hash,
       event.params.user,
       block,
-      "[" +
-        TransactionType.USER_AGREED_TO_PRIVACY_POLICY.toString() +
-        ", " +
-        TransactionType.UPDATED_USER_CREDENTIALS.toString() +
-        "]",
+      `[${TransactionType.USER_AGREED_TO_PRIVACY_POLICY}, ${TransactionType.UPDATED_USER_CREDENTIALS}]`,
       BigInt.fromI32(2)
     );
   });

@@ -358,7 +358,7 @@ describe("TraderPool", () => {
       "TraderPool",
       sender.toHexString(),
       "privateInvestors",
-      "[" + privateInvestors[0].toHexString() + ", " + privateInvestors[1].toHexString() + "]"
+      `[${privateInvestors[0].toHexString()}, ${privateInvestors[1].toHexString()}]`
     );
     assert.fieldEquals("TraderPool", sender.toHexString(), "privateInvestorsCount", "2");
 
@@ -366,7 +366,7 @@ describe("TraderPool", () => {
       "TraderPoolHistory",
       sender.toHexString() + "0",
       "privateInvestors",
-      "[" + privateInvestors[0].toHexString() + ", " + privateInvestors[1].toHexString() + "]"
+      `[${privateInvestors[0].toHexString()}, ${privateInvestors[1].toHexString()}]`
     );
     assert.fieldEquals("TraderPoolHistory", sender.toHexString() + "0", "privateInvestorsCount", "2");
   });
@@ -378,14 +378,9 @@ describe("TraderPool", () => {
 
     onInvestorAdded(event);
 
-    assert.fieldEquals("TraderPool", sender.toHexString(), "investors", "[" + investor.toHexString() + "]");
+    assert.fieldEquals("TraderPool", sender.toHexString(), "investors", `[${investor.toHexString()}]`);
     assert.fieldEquals("TraderPool", sender.toHexString(), "investorsCount", "1");
-    assert.fieldEquals(
-      "TraderPoolHistory",
-      sender.toHexString() + "0",
-      "investors",
-      "[" + investor.toHexString() + "]"
-    );
+    assert.fieldEquals("TraderPoolHistory", sender.toHexString() + "0", "investors", `[${investor.toHexString()}]`);
     assert.fieldEquals("TraderPoolHistory", sender.toHexString() + "0", "investorsCount", "1");
   });
 

@@ -105,13 +105,7 @@ describe("PoolFactory", () => {
     assert.fieldEquals("PoolCreate", tx.hash.concatI32(0).toHexString(), "symbol", expectedSymbol);
     assert.fieldEquals("PoolCreate", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(
-      tx.hash,
-      event.params.trader,
-      block,
-      "[" + TransactionType.POOL_CREATE.toString() + "]",
-      BigInt.fromI32(1)
-    );
+    assertTransaction(tx.hash, event.params.trader, block, `[${TransactionType.POOL_CREATE}]`, BigInt.fromI32(1));
   });
 
   test("should handle DaoPoolDeployed event", () => {
@@ -130,12 +124,6 @@ describe("PoolFactory", () => {
     assert.fieldEquals("DaoPoolCreate", tx.hash.concatI32(0).toHexString(), "pool", govPool.toHexString());
     assert.fieldEquals("DaoPoolCreate", tx.hash.concatI32(0).toHexString(), "name", name);
 
-    assertTransaction(
-      tx.hash,
-      event.params.sender,
-      block,
-      "[" + TransactionType.DAO_POOL_CREATED.toString() + "]",
-      BigInt.fromI32(1)
-    );
+    assertTransaction(tx.hash, event.params.sender, block, `[${TransactionType.DAO_POOL_CREATED}]`, BigInt.fromI32(1));
   });
 });

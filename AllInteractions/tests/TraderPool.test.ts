@@ -234,13 +234,7 @@ describe("TraderPool", () => {
     assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString(), "toVolume", toVolume.toString());
     assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(
-      tx.hash,
-      event.params.sender,
-      block,
-      "[" + TransactionType.SWAP.toString() + "]",
-      BigInt.fromI32(1)
-    );
+    assertTransaction(tx.hash, event.params.sender, block, `[${TransactionType.SWAP}]`, BigInt.fromI32(1));
   });
 
   test("should handle invested event", () => {
@@ -257,13 +251,7 @@ describe("TraderPool", () => {
     assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "lpAmount", receivedLP.toString());
     assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(
-      tx.hash,
-      event.params.user,
-      block,
-      "[" + TransactionType.INVEST.toString() + "]",
-      BigInt.fromI32(1)
-    );
+    assertTransaction(tx.hash, event.params.user, block, `[${TransactionType.INVEST}]`, BigInt.fromI32(1));
   });
 
   test("should handle divested event", () => {
@@ -280,13 +268,7 @@ describe("TraderPool", () => {
     assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "lpAmount", divestedLP.toString());
     assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(
-      tx.hash,
-      event.params.user,
-      block,
-      "[" + TransactionType.DIVEST.toString() + "]",
-      BigInt.fromI32(1)
-    );
+    assertTransaction(tx.hash, event.params.user, block, `[${TransactionType.DIVEST}]`, BigInt.fromI32(1));
   });
 
   test("should handle DescriptionURLChanged event", () => {
@@ -300,13 +282,7 @@ describe("TraderPool", () => {
     assert.fieldEquals("OnlyPool", tx.hash.concatI32(0).toHexString(), "pool", sender.toHexString());
     assert.fieldEquals("OnlyPool", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(
-      tx.hash,
-      event.params.sender,
-      block,
-      "[" + TransactionType.POOL_EDIT.toString() + "]",
-      BigInt.fromI32(1)
-    );
+    assertTransaction(tx.hash, event.params.sender, block, `[${TransactionType.POOL_EDIT}]`, BigInt.fromI32(1));
   });
 
   test("should handle ProposalDivested event", () => {
@@ -330,7 +306,7 @@ describe("TraderPool", () => {
       tx.hash,
       event.params.user,
       block,
-      "[" + TransactionType.RISKY_PROPOSAL_DIVEST.toString() + "]",
+      `[${TransactionType.RISKY_PROPOSAL_DIVEST}]`,
       BigInt.fromI32(1)
     );
   });
@@ -353,7 +329,7 @@ describe("TraderPool", () => {
       tx.hash,
       event.params.sender,
       block,
-      "[" + TransactionType.POOL_UPDATE_INVESTORS.toString() + "]",
+      `[${TransactionType.POOL_UPDATE_INVESTORS}]`,
       BigInt.fromI32(1)
     );
   });
@@ -376,7 +352,7 @@ describe("TraderPool", () => {
       tx.hash,
       event.params.sender,
       block,
-      "[" + TransactionType.POOL_UPDATE_MANAGERS.toString() + "]",
+      `[${TransactionType.POOL_UPDATE_MANAGERS}]`,
       BigInt.fromI32(1)
     );
   });
@@ -403,7 +379,7 @@ describe("TraderPool", () => {
       tx.hash,
       event.params.sender,
       block,
-      "[" + TransactionType.TRADER_GET_PERFOMANCE_FEE.toString() + "]",
+      `[${TransactionType.TRADER_GET_PERFOMANCE_FEE}]`,
       BigInt.fromI32(1)
     );
   });
