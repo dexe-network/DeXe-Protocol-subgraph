@@ -16,6 +16,7 @@ import { getInvestor } from "../entities/trader-pool/Investor";
 import { getProposalPositionOffset } from "../entities/global/ProposalPositionOffset";
 import { upcastCopy } from "../helpers/ArrayHelper";
 import { getProposalClaim } from "../entities/trader-pool/proposal/ProposalClaim";
+import { getUSDValue } from "../helpers/PriceFeedInteractions";
 
 export function onProposalInvest(event: ProposalInvested): void {
   let proposalContract = getProposalContract(event.address);
@@ -128,27 +129,4 @@ export function onProposalInvestorRemoved(event: ProposalInvestorRemoved): void 
   pool.save();
   proposal.save();
   proposalOffset.save();
-}
-
-function getUSDValue(token: Bytes, amount: BigInt): BigInt {
-  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-
-  let resp = pfPrototype.try_getNormalizedPriceOutUSD(Address.fromBytes(token), amount);
-  if (resp.reverted) {
-    log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
-      token.toHexString(),
-      amount.toString(),
-    ]);
-    return BigInt.zero();
-  } else {
-    if (resp.value.value1.length == 0) {
-      log.warning("try_getNormalizedPriceOutUSD returned 0 length path. FromToken: {}, Amount:{}", [
-        token.toHexString(),
-        amount.toString(),
-      ]);
-    }
-    return resp.value.value0;
-  }
-
-  return BigInt.zero();
 }

@@ -8,7 +8,6 @@ import {
   ProposalDivested,
   Transfer,
 } from "../../generated/templates/TraderPool/TraderPool";
-import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { Address, BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts";
 import { extendArray, reduceArray, upcastCopy } from "../helpers/ArrayHelper";
@@ -17,7 +16,7 @@ import { getTraderPoolHistory } from "../entities/trader-pool/history/TraderPool
 import { getInvestorPoolPosition } from "../entities/trader-pool/InvestorPoolPosition";
 import { getVest } from "../entities/trader-pool/Vest";
 import { getPositionOffset } from "../entities/global/PositionOffset";
-import { BTC_ADDRESS, PRICE_FEED_ADDRESS, WBNB_ADDRESS } from "../entities/global/globals";
+import { BTC_ADDRESS, WBNB_ADDRESS } from "../entities/global/globals";
 import { Investor, InvestorPoolPosition, LpHistory } from "../../generated/schema";
 import { getProposalContract } from "../entities/trader-pool/proposal/ProposalContract";
 import { getProposalPosition } from "../entities/trader-pool/proposal/ProposalPosition";
@@ -25,6 +24,7 @@ import { getProposalVest } from "../entities/trader-pool/proposal/ProposalVest";
 import { getProposalPositionOffset } from "../entities/global/ProposalPositionOffset";
 import { getLpHistory } from "../entities/trader-pool/history/LpHistory";
 import { findPrevHistory } from "../helpers/HistorySearcher";
+import { getTokenValue, getUSDValue } from "../helpers/PriceFeedInteractions";
 
 export function onInvestorAdded(event: InvestorAdded): void {
   let pool = getTraderPool(event.address);
@@ -190,50 +190,6 @@ function setupVest(vestInBase: BigInt, vestLp: BigInt, user: Address, isInvest: 
   positionOffset.save();
   investorPoolPosition.save();
   vest.save();
-}
-
-function getUSDValue(token: Bytes, amount: BigInt): BigInt {
-  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-
-  let resp = pfPrototype.try_getNormalizedPriceOutUSD(Address.fromString(token.toHexString()), amount);
-  if (resp.reverted) {
-    log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
-      token.toHexString(),
-      amount.toString(),
-    ]);
-    return BigInt.zero();
-  } else {
-    if (resp.value.value1.length == 0) {
-      log.warning("try_getNormalizedPriceOutUSD returned 0 length path. FromToken: {}, Amount:{}", [
-        token.toHexString(),
-        amount.toString(),
-      ]);
-    }
-    return resp.value.value0;
-  }
-}
-
-function getTokenValue(fromToken: Bytes, toToken: Bytes, amount: BigInt): BigInt {
-  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-
-  let resp = pfPrototype.try_getNormalizedPriceOut(Address.fromBytes(fromToken), Address.fromBytes(toToken), amount);
-  if (resp.reverted) {
-    log.warning("try_getNormalizedPriceOut reverted. FromToken: {}, ToToken: {}, Amount:{}", [
-      fromToken.toHexString(),
-      toToken.toHexString(),
-      amount.toString(),
-    ]);
-    return BigInt.zero();
-  } else {
-    if (resp.value.value1.length == 0) {
-      log.warning("try_getNormalizedPriceOut returned 0 length path. FromToken: {}, ToToken: {}, Amount:{}", [
-        fromToken.toHexString(),
-        toToken.toHexString(),
-        amount.toString(),
-      ]);
-    }
-    return resp.value.value0;
-  }
 }
 
 function injectPrevLPHistory(history: LpHistory, investorPoolPosition: InvestorPoolPosition): void {
