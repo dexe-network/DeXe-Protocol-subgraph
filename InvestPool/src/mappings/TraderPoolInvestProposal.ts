@@ -15,6 +15,7 @@ import { getProposalContract } from "../entities/invest-pool/proposal/ProposalCo
 import { getSupply } from "../entities/invest-pool/proposal/ProposalSupply";
 import { getWithdraw } from "../entities/invest-pool/proposal/ProposalWithdraw";
 import { deleteByIndex, extendArray, upcastCopy } from "../helpers/ArrayHelper";
+import { getUSDValue } from "../helpers/PriceFeedInteractions";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let proposalContract = getProposalContract(event.address);
@@ -104,10 +105,9 @@ export function onProposalConverted(event: ProposalConverted): void {
 
 function totalTokenUSDCost(tokens: Array<Address>, volumes: Array<BigInt>): BigInt {
   let totalCost = BigInt.zero();
-  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
 
   for (let i = 0; i < tokens.length; i++) {
-    totalCost = totalCost.plus(getUSDFromPriceFeed(pfPrototype, tokens[i], volumes[i]));
+    totalCost = totalCost.plus(getUSDValue(tokens[i], volumes[i]));
   }
 
   return totalCost;
@@ -121,33 +121,12 @@ function getInvestedBaseInUSD(proposalAddress: Address, proposalId: BigInt, base
     return BigInt.fromI32(1);
   }
 
-  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-
-  let usd = getUSDFromPriceFeed(pfPrototype, baseToken, resp.value[0].proposalInfo.investedBase);
+  let usd = getUSDValue(baseToken, resp.value[0].proposalInfo.investedBase);
 
   if (usd.equals(BigInt.zero())) {
     return BigInt.fromI32(1);
   } else {
     return usd;
-  }
-}
-
-function getUSDFromPriceFeed(pfPrototype: PriceFeed, baseTokenAddress: Address, fromBaseVolume: BigInt): BigInt {
-  let resp = pfPrototype.try_getNormalizedPriceOutUSD(baseTokenAddress, fromBaseVolume);
-  if (resp.reverted) {
-    log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
-      baseTokenAddress.toHexString(),
-      fromBaseVolume.toString(),
-    ]);
-    return BigInt.zero();
-  } else {
-    if (resp.value.value1.length == 0) {
-      log.warning("try_getNormalizedPriceOutUSD returned 0 length path. FromToken: {}, Amount:{}", [
-        baseTokenAddress.toHexString(),
-        fromBaseVolume.toString(),
-      ]);
-    }
-    return resp.value.value0;
   }
 }
 

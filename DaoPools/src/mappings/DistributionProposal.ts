@@ -10,6 +10,7 @@ import { extendArray } from "../helpers/ArrayHelper";
 import { BNB_ADDRESS, PRICE_FEED_ADDRESS, WBNB_ADDRESS } from "../entities/global/globals";
 import { getDistributionProposal } from "../entities/DistributionProposal";
 import { getVoterInProposal } from "../entities/Voters/VoterInProposal";
+import { getUSDValue } from "../helpers/PriceFeedInteractions";
 
 export function onDistributionProposalClaimed(event: DistributionProposalClaimed): void {
   let dpToPool = getDPContract(event.address);
@@ -20,7 +21,12 @@ export function onDistributionProposalClaimed(event: DistributionProposalClaimed
   let dp = getDistributionProposal(proposal);
   let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
-  let usdAmount = getUSDFromPriceFeed(Address.fromBytes(dp.token), event.params.amount);
+  let usdAmount = getUSDValue(
+    Address.fromBytes(dp.token).equals(Address.fromString(BNB_ADDRESS))
+      ? Address.fromString(WBNB_ADDRESS)
+      : Address.fromBytes(dp.token),
+    event.params.amount
+  );
 
   voterInPool.claimedDPs = extendArray(voterInPool.claimedDPs, [proposal.id]);
   voterInPool.totalDPClaimed = voterInPool.totalDPClaimed.plus(usdAmount);
@@ -31,29 +37,4 @@ export function onDistributionProposalClaimed(event: DistributionProposalClaimed
   voterInPool.save();
   pool.save();
   voter.save();
-}
-
-function getUSDFromPriceFeed(token: Address, amount: BigInt): BigInt {
-  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-
-  if (token.equals(Address.fromString(BNB_ADDRESS))) {
-    token = Address.fromString(WBNB_ADDRESS);
-  }
-
-  let resp = pfPrototype.try_getNormalizedPriceOutUSD(token, amount);
-  if (resp.reverted) {
-    log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
-      token.toHexString(),
-      amount.toString(),
-    ]);
-    return BigInt.zero();
-  } else {
-    if (resp.value.value1.length == 0) {
-      log.warning("try_getNormalizedPriceOutUSD returned 0 length path. FromToken: {}, Amount:{}", [
-        token.toHexString(),
-        amount.toString(),
-      ]);
-    }
-    return resp.value.value0;
-  }
 }

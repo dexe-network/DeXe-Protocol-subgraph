@@ -22,6 +22,7 @@ import { Proposal, VoterInProposal } from "../../generated/schema";
 import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 import { getProposalSettings } from "../entities/Settings/ProposalSettings";
 import { getVoterInPoolPair } from "../entities/Voters/VoterInPoolPair";
+import { getUSDValue } from "../helpers/PriceFeedInteractions";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let pool = getDaoPool(event.address);
@@ -178,9 +179,7 @@ export function onRewardClaimed(event: RewardClaimed): void {
 
   voterInProposal.save();
 
-  voterInPool.totalClaimedUSD = voterInPool.totalClaimedUSD.plus(
-    getUSDFromPriceFeed(event.params.token, event.params.amount)
-  );
+  voterInPool.totalClaimedUSD = voterInPool.totalClaimedUSD.plus(getUSDValue(event.params.token, event.params.amount));
 
   voterInPool.save();
   voter.save();
@@ -200,24 +199,4 @@ export function onRewardCredited(event: RewardCredited): void {
   voterInPool.save();
   voter.save();
   pool.save();
-}
-
-function getUSDFromPriceFeed(baseTokenAddress: Address, fromBaseVolume: BigInt): BigInt {
-  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-  let resp = pfPrototype.try_getNormalizedPriceOutUSD(baseTokenAddress, fromBaseVolume);
-  if (resp.reverted) {
-    log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
-      baseTokenAddress.toHexString(),
-      fromBaseVolume.toString(),
-    ]);
-    return BigInt.zero();
-  } else {
-    if (resp.value.value1.length == 0) {
-      log.warning("try_getNormalizedPriceOutUSD returned 0 length path. FromToken: {}, Amount:{}", [
-        baseTokenAddress.toHexString(),
-        fromBaseVolume.toString(),
-      ]);
-    }
-    return resp.value.value0;
-  }
 }
