@@ -92,6 +92,10 @@ type TraderPoolHistory @entity {
 # @param totalLPDivestVolume the total volume of investor's divests from pool in lp token
 # @param totalUSDInvestVolume the total volume of investor's invests to pool in usd token
 # @param totalUSDDivestVolume the total volume of investor's divests from pool in usd token
+# @param totalNativeInvestVolume the total volume of investor's invests to pool in native
+# @param totalNativeDivestVolume the total volume of investor's divests from pool in native
+# @param totalBTCInvestVolume the total volume of investor's invests to pool in btc token
+# @param totalBTCDivestVolume the total volume of investor's divests from pool in btc token
 type InvestorPoolPosition @entity {
   id: ID! # investor address + pool address + position offset
   pool: TraderPool!
@@ -104,6 +108,10 @@ type InvestorPoolPosition @entity {
   totalLPDivestVolume: BigInt!
   totalUSDInvestVolume: BigInt!
   totalUSDDivestVolume: BigInt!
+  totalNativeInvestVolume: BigInt!
+  totalNativeDivestVolume: BigInt!
+  totalBTCInvestVolume: BigInt!
+  totalBTCDivestVolume: BigInt!
 
   vest: [Vest!]! @derivedFrom(field: "investorPoolPosition")
   lpHistory: [LpHistory!]! @derivedFrom(field: "investorPoolPosition")
@@ -128,6 +136,8 @@ type Vest @entity(immutable: true) {
   volumeBase: BigInt!
   volumeLP: BigInt!
   volumeUSD: BigInt!
+  volumeNative: BigInt!
+  volumeBTC: BigInt!
 }
 
 # @notice The entity holds information about investor position offset in pool

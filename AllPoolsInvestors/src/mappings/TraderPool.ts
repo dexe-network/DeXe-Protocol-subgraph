@@ -8,16 +8,15 @@ import {
   ProposalDivested,
   Transfer,
 } from "../../generated/templates/TraderPool/TraderPool";
-import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
-import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts";
 import { extendArray, reduceArray, upcastCopy } from "../helpers/ArrayHelper";
 import { getInvestor } from "../entities/trader-pool/Investor";
 import { getTraderPoolHistory } from "../entities/trader-pool/history/TraderPoolHistory";
 import { getInvestorPoolPosition } from "../entities/trader-pool/InvestorPoolPosition";
 import { getVest } from "../entities/trader-pool/Vest";
 import { getPositionOffset } from "../entities/global/PositionOffset";
-import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { BTC_ADDRESS, WBNB_ADDRESS } from "../entities/global/globals";
 import { Investor, InvestorPoolPosition, LpHistory } from "../../generated/schema";
 import { getProposalContract } from "../entities/trader-pool/proposal/ProposalContract";
 import { getProposalPosition } from "../entities/trader-pool/proposal/ProposalPosition";
@@ -25,6 +24,7 @@ import { getProposalVest } from "../entities/trader-pool/proposal/ProposalVest";
 import { getProposalPositionOffset } from "../entities/global/ProposalPositionOffset";
 import { getLpHistory } from "../entities/trader-pool/history/LpHistory";
 import { findPrevHistory } from "../helpers/HistorySearcher";
+import { getTokenValue, getUSDValue } from "../helpers/PriceFeedInteractions";
 
 export function onInvestorAdded(event: InvestorAdded): void {
   let pool = getTraderPool(event.address);
@@ -105,75 +105,11 @@ export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): voi
 }
 
 export function onInvest(event: Invested): void {
-  let investor = getInvestor(event.params.user);
-  let pool = getTraderPool(event.address);
-  let positionOffset = getPositionOffset(pool, investor);
-  let investorPoolPosition = getInvestorPoolPosition(investor, pool, positionOffset);
-  let usdValue = getUSDValue(pool.token, event.params.investedBase);
-  let vest = getVest(
-    event.transaction.hash,
-    investorPoolPosition,
-    true,
-    event.params.investedBase,
-    event.params.receivedLP,
-    usdValue,
-    event.block.timestamp
-  );
-
-  investorPoolPosition.totalBaseInvestVolume = investorPoolPosition.totalBaseInvestVolume.plus(
-    event.params.investedBase
-  );
-  investorPoolPosition.totalLPInvestVolume = investorPoolPosition.totalLPInvestVolume.plus(event.params.receivedLP);
-  investorPoolPosition.totalUSDInvestVolume = investorPoolPosition.totalUSDInvestVolume.plus(usdValue);
-
-  let lpHistory = getLpHistory(investorPoolPosition, event.block.timestamp);
-
-  injectPrevLPHistory(lpHistory, investorPoolPosition);
-
-  lpHistory.currentLpAmount = lpHistory.currentLpAmount.plus(event.params.receivedLP);
-
-  lpHistory.save();
-  investor.save();
-  pool.save();
-  positionOffset.save();
-  investorPoolPosition.save();
-  vest.save();
+  setupVest(event.params.investedBase, event.params.receivedLP, event.params.user, true, event);
 }
 
 export function onDivest(event: Divested): void {
-  let investor = getInvestor(event.params.user);
-  let pool = getTraderPool(event.address);
-  let positionOffset = getPositionOffset(pool, investor);
-  let investorPoolPosition = getInvestorPoolPosition(investor, pool, positionOffset);
-  let usdValue = getUSDValue(pool.token, event.params.receivedBase);
-  let vest = getVest(
-    event.transaction.hash,
-    investorPoolPosition,
-    false,
-    event.params.receivedBase,
-    event.params.divestedLP,
-    usdValue,
-    event.block.timestamp
-  );
-
-  investorPoolPosition.totalBaseDivestVolume = investorPoolPosition.totalBaseDivestVolume.plus(
-    event.params.receivedBase
-  );
-  investorPoolPosition.totalLPDivestVolume = investorPoolPosition.totalLPDivestVolume.plus(event.params.divestedLP);
-  investorPoolPosition.totalUSDDivestVolume = investorPoolPosition.totalUSDDivestVolume.plus(usdValue);
-
-  let lpHistory = getLpHistory(investorPoolPosition, event.block.timestamp);
-
-  injectPrevLPHistory(lpHistory, investorPoolPosition);
-
-  lpHistory.currentLpAmount = lpHistory.currentLpAmount.minus(event.params.divestedLP);
-
-  lpHistory.save();
-  investor.save();
-  pool.save();
-  positionOffset.save();
-  investorPoolPosition.save();
-  vest.save();
+  setupVest(event.params.receivedBase, event.params.divestedLP, event.params.user, false, event);
 }
 
 export function onProposalDivest(event: ProposalDivested): void {
@@ -207,25 +143,53 @@ export function onProposalDivest(event: ProposalDivested): void {
   divest.save();
 }
 
-function getUSDValue(token: Bytes, amount: BigInt): BigInt {
-  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
+function setupVest(vestInBase: BigInt, vestLp: BigInt, user: Address, isInvest: boolean, event: ethereum.Event): void {
+  let investor = getInvestor(user);
+  let pool = getTraderPool(event.address);
+  let positionOffset = getPositionOffset(pool, investor);
+  let investorPoolPosition = getInvestorPoolPosition(investor, pool, positionOffset);
+  let usdValue = getUSDValue(pool.token, vestInBase);
+  let bnbValue = getTokenValue(pool.token, Address.fromString(WBNB_ADDRESS), vestInBase);
+  let btcValue = getTokenValue(pool.token, Address.fromString(BTC_ADDRESS), vestInBase);
+  let vest = getVest(
+    event.transaction.hash,
+    investorPoolPosition,
+    isInvest,
+    vestInBase,
+    vestLp,
+    usdValue,
+    bnbValue,
+    btcValue,
+    event.block.timestamp
+  );
 
-  let resp = pfPrototype.try_getNormalizedPriceOutUSD(Address.fromString(token.toHexString()), amount);
-  if (resp.reverted) {
-    log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
-      token.toHexString(),
-      amount.toString(),
-    ]);
-    return BigInt.zero();
+  let lpHistory = getLpHistory(investorPoolPosition, event.block.timestamp);
+  injectPrevLPHistory(lpHistory, investorPoolPosition);
+
+  if (isInvest) {
+    investorPoolPosition.totalBaseInvestVolume = investorPoolPosition.totalBaseInvestVolume.plus(vestInBase);
+    investorPoolPosition.totalLPInvestVolume = investorPoolPosition.totalLPInvestVolume.plus(vestLp);
+    investorPoolPosition.totalUSDInvestVolume = investorPoolPosition.totalUSDInvestVolume.plus(usdValue);
+    investorPoolPosition.totalNativeInvestVolume = investorPoolPosition.totalNativeInvestVolume.plus(bnbValue);
+    investorPoolPosition.totalBTCInvestVolume = investorPoolPosition.totalBTCInvestVolume.plus(btcValue);
+
+    lpHistory.currentLpAmount = lpHistory.currentLpAmount.plus(vestLp);
   } else {
-    if (resp.value.value1.length == 0) {
-      log.warning("try_getNormalizedPriceOutUSD returned 0 length path. FromToken: {}, Amount:{}", [
-        token.toHexString(),
-        amount.toString(),
-      ]);
-    }
-    return resp.value.value0;
+    investorPoolPosition.totalBaseDivestVolume = investorPoolPosition.totalBaseDivestVolume.plus(vestInBase);
+    investorPoolPosition.totalLPDivestVolume = investorPoolPosition.totalLPDivestVolume.plus(vestLp);
+    investorPoolPosition.totalUSDDivestVolume = investorPoolPosition.totalUSDDivestVolume.plus(usdValue);
+    investorPoolPosition.totalNativeDivestVolume = investorPoolPosition.totalNativeDivestVolume.plus(bnbValue);
+    investorPoolPosition.totalBTCDivestVolume = investorPoolPosition.totalBTCDivestVolume.plus(btcValue);
+
+    lpHistory.currentLpAmount = lpHistory.currentLpAmount.minus(vestLp);
   }
+
+  lpHistory.save();
+  investor.save();
+  pool.save();
+  positionOffset.save();
+  investorPoolPosition.save();
+  vest.save();
 }
 
 function injectPrevLPHistory(history: LpHistory, investorPoolPosition: InvestorPoolPosition): void {
