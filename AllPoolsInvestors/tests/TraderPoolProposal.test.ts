@@ -233,13 +233,13 @@ describe("TraderPoolProposal", () => {
       "ProposalClaim",
       tx.hash.concatI32(0).toHexString(),
       "dividendsTokens",
-      "[" + tokens[0].toHexString() + ", " + tokens[1].toHexString() + "]"
+      `[${tokens[0].toHexString()}, ${tokens[1].toHexString()}]`
     );
     assert.fieldEquals(
       "ProposalClaim",
       tx.hash.concatI32(0).toHexString(),
       "amountDividendsTokens",
-      "[" + amounts[0].toString() + ", " + amounts[1].toString() + "]"
+      `[${amounts[0]}, ${amounts[1]}]`
     );
   });
 

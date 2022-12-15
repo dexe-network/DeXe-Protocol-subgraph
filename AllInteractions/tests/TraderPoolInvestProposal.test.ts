@@ -219,13 +219,7 @@ describe("TraderPoolInvestProposal", () => {
       tx.hash.toHexString()
     );
 
-    assertTransaction(
-      tx.hash,
-      trader,
-      block,
-      "[" + TransactionType.INVEST_PROPOSAL_CREATE.toString() + "]",
-      BigInt.fromI32(1)
-    );
+    assertTransaction(tx.hash, trader, block, `[${TransactionType.INVEST_PROPOSAL_CREATE}]`, BigInt.fromI32(1));
   });
 
   test("should handle ProposalWithdrawn event", () => {
@@ -255,7 +249,7 @@ describe("TraderPoolInvestProposal", () => {
       tx.hash,
       event.params.sender,
       block,
-      "[" + TransactionType.INVEST_PROPOSAL_WITHDRAW.toString() + "]",
+      `[${TransactionType.INVEST_PROPOSAL_WITHDRAW}]`,
       BigInt.fromI32(1)
     );
   });
@@ -276,17 +270,12 @@ describe("TraderPoolInvestProposal", () => {
       "proposalId",
       proposalId.toString()
     );
-    assert.fieldEquals(
-      "InvestProposalClaimOrSupply",
-      tx.hash.concatI32(0).toHexString(),
-      "amounts",
-      "[" + amounts.toString() + "]"
-    );
+    assert.fieldEquals("InvestProposalClaimOrSupply", tx.hash.concatI32(0).toHexString(), "amounts", `[${amounts[0]}]`);
     assert.fieldEquals(
       "InvestProposalClaimOrSupply",
       tx.hash.concatI32(0).toHexString(),
       "tokens",
-      "[" + tokens[0].toHexString() + "]"
+      `[${tokens[0].toHexString()}]`
     );
     assert.fieldEquals(
       "InvestProposalClaimOrSupply",
@@ -299,7 +288,7 @@ describe("TraderPoolInvestProposal", () => {
       tx.hash,
       event.params.sender,
       block,
-      "[" + TransactionType.INVEST_PROPOSAL_SUPPLY.toString() + "]",
+      `[${TransactionType.INVEST_PROPOSAL_SUPPLY}]`,
       BigInt.fromI32(1)
     );
   });
@@ -320,17 +309,12 @@ describe("TraderPoolInvestProposal", () => {
       "proposalId",
       proposalId.toString()
     );
-    assert.fieldEquals(
-      "InvestProposalClaimOrSupply",
-      tx.hash.concatI32(0).toHexString(),
-      "amounts",
-      "[" + amounts.toString() + "]"
-    );
+    assert.fieldEquals("InvestProposalClaimOrSupply", tx.hash.concatI32(0).toHexString(), "amounts", `[${amounts[0]}]`);
     assert.fieldEquals(
       "InvestProposalClaimOrSupply",
       tx.hash.concatI32(0).toHexString(),
       "tokens",
-      "[" + tokens[0].toHexString() + "]"
+      `[${tokens[0].toHexString()}]`
     );
     assert.fieldEquals(
       "InvestProposalClaimOrSupply",
@@ -343,7 +327,7 @@ describe("TraderPoolInvestProposal", () => {
       tx.hash,
       event.params.user,
       block,
-      "[" + TransactionType.INVEST_PROPOSAL_CLAIM.toString() + "]",
+      `[${TransactionType.INVEST_PROPOSAL_CLAIM}]`,
       BigInt.fromI32(1)
     );
   });
@@ -368,7 +352,7 @@ describe("TraderPoolInvestProposal", () => {
       tx.hash,
       event.params.user,
       block,
-      "[" + TransactionType.INVEST_PROPOSAL_INVEST.toString() + "]",
+      `[${TransactionType.INVEST_PROPOSAL_INVEST}]`,
       BigInt.fromI32(1)
     );
   });
@@ -417,7 +401,7 @@ describe("TraderPoolInvestProposal", () => {
       tx.hash,
       event.params.user,
       block,
-      "[" + TransactionType.INVEST_PROPOSAL_CONVERT_TO_DIVIDENDS.toString() + "]",
+      `[${TransactionType.INVEST_PROPOSAL_CONVERT_TO_DIVIDENDS}]`,
       BigInt.fromI32(1)
     );
   });
@@ -437,7 +421,7 @@ describe("TraderPoolInvestProposal", () => {
       tx.hash,
       event.params.sender,
       block,
-      "[" + TransactionType.INVEST_PROPOSAL_EDIT.toString() + "]",
+      `[${TransactionType.INVEST_PROPOSAL_EDIT}]`,
       BigInt.fromI32(1)
     );
   });

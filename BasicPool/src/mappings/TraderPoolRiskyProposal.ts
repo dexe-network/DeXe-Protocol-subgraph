@@ -7,12 +7,11 @@ import {
   ProposalExchanged,
   ProposalPositionClosed,
 } from "../../generated/templates/RiskyProposal/RiskyProposal";
-import { PriceFeed } from "../../generated/templates/RiskyProposal/PriceFeed";
 import { Address, BigInt, log } from "@graphprotocol/graph-ts";
-import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { getProposalContract } from "../entities/basic-pool/proposal/ProposalContract";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getProposalPosition } from "../entities/basic-pool/proposal/ProposalPosition";
+import { getUSDValue } from "../helpers/PriceFeedInteractions";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let proposalContract = getProposalContract(event.address);
@@ -52,7 +51,7 @@ export function onProposalExchange(event: ProposalExchanged): void {
     position.totalPositionOpenVolume = position.totalPositionOpenVolume.plus(event.params.toVolume);
     position.totalBaseOpenVolume = position.totalBaseOpenVolume.plus(event.params.fromVolume);
 
-    let usd = getUSDPrice(event.params.fromToken, event.params.fromVolume);
+    let usd = getUSDValue(event.params.fromToken, event.params.fromVolume);
     exchange.usdVolume = usd;
     position.totalUSDOpenVolume = position.totalUSDOpenVolume.plus(usd);
   } else if (event.params.fromToken == proposal.token) {
@@ -60,7 +59,7 @@ export function onProposalExchange(event: ProposalExchanged): void {
     position.totalPositionCloseVolume = position.totalPositionCloseVolume.plus(event.params.fromVolume);
     position.totalBaseCloseVolume = position.totalBaseCloseVolume.plus(event.params.toVolume);
 
-    let usd = getUSDPrice(event.params.toToken, event.params.toVolume);
+    let usd = getUSDValue(event.params.toToken, event.params.toVolume);
     exchange.usdVolume = usd;
     position.totalUSDCloseVolume = position.totalUSDCloseVolume.plus(usd);
   }
@@ -100,38 +99,17 @@ export function onProposalActivePortfolioExchanged(event: ProposalActivePortfoli
     position.totalPositionOpenVolume = position.totalPositionOpenVolume.plus(event.params.toVolume);
     position.totalBaseOpenVolume = position.totalBaseOpenVolume.plus(event.params.fromVolume);
 
-    let usd = getUSDPrice(event.params.fromToken, event.params.fromVolume);
+    let usd = getUSDValue(event.params.fromToken, event.params.fromVolume);
     position.totalUSDOpenVolume = position.totalUSDOpenVolume.plus(usd);
   } else if (event.params.fromToken == proposal.token) {
     // withdrawing funds from the position
     position.totalPositionCloseVolume = position.totalPositionCloseVolume.plus(event.params.fromVolume);
     position.totalBaseCloseVolume = position.totalBaseCloseVolume.plus(event.params.toVolume);
 
-    let usd = getUSDPrice(event.params.toToken, event.params.toVolume);
+    let usd = getUSDValue(event.params.toToken, event.params.toVolume);
     position.totalUSDCloseVolume = position.totalUSDCloseVolume.plus(usd);
   }
 
   positionOffset.save();
   position.save();
-}
-
-function getUSDPrice(token: Address, amount: BigInt): BigInt {
-  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-
-  let resp = pfPrototype.try_getNormalizedPriceOutUSD(token, amount);
-  if (resp.reverted) {
-    log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
-      token.toHexString(),
-      amount.toString(),
-    ]);
-    return BigInt.zero();
-  } else {
-    if (resp.value.value1.length == 0) {
-      log.warning("try_getNormalizedPriceOutUSD returned 0 length path. FromToken: {}, Amount:{}", [
-        token.toHexString(),
-        amount.toString(),
-      ]);
-    }
-    return resp.value.value0;
-  }
 }

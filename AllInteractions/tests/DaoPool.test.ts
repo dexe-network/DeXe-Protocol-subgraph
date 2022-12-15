@@ -258,7 +258,7 @@ describe("DaoPool", () => {
       tx.hash,
       event.params.sender,
       block,
-      "[" + TransactionType.DAO_POOL_PROPOSAL_CREATED.toString() + "]",
+      `[${TransactionType.DAO_POOL_PROPOSAL_CREATED}]`,
       BigInt.fromI32(1)
     );
   });
@@ -276,13 +276,7 @@ describe("DaoPool", () => {
     assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
 
-    assertTransaction(
-      tx.hash,
-      event0.params.from,
-      block,
-      "[" + TransactionType.DAO_POOL_DELEGATED.toString() + "]",
-      BigInt.fromI32(1)
-    );
+    assertTransaction(tx.hash, event0.params.from, block, `[${TransactionType.DAO_POOL_DELEGATED}]`, BigInt.fromI32(1));
 
     let event1 = createDelegated(from, to, amount, nfts, false, contractSender, block, tx);
 
@@ -295,11 +289,7 @@ describe("DaoPool", () => {
       tx.hash,
       event1.params.from,
       block,
-      "[" +
-        TransactionType.DAO_POOL_DELEGATED.toString() +
-        ", " +
-        TransactionType.DAO_POOL_UNDELEGATED.toString() +
-        "]",
+      `[${TransactionType.DAO_POOL_DELEGATED}, ${TransactionType.DAO_POOL_UNDELEGATED}]`,
       BigInt.fromI32(2)
     );
   });
@@ -326,7 +316,7 @@ describe("DaoPool", () => {
       tx.hash,
       event.params.sender,
       block,
-      "[" + TransactionType.DAO_POOL_PROPOSAL_VOTED.toString() + "]",
+      `[${TransactionType.DAO_POOL_PROPOSAL_VOTED}]`,
       BigInt.fromI32(1)
     );
   });
@@ -346,7 +336,7 @@ describe("DaoPool", () => {
       tx.hash,
       event.params.sender,
       block,
-      "[" + TransactionType.DAO_POOL_PROPOSAL_EXECUTED.toString() + "]",
+      `[${TransactionType.DAO_POOL_PROPOSAL_EXECUTED}]`,
       BigInt.fromI32(1)
     );
   });
@@ -376,7 +366,7 @@ describe("DaoPool", () => {
       tx.hash,
       event.params.sender,
       block,
-      "[" + TransactionType.DAO_POOL_REWARD_CLAIMED.toString() + "]",
+      `[${TransactionType.DAO_POOL_REWARD_CLAIMED}]`,
       BigInt.fromI32(1)
     );
   });
@@ -392,18 +382,13 @@ describe("DaoPool", () => {
 
     assert.fieldEquals("DaoPoolDeposit", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals("DaoPoolDeposit", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
-    assert.fieldEquals(
-      "DaoPoolDeposit",
-      tx.hash.concatI32(0).toHexString(),
-      "nfts",
-      "[" + nfts[0].toString() + ", " + nfts[1].toString() + "]"
-    );
+    assert.fieldEquals("DaoPoolDeposit", tx.hash.concatI32(0).toHexString(), "nfts", `[${nfts[0]}, ${nfts[1]}]`);
 
     assertTransaction(
       tx.hash,
       event.params.sender,
       block,
-      "[" + TransactionType.DAO_POOL_DEPOSITED.toString() + "]",
+      `[${TransactionType.DAO_POOL_DEPOSITED}]`,
       BigInt.fromI32(1)
     );
   });
@@ -419,18 +404,13 @@ describe("DaoPool", () => {
 
     assert.fieldEquals("DaoPoolDeposit", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals("DaoPoolDeposit", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
-    assert.fieldEquals(
-      "DaoPoolDeposit",
-      tx.hash.concatI32(0).toHexString(),
-      "nfts",
-      "[" + nfts[0].toString() + ", " + nfts[1].toString() + "]"
-    );
+    assert.fieldEquals("DaoPoolDeposit", tx.hash.concatI32(0).toHexString(), "nfts", `[${nfts[0]}, ${nfts[1]}]`);
 
     assertTransaction(
       tx.hash,
       event.params.sender,
       block,
-      "[" + TransactionType.DAO_POOL_WITHDRAWN.toString() + "]",
+      `[${TransactionType.DAO_POOL_WITHDRAWN}]`,
       BigInt.fromI32(1)
     );
   });
@@ -460,7 +440,7 @@ describe("DaoPool", () => {
       tx.hash,
       event.params.sender,
       block,
-      "[" + TransactionType.DAO_POOL_MOVED_TO_VALIDATORS.toString() + "]",
+      `[${TransactionType.DAO_POOL_MOVED_TO_VALIDATORS}]`,
       BigInt.fromI32(1)
     );
   });

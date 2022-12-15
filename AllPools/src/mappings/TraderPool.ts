@@ -32,6 +32,7 @@ import { getExchangeHistory } from "../entities/trader-pool/history/ExchangeHist
 import { findPrevHistory } from "../helpers/HistorySearcher";
 import { getFeeHistory } from "../entities/trader-pool/history/FeeHistory";
 import { roundCheckUp } from "../entities/trader-pool/TraderPoolPriceHistory";
+import { getTokenValue, getUSDValue } from "../helpers/PriceFeedInteractions";
 
 export function onExchange(event: Exchanged): void {
   let pool = getTraderPool(event.address);
@@ -44,7 +45,6 @@ export function onExchange(event: Exchanged): void {
 
   let usdVolume = BigInt.zero();
 
-  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
   let baseTokenAddress = Address.fromBytes(pool.baseToken);
 
   if (event.params.toToken != pool.baseToken) {
@@ -54,10 +54,10 @@ export function onExchange(event: Exchanged): void {
     position1.totalPositionOpenVolume = position1.totalPositionOpenVolume.plus(event.params.toVolume);
 
     if (event.params.fromToken != pool.baseToken) {
-      fromBaseVolume = getFromPriceFeed(pfPrototype, event.params.fromToken, baseTokenAddress, event.params.fromVolume);
+      fromBaseVolume = getTokenValue(event.params.fromToken, baseTokenAddress, event.params.fromVolume);
     }
 
-    usdVolume = getUSDFromPriceFeed(pfPrototype, baseTokenAddress, fromBaseVolume);
+    usdVolume = getUSDValue(baseTokenAddress, fromBaseVolume);
 
     position1.totalBaseOpenVolume = position1.totalBaseOpenVolume.plus(fromBaseVolume);
   }
@@ -69,10 +69,10 @@ export function onExchange(event: Exchanged): void {
     position2.totalPositionCloseVolume = position2.totalPositionCloseVolume.plus(event.params.fromVolume);
 
     if (event.params.toToken != pool.baseToken) {
-      toBaseVolume = getFromPriceFeed(pfPrototype, event.params.toToken, baseTokenAddress, event.params.toVolume);
+      toBaseVolume = getTokenValue(event.params.toToken, baseTokenAddress, event.params.toVolume);
     }
 
-    usdVolume = getUSDFromPriceFeed(pfPrototype, baseTokenAddress, toBaseVolume);
+    usdVolume = getUSDValue(baseTokenAddress, toBaseVolume);
 
     position2.totalBaseCloseVolume = position2.totalBaseCloseVolume.plus(toBaseVolume);
   }
@@ -232,7 +232,6 @@ export function onActivePortfolioExchanged(event: ActivePortfolioExchanged): voi
 
   let usdVolume = BigInt.zero();
 
-  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
   let baseTokenAddress = Address.fromBytes(pool.baseToken);
 
   if (event.params.toToken != pool.baseToken) {
@@ -242,10 +241,10 @@ export function onActivePortfolioExchanged(event: ActivePortfolioExchanged): voi
     position1.totalPositionOpenVolume = position1.totalPositionOpenVolume.plus(event.params.toVolume);
 
     if (event.params.fromToken != pool.baseToken) {
-      fromBaseVolume = getFromPriceFeed(pfPrototype, event.params.fromToken, baseTokenAddress, event.params.fromVolume);
+      fromBaseVolume = getTokenValue(event.params.fromToken, baseTokenAddress, event.params.fromVolume);
     }
 
-    usdVolume = getUSDFromPriceFeed(pfPrototype, baseTokenAddress, fromBaseVolume);
+    usdVolume = getUSDValue(baseTokenAddress, fromBaseVolume);
 
     position1.totalBaseOpenVolume = position1.totalBaseOpenVolume.plus(fromBaseVolume);
   }
@@ -257,10 +256,10 @@ export function onActivePortfolioExchanged(event: ActivePortfolioExchanged): voi
     position2.totalPositionCloseVolume = position2.totalPositionCloseVolume.plus(event.params.fromVolume);
 
     if (event.params.toToken != pool.baseToken) {
-      toBaseVolume = getFromPriceFeed(pfPrototype, event.params.toToken, baseTokenAddress, event.params.toVolume);
+      toBaseVolume = getTokenValue(event.params.toToken, baseTokenAddress, event.params.toVolume);
     }
 
-    usdVolume = getUSDFromPriceFeed(pfPrototype, baseTokenAddress, toBaseVolume);
+    usdVolume = getUSDValue(baseTokenAddress, toBaseVolume);
 
     position2.totalBaseCloseVolume = position2.totalBaseCloseVolume.plus(toBaseVolume);
   }
@@ -365,45 +364,4 @@ function recalculateOrderSize(baseVolume: BigInt, pool: TraderPool, block: BigIn
     .times(pool.orderSize)
     .plus(currentPercentage)
     .div(pool.totalTrades.plus(BigInt.fromI32(1)));
-}
-
-function getFromPriceFeed(pfPrototype: PriceFeed, fromToken: Address, toToken: Address, amount: BigInt): BigInt {
-  let baseVolume = pfPrototype.try_getNormalizedPriceOut(fromToken, toToken, amount);
-
-  if (baseVolume.reverted) {
-    log.warning("try_getNormalizedPriceOut reverted. FromToken: {}, toToken: {}, Amount:{}", [
-      fromToken.toHexString(),
-      toToken.toHexString(),
-      amount.toString(),
-    ]);
-    return BigInt.zero();
-  } else {
-    if (baseVolume.value.value1.length == 0) {
-      log.warning("try_getNormalizedPriceOut returned 0 length path. FromToken: {}, toToken: {}, Amount:{}", [
-        fromToken.toHexString(),
-        toToken.toHexString(),
-        amount.toString(),
-      ]);
-    }
-    return baseVolume.value.value0;
-  }
-}
-
-function getUSDFromPriceFeed(pfPrototype: PriceFeed, baseTokenAddress: Address, fromBaseVolume: BigInt): BigInt {
-  let resp = pfPrototype.try_getNormalizedPriceOutUSD(baseTokenAddress, fromBaseVolume);
-  if (resp.reverted) {
-    log.warning("try_getNormalizedPriceOutUSD reverted. FromToken: {}, Amount:{}", [
-      baseTokenAddress.toHexString(),
-      fromBaseVolume.toString(),
-    ]);
-    return BigInt.zero();
-  } else {
-    if (resp.value.value1.length == 0) {
-      log.warning("try_getNormalizedPriceOutUSD returned 0 length path. FromToken: {}, Amount:{}", [
-        baseTokenAddress.toHexString(),
-        fromBaseVolume.toString(),
-      ]);
-    }
-    return resp.value.value0;
-  }
 }

@@ -207,9 +207,9 @@ describe("TraderPool", () => {
 
     onInvestorAdded(event);
 
-    assert.fieldEquals("Investor", expectedInvestor.toHexString(), "activePools", "[" + sender.toHexString() + "]");
-    assert.fieldEquals("Investor", expectedInvestor.toHexString(), "allPools", "[" + sender.toHexString() + "]");
-    assert.fieldEquals("TraderPool", sender.toHexString(), "investors", "[" + expectedInvestor.toHexString() + "]");
+    assert.fieldEquals("Investor", expectedInvestor.toHexString(), "activePools", `[${sender.toHexString()}]`);
+    assert.fieldEquals("Investor", expectedInvestor.toHexString(), "allPools", `[${sender.toHexString()}]`);
+    assert.fieldEquals("TraderPool", sender.toHexString(), "investors", `[${expectedInvestor.toHexString()}]`);
     assert.fieldEquals("TraderPool", sender.toHexString(), "investorsCount", BigInt.fromI32(1).toString());
   });
 
@@ -224,7 +224,7 @@ describe("TraderPool", () => {
     onInvestorRemoved(eventInvestorRemoved);
 
     assert.fieldEquals("Investor", expectedInvestor.toHexString(), "activePools", "[]");
-    assert.fieldEquals("Investor", expectedInvestor.toHexString(), "allPools", "[" + sender.toHexString() + "]");
+    assert.fieldEquals("Investor", expectedInvestor.toHexString(), "allPools", `[${sender.toHexString()}]`);
     assert.fieldEquals("TraderPool", sender.toHexString(), "investors", "[]");
     assert.fieldEquals("TraderPool", sender.toHexString(), "investorsCount", BigInt.zero().toString());
   });
@@ -253,11 +253,9 @@ describe("TraderPool", () => {
       "TraderPool",
       sender.toHexString(),
       "admins",
-      "[" +
-        getTraderPool(sender).trader.toHexString() +
-        ", " +
-        Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679").toHexString() +
-        "]"
+      `[${getTraderPool(sender).trader.toHexString()}, ${Address.fromString(
+        "0x76e98f7d84603AEb97cd1c89A80A9e914f181679"
+      ).toHexString()}]`
     );
   });
 
@@ -274,7 +272,7 @@ describe("TraderPool", () => {
       "TraderPool",
       sender.toHexString(),
       "privateInvestors",
-      "[" + Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679").toHexString() + "]"
+      `[${Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679").toHexString()}]`
     );
   });
 

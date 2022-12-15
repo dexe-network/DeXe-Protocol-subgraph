@@ -88,7 +88,7 @@ describe("DistributionProposal", () => {
       "VoterInPool",
       sender.concat(pool).toHexString(),
       "claimedDPs",
-      "[" + pool.concatI32(proposalId.toI32()).toHexString() + "]"
+      `[${pool.concatI32(proposalId.toI32()).toHexString()}]`
     );
     assert.fieldEquals(
       "VoterInPool",
