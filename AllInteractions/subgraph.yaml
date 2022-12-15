@@ -6,9 +6,9 @@ dataSources:
     name: PoolFactory
     network: chapel
     source:
-      address: "0x39C299E709028c2b96F0BD0d4A1B9D7Ad83a21C5"
+      address: "0xf4A1E9983ffBAaF120890b0B0f79Fb031CBc22CC"
       abi: PoolFactory
-      startBlock: 24825908
+      startBlock: 25475908
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -29,9 +29,9 @@ dataSources:
     name: UserRegistry
     network: chapel
     source:
-      address: "0x80d2c3898E5dF78B3926e7E8e1BcfE2eAc5Ed715"
+      address: "0x43bCa0AA4264e7719B7068fBe9E84671284E180C"
       abi: UserRegistry
-      startBlock: 24825908
+      startBlock: 25475908
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -52,9 +52,9 @@ dataSources:
     name: Insurance
     network: chapel
     source:
-      address: "0xFA341D855e05549a82B29970Df9d3CD58E0F87Bf"
+      address: "0xd20E8B01B2dC987e1DcC5ad6613D5a6b4BB26dE1"
       abi: Insurance
-      startBlock: 24825908
+      startBlock: 25475908
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
