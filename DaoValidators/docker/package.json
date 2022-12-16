@@ -6,8 +6,7 @@
     "create": "graph create --node $GRAPH_NODE_ENDPOINT DaoValidators",
     "remove": "graph remove --node $GRAPH_NODE_ENDPOINT DaoValidators",
     "deploy-only": "graph deploy --node $GRAPH_NODE_ENDPOINT --ipfs $IPFS_ENDPOINT --version-label $GRAPH_VERSION DaoValidators",
-    "compile-and-deploy": "npm run compile && npm run deploy-only",
-    "update-config": "node scripts/config-parser.js"
+    "compile-and-deploy": "npm run compile && npm run deploy-only"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "^0.32.0",
