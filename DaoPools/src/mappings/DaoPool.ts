@@ -113,7 +113,7 @@ export function onDelegated(event: Delegated): void {
     let nftDelegatees = extendArray(pool.nftDelegatees, [event.params.to]);
     if (nftDelegatees.length > pool.nftDelegatees.length) {
       pool.totalNFTDelegatees = pool.totalNFTDelegatees.plus(BigInt.fromI32(1));
-      pool.tokenDelegatees = nftDelegatees;
+      pool.nftDelegatees = nftDelegatees;
     }
   }
 
