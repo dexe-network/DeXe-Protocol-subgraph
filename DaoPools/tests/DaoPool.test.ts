@@ -343,7 +343,7 @@ describe("DaoPool", () => {
       `[${nfts[0]}, ${nfts[1]}]`
     );
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "currentDelegatorsCount", "1");
-
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedNFTDelegationCount", "2");
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals(
       "DelegationHistory",
@@ -418,7 +418,7 @@ describe("DaoPool", () => {
       `[${nfts1[1]}]`
     );
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "currentDelegatorsCount", "1");
-
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedNFTDelegationCount", "1");
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals(
       "DelegationHistory",
