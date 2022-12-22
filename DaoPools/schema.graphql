@@ -45,6 +45,9 @@ type DaoPool @entity {
   totalCurrentTokenDelegated: BigInt!
   totalCurrentNFTDelegated: [BigInt!]!
 
+  totalCurrentTokenDelegatees: BigInt!
+  totalCurrentNFTDelegatees: BigInt!
+
   voters: [VoterInPool!]! @derivedFrom(field: "pool")
   proposals: [Proposal!]! @derivedFrom(field: "pool")
   settings: [ProposalSettings!]! @derivedFrom(field: "pool")

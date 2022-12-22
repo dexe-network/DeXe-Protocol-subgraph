@@ -22,6 +22,9 @@ export function getDaoPool(
 
     pool.totalCurrentTokenDelegated = BigInt.zero();
     pool.totalCurrentNFTDelegated = new Array<BigInt>();
+
+    pool.totalCurrentTokenDelegatees = BigInt.zero();
+    pool.totalCurrentNFTDelegatees = BigInt.zero();
   }
 
   return pool;
