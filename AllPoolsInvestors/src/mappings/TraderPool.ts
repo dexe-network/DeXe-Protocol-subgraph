@@ -16,7 +16,7 @@ import { getTraderPoolHistory } from "../entities/trader-pool/history/TraderPool
 import { getInvestorPoolPosition } from "../entities/trader-pool/InvestorPoolPosition";
 import { getVest } from "../entities/trader-pool/Vest";
 import { getPositionOffset } from "../entities/global/PositionOffset";
-import { WBTC_ADDRESS, WBNB_ADDRESS } from "../entities/global/globals";
+import { WBTC_ADDRESS, WETH_ADDRESS } from "../entities/global/globals";
 import { Investor, InvestorPoolPosition, LpHistory } from "../../generated/schema";
 import { getProposalContract } from "../entities/trader-pool/proposal/ProposalContract";
 import { getProposalPosition } from "../entities/trader-pool/proposal/ProposalPosition";
@@ -149,7 +149,7 @@ function setupVest(vestInBase: BigInt, vestLp: BigInt, user: Address, isInvest: 
   let positionOffset = getPositionOffset(pool, investor);
   let investorPoolPosition = getInvestorPoolPosition(investor, pool, positionOffset);
   let usdValue = getUSDValue(pool.token, vestInBase);
-  let bnbValue = getTokenValue(pool.token, Address.fromString(WBNB_ADDRESS), vestInBase);
+  let bnbValue = getTokenValue(pool.token, Address.fromString(WETH_ADDRESS), vestInBase);
   let btcValue = getTokenValue(pool.token, Address.fromString(WBTC_ADDRESS), vestInBase);
   let vest = getVest(
     event.transaction.hash,
