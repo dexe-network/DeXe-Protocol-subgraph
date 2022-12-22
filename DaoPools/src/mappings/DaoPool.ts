@@ -102,18 +102,18 @@ export function onDelegated(event: Delegated): void {
   }
 
   if (event.params.amount.gt(BigInt.zero())) {
-    let tokenDelegatees = extendArray(pool.tokenDelegatees, [event.params.to]);
-    if (tokenDelegatees.length > pool.tokenDelegatees.length) {
-      pool.totalTokenDelegatees = pool.totalTokenDelegatees.plus(BigInt.fromI32(1));
-      pool.tokenDelegatees = tokenDelegatees;
+    if (toVoterInPool.receivedDelegation.equals(event.params.amount) && event.params.isDelegate) {
+      pool.totalCurrentTokenDelegatees = pool.totalCurrentTokenDelegatees.plus(BigInt.fromI32(1));
+    } else if (toVoterInPool.receivedDelegation.equals(BigInt.zero()) && !event.params.isDelegate) {
+      pool.totalCurrentTokenDelegatees = pool.totalCurrentTokenDelegatees.minus(BigInt.fromI32(1));
     }
   }
 
   if (event.params.nfts.length > 0) {
-    let nftDelegatees = extendArray(pool.nftDelegatees, [event.params.to]);
-    if (nftDelegatees.length > pool.nftDelegatees.length) {
-      pool.totalNFTDelegatees = pool.totalNFTDelegatees.plus(BigInt.fromI32(1));
-      pool.nftDelegatees = nftDelegatees;
+    if (toVoterInPool.receivedNFTDelegation.length == event.params.nfts.length && event.params.isDelegate) {
+      pool.totalCurrentNFTDelegatees = pool.totalCurrentNFTDelegatees.plus(BigInt.fromI32(1));
+    } else if (toVoterInPool.receivedNFTDelegation.length == 0 && !event.params.isDelegate) {
+      pool.totalCurrentNFTDelegatees = pool.totalCurrentNFTDelegatees.minus(BigInt.fromI32(1));
     }
   }
 
