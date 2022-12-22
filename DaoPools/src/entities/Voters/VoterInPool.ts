@@ -13,6 +13,7 @@ export function getVoterInPool(pool: DaoPool, voter: Voter): VoterInPool {
     voterInPool.totalClaimedUSD = BigInt.zero();
     voterInPool.claimedDPs = new Array<Bytes>();
     voterInPool.receivedNFTDelegation = new Array<BigInt>();
+    voterInPool.receivedNFTDelegationCount = BigInt.zero();
 
     voterInPool.currentDelegatorsCount = BigInt.zero();
 
