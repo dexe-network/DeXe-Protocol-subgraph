@@ -29,6 +29,10 @@ type UserKeeperContract @entity(immutable: true) {
 # @param creationTime the timestamp of creation
 # @param creationBlock the block number of creation
 # @param proposalCount the number of proposals
+# @param totalCurrentTokenDelegated the number of delegated tokens
+# @param totalCurrentNFTDelegated the number of delegated nfts
+# @param totalCurrentTokenDelegatees the number of delegatees for tokens
+# @param totalCurrentNFTDelegatees the number of delegatees for nfts
 type DaoPool @entity {
   id: Bytes! # pool address
   name: String!

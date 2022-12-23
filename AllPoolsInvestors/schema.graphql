@@ -126,6 +126,8 @@ type InvestorPoolPosition @entity {
 # @param volumeBase the volume of operation in base
 # @param volumeLP the volume of operaion in lp token
 # @param volumeUSD the volume of operaion in USD
+# @param volumeNative the volume of operaion in ETH
+# @param volumeBTC the volume of operaion in BTC
 type Vest @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCounter
   hash: Bytes!
