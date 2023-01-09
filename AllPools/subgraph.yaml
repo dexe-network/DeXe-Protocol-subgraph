@@ -65,10 +65,10 @@ templates:
       eventHandlers:
         - event: Exchanged(address,address,address,uint256,uint256)
           handler: onExchange
-        - event: InvestorAdded(address)
-          handler: onInvestorAdded
-        - event: InvestorRemoved(address)
-          handler: onInvestorRemoved
+        - event: Joined(address)
+          handler: onJoined
+        - event: Left(address)
+          handler: onLeft
         - event: DescriptionURLChanged(address,string)
           handler: onDescriptionURLChanged
         - event: ModifiedAdmins(address,address[],bool)

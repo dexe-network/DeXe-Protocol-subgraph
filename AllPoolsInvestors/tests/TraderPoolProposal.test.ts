@@ -13,17 +13,17 @@ import {
 import {
   ProposalInvested,
   ProposalDivested,
-  ProposalInvestorAdded,
+  ProposalJoined,
   ProposalClaimed,
-  ProposalInvestorRemoved,
+  ProposalLeft,
 } from "../generated/templates/Proposal/Proposal";
 import { getBlock, getTransaction } from "./utils";
 import {
   onProposalInvest,
   onProposalClaimed,
   onProposalDivest,
-  onProposalInvestorAdded,
-  onProposalInvestorRemoved,
+  onProposalJoined,
+  onProposalLeft,
 } from "../src/mappings/TraderPoolProposal";
 import { PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
 
@@ -109,8 +109,8 @@ function createProposalInvestorAdded(
   sender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
-): ProposalInvestorAdded {
-  let event = changetype<ProposalInvestorAdded>(newMockEvent());
+): ProposalJoined {
+  let event = changetype<ProposalJoined>(newMockEvent());
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
@@ -129,8 +129,8 @@ function createProposalInvestorRemoved(
   sender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
-): ProposalInvestorRemoved {
-  let event = changetype<ProposalInvestorRemoved>(newMockEvent());
+): ProposalLeft {
+  let event = changetype<ProposalLeft>(newMockEvent());
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
@@ -248,7 +248,7 @@ describe("TraderPoolProposal", () => {
 
     let event = createProposalInvestorAdded(proposalId, user, sender, block, tx);
 
-    onProposalInvestorAdded(event);
+    onProposalJoined(event);
 
     let proposalEntityId = sender.toHexString() + user.toHexString() + proposalId.toString() + "_" + "0";
 
@@ -263,8 +263,8 @@ describe("TraderPoolProposal", () => {
     let eventAdded = createProposalInvestorAdded(proposalId, user, sender, block, tx);
     let eventRemoved = createProposalInvestorRemoved(proposalId, user, sender, block, tx);
 
-    onProposalInvestorAdded(eventAdded);
-    onProposalInvestorRemoved(eventRemoved);
+    onProposalJoined(eventAdded);
+    onProposalLeft(eventRemoved);
 
     let proposalEntityId = sender.toHexString() + user.toHexString() + proposalId.toString() + "_" + "0";
 

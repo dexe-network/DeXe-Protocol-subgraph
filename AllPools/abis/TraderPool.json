@@ -155,11 +155,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "investor",
+        "name": "user",
         "type": "address"
       }
     ],
-    "name": "InvestorAdded",
+    "name": "Joined",
     "type": "event"
   },
   {
@@ -168,11 +168,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "investor",
+        "name": "user",
         "type": "address"
       }
     ],
-    "name": "InvestorRemoved",
+    "name": "Left",
     "type": "event"
   },
   {
