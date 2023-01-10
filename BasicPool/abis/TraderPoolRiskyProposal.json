@@ -236,7 +236,7 @@
         "type": "address"
       }
     ],
-    "name": "ProposalInvestorAdded",
+    "name": "ProposalJoined",
     "type": "event"
   },
   {
@@ -255,7 +255,7 @@
         "type": "address"
       }
     ],
-    "name": "ProposalInvestorRemoved",
+    "name": "ProposalLeft",
     "type": "event"
   },
   {
@@ -544,6 +544,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "string",
+        "name": "descriptionURL",
+        "type": "string"
+      },
       {
         "internalType": "address",
         "name": "token",
@@ -1015,6 +1020,11 @@
         "components": [
           {
             "components": [
+              {
+                "internalType": "string",
+                "name": "descriptionURL",
+                "type": "string"
+              },
               {
                 "internalType": "address",
                 "name": "token",

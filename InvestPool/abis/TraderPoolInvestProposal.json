@@ -207,7 +207,7 @@
         "type": "address"
       }
     ],
-    "name": "ProposalInvestorAdded",
+    "name": "ProposalJoined",
     "type": "event"
   },
   {
@@ -226,7 +226,7 @@
         "type": "address"
       }
     ],
-    "name": "ProposalInvestorRemoved",
+    "name": "ProposalLeft",
     "type": "event"
   },
   {

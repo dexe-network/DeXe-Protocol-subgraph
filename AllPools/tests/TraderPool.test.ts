@@ -10,10 +10,9 @@ import {
   createMockedFunction,
 } from "matchstick-as";
 import {
-  CommissionClaimed,
   DescriptionURLChanged,
-  InvestorAdded,
-  InvestorRemoved,
+  Joined,
+  Left,
   ModifiedAdmins,
   ModifiedPrivateInvestors,
   PositionClosed,
@@ -24,8 +23,8 @@ import {
   onClose,
   onDescriptionURLChanged,
   onExchange,
-  onInvestorAdded,
-  onInvestorRemoved,
+  onJoined,
+  onLeft,
   onModifiedAdmins,
   onModifiedPrivateInvestors,
   onTraderCommissionMinted,
@@ -77,13 +76,8 @@ function createClosed(
   return event;
 }
 
-function createInvestorAdded(
-  investor: Address,
-  sender: Address,
-  block: ethereum.Block,
-  tx: ethereum.Transaction
-): InvestorAdded {
-  let event = changetype<InvestorAdded>(newMockEvent());
+function createJoined(investor: Address, sender: Address, block: ethereum.Block, tx: ethereum.Transaction): Joined {
+  let event = changetype<Joined>(newMockEvent());
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("investor", ethereum.Value.fromAddress(investor)));
@@ -95,13 +89,8 @@ function createInvestorAdded(
   return event;
 }
 
-function createInvestorRemoved(
-  investor: Address,
-  sender: Address,
-  block: ethereum.Block,
-  tx: ethereum.Transaction
-): InvestorRemoved {
-  let event = changetype<InvestorRemoved>(newMockEvent());
+function createLeft(investor: Address, sender: Address, block: ethereum.Block, tx: ethereum.Transaction): Left {
+  let event = changetype<Left>(newMockEvent());
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("investor", ethereum.Value.fromAddress(investor)));
@@ -201,11 +190,11 @@ describe("TraderPool", () => {
     clearStore();
   });
 
-  test("should handle InvestorAdded", () => {
+  test("should handle Joined", () => {
     let expectedInvestor = Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679");
-    let event = createInvestorAdded(expectedInvestor, sender, block, tx);
+    let event = createJoined(expectedInvestor, sender, block, tx);
 
-    onInvestorAdded(event);
+    onJoined(event);
 
     assert.fieldEquals("Investor", expectedInvestor.toHexString(), "activePools", `[${sender.toHexString()}]`);
     assert.fieldEquals("Investor", expectedInvestor.toHexString(), "allPools", `[${sender.toHexString()}]`);
@@ -213,15 +202,15 @@ describe("TraderPool", () => {
     assert.fieldEquals("TraderPool", sender.toHexString(), "investorsCount", BigInt.fromI32(1).toString());
   });
 
-  test("should handle InvestorRemoved", () => {
+  test("should handle Left", () => {
     let expectedInvestor = Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679");
-    let eventInvestorAdded = createInvestorAdded(expectedInvestor, sender, block, tx);
+    let eventJoined = createJoined(expectedInvestor, sender, block, tx);
 
-    onInvestorAdded(eventInvestorAdded);
+    onJoined(eventJoined);
 
-    let eventInvestorRemoved = createInvestorRemoved(expectedInvestor, sender, block, tx);
+    let eventLeft = createLeft(expectedInvestor, sender, block, tx);
 
-    onInvestorRemoved(eventInvestorRemoved);
+    onLeft(eventLeft);
 
     assert.fieldEquals("Investor", expectedInvestor.toHexString(), "activePools", "[]");
     assert.fieldEquals("Investor", expectedInvestor.toHexString(), "allPools", `[${sender.toHexString()}]`);

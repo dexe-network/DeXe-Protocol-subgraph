@@ -1,8 +1,8 @@
 import {
   Exchanged,
   PositionClosed,
-  InvestorAdded,
-  InvestorRemoved,
+  Joined,
+  Left,
   DescriptionURLChanged,
   ModifiedAdmins,
   ModifiedPrivateInvestors,
@@ -125,10 +125,10 @@ export function onClose(event: PositionClosed): void {
   positionOffset.save();
 }
 
-export function onInvestorAdded(event: InvestorAdded): void {
+export function onJoined(event: Joined): void {
   let pool = getTraderPool(event.address);
 
-  let investor = getInvestor(event.params.investor);
+  let investor = getInvestor(event.params.user);
   pool.investors = extendArray(pool.investors, [investor.id]);
   pool.investorsCount = pool.investorsCount.plus(BigInt.fromI32(1));
 
@@ -139,10 +139,10 @@ export function onInvestorAdded(event: InvestorAdded): void {
   pool.save();
 }
 
-export function onInvestorRemoved(event: InvestorRemoved): void {
+export function onLeft(event: Left): void {
   let pool = getTraderPool(event.address);
 
-  let investor = getInvestor(event.params.investor);
+  let investor = getInvestor(event.params.user);
   pool.investors = reduceArray(pool.investors, [investor.id]);
   pool.investorsCount = pool.investorsCount.minus(BigInt.fromI32(1));
 

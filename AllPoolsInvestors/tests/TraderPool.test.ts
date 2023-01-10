@@ -18,15 +18,15 @@ import {
   ProposalDivested,
   ModifiedPrivateInvestors,
   CommissionClaimed,
-  InvestorAdded,
-  InvestorRemoved,
+  Joined,
+  Left,
 } from "../generated/templates/TraderPool/TraderPool";
 import { getBlock, getTransaction } from "./utils";
 import {
   onDivest,
   onInvest,
-  onInvestorAdded,
-  onInvestorRemoved,
+  onJoined,
+  onLeft,
   onModifiedPrivateInvestors,
   onProposalDivest,
 } from "../src/mappings/TraderPool";
@@ -124,13 +124,13 @@ function createModifiedPrivateInvestors(
   return event;
 }
 
-function createInvestorAddedEvent(
+function createJoinedEvent(
   investor: Address,
   sender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
-): InvestorAdded {
-  let event = changetype<InvestorAdded>(newMockEvent());
+): Joined {
+  let event = changetype<Joined>(newMockEvent());
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("investor", ethereum.Value.fromAddress(investor)));
@@ -142,13 +142,8 @@ function createInvestorAddedEvent(
   return event;
 }
 
-function createInvestorRemovedEvent(
-  investor: Address,
-  sender: Address,
-  block: ethereum.Block,
-  tx: ethereum.Transaction
-): InvestorRemoved {
-  let event = changetype<InvestorRemoved>(newMockEvent());
+function createLeftEvent(investor: Address, sender: Address, block: ethereum.Block, tx: ethereum.Transaction): Left {
+  let event = changetype<Left>(newMockEvent());
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("investor", ethereum.Value.fromAddress(investor)));
@@ -187,7 +182,7 @@ describe("TraderPool", () => {
     )
       .withArgs([
         ethereum.Value.fromAddress(Address.fromString("0x0000000000000000000000000000000000000000")),
-        ethereum.Value.fromAddress(Address.fromString("0x094616f0bdfb0b526bd735bf66eca0ad254ca81f")),
+        ethereum.Value.fromAddress(Address.fromString("0x8babbb98678facc7342735486c851abd7a0d17ca")),
         ethereum.Value.fromUnsignedBigInt(expectedUSD),
       ])
       .returns([ethereum.Value.fromUnsignedBigInt(expectedNative), ethereum.Value.fromAddressArray([sender, sender])]);
@@ -371,12 +366,12 @@ describe("TraderPool", () => {
     assert.fieldEquals("TraderPoolHistory", sender.toHexString() + "0", "privateInvestorsCount", "2");
   });
 
-  test("should handle InvestorAdded event", () => {
+  test("should handle Joined event", () => {
     let investor = Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670");
 
-    let event = createInvestorAddedEvent(investor, sender, block, tx);
+    let event = createJoinedEvent(investor, sender, block, tx);
 
-    onInvestorAdded(event);
+    onJoined(event);
 
     assert.fieldEquals("TraderPool", sender.toHexString(), "investors", `[${investor.toHexString()}]`);
     assert.fieldEquals("TraderPool", sender.toHexString(), "investorsCount", "1");
@@ -384,14 +379,14 @@ describe("TraderPool", () => {
     assert.fieldEquals("TraderPoolHistory", sender.toHexString() + "0", "investorsCount", "1");
   });
 
-  test("should handle InvestorRemoved event", () => {
+  test("should handle Left event", () => {
     let investor = Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670");
 
-    let eventAdded = createInvestorAddedEvent(investor, sender, block, tx);
-    let eventRemoved = createInvestorRemovedEvent(investor, sender, block, tx);
+    let eventAdded = createJoinedEvent(investor, sender, block, tx);
+    let eventRemoved = createLeftEvent(investor, sender, block, tx);
 
-    onInvestorAdded(eventAdded);
-    onInvestorRemoved(eventRemoved);
+    onJoined(eventAdded);
+    onLeft(eventRemoved);
 
     assert.fieldEquals("TraderPool", sender.toHexString(), "investors", "[]");
     assert.fieldEquals("TraderPool", sender.toHexString(), "investorsCount", "0");

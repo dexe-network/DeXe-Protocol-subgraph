@@ -67,10 +67,10 @@ templates:
         - name: PriceFeed
           file: ./abis/PriceFeed.json
       eventHandlers:
-        - event: InvestorAdded(address)
-          handler: onInvestorAdded
-        - event: InvestorRemoved(address)
-          handler: onInvestorRemoved
+        - event: Joined(address)
+          handler: onJoined
+        - event: Left(address)
+          handler: onLeft
         - event: ModifiedPrivateInvestors(address,address[],bool)
           handler: onModifiedPrivateInvestors
         - event: Invested(address,uint256,uint256)
@@ -102,9 +102,9 @@ templates:
           handler: onProposalInvest
         - event: ProposalDivested(uint256,address,uint256,uint256,uint256)
           handler: onProposalDivest
-        - event: ProposalInvestorAdded(uint256,address)
-          handler: onProposalInvestorAdded
-        - event: ProposalInvestorRemoved(uint256,address)
-          handler: onProposalInvestorRemoved
+        - event: ProposalJoined(uint256,address)
+          handler: onProposalJoined
+        - event: ProposalLeft(uint256,address)
+          handler: onProposalLeft
         - event: ProposalClaimed(uint256,address,uint256[],address[])
           handler: onProposalClaimed

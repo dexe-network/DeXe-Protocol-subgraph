@@ -2,8 +2,8 @@ import {
   ProposalClaimed,
   ProposalDivested,
   ProposalInvested,
-  ProposalInvestorAdded,
-  ProposalInvestorRemoved,
+  ProposalJoined,
+  ProposalLeft,
 } from "../../generated/templates/Proposal/Proposal";
 import { getProposalPosition } from "../entities/trader-pool/proposal/ProposalPosition";
 import { getProposalVest } from "../entities/trader-pool/proposal/ProposalVest";
@@ -81,7 +81,7 @@ export function onProposalDivest(event: ProposalDivested): void {
   divest.save();
 }
 
-export function onProposalInvestorAdded(event: ProposalInvestorAdded): void {
+export function onProposalJoined(event: ProposalJoined): void {
   let proposalContract = getProposalContract(event.address);
   let investor = getInvestor(event.params.investor);
   let pool = getTraderPool(Address.fromBytes(proposalContract.traderPool));
@@ -115,7 +115,7 @@ export function onProposalClaimed(event: ProposalClaimed): void {
   proposal.save();
 }
 
-export function onProposalInvestorRemoved(event: ProposalInvestorRemoved): void {
+export function onProposalLeft(event: ProposalLeft): void {
   let proposalContract = getProposalContract(event.address);
   let investor = getInvestor(event.params.investor);
   let pool = getTraderPool(Address.fromBytes(proposalContract.traderPool));

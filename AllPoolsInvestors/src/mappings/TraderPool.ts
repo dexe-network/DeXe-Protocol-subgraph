@@ -1,8 +1,8 @@
 import {
   Divested,
   Invested,
-  InvestorAdded,
-  InvestorRemoved,
+  Joined,
+  Left,
   ModifiedPrivateInvestors,
   TraderPool,
   ProposalDivested,
@@ -26,11 +26,11 @@ import { getLpHistory } from "../entities/trader-pool/history/LpHistory";
 import { findPrevHistory } from "../helpers/HistorySearcher";
 import { getTokenValue, getUSDValue } from "../helpers/PriceFeedInteractions";
 
-export function onInvestorAdded(event: InvestorAdded): void {
+export function onJoined(event: Joined): void {
   let pool = getTraderPool(event.address);
   let history = getTraderPoolHistory(pool, event.block.timestamp);
 
-  let investor = getInvestor(event.params.investor);
+  let investor = getInvestor(event.params.user);
   pool.investors = extendArray(pool.investors, [investor.id]);
   pool.investorsCount = pool.investorsCount.plus(BigInt.fromI32(1));
 
@@ -50,11 +50,11 @@ export function onInvestorAdded(event: InvestorAdded): void {
   history.save();
 }
 
-export function onInvestorRemoved(event: InvestorRemoved): void {
+export function onLeft(event: Left): void {
   let pool = getTraderPool(event.address);
   let history = getTraderPoolHistory(pool, event.block.timestamp);
 
-  let investor = getInvestor(event.params.investor);
+  let investor = getInvestor(event.params.user);
   pool.investors = reduceArray(pool.investors, [investor.id]);
   pool.investorsCount = pool.investorsCount.minus(BigInt.fromI32(1));
 
