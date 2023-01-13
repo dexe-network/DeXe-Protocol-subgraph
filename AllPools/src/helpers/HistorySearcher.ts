@@ -1,5 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { CHECK_PER_BLOCK, MAX_SEARCH_DEPTH } from "../entities/global/globals";
+import { MAX_SEARCH_DEPTH } from "../entities/global/globals";
 
 export function findPrevHistory<T>(
   loadFunction: (id: string) => T | null,
@@ -14,7 +14,7 @@ export function findPrevHistory<T>(
   while (
     history == null &&
     newSuffix.gt(minimum) &&
-    idSuffix.minus(newSuffix).div(BigInt.fromI32(CHECK_PER_BLOCK)).le(BigInt.fromI32(MAX_SEARCH_DEPTH))
+    idSuffix.minus(newSuffix).div(decrement).le(BigInt.fromI32(MAX_SEARCH_DEPTH))
   ) {
     newSuffix = newSuffix.minus(decrement);
     history = loadFunction(idBase + newSuffix.toString());
