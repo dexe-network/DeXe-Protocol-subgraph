@@ -1,5 +1,3 @@
-import { BigInt } from "@graphprotocol/graph-ts";
-
 export const DAY = 86400;
 export const BLOCK_PER_YEAR = 10512000;
 export const CHECK_PER_BLOCK = 100;
@@ -13,3 +11,4 @@ export const PERCENTAGE_DENOMINATOR = 100000000000000; // 10**14
 export const PERCENTAGE_100 = 1000000000000000000000000000;
 export const REVERSED_PLATFORM_COMMISSION = 7;
 export const PERCENTAGE_NUMERATOR = 10000;
+export const MAX_SEARCH_DEPTH = 100;
