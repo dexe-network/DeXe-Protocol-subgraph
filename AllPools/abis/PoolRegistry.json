@@ -111,6 +111,19 @@
   },
   {
     "inputs": [],
+    "name": "TOKEN_SALE_PROPOSAL_NAME",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "USER_KEEPER_NAME",
     "outputs": [
       {

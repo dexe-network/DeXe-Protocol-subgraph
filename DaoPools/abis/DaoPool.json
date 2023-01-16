@@ -85,6 +85,19 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "resultsHash",
+        "type": "string"
+      }
+    ],
+    "name": "OffchainResultsSaved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
@@ -104,6 +117,32 @@
     ],
     "name": "Withdrawn",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "PERCENTAGE_DELEGATORS_REWARDS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "PERCENTAGE_MICROPOOL_REWARDS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [
@@ -133,6 +172,11 @@
         "type": "address"
       },
       {
+        "internalType": "address",
+        "name": "_verifier",
+        "type": "address"
+      },
+      {
         "internalType": "string",
         "name": "_descriptionURL",
         "type": "string"
@@ -144,6 +188,19 @@
       }
     ],
     "name": "__GovPool_init",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newVerifier",
+        "type": "address"
+      }
+    ],
+    "name": "changeVerifier",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -295,14 +352,42 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "proposalId",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "delegator",
+        "type": "address"
       }
     ],
-    "name": "executeAndClaim",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "getDelegatorStakingRewards",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "micropool",
+            "type": "address"
+          },
+          {
+            "internalType": "address[]",
+            "name": "rewardTokens",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "expectedRewards",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "realRewards",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct IGovPool.UserStakeRewardsView[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -341,6 +426,79 @@
         "internalType": "address",
         "name": "_injector",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getOffchainResultsHash",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "resultsHash",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "resultHash",
+        "type": "string"
+      }
+    ],
+    "name": "getOffchainSignHash",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "proposalIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "getPendingRewards",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "onchainRewards",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "offchainRewards",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "address[]",
+            "name": "offchainTokens",
+            "type": "address[]"
+          }
+        ],
+        "internalType": "struct IGovPool.PendingRewardsView",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -676,6 +834,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getVerifier",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -739,6 +910,25 @@
     ],
     "name": "moveProposalToValidators",
     "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes[]",
+        "name": "data",
+        "type": "bytes[]"
+      }
+    ],
+    "name": "multicall",
+    "outputs": [
+      {
+        "internalType": "bytes[]",
+        "name": "results",
+        "type": "bytes[]"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -883,25 +1073,19 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "resultsHash",
+        "type": "string"
       },
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
       }
     ],
-    "name": "pendingRewards",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
+    "name": "saveOffchainResults",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1032,16 +1216,6 @@
         "internalType": "uint256",
         "name": "proposalId",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "depositAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "depositNftIds",
-        "type": "uint256[]"
       },
       {
         "internalType": "uint256",

@@ -181,6 +181,11 @@
     "name": "delegations",
     "outputs": [
       {
+        "internalType": "uint256",
+        "name": "power",
+        "type": "uint256"
+      },
+      {
         "components": [
           {
             "internalType": "address",
@@ -195,6 +200,16 @@
           {
             "internalType": "uint256[]",
             "name": "delegatedNfts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nftPower",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "perNftPower",
             "type": "uint256[]"
           }
         ],
@@ -250,6 +265,79 @@
     "name": "depositTokens",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "delegator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
+      }
+    ],
+    "name": "getDelegatedStakeAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "delegator",
+        "type": "address"
+      }
+    ],
+    "name": "getDelegatees",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getNftInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "isSupportPower",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalPowerInTokens",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalSupply",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IGovUserKeeper.NFTInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -572,29 +660,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "nftInfo",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "isSupportPower",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint256",
-        "name": "totalPowerInTokens",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "totalSupply",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -608,6 +673,30 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "nftIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "nftVotingPower",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "nftPower",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "perNftPower",
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -890,32 +979,59 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
+        "internalType": "address[]",
+        "name": "users",
+        "type": "address[]"
       },
       {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
+        "internalType": "bool[]",
+        "name": "isMicropools",
+        "type": "bool[]"
       },
       {
-        "internalType": "bool",
+        "internalType": "bool[]",
         "name": "useDelegated",
-        "type": "bool"
+        "type": "bool[]"
       }
     ],
     "name": "votingPower",
     "outputs": [
       {
-        "internalType": "uint256",
-        "name": "power",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "nftPower",
-        "type": "uint256[]"
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "power",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nftPower",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "perNftPower",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ownedBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ownedLength",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "nftIds",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct IGovUserKeeper.VotingPowerView[]",
+        "name": "votingPowers",
+        "type": "tuple[]"
       }
     ],
     "stateMutability": "view",

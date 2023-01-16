@@ -53,6 +53,31 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "govPool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "tokenSale",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "DaoTokenSaleDeployed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "string",
         "name": "poolType",
         "type": "string"
@@ -337,6 +362,11 @@
             "type": "address"
           },
           {
+            "internalType": "address",
+            "name": "verifier",
+            "type": "address"
+          },
+          {
             "internalType": "string",
             "name": "descriptionURL",
             "type": "string"
@@ -353,6 +383,356 @@
       }
     ],
     "name": "deployGovPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "bool",
+                    "name": "earlyCompletion",
+                    "type": "bool"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "delegatedVotingAllowed",
+                    "type": "bool"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "validatorsVote",
+                    "type": "bool"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "duration",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "durationValidators",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint128",
+                    "name": "quorum",
+                    "type": "uint128"
+                  },
+                  {
+                    "internalType": "uint128",
+                    "name": "quorumValidators",
+                    "type": "uint128"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "minVotesForVoting",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "minVotesForCreating",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "rewardToken",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "creationReward",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "executionReward",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "voteRewardsCoefficient",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "executorDescription",
+                    "type": "string"
+                  }
+                ],
+                "internalType": "struct IGovSettings.ProposalSettings[]",
+                "name": "proposalSettings",
+                "type": "tuple[]"
+              },
+              {
+                "internalType": "address[]",
+                "name": "additionalProposalExecutors",
+                "type": "address[]"
+              }
+            ],
+            "internalType": "struct IPoolFactory.SettingsDeployParams",
+            "name": "settingsParams",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "symbol",
+                "type": "string"
+              },
+              {
+                "internalType": "uint64",
+                "name": "duration",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint128",
+                "name": "quorum",
+                "type": "uint128"
+              },
+              {
+                "internalType": "address[]",
+                "name": "validators",
+                "type": "address[]"
+              },
+              {
+                "internalType": "uint256[]",
+                "name": "balances",
+                "type": "uint256[]"
+              }
+            ],
+            "internalType": "struct IPoolFactory.ValidatorsDeployParams",
+            "name": "validatorsParams",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "tokenAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "nftAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalPowerInTokens",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "nftsTotalSupply",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IPoolFactory.UserKeeperDeployParams",
+            "name": "userKeeperParams",
+            "type": "tuple"
+          },
+          {
+            "internalType": "address",
+            "name": "nftMultiplierAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "verifier",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "descriptionURL",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct IPoolFactory.GovPoolDeployParams",
+        "name": "parameters",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "internalType": "string",
+                    "name": "name",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "description",
+                    "type": "string"
+                  }
+                ],
+                "internalType": "struct ITokenSaleProposal.TierMetadata",
+                "name": "metadata",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalTokenProvided",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "saleStartTime",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "saleEndTime",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "saleTokenAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "address[]",
+                "name": "purchaseTokenAddresses",
+                "type": "address[]"
+              },
+              {
+                "internalType": "uint256[]",
+                "name": "exchangeRates",
+                "type": "uint256[]"
+              },
+              {
+                "internalType": "uint256",
+                "name": "minAllocationPerUser",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "maxAllocationPerUser",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "uint256",
+                    "name": "vestingPercentage",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "vestingDuration",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "cliffPeriod",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "unlockStep",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct ITokenSaleProposal.VestingSettings",
+                "name": "vestingSettings",
+                "type": "tuple"
+              }
+            ],
+            "internalType": "struct ITokenSaleProposal.TierView[]",
+            "name": "tiersParams",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "tierId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address[]",
+                "name": "users",
+                "type": "address[]"
+              },
+              {
+                "internalType": "string",
+                "name": "uri",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct ITokenSaleProposal.WhitelistingRequest[]",
+            "name": "whitelistParams",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "symbol",
+                "type": "string"
+              },
+              {
+                "internalType": "address[]",
+                "name": "users",
+                "type": "address[]"
+              },
+              {
+                "internalType": "uint256",
+                "name": "saleAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "cap",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "mintedTotal",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256[]",
+                "name": "amounts",
+                "type": "uint256[]"
+              }
+            ],
+            "internalType": "struct IERC20Sale.ConstructorParams",
+            "name": "tokenParams",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct IPoolFactory.GovTokenSaleProposalDeployParams",
+        "name": "tokenSaleParameters",
+        "type": "tuple"
+      }
+    ],
+    "name": "deployGovPoolWithTokenSale",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -429,6 +809,30 @@
       {
         "internalType": "address",
         "name": "_injector",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "deployer",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "poolName",
+        "type": "string"
+      }
+    ],
+    "name": "predictGovAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
         "type": "address"
       }
     ],
