@@ -1,8 +1,8 @@
 import { Address, ethereum, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { DaoPoolDeployed } from "../generated/PoolFactory/PoolFactory";
+import { DaoPoolDeployed, DaoTokenSaleDeployed } from "../generated/PoolFactory/PoolFactory";
 import { afterEach, assert, clearStore, describe, newMockEvent, test } from "matchstick-as/assembly/index";
 import { getBlock, getTransaction } from "./utils";
-import { onDeployed } from "../src/mappings/PoolFactory";
+import { onDeployed, onTokenSaleDeployed } from "../src/mappings/PoolFactory";
 
 function createDaoPoolDeployed(
   name: string,
@@ -25,6 +25,20 @@ function createDaoPoolDeployed(
   event.parameters.push(new ethereum.EventParam("settings", ethereum.Value.fromAddress(settings)));
   event.parameters.push(new ethereum.EventParam("govUserKeeper", ethereum.Value.fromAddress(govUserKeeper)));
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
+
+  event.block = block;
+  event.transaction = tx;
+
+  return event;
+}
+
+function createDaoTokenSaleDeployed(govPool: Address, tokenSale: Address, token: Address): DaoTokenSaleDeployed {
+  let event = changetype<DaoTokenSaleDeployed>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("govPool", ethereum.Value.fromAddress(govPool)));
+  event.parameters.push(new ethereum.EventParam("tokenSale", ethereum.Value.fromAddress(tokenSale)));
+  event.parameters.push(new ethereum.EventParam("token", ethereum.Value.fromAddress(token)));
 
   event.block = block;
   event.transaction = tx;
@@ -61,5 +75,18 @@ describe("PoolFactory", () => {
     assert.fieldEquals("DPContract", dp.toHexString(), "daoPool", govPool.toHexString());
     assert.fieldEquals("SettingsContract", settings.toHexString(), "daoPool", govPool.toHexString());
     assert.fieldEquals("UserKeeperContract", govUserKeeper.toHexString(), "daoPool", govPool.toHexString());
+  });
+
+  test("should handle DaoTokenSaleDeployed", () => {
+    let govPool = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181679");
+    let tokenSaleAddress = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let tokenAddress = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
+
+    let event = createDaoTokenSaleDeployed(govPool, tokenSaleAddress, tokenAddress);
+
+    onTokenSaleDeployed(event);
+
+    assert.fieldEquals("TokenSale", tokenSaleAddress.toHexString(), "token", tokenAddress.toHexString());
+    assert.fieldEquals("TokenSale", tokenSaleAddress.toHexString(), "pool", govPool.toHexString());
   });
 });

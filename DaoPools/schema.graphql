@@ -56,6 +56,7 @@ type DaoPool @entity {
   proposals: [Proposal!]! @derivedFrom(field: "pool")
   settings: [ProposalSettings!]! @derivedFrom(field: "pool")
   executors: [Executor!]! @derivedFrom(field: "pool")
+  tokenSales: [TokenSale!]! @derivedFrom(field: "pool")
 }
 
 # @notice The entity holds information about voter
@@ -261,6 +262,17 @@ type VoterInPoolPair @entity {
   delegateNfts: [BigInt!]!
 
   history: [DelegationHistory!]! @derivedFrom(field: "pair")
+}
+
+# @notice The entity holds information about token sale
+# @param id forms from TokenSale address
+# @param token the token address
+# @param pool the dao pool entity id
+type TokenSale @entity {
+  id: Bytes!
+  token: Bytes!
+
+  pool: DaoPool!
 }
 
 # @notice The entity counts interactions in single tx
