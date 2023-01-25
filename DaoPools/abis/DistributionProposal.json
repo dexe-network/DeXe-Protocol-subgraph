@@ -89,11 +89,6 @@
         "internalType": "address",
         "name": "voter",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "rewardAmount",
-        "type": "uint256"
       }
     ],
     "name": "getPotentialReward",
