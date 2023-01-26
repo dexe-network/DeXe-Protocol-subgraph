@@ -22,6 +22,8 @@ dataSources:
       eventHandlers:
         - event: DaoPoolDeployed(string,address,address,address,address,address,address)
           handler: onDeployed
+        - event: DaoTokenSaleDeployed(address,address,address)
+          handler: onTokenSaleDeployed
 
 templates:
   - kind: ethereum/contract
