@@ -30,7 +30,7 @@ import {
   onRewardCredited,
 } from "../src/mappings/DaoPool";
 import { ProposalType } from "../src/entities/global/ProposalTypes";
-import { PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
+import { PRICE_FEED_ADDRESS, REWARD_TYPE_DELEGATED } from "../src/entities/global/globals";
 import { ProposalSettings } from "../generated/schema";
 
 function createProposalCreated(
@@ -183,16 +183,19 @@ function createRewardClaimed(
 
 function createRewardCredited(
   proposalId: BigInt,
+  rewardType: BigInt,
   amount: BigInt,
   sender: Address,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
 ): RewardCredited {
+  rewardType;
   let event = changetype<RewardCredited>(newMockEvent());
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
+  event.parameters.push(new ethereum.EventParam("rewardType", ethereum.Value.fromUnsignedBigInt(rewardType)));
   event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
@@ -617,7 +620,15 @@ describe("DaoPool", () => {
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
     let amount = BigInt.fromI32(1000);
 
-    let event = createRewardCredited(proposalId, amount, sender, contractSender, block, tx);
+    let event = createRewardCredited(
+      proposalId,
+      BigInt.fromI32(REWARD_TYPE_DELEGATED - 1),
+      amount,
+      sender,
+      contractSender,
+      block,
+      tx
+    );
 
     onRewardCredited(event);
 
@@ -625,6 +636,31 @@ describe("DaoPool", () => {
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
       "unclaimedReward",
+      amount.toString()
+    );
+  });
+
+  test("should handle RewardCredited when reward type", () => {
+    let proposalId = BigInt.fromI32(1);
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let amount = BigInt.fromI32(1000);
+
+    let event = createRewardCredited(
+      proposalId,
+      BigInt.fromI32(REWARD_TYPE_DELEGATED),
+      amount,
+      sender,
+      contractSender,
+      block,
+      tx
+    );
+
+    onRewardCredited(event);
+
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardFromDelegations",
       amount.toString()
     );
   });
