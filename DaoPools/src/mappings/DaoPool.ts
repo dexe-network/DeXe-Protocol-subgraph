@@ -17,7 +17,7 @@ import { getVoter } from "../entities/Voters/Voter";
 import { getVoterInPool } from "../entities/Voters/VoterInPool";
 import { getVoterInProposal } from "../entities/Voters/VoterInProposal";
 import { PriceFeed } from "../../generated/templates/DaoPool/PriceFeed";
-import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
+import { PRICE_FEED_ADDRESS, REWARD_TYPE_VOTE_DELEGATED } from "../entities/global/globals";
 import { Proposal, VoterInProposal } from "../../generated/schema";
 import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 import { getProposalSettings } from "../entities/Settings/ProposalSettings";
@@ -210,6 +210,12 @@ export function onRewardCredited(event: RewardCredited): void {
   let voterInPool = getVoterInPool(pool, voter);
   let proposal = getProposal(pool, event.params.proposalId);
   let voterInProposal = getVoterInProposal(proposal, voterInPool);
+
+  if (event.params.rewardType == REWARD_TYPE_VOTE_DELEGATED) {
+    voterInProposal.unclaimedRewardFromDelegations = voterInProposal.unclaimedRewardFromDelegations.plus(
+      event.params.amount
+    );
+  }
 
   voterInProposal.unclaimedReward = voterInProposal.unclaimedReward.plus(event.params.amount);
 
