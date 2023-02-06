@@ -30,7 +30,7 @@ import {
   onRewardCredited,
 } from "../src/mappings/DaoPool";
 import { ProposalType } from "../src/entities/global/ProposalTypes";
-import { PRICE_FEED_ADDRESS, REWARD_TYPE_DELEGATED } from "../src/entities/global/globals";
+import { PRICE_FEED_ADDRESS, REWARD_TYPE_VOTE_DELEGATED } from "../src/entities/global/globals";
 import { ProposalSettings } from "../generated/schema";
 
 function createProposalCreated(
@@ -622,7 +622,7 @@ describe("DaoPool", () => {
 
     let event = createRewardCredited(
       proposalId,
-      BigInt.fromI32(REWARD_TYPE_DELEGATED - 1),
+      BigInt.fromI32(REWARD_TYPE_VOTE_DELEGATED - 1),
       amount,
       sender,
       contractSender,
@@ -638,6 +638,12 @@ describe("DaoPool", () => {
       "unclaimedReward",
       amount.toString()
     );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardFromDelegations",
+      "0"
+    );
   });
 
   test("should handle RewardCredited when reward type", () => {
@@ -647,7 +653,7 @@ describe("DaoPool", () => {
 
     let event = createRewardCredited(
       proposalId,
-      BigInt.fromI32(REWARD_TYPE_DELEGATED),
+      BigInt.fromI32(REWARD_TYPE_VOTE_DELEGATED),
       amount,
       sender,
       contractSender,
@@ -661,6 +667,12 @@ describe("DaoPool", () => {
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
       "unclaimedRewardFromDelegations",
+      amount.toString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedReward",
       amount.toString()
     );
   });
