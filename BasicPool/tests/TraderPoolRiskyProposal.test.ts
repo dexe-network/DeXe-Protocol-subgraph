@@ -174,6 +174,7 @@ describe("TraderPoolRiskyProposal", () => {
 
     assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "basicPool", pool.toHexString());
     assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "token", token.toHexString());
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "proposalId", proposalId.toString());
     assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "timestampLimit", "1");
     assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "investLPLimit", "2");
     assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "maxTokenPriceLimit", "3");

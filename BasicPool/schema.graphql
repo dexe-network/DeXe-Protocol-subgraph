@@ -30,6 +30,7 @@ type ProposalContract @entity(immutable: true) {
 type Proposal @entity {
   id: ID! # proposal address + proposal index
   token: Bytes!
+  proposalId: BigInt!
 
   timestampLimit: BigInt!
   investLPLimit: BigInt!
