@@ -23,6 +23,7 @@ type ProposalContract @entity(immutable: true) {
 # @notice The entity holds information about proposal
 # @param id forms from proposal contract address + proposal index
 # @param token the address of proposal token
+# @param proposalId the id of proposal at contract
 # @param timestampLimit the timestamp from contract after which the investment into proposal closes
 # @param investLPLimit the maximal number of invested LP tokens from contract after which the investment into the proposal closes
 # @param maxTokenPriceLimit the maximal price of the proposal token from contract after which the investment into the proposal closes
@@ -30,6 +31,7 @@ type ProposalContract @entity(immutable: true) {
 type Proposal @entity {
   id: ID! # proposal address + proposal index
   token: Bytes!
+  proposalId: BigInt!
 
   timestampLimit: BigInt!
   investLPLimit: BigInt!
