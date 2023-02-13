@@ -88,6 +88,12 @@
         "internalType": "string",
         "name": "resultsHash",
         "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
       }
     ],
     "name": "OffchainResultsSaved",
@@ -177,6 +183,16 @@
         "type": "address"
       },
       {
+        "internalType": "bool",
+        "name": "_onlyBABTHolders",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_deployerBABTid",
+        "type": "uint256"
+      },
+      {
         "internalType": "string",
         "name": "_descriptionURL",
         "type": "string"
@@ -190,6 +206,19 @@
     "name": "__GovPool_init",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "babt",
+    "outputs": [
+      {
+        "internalType": "contract ISBT721",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -285,6 +314,19 @@
     "name": "delegate",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "deployerBABTid",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -700,6 +742,11 @@
                     "type": "bool"
                   },
                   {
+                    "internalType": "uint32",
+                    "name": "snapshotId",
+                    "type": "uint32"
+                  },
+                  {
                     "internalType": "uint64",
                     "name": "voteEnd",
                     "type": "uint64"
@@ -712,11 +759,6 @@
                   {
                     "internalType": "uint256",
                     "name": "votesFor",
-                    "type": "uint256"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "snapshotId",
                     "type": "uint256"
                   }
                 ],
@@ -1068,6 +1110,19 @@
       }
     ],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "onlyBABTHolders",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1424,6 +1479,12 @@
         "internalType": "uint256",
         "name": "proposalId",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum IGovPool.RewardType",
+        "name": "rewardType",
+        "type": "uint8"
       },
       {
         "indexed": false,

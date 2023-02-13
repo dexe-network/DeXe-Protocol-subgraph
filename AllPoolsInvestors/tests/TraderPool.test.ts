@@ -194,7 +194,7 @@ describe("TraderPool", () => {
     )
       .withArgs([
         ethereum.Value.fromAddress(Address.fromString("0x0000000000000000000000000000000000000000")),
-        ethereum.Value.fromAddress(Address.fromString("0x34a601cb81ffe8941e24f303306b13a859ccee13")),
+        ethereum.Value.fromAddress(Address.fromString("0xae13d989dac2f0debff460ac112a837c89baa7cd")),
         ethereum.Value.fromUnsignedBigInt(expectedUSD),
       ])
       .returns([ethereum.Value.fromUnsignedBigInt(expectedBTC), ethereum.Value.fromAddressArray([sender, sender])]);

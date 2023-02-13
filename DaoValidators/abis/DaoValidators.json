@@ -306,6 +306,11 @@
                 "type": "bool"
               },
               {
+                "internalType": "uint32",
+                "name": "snapshotId",
+                "type": "uint32"
+              },
+              {
                 "internalType": "uint64",
                 "name": "voteEnd",
                 "type": "uint64"
@@ -318,11 +323,6 @@
               {
                 "internalType": "uint256",
                 "name": "votesFor",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "snapshotId",
                 "type": "uint256"
               }
             ],
@@ -371,6 +371,11 @@
                     "type": "bool"
                   },
                   {
+                    "internalType": "uint32",
+                    "name": "snapshotId",
+                    "type": "uint32"
+                  },
+                  {
                     "internalType": "uint64",
                     "name": "voteEnd",
                     "type": "uint64"
@@ -383,11 +388,6 @@
                   {
                     "internalType": "uint256",
                     "name": "votesFor",
-                    "type": "uint256"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "snapshotId",
                     "type": "uint256"
                   }
                 ],

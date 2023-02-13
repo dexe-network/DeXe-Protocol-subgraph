@@ -88,6 +88,12 @@
         "internalType": "string",
         "name": "resultsHash",
         "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
       }
     ],
     "name": "OffchainResultsSaved",

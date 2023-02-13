@@ -507,6 +507,16 @@
                 "type": "bool"
               },
               {
+                "internalType": "uint8",
+                "name": "baseTokenDecimals",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "onlyBABTHolders",
+                "type": "bool"
+              },
+              {
                 "internalType": "uint256",
                 "name": "totalLPEmission",
                 "type": "uint256"
@@ -515,11 +525,6 @@
                 "internalType": "address",
                 "name": "baseToken",
                 "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "baseTokenDecimals",
-                "type": "uint256"
               },
               {
                 "internalType": "uint256",
@@ -534,6 +539,11 @@
               {
                 "internalType": "uint256",
                 "name": "commissionPercentage",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "traderBABTId",
                 "type": "uint256"
               }
             ],
