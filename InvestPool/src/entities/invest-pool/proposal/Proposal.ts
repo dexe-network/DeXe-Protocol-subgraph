@@ -12,6 +12,7 @@ export function getProposal(
 
   if (proposal == null) {
     proposal = new Proposal(id);
+    proposal.proposalId = index;
 
     proposal.timestampLimit = timestampLimit;
     proposal.investLPLimit = investLPLimit;
