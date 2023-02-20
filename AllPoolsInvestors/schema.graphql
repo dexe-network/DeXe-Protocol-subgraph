@@ -31,6 +31,20 @@ type Investor @entity {
   insuranceHistory: [InsuranceHistory!]! @derivedFrom(field: "investor")
 }
 
+type InvestorAmountHistory @entity {
+  id: ID! # investor + day
+  totalUSDInvestVolume: BigInt!
+  totalUSDDivestVolume: BigInt!
+  totalNativeInvestVolume: BigInt!
+  totalNativeDivestVolume: BigInt!
+  totalBTCInvestVolume: BigInt!
+  totalBTCDivestVolume: BigInt!
+
+  investor: Investor!
+  day: BigInt!
+  prevHistory: LpHistory!
+}
+
 # @notice The entity holds historical information about investor's insurance
 # @param id the investor address + day
 # @param stake the staked amount
