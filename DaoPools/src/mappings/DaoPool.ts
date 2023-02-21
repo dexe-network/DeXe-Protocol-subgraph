@@ -1,12 +1,14 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import {
   Delegated,
+  Deposited,
   DPCreated,
   ProposalCreated,
   ProposalExecuted,
   RewardClaimed,
   RewardCredited,
   Voted,
+  Withdrawn,
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPool } from "../entities/DaoPool";
 import { getDelegationHistory } from "../entities/DelegationHistory";
@@ -218,8 +220,51 @@ export function onRewardCredited(event: RewardCredited): void {
   }
 
   voterInProposal.unclaimedReward = voterInProposal.unclaimedReward.plus(event.params.amount);
+  voterInPool.totalCreditedRewardsUSD = voterInPool.totalCreditedRewardsUSD.plus(
+    getUSDValue(event.params.rewardToken, event.params.amount)
+  );
+
+  voterInPool.APR = voterInPool.totalLockedFundsUSD.equals(BigInt.zero())
+    ? BigInt.zero()
+    : voterInPool.totalCreditedRewardsUSD.div(voterInPool.totalLockedFundsUSD);
 
   voterInProposal.save();
+  voterInPool.save();
+  voter.save();
+  pool.save();
+}
+
+export function onDeposited(event: Deposited): void {
+  let pool = getDaoPool(event.address);
+  let voter = getVoter(event.params.sender);
+  let voterInPool = getVoterInPool(pool, voter);
+
+  voterInPool.totalLockedFundsUSD = voterInPool.totalLockedFundsUSD.plus(
+    getUSDValue(pool.erc20Token, event.params.amount)
+  );
+  voterInPool.APR = BigInt.zero();
+
+  if (voterInPool.totalLockedFundsUSD.notEqual(BigInt.zero())) {
+    voterInPool.APR = voterInPool.totalCreditedRewardsUSD.div(voterInPool.totalLockedFundsUSD);
+  }
+
+  voterInPool.save();
+  voter.save();
+  pool.save();
+}
+
+export function onWithdrawn(event: Withdrawn): void {
+  let pool = getDaoPool(event.address);
+  let voter = getVoter(event.params.sender);
+  let voterInPool = getVoterInPool(pool, voter);
+
+  voterInPool.totalLockedFundsUSD = voterInPool.totalLockedFundsUSD.minus(
+    getUSDValue(pool.erc20Token, event.params.amount)
+  );
+  voterInPool.APR = voterInPool.totalLockedFundsUSD.equals(BigInt.zero())
+    ? BigInt.zero()
+    : voterInPool.totalCreditedRewardsUSD.div(voterInPool.totalLockedFundsUSD);
+
   voterInPool.save();
   voter.save();
   pool.save();

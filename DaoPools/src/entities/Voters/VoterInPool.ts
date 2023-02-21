@@ -20,6 +20,10 @@ export function getVoterInPool(pool: DaoPool, voter: Voter): VoterInPool {
     voterInPool.pool = pool.id;
     voterInPool.voter = voter.id;
 
+    voterInPool.APR = BigInt.zero();
+    voterInPool.totalCreditedRewardsUSD = BigInt.zero();
+    voterInPool.totalLockedFundsUSD = BigInt.zero();
+
     pool.votersCount = pool.votersCount.plus(BigInt.fromI32(1));
   }
 

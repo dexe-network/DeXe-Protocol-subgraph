@@ -13,6 +13,8 @@ import {
 import { getBlock, getTransaction } from "./utils";
 import {
   Delegated,
+  Deposited,
+  Withdrawn,
   DPCreated,
   ProposalCreated,
   ProposalExecuted,
@@ -28,10 +30,15 @@ import {
   onVoted,
   onRewardClaimed,
   onRewardCredited,
+  onDeposited,
+  onWithdrawn,
 } from "../src/mappings/DaoPool";
 import { ProposalType } from "../src/entities/global/ProposalTypes";
 import { PRICE_FEED_ADDRESS, REWARD_TYPE_VOTE_DELEGATED } from "../src/entities/global/globals";
 import { ProposalSettings } from "../generated/schema";
+import { createSetERC20 } from "./UserKeeper.test";
+import { getUserKeeperContract } from "../src/entities/UserKeeperContract";
+import { onSetERC20 } from "../src/mappings/UserKeeper";
 
 function createProposalCreated(
   proposalId: BigInt,
@@ -184,6 +191,7 @@ function createRewardClaimed(
 function createRewardCredited(
   proposalId: BigInt,
   rewardType: BigInt,
+  rewardToken: Address,
   amount: BigInt,
   sender: Address,
   contractSender: Address,
@@ -196,8 +204,53 @@ function createRewardCredited(
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
   event.parameters.push(new ethereum.EventParam("rewardType", ethereum.Value.fromUnsignedBigInt(rewardType)));
+  event.parameters.push(new ethereum.EventParam("rewardToken", ethereum.Value.fromAddress(rewardToken)));
   event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createDeposited(
+  amount: BigInt,
+  nfts: Array<BigInt>,
+  to: Address,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): Deposited {
+  let event = changetype<Deposited>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("nfts", ethereum.Value.fromUnsignedBigIntArray(nfts)));
+  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(to)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createWithdrawn(
+  amount: BigInt,
+  nfts: Array<BigInt>,
+  to: Address,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): Withdrawn {
+  let event = changetype<Withdrawn>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("nfts", ethereum.Value.fromUnsignedBigIntArray(nfts)));
+  event.parameters.push(new ethereum.EventParam("to", ethereum.Value.fromAddress(to)));
 
   event.block = block;
   event.transaction = tx;
@@ -238,6 +291,48 @@ describe("DaoPool", () => {
       ])
       .returns([
         ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(2000000000000000000)),
+        ethereum.Value.fromAddressArray([contractSender, contractSender]),
+      ]);
+
+    createMockedFunction(
+      Address.fromString(PRICE_FEED_ADDRESS),
+      "getNormalizedPriceOutUSD",
+      "getNormalizedPriceOutUSD(address,uint256):(uint256,address[])"
+    )
+      .withArgs([
+        ethereum.Value.fromAddress(Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676")),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(1000)),
+      ])
+      .returns([
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(200)),
+        ethereum.Value.fromAddressArray([contractSender, contractSender]),
+      ]);
+
+    createMockedFunction(
+      Address.fromString(PRICE_FEED_ADDRESS),
+      "getNormalizedPriceOutUSD",
+      "getNormalizedPriceOutUSD(address,uint256):(uint256,address[])"
+    )
+      .withArgs([
+        ethereum.Value.fromAddress(Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676")),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(500)),
+      ])
+      .returns([
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(100)),
+        ethereum.Value.fromAddressArray([contractSender, contractSender]),
+      ]);
+
+    createMockedFunction(
+      Address.fromString(PRICE_FEED_ADDRESS),
+      "getNormalizedPriceOutUSD",
+      "getNormalizedPriceOutUSD(address,uint256):(uint256,address[])"
+    )
+      .withArgs([
+        ethereum.Value.fromAddress(Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676")),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(3000)),
+      ])
+      .returns([
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(1500)),
         ethereum.Value.fromAddressArray([contractSender, contractSender]),
       ]);
 
@@ -618,11 +713,13 @@ describe("DaoPool", () => {
   test("should handle RewardCredited", () => {
     let proposalId = BigInt.fromI32(1);
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let rewardToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181676");
     let amount = BigInt.fromI32(1000);
 
     let event = createRewardCredited(
       proposalId,
       BigInt.fromI32(REWARD_TYPE_VOTE_DELEGATED - 1),
+      rewardToken,
       amount,
       sender,
       contractSender,
@@ -644,16 +741,20 @@ describe("DaoPool", () => {
       "unclaimedRewardFromDelegations",
       "0"
     );
+
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalCreditedRewardsUSD", "200");
   });
 
   test("should handle RewardCredited when reward type", () => {
     let proposalId = BigInt.fromI32(1);
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let rewardToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181676");
     let amount = BigInt.fromI32(1000);
 
     let event = createRewardCredited(
       proposalId,
       BigInt.fromI32(REWARD_TYPE_VOTE_DELEGATED),
+      rewardToken,
       amount,
       sender,
       contractSender,
@@ -675,5 +776,89 @@ describe("DaoPool", () => {
       "unclaimedReward",
       amount.toString()
     );
+
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalCreditedRewardsUSD", "200");
+  });
+
+  test("should deposit", () => {
+    let userKeeperAddress = Address.fromString("0x16e08f7d84603aeb97cd1c89a80a9e914f181676");
+    getUserKeeperContract(userKeeperAddress, contractSender).save();
+
+    let tokenAddress = Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676");
+    let amount = BigInt.fromI32(1000);
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+
+    let setTokenEvent = createSetERC20(tokenAddress, userKeeperAddress, block, tx);
+
+    onSetERC20(setTokenEvent);
+
+    let event = createDeposited(amount, [], sender, contractSender, block, tx);
+
+    onDeposited(event);
+
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalLockedFundsUSD", "200");
+
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "0");
+  });
+  100;
+
+  test("should withdrawn", () => {
+    let userKeeperAddress = Address.fromString("0x16e08f7d84603aeb97cd1c89a80a9e914f181676");
+    getUserKeeperContract(userKeeperAddress, contractSender).save();
+
+    let tokenAddress = Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676");
+    let amount1 = BigInt.fromI32(1000);
+    let amount2 = BigInt.fromI32(500);
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+
+    let setTokenEvent = createSetERC20(tokenAddress, userKeeperAddress, block, tx);
+
+    onSetERC20(setTokenEvent);
+
+    let event1 = createDeposited(amount1, [], sender, contractSender, block, tx);
+
+    onDeposited(event1);
+
+    let event2 = createWithdrawn(amount2, [], sender, contractSender, block, tx);
+
+    onWithdrawn(event2);
+
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalLockedFundsUSD", "100");
+
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "0");
+  });
+
+  test("dao apr flow", () => {
+    let userKeeperAddress = Address.fromString("0x16e08f7d84603aeb97cd1c89a80a9e914f181676");
+    getUserKeeperContract(userKeeperAddress, contractSender).save();
+
+    let tokenAddress = Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676");
+    let amount1 = BigInt.fromI32(1000);
+    let amount2 = BigInt.fromI32(3000);
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let proposalId = BigInt.fromI32(1);
+    let rewardToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181676");
+
+    let setTokenEvent = createSetERC20(tokenAddress, userKeeperAddress, block, tx);
+
+    onSetERC20(setTokenEvent);
+
+    let event1 = createDeposited(amount1, [], sender, contractSender, block, tx);
+    onDeposited(event1);
+
+    let event = createRewardCredited(
+      proposalId,
+      BigInt.fromI32(REWARD_TYPE_VOTE_DELEGATED - 1),
+      rewardToken,
+      amount2,
+      sender,
+      contractSender,
+      block,
+      tx
+    );
+
+    onRewardCredited(event);
+
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "7");
   });
 });
