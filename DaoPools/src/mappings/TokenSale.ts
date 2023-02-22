@@ -1,0 +1,27 @@
+import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { VoterInPool } from "../../generated/schema";
+import { Bought } from "../../generated/templates/TokenSale/TokenSaleProposal";
+import { getDaoPool } from "../entities/DaoPool";
+import { getTokenSale } from "../entities/TokenSale";
+import { getTokenSaleTier } from "../entities/TokenSaleTier";
+import { getVoter } from "../entities/Voters/Voter";
+import { getVoterInPool } from "../entities/Voters/VoterInPool";
+import { extendArray } from "../helpers/ArrayHelper";
+
+export function onBought(event: Bought): void {
+  let tokenSale = getTokenSale(event.address);
+  let tier = getTokenSaleTier(tokenSale, event.params.tierId);
+  let pool = getDaoPool(Address.fromBytes(tokenSale.pool));
+
+  tier.voters = extendArray<Bytes>(tier.voters, [
+    getVoterInPool(pool, getVoter(event.params.buyer), event.block.timestamp).id,
+  ]);
+
+  if (tier.voters.length > tier.totalUserCount.toI32()) {
+    tier.totalUserCount = tier.totalUserCount.plus(BigInt.fromI32(tier.voters.length).minus(tier.totalUserCount));
+  }
+
+  tokenSale.save();
+  tier.save();
+  pool.save();
+}

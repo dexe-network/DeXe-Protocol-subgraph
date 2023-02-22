@@ -119,3 +119,22 @@ templates:
           handler: onSetERC20
         - event: SetERC721(address)
           handler: onSetERC721
+
+  - kind: ethereum/contract
+    name: TokenSale
+    network: chapel
+    source:
+      abi: TokenSaleProposal
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/TokenSale.ts
+      entities:
+        - TokenSaleTier
+      abis:
+        - name: TokenSaleProposal
+          file: ./abis/TokenSale.json
+      eventHandlers:
+        - event: Bought(uint256,address)
+          handler: onBought

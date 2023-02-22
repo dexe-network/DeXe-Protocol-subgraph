@@ -289,6 +289,21 @@ type TokenSale @entity {
   token: Bytes!
 
   pool: DaoPool!
+
+  tiers: [TokenSaleTier!]! @derivedFrom(field: "tokenSale")
+}
+
+# @notice The entity holds information about token sale tier
+# @param id forms from token sale address + tier id
+# @param tokenSale the token sale
+# @param totalUserCount the number users
+# @param voters the array of VoterInPool ids
+type TokenSaleTier @entity {
+  id: Bytes!
+  tokenSale: TokenSale!
+
+  totalUserCount: BigInt!
+  voters: [VoterInPool!]!
 }
 
 # @notice The entity counts interactions in single tx
