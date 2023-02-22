@@ -120,6 +120,8 @@ type Proposal @entity {
 # @param claimedDPs the array of claimed dp ids
 type VoterInPool @entity {
   id: Bytes! # voter address + pool address
+  joinedTimestamp: BigInt!
+
   receivedDelegation: BigInt!
   receivedNFTDelegation: [BigInt!]!
   receivedNFTDelegationCount: BigInt!
@@ -129,6 +131,8 @@ type VoterInPool @entity {
   currentDelegatorsCount: BigInt!
 
   APR: BigInt!
+  cusum: BigInt!
+  lastUpdate: BigInt!
   totalCreditedRewardsUSD: BigInt!
   totalLockedFundsUSD: BigInt!
 

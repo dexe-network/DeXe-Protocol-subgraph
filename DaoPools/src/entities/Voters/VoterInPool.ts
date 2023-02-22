@@ -1,12 +1,14 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { DaoPool, Voter, VoterInPool } from "../../../generated/schema";
 
-export function getVoterInPool(pool: DaoPool, voter: Voter): VoterInPool {
+export function getVoterInPool(pool: DaoPool, voter: Voter, timestamp: BigInt): VoterInPool {
   let id = voter.id.concat(pool.id);
   let voterInPool = VoterInPool.load(id);
 
   if (voterInPool == null) {
     voterInPool = new VoterInPool(id);
+
+    voterInPool.joinedTimestamp = timestamp;
 
     voterInPool.receivedDelegation = BigInt.zero();
     voterInPool.totalDPClaimed = BigInt.zero();
@@ -21,6 +23,9 @@ export function getVoterInPool(pool: DaoPool, voter: Voter): VoterInPool {
     voterInPool.voter = voter.id;
 
     voterInPool.APR = BigInt.zero();
+    voterInPool.cusum = BigInt.zero();
+    voterInPool.lastUpdate = BigInt.zero();
+
     voterInPool.totalCreditedRewardsUSD = BigInt.zero();
     voterInPool.totalLockedFundsUSD = BigInt.zero();
 

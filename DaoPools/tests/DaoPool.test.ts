@@ -444,6 +444,19 @@ describe("DaoPool", () => {
     );
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "currentDelegatorsCount", "1");
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedNFTDelegationCount", "2");
+    assert.fieldEquals(
+      "VoterInPool",
+      to.concat(contractSender).toHexString(),
+      "joinedTimestamp",
+      block.timestamp.toString()
+    );
+    assert.fieldEquals(
+      "VoterInPool",
+      from.concat(contractSender).toHexString(),
+      "joinedTimestamp",
+      block.timestamp.toString()
+    );
+
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals(
       "DelegationHistory",
@@ -800,7 +813,6 @@ describe("DaoPool", () => {
 
     assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "0");
   });
-  100;
 
   test("should withdrawn", () => {
     let userKeeperAddress = Address.fromString("0x16e08f7d84603aeb97cd1c89a80a9e914f181676");
@@ -846,6 +858,8 @@ describe("DaoPool", () => {
     let event1 = createDeposited(amount1, [], sender, contractSender, block, tx);
     onDeposited(event1);
 
+    let block4000 = getBlock(BigInt.fromI32(4000), BigInt.fromI32(4000));
+
     let event = createRewardCredited(
       proposalId,
       BigInt.fromI32(REWARD_TYPE_VOTE_DELEGATED - 1),
@@ -853,12 +867,12 @@ describe("DaoPool", () => {
       amount2,
       sender,
       contractSender,
-      block,
+      block4000,
       tx
     );
 
     onRewardCredited(event);
 
-    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "7");
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "551880000");
   });
 });

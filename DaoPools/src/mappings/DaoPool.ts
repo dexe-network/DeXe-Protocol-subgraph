@@ -19,8 +19,8 @@ import { getVoter } from "../entities/Voters/Voter";
 import { getVoterInPool } from "../entities/Voters/VoterInPool";
 import { getVoterInProposal } from "../entities/Voters/VoterInProposal";
 import { PriceFeed } from "../../generated/templates/DaoPool/PriceFeed";
-import { PRICE_FEED_ADDRESS, REWARD_TYPE_VOTE_DELEGATED } from "../entities/global/globals";
-import { Proposal, VoterInProposal } from "../../generated/schema";
+import { PERCENTAGE_NUMERATOR, PRICE_FEED_ADDRESS, REWARD_TYPE_VOTE_DELEGATED, YEAR } from "../entities/global/globals";
+import { Proposal, VoterInPool, VoterInProposal } from "../../generated/schema";
 import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 import { getProposalSettings } from "../entities/Settings/ProposalSettings";
 import { getVoterInPoolPair } from "../entities/Voters/VoterInPoolPair";
@@ -68,8 +68,8 @@ export function onDelegated(event: Delegated): void {
     event.params.nfts,
     event.params.isDelegate
   );
-  let toVoterInPool = getVoterInPool(pool, to);
-  let fromVoterInPool = getVoterInPool(pool, from);
+  let toVoterInPool = getVoterInPool(pool, to, event.block.timestamp);
+  let fromVoterInPool = getVoterInPool(pool, from, event.block.timestamp);
 
   let pair = getVoterInPoolPair(fromVoterInPool, toVoterInPool);
 
@@ -134,7 +134,7 @@ export function onVoted(event: Voted): void {
   let voter = getVoter(event.params.sender);
   let pool = getDaoPool(event.address);
   let proposal = getProposal(pool, event.params.proposalId);
-  let voterInPool = getVoterInPool(pool, voter);
+  let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
   let voterInProposal = getVoterInProposal(proposal, voterInPool);
   let proposalVote = getProposalVote(
     event.transaction.hash,
@@ -191,7 +191,7 @@ export function onProposalExecuted(event: ProposalExecuted): void {
 export function onRewardClaimed(event: RewardClaimed): void {
   let pool = getDaoPool(event.address);
   let voter = getVoter(event.params.sender);
-  let voterInPool = getVoterInPool(pool, voter);
+  let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
   let proposal = getProposal(pool, event.params.proposalId);
   let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
@@ -209,7 +209,7 @@ export function onRewardClaimed(event: RewardClaimed): void {
 export function onRewardCredited(event: RewardCredited): void {
   let pool = getDaoPool(event.address);
   let voter = getVoter(event.params.sender);
-  let voterInPool = getVoterInPool(pool, voter);
+  let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
   let proposal = getProposal(pool, event.params.proposalId);
   let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
@@ -224,9 +224,7 @@ export function onRewardCredited(event: RewardCredited): void {
     getUSDValue(event.params.rewardToken, event.params.amount)
   );
 
-  voterInPool.APR = voterInPool.totalLockedFundsUSD.equals(BigInt.zero())
-    ? BigInt.zero()
-    : voterInPool.totalCreditedRewardsUSD.div(voterInPool.totalLockedFundsUSD);
+  recalculateAPR(voterInPool, event.block.timestamp);
 
   voterInProposal.save();
   voterInPool.save();
@@ -237,16 +235,11 @@ export function onRewardCredited(event: RewardCredited): void {
 export function onDeposited(event: Deposited): void {
   let pool = getDaoPool(event.address);
   let voter = getVoter(event.params.sender);
-  let voterInPool = getVoterInPool(pool, voter);
+  let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
 
   voterInPool.totalLockedFundsUSD = voterInPool.totalLockedFundsUSD.plus(
     getUSDValue(pool.erc20Token, event.params.amount)
   );
-  voterInPool.APR = BigInt.zero();
-
-  if (voterInPool.totalLockedFundsUSD.notEqual(BigInt.zero())) {
-    voterInPool.APR = voterInPool.totalCreditedRewardsUSD.div(voterInPool.totalLockedFundsUSD);
-  }
 
   voterInPool.save();
   voter.save();
@@ -256,16 +249,33 @@ export function onDeposited(event: Deposited): void {
 export function onWithdrawn(event: Withdrawn): void {
   let pool = getDaoPool(event.address);
   let voter = getVoter(event.params.sender);
-  let voterInPool = getVoterInPool(pool, voter);
+  let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
 
   voterInPool.totalLockedFundsUSD = voterInPool.totalLockedFundsUSD.minus(
     getUSDValue(pool.erc20Token, event.params.amount)
   );
-  voterInPool.APR = voterInPool.totalLockedFundsUSD.equals(BigInt.zero())
-    ? BigInt.zero()
-    : voterInPool.totalCreditedRewardsUSD.div(voterInPool.totalLockedFundsUSD);
 
   voterInPool.save();
   voter.save();
   pool.save();
+}
+
+function recalculateAPR(voterInPool: VoterInPool, currentTimestamp: BigInt): void {
+  if (
+    voterInPool.totalLockedFundsUSD.notEqual(BigInt.zero()) &&
+    currentTimestamp.notEqual(voterInPool.joinedTimestamp)
+  ) {
+    let RLRatio = voterInPool.totalCreditedRewardsUSD.div(voterInPool.totalLockedFundsUSD);
+    let numerator = voterInPool.cusum
+      .times(voterInPool.lastUpdate.minus(voterInPool.joinedTimestamp))
+      .plus(RLRatio.times(currentTimestamp.minus(voterInPool.joinedTimestamp)));
+    let denumerator = currentTimestamp.minus(voterInPool.joinedTimestamp);
+    let P = numerator.div(denumerator);
+
+    voterInPool.APR = P.times(YEAR.div(currentTimestamp.minus(voterInPool.lastUpdate))).times(
+      BigInt.fromI32(PERCENTAGE_NUMERATOR)
+    );
+    voterInPool.cusum = RLRatio;
+    voterInPool.lastUpdate = currentTimestamp;
+  }
 }

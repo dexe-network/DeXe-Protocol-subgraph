@@ -16,7 +16,7 @@ export function onDistributionProposalClaimed(event: DistributionProposalClaimed
   let dpToPool = getDPContract(event.address);
   let voter = getVoter(event.params.sender);
   let pool = getDaoPool(Address.fromBytes(dpToPool.daoPool));
-  let voterInPool = getVoterInPool(pool, voter);
+  let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
   let proposal = getProposal(pool, event.params.proposalId);
   let dp = getDistributionProposal(proposal);
   let voterInProposal = getVoterInProposal(proposal, voterInPool);
