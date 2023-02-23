@@ -248,9 +248,13 @@ export function onWithdrawn(event: Withdrawn): void {
   let voter = getVoter(event.params.sender);
   let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
 
-  voterInPool.totalLockedFundsUSD = voterInPool.totalLockedFundsUSD.minus(
-    getUSDValue(pool.erc20Token, event.params.amount)
-  );
+  let usdAmount = getUSDValue(pool.erc20Token, event.params.amount);
+
+  if (usdAmount.gt(voterInPool.totalLockedFundsUSD)) {
+    voterInPool.totalLockedFundsUSD = BigInt.zero();
+  } else {
+    voterInPool.totalLockedFundsUSD = voterInPool.totalLockedFundsUSD.minus(usdAmount);
+  }
 
   voterInPool.save();
   voter.save();
