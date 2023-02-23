@@ -269,7 +269,7 @@ function recalculateAPR(voterInPool: VoterInPool, currentTimestamp: BigInt): voi
     let numerator = voterInPool.cusum
       .times(voterInPool.lastUpdate.minus(voterInPool.joinedTimestamp))
       .plus(RLRatio.times(currentTimestamp.minus(voterInPool.joinedTimestamp)));
-    let denumerator = currentTimestamp.minus(voterInPool.joinedTimestamp);
+    let denominator = currentTimestamp.minus(voterInPool.joinedTimestamp);
     let P = numerator.div(denumerator);
 
     voterInPool.APR = P.times(YEAR.div(currentTimestamp.minus(voterInPool.lastUpdate))).times(
