@@ -213,6 +213,8 @@ export function onRewardCredited(event: RewardCredited): void {
   let proposal = getProposal(pool, event.params.proposalId);
   let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
+  let usdAmount = getUSDValue(event.params.rewardToken, event.params.amount);
+
   if (event.params.rewardType == REWARD_TYPE_VOTE_DELEGATED) {
     voterInProposal.unclaimedRewardFromDelegations = voterInProposal.unclaimedRewardFromDelegations.plus(
       event.params.amount
@@ -220,11 +222,8 @@ export function onRewardCredited(event: RewardCredited): void {
   }
 
   voterInProposal.unclaimedReward = voterInProposal.unclaimedReward.plus(event.params.amount);
-  voterInPool.totalCreditedRewardsUSD = voterInPool.totalCreditedRewardsUSD.plus(
-    getUSDValue(event.params.rewardToken, event.params.amount)
-  );
 
-  recalculateAPR(voterInPool, event.block.timestamp);
+  recalculateAPR(voterInPool, usdAmount, event.block.timestamp);
 
   voterInProposal.save();
   voterInPool.save();
@@ -260,21 +259,19 @@ export function onWithdrawn(event: Withdrawn): void {
   pool.save();
 }
 
-function recalculateAPR(voterInPool: VoterInPool, currentTimestamp: BigInt): void {
+function recalculateAPR(voterInPool: VoterInPool, rewardCredited: BigInt, currentTimestamp: BigInt): void {
   if (
     voterInPool.totalLockedFundsUSD.notEqual(BigInt.zero()) &&
     currentTimestamp.notEqual(voterInPool.joinedTimestamp)
   ) {
-    let RLRatio = voterInPool.totalCreditedRewardsUSD.div(voterInPool.totalLockedFundsUSD);
+    let RLRatio = rewardCredited.times(BigInt.fromI32(PERCENTAGE_NUMERATOR)).div(voterInPool.totalLockedFundsUSD);
     let numerator = voterInPool.cusum
       .times(voterInPool.lastUpdate.minus(voterInPool.joinedTimestamp))
       .plus(RLRatio.times(currentTimestamp.minus(voterInPool.joinedTimestamp)));
     let denominator = currentTimestamp.minus(voterInPool.joinedTimestamp);
-    let P = numerator.div(denumerator);
+    let P = numerator.div(denominator);
 
-    voterInPool.APR = P.times(YEAR.div(currentTimestamp.minus(voterInPool.lastUpdate))).times(
-      BigInt.fromI32(PERCENTAGE_NUMERATOR)
-    );
+    voterInPool.APR = P.times(YEAR).div(currentTimestamp.minus(voterInPool.lastUpdate));
     voterInPool.cusum = RLRatio;
     voterInPool.lastUpdate = currentTimestamp;
   }

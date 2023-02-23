@@ -26,7 +26,6 @@ export function getVoterInPool(pool: DaoPool, voter: Voter, timestamp: BigInt): 
     voterInPool.cusum = BigInt.zero();
     voterInPool.lastUpdate = BigInt.zero();
 
-    voterInPool.totalCreditedRewardsUSD = BigInt.zero();
     voterInPool.totalLockedFundsUSD = BigInt.zero();
 
     pool.votersCount = pool.votersCount.plus(BigInt.fromI32(1));

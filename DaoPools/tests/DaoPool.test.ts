@@ -754,8 +754,6 @@ describe("DaoPool", () => {
       "unclaimedRewardFromDelegations",
       "0"
     );
-
-    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalCreditedRewardsUSD", "200");
   });
 
   test("should handle RewardCredited when reward type", () => {
@@ -789,8 +787,6 @@ describe("DaoPool", () => {
       "unclaimedReward",
       amount.toString()
     );
-
-    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalCreditedRewardsUSD", "200");
   });
 
   test("should deposit", () => {
@@ -873,6 +869,6 @@ describe("DaoPool", () => {
 
     onRewardCredited(event);
 
-    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "551880000");
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "591300000");
   });
 });

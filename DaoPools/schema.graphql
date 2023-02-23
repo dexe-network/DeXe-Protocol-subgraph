@@ -119,7 +119,6 @@ type Proposal @entity {
 # @param APR the APR of user in pool
 # @param cusum the cumulative sum for APR calculations
 # @param lastUpdate the timestamp of last cusum update
-# @param totalCreditedRewardsUSD the total amount of rewards in USD
 # @param totalLockedFundsUSD the total locked amount in USD
 # @param pool the pool entity id
 # @param voter the voter entity id
@@ -139,7 +138,6 @@ type VoterInPool @entity {
   APR: BigInt!
   cusum: BigInt!
   lastUpdate: BigInt!
-  totalCreditedRewardsUSD: BigInt!
   totalLockedFundsUSD: BigInt!
 
   pool: DaoPool!
