@@ -31,6 +31,31 @@ type Investor @entity {
   insuranceHistory: [InsuranceHistory!]! @derivedFrom(field: "investor")
 }
 
+# @notice The entity holds historical information about investor's amount
+# @param id forms from investor address and day
+# @param totalUSDInvestVolume the total invest volume in usd
+# @param totalUSDDivestVolume the total divest volume in usd
+# @param totalNativeInvestVolume the total invest volume in native
+# @param totalNativeDivestVolume the total divest volume in native
+# @param totalBTCInvestVolume the total invest volume in BTC
+# @param totalBTCDivestVolume the total divest volume in BTC
+# @param investor the investor entity id
+# @param day the timestamp / 86400
+# @param prevHistory the InvestorAmountHistory entity id
+type InvestorAmountHistory @entity {
+  id: ID! # investor + day
+  totalUSDInvestVolume: BigInt!
+  totalUSDDivestVolume: BigInt!
+  totalNativeInvestVolume: BigInt!
+  totalNativeDivestVolume: BigInt!
+  totalBTCInvestVolume: BigInt!
+  totalBTCDivestVolume: BigInt!
+
+  investor: Investor!
+  day: BigInt!
+  prevHistory: InvestorAmountHistory!
+}
+
 # @notice The entity holds historical information about investor's insurance
 # @param id the investor address + day
 # @param stake the staked amount

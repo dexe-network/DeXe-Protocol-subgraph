@@ -6,6 +6,7 @@ import {
   clearStore,
   createMockedFunction,
   describe,
+  logStore,
   newMockEvent,
   test,
 } from "matchstick-as";
@@ -255,6 +256,25 @@ describe("TraderPool", () => {
       "currentLpAmount",
       receivedLP.toString()
     );
+    logStore();
+    assert.fieldEquals(
+      "InvestorAmountHistory",
+      user.toHexString() + "0",
+      "totalUSDInvestVolume",
+      expectedUSD.toString()
+    );
+    assert.fieldEquals(
+      "InvestorAmountHistory",
+      user.toHexString() + "0",
+      "totalNativeInvestVolume",
+      expectedNative.toString()
+    );
+    assert.fieldEquals(
+      "InvestorAmountHistory",
+      user.toHexString() + "0",
+      "totalBTCInvestVolume",
+      expectedBTC.toString()
+    );
   });
 
   test("should handle divested event", () => {
@@ -307,6 +327,25 @@ describe("TraderPool", () => {
       user.toHexString() + sender.toHexString() + "0" + "0",
       "currentLpAmount",
       "-" + divestedLP.toString()
+    );
+
+    assert.fieldEquals(
+      "InvestorAmountHistory",
+      user.toHexString() + "0",
+      "totalUSDDivestVolume",
+      expectedUSD.toString()
+    );
+    assert.fieldEquals(
+      "InvestorAmountHistory",
+      user.toHexString() + "0",
+      "totalNativeDivestVolume",
+      expectedNative.toString()
+    );
+    assert.fieldEquals(
+      "InvestorAmountHistory",
+      user.toHexString() + "0",
+      "totalBTCDivestVolume",
+      expectedBTC.toString()
     );
   });
 

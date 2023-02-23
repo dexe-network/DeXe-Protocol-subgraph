@@ -4,9 +4,7 @@ import {
   Joined,
   Left,
   ModifiedPrivateInvestors,
-  TraderPool,
   ProposalDivested,
-  Transfer,
 } from "../../generated/templates/TraderPool/TraderPool";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { Address, BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts";
@@ -17,14 +15,16 @@ import { getInvestorPoolPosition } from "../entities/trader-pool/InvestorPoolPos
 import { getVest } from "../entities/trader-pool/Vest";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { WBTC_ADDRESS, WETH_ADDRESS } from "../entities/global/globals";
-import { Investor, InvestorPoolPosition, LpHistory } from "../../generated/schema";
 import { getProposalContract } from "../entities/trader-pool/proposal/ProposalContract";
 import { getProposalPosition } from "../entities/trader-pool/proposal/ProposalPosition";
 import { getProposalVest } from "../entities/trader-pool/proposal/ProposalVest";
 import { getProposalPositionOffset } from "../entities/global/ProposalPositionOffset";
-import { getLpHistory } from "../entities/trader-pool/history/LpHistory";
-import { findPrevHistory } from "../helpers/HistorySearcher";
+import { getLpHistory, injectPrevLPHistory } from "../entities/trader-pool/history/LpHistory";
 import { getTokenValue, getUSDValue } from "../helpers/PriceFeedInteractions";
+import {
+  getInvestorAmountHistory,
+  injectPrevInvestorAmountHistory,
+} from "../entities/trader-pool/history/InvestorAmountHistory";
 
 export function onJoined(event: Joined): void {
   let pool = getTraderPool(event.address);
@@ -166,6 +166,9 @@ function setupVest(vestInBase: BigInt, vestLp: BigInt, user: Address, isInvest: 
   let lpHistory = getLpHistory(investorPoolPosition, event.block.timestamp);
   injectPrevLPHistory(lpHistory, investorPoolPosition);
 
+  let investorAmountHistory = getInvestorAmountHistory(investor, event.block.timestamp);
+  injectPrevInvestorAmountHistory(investorAmountHistory, investor);
+
   if (isInvest) {
     investorPoolPosition.totalBaseInvestVolume = investorPoolPosition.totalBaseInvestVolume.plus(vestInBase);
     investorPoolPosition.totalLPInvestVolume = investorPoolPosition.totalLPInvestVolume.plus(vestLp);
@@ -174,6 +177,10 @@ function setupVest(vestInBase: BigInt, vestLp: BigInt, user: Address, isInvest: 
     investorPoolPosition.totalBTCInvestVolume = investorPoolPosition.totalBTCInvestVolume.plus(btcValue);
 
     lpHistory.currentLpAmount = lpHistory.currentLpAmount.plus(vestLp);
+
+    investorAmountHistory.totalUSDInvestVolume = investorAmountHistory.totalUSDInvestVolume.plus(usdValue);
+    investorAmountHistory.totalNativeInvestVolume = investorAmountHistory.totalNativeInvestVolume.plus(bnbValue);
+    investorAmountHistory.totalBTCInvestVolume = investorAmountHistory.totalBTCInvestVolume.plus(btcValue);
   } else {
     investorPoolPosition.totalBaseDivestVolume = investorPoolPosition.totalBaseDivestVolume.plus(vestInBase);
     investorPoolPosition.totalLPDivestVolume = investorPoolPosition.totalLPDivestVolume.plus(vestLp);
@@ -182,27 +189,17 @@ function setupVest(vestInBase: BigInt, vestLp: BigInt, user: Address, isInvest: 
     investorPoolPosition.totalBTCDivestVolume = investorPoolPosition.totalBTCDivestVolume.plus(btcValue);
 
     lpHistory.currentLpAmount = lpHistory.currentLpAmount.minus(vestLp);
+
+    investorAmountHistory.totalUSDDivestVolume = investorAmountHistory.totalUSDDivestVolume.plus(usdValue);
+    investorAmountHistory.totalNativeDivestVolume = investorAmountHistory.totalNativeDivestVolume.plus(bnbValue);
+    investorAmountHistory.totalBTCDivestVolume = investorAmountHistory.totalBTCDivestVolume.plus(btcValue);
   }
 
   lpHistory.save();
+  investorAmountHistory.save();
   investor.save();
   pool.save();
   positionOffset.save();
   investorPoolPosition.save();
   vest.save();
-}
-
-function injectPrevLPHistory(history: LpHistory, investorPoolPosition: InvestorPoolPosition): void {
-  if (history.prevHistory == "") {
-    let prevHistory = findPrevHistory<LpHistory>(
-      LpHistory.load,
-      investorPoolPosition.id,
-      history.day,
-      BigInt.fromI32(1)
-    );
-    if (prevHistory != null) {
-      history.prevHistory = prevHistory.id;
-      history.currentLpAmount = prevHistory.currentLpAmount;
-    }
-  }
 }
