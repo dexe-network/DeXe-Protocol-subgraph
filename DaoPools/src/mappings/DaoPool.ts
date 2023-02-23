@@ -270,7 +270,7 @@ function recalculateAPR(voterInPool: VoterInPool, rewardCredited: BigInt, curren
     let P = numerator.div(denominator);
 
     voterInPool.APR = P.times(YEAR).div(currentTimestamp.minus(voterInPool.joinedTimestamp));
-    voterInPool.cusum = RLRatio;
+    voterInPool.cusum = P;
     voterInPool.lastUpdate = currentTimestamp;
   }
 }
