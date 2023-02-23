@@ -746,7 +746,7 @@ describe("DaoPool", () => {
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
       "unclaimedReward",
-      amount.toString()
+      "200"
     );
     assert.fieldEquals(
       "VoterInProposal",
@@ -779,13 +779,13 @@ describe("DaoPool", () => {
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
       "unclaimedRewardFromDelegations",
-      amount.toString()
+      "200"
     );
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
       "unclaimedReward",
-      amount.toString()
+      "200"
     );
   });
 
@@ -869,6 +869,6 @@ describe("DaoPool", () => {
 
     onRewardCredited(event);
 
-    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "591300000");
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "591447861");
   });
 });

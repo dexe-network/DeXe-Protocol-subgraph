@@ -216,12 +216,10 @@ export function onRewardCredited(event: RewardCredited): void {
   let usdAmount = getUSDValue(event.params.rewardToken, event.params.amount);
 
   if (event.params.rewardType == REWARD_TYPE_VOTE_DELEGATED) {
-    voterInProposal.unclaimedRewardFromDelegations = voterInProposal.unclaimedRewardFromDelegations.plus(
-      event.params.amount
-    );
+    voterInProposal.unclaimedRewardFromDelegations = voterInProposal.unclaimedRewardFromDelegations.plus(usdAmount);
   }
 
-  voterInProposal.unclaimedReward = voterInProposal.unclaimedReward.plus(event.params.amount);
+  voterInProposal.unclaimedReward = voterInProposal.unclaimedReward.plus(usdAmount);
 
   recalculateAPR(voterInPool, usdAmount, event.block.timestamp);
 
@@ -271,7 +269,7 @@ function recalculateAPR(voterInPool: VoterInPool, rewardCredited: BigInt, curren
     let denominator = currentTimestamp.minus(voterInPool.joinedTimestamp);
     let P = numerator.div(denominator);
 
-    voterInPool.APR = P.times(YEAR).div(currentTimestamp.minus(voterInPool.lastUpdate));
+    voterInPool.APR = P.times(YEAR).div(currentTimestamp.minus(voterInPool.joinedTimestamp));
     voterInPool.cusum = RLRatio;
     voterInPool.lastUpdate = currentTimestamp;
   }
