@@ -5,7 +5,7 @@ import { getBlock, getTransaction } from "./utils";
 import { getUserKeeperContract } from "../src/entities/UserKeeperContract";
 import { onSetERC20, onSetERC721 } from "../src/mappings/UserKeeper";
 
-function createSetERC20(
+export function createSetERC20(
   token: Address,
   contractSender: Address,
   block: ethereum.Block,

@@ -56,7 +56,7 @@ templates:
           handler: onProposalExecuted
         - event: RewardClaimed(uint256,address,address,uint256) # id, msg.sender, token, amount
           handler: onRewardClaimed
-        - event: RewardCredited(uint256,uint8,uint256,address) # id, type, amount, to
+        - event: RewardCredited(uint256,uint8,address,uint256,address) # id, type, token, amount, to
           handler: onRewardCredited
 
   - kind: ethereum/contract
@@ -119,3 +119,22 @@ templates:
           handler: onSetERC20
         - event: SetERC721(address)
           handler: onSetERC721
+
+  - kind: ethereum/contract
+    name: TokenSale
+    network: chapel
+    source:
+      abi: TokenSaleProposal
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/TokenSale.ts
+      entities:
+        - TokenSaleTier
+      abis:
+        - name: TokenSaleProposal
+          file: ./abis/TokenSale.json
+      eventHandlers:
+        - event: Bought(uint256,address)
+          handler: onBought

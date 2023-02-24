@@ -110,16 +110,23 @@ type Proposal @entity {
 
 # @notice The entity holds information about voter's actions in pool
 # @param id forms from voter address + pool address
+# @param joinedTimestamp the timestamp of first interaction with pool
 # @param receivedDelegation the amount of received erc20 as delegation in this pool
 # @param receivedNFTDelegation the ids of received erc721 as delegation in this pool
 # @param totalDPClaimed the total usd amount claimed from DPs
 # @param totalClaimedUSD the total usd amount claimed from rewards
 # @param currentDelegatorsCount the current numbers of received delegations
+# @param APR the APR of user in pool
+# @param cusum the cumulative sum for APR calculations
+# @param lastUpdate the timestamp of last cusum update
+# @param totalLockedFundsUSD the total locked amount in USD
 # @param pool the pool entity id
 # @param voter the voter entity id
 # @param claimedDPs the array of claimed dp ids
 type VoterInPool @entity {
   id: Bytes! # voter address + pool address
+  joinedTimestamp: BigInt!
+
   receivedDelegation: BigInt!
   receivedNFTDelegation: [BigInt!]!
   receivedNFTDelegationCount: BigInt!
@@ -127,6 +134,11 @@ type VoterInPool @entity {
   totalClaimedUSD: BigInt!
 
   currentDelegatorsCount: BigInt!
+
+  APR: BigInt!
+  cusum: BigInt!
+  lastUpdate: BigInt!
+  totalLockedFundsUSD: BigInt!
 
   pool: DaoPool!
   voter: Voter!
@@ -275,6 +287,21 @@ type TokenSale @entity {
   token: Bytes!
 
   pool: DaoPool!
+
+  tiers: [TokenSaleTier!]! @derivedFrom(field: "tokenSale")
+}
+
+# @notice The entity holds information about token sale tier
+# @param id forms from token sale address + tier id
+# @param tokenSale the token sale
+# @param totalUserCount the number users
+# @param voters the array of VoterInPool ids
+type TokenSaleTier @entity {
+  id: Bytes!
+  tokenSale: TokenSale!
+
+  totalUserCount: BigInt!
+  voters: [VoterInPool!]!
 }
 
 # @notice The entity counts interactions in single tx

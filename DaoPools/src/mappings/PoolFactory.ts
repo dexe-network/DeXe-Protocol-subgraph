@@ -1,5 +1,5 @@
 import { DaoPoolDeployed, DaoTokenSaleDeployed } from "../../generated/PoolFactory/PoolFactory";
-import { DaoPool, DaoSettings, DistributionProposal, UserKeeper } from "../../generated/templates";
+import { DaoPool, DaoSettings, DistributionProposal, TokenSale, UserKeeper } from "../../generated/templates";
 import { getDaoPool } from "../entities/DaoPool";
 import { getDPContract } from "../entities/DPContract";
 import { getSettingsContract } from "../entities/SettingsContract";
@@ -20,7 +20,8 @@ export function onDeployed(event: DaoPoolDeployed): void {
 }
 
 export function onTokenSaleDeployed(event: DaoTokenSaleDeployed): void {
+  TokenSale.create(event.params.tokenSale);
   let pool = getDaoPool(event.params.govPool);
-  getTokenSale(pool, event.params.tokenSale, event.params.token).save();
+  getTokenSale(event.params.tokenSale, pool.id, event.params.token).save();
   pool.save();
 }
