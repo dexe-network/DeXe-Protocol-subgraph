@@ -1,6 +1,6 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 
-export const PRICE_FEED_ADDRESS = "0x91832863A377Ba4fd018330Dbdb51DCc74034bC8";
+export const PRICE_FEED_ADDRESS = "0x56d8412b75434671FbC6ad9c6b91Ba2d5E3817c1";
 export const BNB_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export const WBNB_ADDRESS = "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd";
 export const REWARD_TYPE_VOTE_DELEGATED = 2;
