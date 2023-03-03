@@ -1,4 +1,8 @@
-[
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "TokenSaleProposal",
+  "sourceName": "contracts/gov/proposals/TokenSaleProposal.sol",
+  "abi": [
     {
       "anonymous": false,
       "inputs": [
@@ -41,6 +45,25 @@
         }
       ],
       "name": "Bought",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "tierId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "saleToken",
+          "type": "address"
+        }
+      ],
+      "name": "TierCreated",
       "type": "event"
     },
     {
@@ -932,3 +955,4 @@
       "type": "function"
     }
   ]
+}
