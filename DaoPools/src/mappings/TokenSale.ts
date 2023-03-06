@@ -1,12 +1,20 @@
 import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { VoterInPool } from "../../generated/schema";
-import { Bought } from "../../generated/templates/TokenSale/TokenSaleProposal";
+import { Bought, TierCreated } from "../../generated/templates/TokenSale/TokenSaleProposal";
 import { getDaoPool } from "../entities/DaoPool";
 import { getTokenSale } from "../entities/TokenSale";
 import { getTokenSaleTier } from "../entities/TokenSaleTier";
 import { getVoter } from "../entities/Voters/Voter";
 import { getVoterInPool } from "../entities/Voters/VoterInPool";
 import { extendArray } from "../helpers/ArrayHelper";
+
+export function onTierCreated(event: TierCreated): void {
+  let tokenSale = getTokenSale(event.address);
+  let tier = getTokenSaleTier(tokenSale, event.params.tierId, event.params.saleToken);
+
+  tier.save();
+  tokenSale.save();
+}
 
 export function onBought(event: Bought): void {
   let tokenSale = getTokenSale(event.address);

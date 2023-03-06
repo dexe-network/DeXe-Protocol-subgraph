@@ -1,7 +1,11 @@
-import { BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { TokenSale, TokenSaleTier } from "../../generated/schema";
 
-export function getTokenSaleTier(tokenSale: TokenSale, tierId: BigInt): TokenSaleTier {
+export function getTokenSaleTier(
+  tokenSale: TokenSale,
+  tierId: BigInt,
+  tierToken: Address = Address.zero()
+): TokenSaleTier {
   let id = tokenSale.id.concatI32(tierId.toI32());
   let tier = TokenSaleTier.load(id);
 
@@ -10,6 +14,7 @@ export function getTokenSaleTier(tokenSale: TokenSale, tierId: BigInt): TokenSal
 
     tier.tokenSale = tokenSale.id;
     tier.totalUserCount = BigInt.zero();
+    tier.tierToken = tierToken;
     tier.voters = new Array();
   }
 

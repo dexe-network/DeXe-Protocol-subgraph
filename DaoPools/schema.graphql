@@ -300,6 +300,7 @@ type TokenSaleTier @entity {
   id: Bytes!
   tokenSale: TokenSale!
 
+  tierToken: Bytes!
   totalUserCount: BigInt!
   voters: [VoterInPool!]!
 }
