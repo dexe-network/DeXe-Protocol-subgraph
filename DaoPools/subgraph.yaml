@@ -11,7 +11,7 @@ dataSources:
       startBlock: 27518585
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/PoolFactory.ts
       entities:
@@ -33,7 +33,7 @@ templates:
       abi: DaoPool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/DaoPool.ts
       entities:
@@ -66,7 +66,7 @@ templates:
       abi: DistributionProposal
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/DistributionProposal.ts
       entities:
@@ -86,7 +86,7 @@ templates:
       abi: DaoSettings
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/DaoSettings.ts
       entities:
@@ -106,7 +106,7 @@ templates:
       abi: UserKeeper
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/UserKeeper.ts
       entities:
@@ -127,7 +127,7 @@ templates:
       abi: TokenSaleProposal
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/TokenSale.ts
       entities:
