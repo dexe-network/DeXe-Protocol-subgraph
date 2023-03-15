@@ -14,7 +14,7 @@ export function onDeployed(event: DaoPoolDeployed): void {
   getUserKeeperContract(event.params.govUserKeeper, event.params.govPool).save();
 
   DaoPool.create(event.params.govPool);
-  DistributionProposal.create(event.params.DP);
+  DistributionProposal.create(event.params.dp);
   DaoSettings.create(event.params.settings);
   UserKeeper.create(event.params.govUserKeeper);
 }
