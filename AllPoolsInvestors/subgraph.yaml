@@ -11,7 +11,7 @@ dataSources:
       startBlock: 27518585
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/PoolFactory.ts
       entities:
@@ -32,7 +32,7 @@ dataSources:
       startBlock: 27518585
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/Insurance.ts
       entities:
@@ -56,7 +56,7 @@ templates:
       abi: TraderPool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/TraderPool.ts
       entities:
@@ -87,7 +87,7 @@ templates:
       abi: Proposal
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/TraderPoolProposal.ts
       entities:

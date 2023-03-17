@@ -20,7 +20,7 @@ function createDaoPoolDeployed(
 
   event.parameters.push(new ethereum.EventParam("name", ethereum.Value.fromString(name)));
   event.parameters.push(new ethereum.EventParam("govPool", ethereum.Value.fromAddress(govPool)));
-  event.parameters.push(new ethereum.EventParam("DP", ethereum.Value.fromAddress(dp)));
+  event.parameters.push(new ethereum.EventParam("dp", ethereum.Value.fromAddress(dp)));
   event.parameters.push(new ethereum.EventParam("validators", ethereum.Value.fromAddress(validators)));
   event.parameters.push(new ethereum.EventParam("settings", ethereum.Value.fromAddress(settings)));
   event.parameters.push(new ethereum.EventParam("govUserKeeper", ethereum.Value.fromAddress(govUserKeeper)));

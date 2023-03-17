@@ -42,7 +42,7 @@ function createTraderPoolDeployed(
 function createDaoPoolDeployed(
   name: string,
   govPool: Address,
-  DP: Address,
+  dp: Address,
   validators: Address,
   settings: Address,
   govUserKeeper: Address,
@@ -55,7 +55,7 @@ function createDaoPoolDeployed(
 
   event.parameters.push(new ethereum.EventParam("name", ethereum.Value.fromString(name)));
   event.parameters.push(new ethereum.EventParam("govPool", ethereum.Value.fromAddress(govPool)));
-  event.parameters.push(new ethereum.EventParam("DP", ethereum.Value.fromAddress(DP)));
+  event.parameters.push(new ethereum.EventParam("dp", ethereum.Value.fromAddress(dp)));
   event.parameters.push(new ethereum.EventParam("validators", ethereum.Value.fromAddress(validators)));
   event.parameters.push(new ethereum.EventParam("settings", ethereum.Value.fromAddress(settings)));
   event.parameters.push(new ethereum.EventParam("govUserKeeper", ethereum.Value.fromAddress(govUserKeeper)));
@@ -111,13 +111,13 @@ describe("PoolFactory", () => {
   test("should handle DaoPoolDeployed event", () => {
     let name = "DAO_POOL";
     let govPool = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181619");
-    let DP = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181629");
+    let dp = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181629");
     let validators = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181639");
     let settings = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181649");
     let govUserKeeper = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181659");
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181669");
 
-    let event = createDaoPoolDeployed(name, govPool, DP, validators, settings, govUserKeeper, sender, block, tx);
+    let event = createDaoPoolDeployed(name, govPool, dp, validators, settings, govUserKeeper, sender, block, tx);
 
     onDaoPoolDeployed(event);
 

@@ -63,7 +63,7 @@ describe("TraderPoolRegistry", () => {
     createMockedFunction(
       Address.fromString(POOL_REGISTRY_ADDRESS),
       "listTraderPoolsWithInfo",
-      "listTraderPoolsWithInfo(string,uint256,uint256):(address[],(string,string,(string,address,bool,uint256,address,uint256,uint256,uint8,uint256),address[],uint256[],uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)[],(uint256,uint256,uint256,uint256)[])"
+      "listTraderPoolsWithInfo(string,uint256,uint256):(address[],(string,string,(string,address,bool,uint8,bool,uint256,address,uint256,uint8,uint256,uint256),address[],uint256[],uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)[],(uint256,uint256,uint256,uint256)[])"
     )
       .withArgs([
         ethereum.Value.fromString(BASIC_POOL_NAME),
@@ -74,7 +74,7 @@ describe("TraderPoolRegistry", () => {
     createMockedFunction(
       Address.fromString(POOL_REGISTRY_ADDRESS),
       "listTraderPoolsWithInfo",
-      "listTraderPoolsWithInfo(string,uint256,uint256):(address[],(string,string,(string,address,bool,uint256,address,uint256,uint256,uint8,uint256),address[],uint256[],uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)[],(uint256,uint256,uint256,uint256)[])"
+      "listTraderPoolsWithInfo(string,uint256,uint256):(address[],(string,string,(string,address,bool,uint8,bool,uint256,address,uint256,uint8,uint256,uint256),address[],uint256[],uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)[],(uint256,uint256,uint256,uint256)[])"
     )
       .withArgs([
         ethereum.Value.fromString(INVEST_POOL_NAME),
@@ -587,12 +587,14 @@ function getPoolParametersTuple(): ethereum.Tuple {
   poolParametersTuple[0] = ethereum.Value.fromString("URL");
   poolParametersTuple[1] = ethereum.Value.fromAddress(Address.fromString("0x86e98f7d84603AEb97cd1c89A80A9e914f181679"));
   poolParametersTuple[2] = ethereum.Value.fromBoolean(false);
-  poolParametersTuple[3] = ethereum.Value.fromUnsignedBigInt(BigInt.zero());
-  poolParametersTuple[4] = ethereum.Value.fromAddress(basicTokens[0]);
-  poolParametersTuple[5] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(18));
-  poolParametersTuple[6] = ethereum.Value.fromUnsignedBigInt(BigInt.zero());
+  poolParametersTuple[3] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(18));
+  poolParametersTuple[4] = ethereum.Value.fromBoolean(false);
+  poolParametersTuple[5] = ethereum.Value.fromUnsignedBigInt(BigInt.zero());
+  poolParametersTuple[6] = ethereum.Value.fromAddress(basicTokens[0]);
   poolParametersTuple[7] = ethereum.Value.fromUnsignedBigInt(BigInt.zero());
-  poolParametersTuple[8] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(18));
+  poolParametersTuple[8] = ethereum.Value.fromUnsignedBigInt(BigInt.zero());
+  poolParametersTuple[9] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(18));
+  poolParametersTuple[10] = ethereum.Value.fromUnsignedBigInt(BigInt.zero());
 
   return poolParametersTuple;
 }
