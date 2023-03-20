@@ -140,3 +140,5 @@ templates:
           handler: onTierCreated
         - event: Bought(uint256,address)
           handler: onBought
+        - event: Whitelisted(uint256,address)
+          handler: onWhitelisted

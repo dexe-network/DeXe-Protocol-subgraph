@@ -301,6 +301,9 @@ type TokenSaleTier @entity {
   tokenSale: TokenSale!
 
   tierToken: Bytes!
+
+  userWhitelist: [Bytes!]!
+
   totalUserCount: BigInt!
   voters: [VoterInPool!]!
 }
