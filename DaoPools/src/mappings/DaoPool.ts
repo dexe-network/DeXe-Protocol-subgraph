@@ -7,6 +7,7 @@ import {
   ProposalExecuted,
   RewardClaimed,
   RewardCredited,
+  StakingRewardClaimed,
   Voted,
   Withdrawn,
 } from "../../generated/templates/DaoPool/DaoPool";
@@ -255,6 +256,20 @@ export function onWithdrawn(event: Withdrawn): void {
   } else {
     voterInPool.totalLockedFundsUSD = voterInPool.totalLockedFundsUSD.minus(usdAmount);
   }
+
+  voterInPool.save();
+  voter.save();
+  pool.save();
+}
+
+export function onStakingRewardClaimed(event: StakingRewardClaimed): void {
+  let pool = getDaoPool(event.address);
+  let voter = getVoter(event.params.user);
+  let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
+
+  voterInPool.totalStakingReward = voterInPool.totalStakingReward.plus(
+    getUSDValue(event.params.token, event.params.amount)
+  );
 
   voterInPool.save();
   voter.save();
