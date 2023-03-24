@@ -16,6 +16,7 @@ export function getTokenSaleTier(
     tier.totalUserCount = BigInt.zero();
     tier.tierToken = tierToken;
     tier.voters = new Array();
+    tier.userWhitelist = new Array();
   }
 
   return tier;

@@ -294,6 +294,7 @@ type TokenSale @entity {
 # @notice The entity holds information about token sale tier
 # @param id forms from token sale address + tier id
 # @param tokenSale the token sale
+# @param userWhitelist the array with whitelisted addresses
 # @param totalUserCount the number users
 # @param voters the array of VoterInPool ids
 type TokenSaleTier @entity {
@@ -301,6 +302,9 @@ type TokenSaleTier @entity {
   tokenSale: TokenSale!
 
   tierToken: Bytes!
+
+  userWhitelist: [Bytes!]!
+
   totalUserCount: BigInt!
   voters: [VoterInPool!]!
 }

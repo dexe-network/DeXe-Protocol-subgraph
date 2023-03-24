@@ -1,6 +1,5 @@
 import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { VoterInPool } from "../../generated/schema";
-import { Bought, TierCreated } from "../../generated/templates/TokenSale/TokenSaleProposal";
+import { Bought, TierCreated, Whitelisted } from "../../generated/templates/TokenSale/TokenSaleProposal";
 import { getDaoPool } from "../entities/DaoPool";
 import { getTokenSale } from "../entities/TokenSale";
 import { getTokenSaleTier } from "../entities/TokenSaleTier";
@@ -32,4 +31,14 @@ export function onBought(event: Bought): void {
   tokenSale.save();
   tier.save();
   pool.save();
+}
+
+export function onWhitelisted(event: Whitelisted): void {
+  let tokenSale = getTokenSale(event.address);
+  let tier = getTokenSaleTier(tokenSale, event.params.tierId);
+
+  tier.userWhitelist = extendArray(tier.userWhitelist, [event.params.user]);
+
+  tier.save();
+  tokenSale.save();
 }
