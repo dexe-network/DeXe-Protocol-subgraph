@@ -21,6 +21,7 @@ import {
   RewardClaimed,
   RewardCredited,
   Voted,
+  StakingRewardClaimed,
 } from "../generated/templates/DaoPool/DaoPool";
 import {
   onDelegated,
@@ -32,6 +33,7 @@ import {
   onRewardCredited,
   onDeposited,
   onWithdrawn,
+  onStakingRewardClaimed,
 } from "../src/mappings/DaoPool";
 import { ProposalType } from "../src/entities/global/ProposalTypes";
 import { PRICE_FEED_ADDRESS, REWARD_TYPE_VOTE_DELEGATED } from "../src/entities/global/globals";
@@ -251,6 +253,28 @@ function createWithdrawn(
   event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
   event.parameters.push(new ethereum.EventParam("nfts", ethereum.Value.fromUnsignedBigIntArray(nfts)));
   event.parameters.push(new ethereum.EventParam("to", ethereum.Value.fromAddress(to)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createStakingRewardClaimed(
+  user: Address,
+  token: Address,
+  amount: BigInt,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): StakingRewardClaimed {
+  let event = changetype<StakingRewardClaimed>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("user", ethereum.Value.fromAddress(user)));
+  event.parameters.push(new ethereum.EventParam("token", ethereum.Value.fromAddress(token)));
+  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
 
   event.block = block;
   event.transaction = tx;
@@ -870,5 +894,17 @@ describe("DaoPool", () => {
     onRewardCredited(event);
 
     assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "591447861");
+  });
+
+  test("should handle StakingRewardClaimed event", () => {
+    let user = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let token = Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676");
+    let amount = BigInt.fromI32(3000);
+
+    let event = createStakingRewardClaimed(user, token, amount, contractSender, block, tx);
+
+    onStakingRewardClaimed(event);
+
+    assert.fieldEquals("VoterInPool", user.concat(contractSender).toHexString(), "totalStakingReward", "1500");
   });
 });

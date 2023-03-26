@@ -28,6 +28,8 @@ export function getVoterInPool(pool: DaoPool, voter: Voter, timestamp: BigInt): 
 
     voterInPool.totalLockedFundsUSD = BigInt.zero();
 
+    voterInPool.totalStakingReward = BigInt.zero();
+
     pool.votersCount = pool.votersCount.plus(BigInt.fromI32(1));
   }
 

@@ -58,6 +58,8 @@ templates:
           handler: onRewardClaimed
         - event: RewardCredited(uint256,uint8,address,uint256,address) # id, type, token, amount, to
           handler: onRewardCredited
+        - event: StakingRewardClaimed(address,address,uint256)
+          handler: onStakingRewardClaimed
 
   - kind: ethereum/contract
     name: DistributionProposal
