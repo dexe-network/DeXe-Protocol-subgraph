@@ -14,10 +14,10 @@ export function getVoterInProposal(proposal: Proposal, voterInPool: VoterInPool)
     voterInProposal.totalVoteAmount = BigInt.zero();
     voterInProposal.totalDelegatedVoteAmount = BigInt.zero();
 
-    voterInProposal.claimedReward = BigInt.zero();
+    voterInProposal.claimedRewardUSD = BigInt.zero();
     voterInProposal.claimedDpRewardUSD = BigInt.zero();
-    voterInProposal.unclaimedReward = BigInt.zero();
-    voterInProposal.unclaimedRewardFromDelegations = BigInt.zero();
+    voterInProposal.unclaimedRewardUSD = BigInt.zero();
+    voterInProposal.unclaimedRewardFromDelegationsUSD = BigInt.zero();
   }
 
   return voterInProposal;

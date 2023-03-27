@@ -646,7 +646,7 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "claimedReward",
+      "claimedRewardUSD",
       BigInt.zero().toString()
     );
   });
@@ -721,7 +721,7 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
-      "claimedReward",
+      "claimedRewardUSD",
       amounts[0].toString()
     );
     assert.fieldEquals(
@@ -736,7 +736,7 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),
-      "claimedReward",
+      "claimedRewardUSD",
       amounts[1].toString()
     );
     assert.fieldEquals(
@@ -769,13 +769,13 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "unclaimedReward",
+      "unclaimedRewardUSD",
       "200"
     );
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "unclaimedRewardFromDelegations",
+      "unclaimedRewardFromDelegationsUSD",
       "0"
     );
   });
@@ -802,13 +802,13 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "unclaimedRewardFromDelegations",
+      "unclaimedRewardFromDelegationsUSD",
       "200"
     );
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "unclaimedReward",
+      "unclaimedRewardUSD",
       "200"
     );
   });
