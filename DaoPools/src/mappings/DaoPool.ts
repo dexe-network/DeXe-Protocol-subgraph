@@ -196,11 +196,13 @@ export function onRewardClaimed(event: RewardClaimed): void {
   let proposal = getProposal(pool, event.params.proposalId);
   let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
-  voterInProposal.claimedReward = event.params.amount;
+  let usdAmount = getUSDValue(event.params.token, event.params.amount);
+
+  voterInProposal.claimedRewardUSD = usdAmount;
 
   voterInProposal.save();
 
-  voterInPool.totalClaimedUSD = voterInPool.totalClaimedUSD.plus(getUSDValue(event.params.token, event.params.amount));
+  voterInPool.totalClaimedUSD = voterInPool.totalClaimedUSD.plus(usdAmount);
 
   voterInPool.save();
   voter.save();
@@ -217,11 +219,12 @@ export function onRewardCredited(event: RewardCredited): void {
   let usdAmount = getUSDValue(event.params.rewardToken, event.params.amount);
 
   if (event.params.rewardType == REWARD_TYPE_VOTE_DELEGATED) {
-    voterInProposal.unclaimedRewardFromDelegations = voterInProposal.unclaimedRewardFromDelegations.plus(usdAmount);
+    voterInProposal.unclaimedRewardFromDelegationsUSD =
+      voterInProposal.unclaimedRewardFromDelegationsUSD.plus(usdAmount);
     voterInPool.totalDelegationRewardUSD = voterInPool.totalDelegationRewardUSD.plus(usdAmount);
   }
 
-  voterInProposal.unclaimedReward = voterInProposal.unclaimedReward.plus(usdAmount);
+  voterInProposal.unclaimedRewardUSD = voterInProposal.unclaimedRewardUSD.plus(usdAmount);
 
   recalculateAPR(voterInPool, usdAmount, event.block.timestamp);
 

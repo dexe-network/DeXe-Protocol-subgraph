@@ -180,7 +180,9 @@ type ProposalVote @entity(immutable: true) {
 # @param voter the VoterInPool entity id
 # @param totalVoteAmount the total personal amount of vote for proposal
 # @param totalDelegatedVoteAmount the total delegated amount of vote for proposal
-# @param claimedReward the amount of claimed reward
+# @param unclaimedRewardUSD the amount of credited reward in usd
+# @param unclaimedRewardFromDelegationsUSD the amount of credited reward from delegations in usd
+# @param claimedRewardUSD the amount of claimed reward
 # @param claimedDpRewardUSD the amount of dp rewards in usd
 type VoterInProposal @entity {
   id: Bytes! # voter in voter address + proposal entity id
@@ -191,10 +193,10 @@ type VoterInProposal @entity {
   totalVoteAmount: BigInt!
   totalDelegatedVoteAmount: BigInt!
 
-  unclaimedReward: BigInt!
-  unclaimedRewardFromDelegations: BigInt!
+  unclaimedRewardUSD: BigInt!
+  unclaimedRewardFromDelegationsUSD: BigInt!
 
-  claimedReward: BigInt!
+  claimedRewardUSD: BigInt!
   claimedDpRewardUSD: BigInt!
 
   votes: [ProposalVote!]! @derivedFrom(field: "voter")
