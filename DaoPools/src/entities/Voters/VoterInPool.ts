@@ -17,6 +17,8 @@ export function getVoterInPool(pool: DaoPool, voter: Voter, timestamp: BigInt): 
     voterInPool.receivedNFTDelegation = new Array<BigInt>();
     voterInPool.receivedNFTDelegationCount = BigInt.zero();
 
+    voterInPool.totalDelegationRewardUSD = BigInt.zero();
+
     voterInPool.currentDelegatorsCount = BigInt.zero();
 
     voterInPool.pool = pool.id;

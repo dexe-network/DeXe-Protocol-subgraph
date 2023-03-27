@@ -218,6 +218,7 @@ export function onRewardCredited(event: RewardCredited): void {
 
   if (event.params.rewardType == REWARD_TYPE_VOTE_DELEGATED) {
     voterInProposal.unclaimedRewardFromDelegations = voterInProposal.unclaimedRewardFromDelegations.plus(usdAmount);
+    voterInPool.totalDelegationRewardUSD = voterInPool.totalDelegationRewardUSD.plus(usdAmount);
   }
 
   voterInProposal.unclaimedReward = voterInProposal.unclaimedReward.plus(usdAmount);
