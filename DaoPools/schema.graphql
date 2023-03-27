@@ -115,6 +115,7 @@ type Proposal @entity {
 # @param receivedNFTDelegation the ids of received erc721 as delegation in this pool
 # @param totalDPClaimed the total usd amount claimed from DPs
 # @param totalClaimedUSD the total usd amount claimed from rewards
+# @param totalDelegationRewardUSD the total amount of rewards from delegation voting
 # @param currentDelegatorsCount the current numbers of received delegations
 # @param APR the APR of user in pool
 # @param cusum the cumulative sum for APR calculations
@@ -133,6 +134,8 @@ type VoterInPool @entity {
   receivedNFTDelegationCount: BigInt!
   totalDPClaimed: BigInt!
   totalClaimedUSD: BigInt!
+
+  totalDelegationRewardUSD: BigInt!
 
   currentDelegatorsCount: BigInt!
 

@@ -811,6 +811,7 @@ describe("DaoPool", () => {
       "unclaimedRewardUSD",
       "200"
     );
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalDelegationRewardUSD", "200");
   });
 
   test("should deposit", () => {
