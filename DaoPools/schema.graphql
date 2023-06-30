@@ -90,7 +90,8 @@ type Proposal @entity {
   executor: Bytes!
   executionTimestamp: BigInt!
 
-  currentVotes: BigInt!
+  currentVotesFor: BigInt!
+  currentVotesAgainst: BigInt!
   quorum: BigInt!
   description: String!
   misc: String!
@@ -157,6 +158,7 @@ type VoterInPool @entity {
 # @param id forms from tx hash + counter
 # @param hash the tx hash
 # @param timestamp the timestamp of tx
+# @param isVoteFor bool flag, if true - vote for, if false - vote against
 # @param personalAmount the personal amount of vote
 # @param delegatedAmount the delegated amount of vote
 # @param voter the VoterInProposal entity id
@@ -165,6 +167,8 @@ type ProposalVote @entity(immutable: true) {
   id: Bytes! # tx hash + counter
   hash: Bytes!
   timestamp: BigInt!
+
+  isVoteFor: Boolean!
 
   personalAmount: BigInt!
   delegatedAmount: BigInt!
@@ -178,8 +182,10 @@ type ProposalVote @entity(immutable: true) {
 # @param pool the pool entity id
 # @param proposal the proposal entity id
 # @param voter the VoterInPool entity id
-# @param totalVoteAmount the total personal amount of vote for proposal
-# @param totalDelegatedVoteAmount the total delegated amount of vote for proposal
+# @param totalVoteAmountFor the total personal amount of vote for the proposal
+# @param totalVoteAmountAgainst the total personal amount of vote against the proposal
+# @param totalDelegatedVoteAmountFor the total delegated amount of vote for the proposal
+# @param totalDelegatedVoteAmountAgainst the total delegated amount of vote against the proposal
 # @param unclaimedRewardUSD the amount of credited reward in usd
 # @param unclaimedRewardFromDelegationsUSD the amount of credited reward from delegations in usd
 # @param claimedRewardUSD the amount of claimed reward
@@ -190,8 +196,11 @@ type VoterInProposal @entity {
   proposal: Proposal!
   voter: VoterInPool!
 
-  totalVoteAmount: BigInt!
-  totalDelegatedVoteAmount: BigInt!
+  totalVoteForAmount: BigInt!
+  totalVoteAgainstAmount: BigInt!
+
+  totalDelegatedVoteForAmount: BigInt!
+  totalDelegatedVoteAgainstAmount: BigInt!
 
   unclaimedRewardUSD: BigInt!
   unclaimedRewardFromDelegationsUSD: BigInt!

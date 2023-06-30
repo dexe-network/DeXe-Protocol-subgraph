@@ -99,6 +99,7 @@ function createVoted(
   sender: Address,
   vote: BigInt,
   isInternal: boolean,
+  isVoteFor: boolean,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
@@ -110,6 +111,7 @@ function createVoted(
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
   event.parameters.push(new ethereum.EventParam("vote", ethereum.Value.fromUnsignedBigInt(vote)));
   event.parameters.push(new ethereum.EventParam("isInternal", ethereum.Value.fromBoolean(isInternal)));
+  event.parameters.push(new ethereum.EventParam("isVoteFor", ethereum.Value.fromBoolean(isVoteFor)));
 
   event.block = block;
   event.transaction = tx;
@@ -209,7 +211,13 @@ describe("DaoValidators", () => {
       "quorum",
       quorum.toString()
     );
-    assert.fieldEquals("Proposal", poolAddress.toHexString() + proposalId.toString() + "_" + "0", "totalVote", "0");
+    assert.fieldEquals("Proposal", poolAddress.toHexString() + proposalId.toString() + "_" + "0", "totalVoteFor", "0");
+    assert.fieldEquals(
+      "Proposal",
+      poolAddress.toHexString() + proposalId.toString() + "_" + "0",
+      "totalVoteAgainst",
+      "0"
+    );
     assert.fieldEquals(
       "Proposal",
       poolAddress.toHexString() + proposalId.toString() + "_" + "0",
@@ -253,7 +261,13 @@ describe("DaoValidators", () => {
       "quorum",
       quorum.toString()
     );
-    assert.fieldEquals("Proposal", poolAddress.toHexString() + proposalId.toString() + "_" + "1", "totalVote", "0");
+    assert.fieldEquals("Proposal", poolAddress.toHexString() + proposalId.toString() + "_" + "1", "totalVoteFor", "0");
+    assert.fieldEquals(
+      "Proposal",
+      poolAddress.toHexString() + proposalId.toString() + "_" + "1",
+      "totalVoteAgainst",
+      "0"
+    );
     assert.fieldEquals(
       "Proposal",
       poolAddress.toHexString() + proposalId.toString() + "_" + "1",
@@ -297,15 +311,22 @@ describe("DaoValidators", () => {
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181670");
     let vote = BigInt.fromI32(100);
     let isInternal = true;
+    let isVoteFor = true;
 
-    let event = createVoted(proposalId, sender, vote, isInternal, contractSender, block, tx);
+    let event = createVoted(proposalId, sender, vote, isInternal, isVoteFor, contractSender, block, tx);
 
     onVoted(event);
 
     assert.fieldEquals(
       "ValidatorInProposal",
       sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
-      "totalVote",
+      "totalVoteAgainst",
+      "0"
+    );
+    assert.fieldEquals(
+      "ValidatorInProposal",
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
+      "totalVoteFor",
       vote.toString()
     );
     assert.fieldEquals("ProposalVote", tx.hash.concatI32(0).toHexString(), "hash", tx.hash.toHexString());
@@ -316,10 +337,47 @@ describe("DaoValidators", () => {
       "proposal",
       poolAddress.toHexString() + proposalId.toString() + "_" + "1"
     );
+    assert.fieldEquals("ProposalVote", tx.hash.concatI32(0).toHexString(), "isVoteFor", isVoteFor.toString());
     assert.fieldEquals("ProposalVote", tx.hash.concatI32(0).toHexString(), "amount", vote.toString());
     assert.fieldEquals(
       "ProposalVote",
       tx.hash.concatI32(0).toHexString(),
+      "voter",
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString()
+    );
+
+    isVoteFor = false;
+
+    const nextTx = getTransaction(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromI32(2))));
+    event = createVoted(proposalId, sender, vote, isInternal, isVoteFor, contractSender, block, nextTx);
+
+    onVoted(event);
+
+    assert.fieldEquals(
+      "ValidatorInProposal",
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
+      "totalVoteAgainst",
+      vote.toString()
+    );
+    assert.fieldEquals(
+      "ValidatorInProposal",
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
+      "totalVoteFor",
+      vote.toString()
+    );
+    assert.fieldEquals("ProposalVote", nextTx.hash.concatI32(0).toHexString(), "hash", nextTx.hash.toHexString());
+    assert.fieldEquals("ProposalVote", nextTx.hash.concatI32(0).toHexString(), "timestamp", block.timestamp.toString());
+    assert.fieldEquals(
+      "ProposalVote",
+      nextTx.hash.concatI32(0).toHexString(),
+      "proposal",
+      poolAddress.toHexString() + proposalId.toString() + "_" + "1"
+    );
+    assert.fieldEquals("ProposalVote", nextTx.hash.concatI32(0).toHexString(), "isVoteFor", isVoteFor.toString());
+    assert.fieldEquals("ProposalVote", nextTx.hash.concatI32(0).toHexString(), "amount", vote.toString());
+    assert.fieldEquals(
+      "ProposalVote",
+      nextTx.hash.concatI32(0).toHexString(),
       "voter",
       sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString()
     );

@@ -264,7 +264,7 @@ type GetPerfomanceFee @entity(immutable: true) {
   transaction: Transaction!
 }
 
-# @notice The entity holds inforamtion about pool address of transaction
+# @notice The entity holds information about pool address of transaction
 # @param id forms from tx hash + interactionCount
 # @param pool the pool address
 # @param transaction the transaction entity id
@@ -307,12 +307,14 @@ type DaoPoolDelegate @entity(immutable: true) {
 # @notice The entity holds information about vote in dao pool
 # @param id forms from tx hash + interactionCount
 # @param pool the pool address
+# @param isVoteFor bool flag, if true - vote for, if false - vote against
 # @param amount the vote amount
 # @param transaction the transaction entity id
 type DaoPoolVote @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
   pool: Bytes!
 
+  isVoteFor: Boolean!
   amount: BigInt!
 
   transaction: Transaction!
@@ -407,6 +409,7 @@ type DaoValidatorProposalCreate @entity(immutable: true) {
 # @param id forms from tx hash + interactionCount
 # @param pool the pool address
 # @param proposalId the id of proposal
+# @param isVoteFor bool flag, if true - vote for, if false - vote against
 # @param amount the vote amount
 # @param transaction the transaction entity id
 type DaoValidatorProposalVote @entity(immutable: true) {
@@ -414,6 +417,7 @@ type DaoValidatorProposalVote @entity(immutable: true) {
   pool: Bytes!
   proposalId: BigInt!
 
+  isVoteFor: Boolean!
   amount: BigInt!
 
   transaction: Transaction!

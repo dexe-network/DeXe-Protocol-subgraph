@@ -24,7 +24,8 @@ export function onVoted(event: Voted): void {
     event.address,
     event.params.proposalId,
     event.params.vote,
-    transaction.interactionsCount
+    transaction.interactionsCount,
+    event.params.isVoteFor
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));

@@ -40,7 +40,7 @@ templates:
         - name: DaoValidators
           file: ./abis/DaoValidators.json
       eventHandlers:
-        - event: Voted(uint256,address,uint256,bool) # id, msg.sender, vote
+        - event: Voted(uint256,address,uint256,bool,bool) # id, msg.sender, vote
           handler: onVoted
         - event: ChangedValidatorsBalances(address[],uint256[]) # validators[], newBalances[]
           handler: onChangedValidatorsBalances

@@ -94,6 +94,7 @@ function createVoted(
   sender: Address,
   personalVote: BigInt,
   delegatedVote: BigInt,
+  isVoteFor: boolean,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
@@ -105,6 +106,7 @@ function createVoted(
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
   event.parameters.push(new ethereum.EventParam("personalVote", ethereum.Value.fromUnsignedBigInt(personalVote)));
   event.parameters.push(new ethereum.EventParam("delegatedVote", ethereum.Value.fromUnsignedBigInt(delegatedVote)));
+  event.parameters.push(new ethereum.EventParam("isVoteFor", ethereum.Value.fromBoolean(isVoteFor)));
 
   event.block = block;
   event.transaction = tx;
@@ -299,8 +301,9 @@ describe("DaoPool", () => {
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
     let personalVote = BigInt.fromI32(1000);
     let delegatedVote = BigInt.fromI32(100);
+    let isVoteFor = true;
 
-    let event = createVoted(proposalId, sender, personalVote, delegatedVote, contractSender, block, tx);
+    let event = createVoted(proposalId, sender, personalVote, delegatedVote, isVoteFor, contractSender, block, tx);
 
     onVoted(event);
 
@@ -311,6 +314,7 @@ describe("DaoPool", () => {
       "amount",
       personalVote.plus(delegatedVote).toString()
     );
+    assert.fieldEquals("DaoPoolVote", tx.hash.concatI32(0).toHexString(), "isVoteFor", isVoteFor.toString());
 
     assertTransaction(
       tx.hash,

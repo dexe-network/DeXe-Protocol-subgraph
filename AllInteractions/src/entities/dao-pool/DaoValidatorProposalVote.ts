@@ -6,7 +6,8 @@ export function getDaoVaildatorProposalVote(
   pool: Address,
   proposalId: BigInt,
   amount: BigInt,
-  count: BigInt
+  count: BigInt,
+  isVoteFor: boolean
 ): DaoValidatorProposalVote {
   let id = hash.concatI32(count.toI32());
   let proposalVote = DaoValidatorProposalVote.load(id);
@@ -17,6 +18,7 @@ export function getDaoVaildatorProposalVote(
     proposalVote.proposalId = proposalId;
 
     proposalVote.amount = amount;
+    proposalVote.isVoteFor = isVoteFor;
 
     proposalVote.transaction = Bytes.empty();
   }
