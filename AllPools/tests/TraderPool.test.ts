@@ -17,6 +17,8 @@ import {
   ModifiedPrivateInvestors,
   PositionClosed,
   Exchanged,
+  CommissionClaimed,
+  ActivePortfolioExchanged,
 } from "../generated/templates/TraderPool/TraderPool";
 import { getBlock, getNextBlock, getNextTx, getTransaction } from "./utils";
 import {
@@ -28,9 +30,16 @@ import {
   onModifiedAdmins,
   onModifiedPrivateInvestors,
   onTraderCommissionMinted,
+  onActivePortfolioExchanged,
 } from "../src/mappings/TraderPool";
 import { getTraderPool } from "../src/entities/trader-pool/TraderPool";
-import { PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
+import {
+  DAY,
+  DECIMAL,
+  PERCENTAGE_100,
+  PRICE_FEED_ADDRESS,
+  REVERSED_PLATFORM_COMMISSION,
+} from "../src/entities/global/globals";
 
 function createExchanged(
   user: Address,
@@ -158,6 +167,54 @@ function createModifiedPrivateInvestors(
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(user)));
   event.parameters.push(new ethereum.EventParam("privateInvestors", ethereum.Value.fromAddressArray(privateInvestors)));
   event.parameters.push(new ethereum.EventParam("add", ethereum.Value.fromBoolean(add)));
+
+  event.address = sender;
+  event.block = block;
+  event.transaction = tx;
+
+  return event;
+}
+
+function createCommissionClaimed(
+  user: Address,
+  traderBaseClaimed: BigInt,
+  traderLpClaimed: BigInt,
+  sender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): CommissionClaimed {
+  let event = changetype<CommissionClaimed>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(user)));
+  event.parameters.push(
+    new ethereum.EventParam("traderBaseClaimed", ethereum.Value.fromUnsignedBigInt(traderBaseClaimed))
+  );
+  event.parameters.push(new ethereum.EventParam("traderLpClaimed", ethereum.Value.fromUnsignedBigInt(traderLpClaimed)));
+
+  event.address = sender;
+  event.block = block;
+  event.transaction = tx;
+
+  return event;
+}
+
+function createActivePortfolioExchanged(
+  fromToken: Address,
+  toToken: Address,
+  fromVolume: BigInt,
+  toVolume: BigInt,
+  sender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): ActivePortfolioExchanged {
+  let event = changetype<ActivePortfolioExchanged>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("fromToken", ethereum.Value.fromAddress(fromToken)));
+  event.parameters.push(new ethereum.EventParam("toToken", ethereum.Value.fromAddress(toToken)));
+  event.parameters.push(new ethereum.EventParam("fromVolume", ethereum.Value.fromUnsignedBigInt(fromVolume)));
+  event.parameters.push(new ethereum.EventParam("toVolume", ethereum.Value.fromUnsignedBigInt(toVolume)));
 
   event.address = sender;
   event.block = block;
@@ -348,5 +405,89 @@ describe("TraderPool", () => {
     assert.fieldEquals("TraderPool", sender.toHexString(), "averagePositionTime", "1");
     assert.fieldEquals("TraderPool", sender.toHexString(), "totalClosedPositions", "1");
     assert.fieldEquals("TraderPool", sender.toHexString(), "maxLoss", "0");
+  });
+
+  test("should handle CommissionClaimed event", () => {
+    const commission = BigInt.fromI32(30);
+    getTraderPool(
+      sender,
+      "BASIC_TRADER_POOL",
+      baseToken,
+      "tiker",
+      "name",
+      "url",
+      block.timestamp,
+      block.number,
+      Address.zero(),
+      commission
+    ).save();
+
+    let user = Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670");
+    let traderBaseClaimed = BigInt.fromI32(10);
+    let traderLpClaimed = BigInt.fromI32(20);
+
+    let event = createCommissionClaimed(user, traderBaseClaimed, traderLpClaimed, sender, block, tx);
+
+    onTraderCommissionMinted(event);
+
+    const historyId = sender.toHexString() + block.timestamp.div(BigInt.fromI32(DAY)).toString();
+
+    let lpCommission = event.params.traderLpClaimed
+      .times(BigInt.fromU64(DECIMAL))
+      .div(BigInt.fromI32(REVERSED_PLATFORM_COMMISSION).times(BigInt.fromU64(DECIMAL).div(BigInt.fromI32(10))));
+
+    const perfomanceFee = lpCommission.times(BigInt.fromI32(1));
+    const fundProfit = perfomanceFee.times(BigInt.fromU64(PERCENTAGE_100).minus(commission)).div(commission);
+
+    assert.fieldEquals("FeeHistory", historyId, "traderPool", sender.toHexString());
+    assert.fieldEquals("FeeHistory", historyId, "PNL", "0");
+    assert.fieldEquals("FeeHistory", historyId, "fundProfit", fundProfit.toString());
+    assert.fieldEquals("FeeHistory", historyId, "perfomanceFee", perfomanceFee.toString());
+    assert.fieldEquals("FeeHistory", historyId, "day", "0");
+    assert.fieldEquals("FeeHistory", historyId, "prevHistory", "");
+  });
+
+  test("should handle ActivePortfolioExchanged event", () => {
+    getTraderPool(
+      sender,
+      "BASIC_TRADER_POOL",
+      baseToken,
+      "Ticker",
+      "name",
+      "url",
+      block.timestamp,
+      block.number,
+      Address.zero(),
+      BigInt.fromI32(30)
+    ).save();
+
+    let fromToken = baseToken;
+    let toToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181979");
+    let fromVolume = BigInt.fromI32(10).pow(18);
+    let toVolume = BigInt.fromI32(10).pow(19);
+
+    let event = createActivePortfolioExchanged(fromToken, toToken, fromVolume, toVolume, sender, block, tx);
+
+    onActivePortfolioExchanged(event);
+
+    assert.fieldEquals(
+      "Position",
+      sender.toHexString() + toToken.toHexString() + "0",
+      "totalPositionOpenVolume",
+      toVolume.toString()
+    );
+    assert.fieldEquals(
+      "Position",
+      sender.toHexString() + toToken.toHexString() + "0",
+      "totalBaseOpenVolume",
+      fromVolume.toString()
+    );
+
+    assert.fieldEquals(
+      "Position",
+      sender.toHexString() + toToken.toHexString() + "0",
+      "totalUSDOpenVolume",
+      fromVolume.toString()
+    );
   });
 });
