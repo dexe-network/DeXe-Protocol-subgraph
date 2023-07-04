@@ -54,11 +54,17 @@ export function onVoted(event: Voted): void {
     event.block.timestamp,
     proposal,
     event.params.vote,
-    validatorInProposal
+    validatorInProposal,
+    event.params.isVoteFor
   );
 
-  validatorInProposal.totalVote = validatorInProposal.totalVote.plus(event.params.vote);
-  proposal.totalVote = proposal.totalVote.plus(event.params.vote);
+  if (vote.isVoteFor) {
+    validatorInProposal.totalVoteFor = validatorInProposal.totalVoteFor.plus(event.params.vote);
+    proposal.totalVoteFor = proposal.totalVoteFor.plus(event.params.vote);
+  } else {
+    validatorInProposal.totalVoteAgainst = validatorInProposal.totalVoteAgainst.plus(event.params.vote);
+    proposal.totalVoteAgainst = proposal.totalVoteAgainst.plus(event.params.vote);
+  }
 
   vote.save();
   validatorInProposal.save();

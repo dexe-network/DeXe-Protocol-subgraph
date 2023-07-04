@@ -20,7 +20,8 @@ export function getProposal(
     proposal.creator = creator;
     proposal.executor = Bytes.empty();
     proposal.executionTimestamp = BigInt.zero();
-    proposal.currentVotes = BigInt.zero();
+    proposal.currentVotesFor = BigInt.zero();
+    proposal.currentVotesAgainst = BigInt.zero();
     proposal.quorum = quorum;
     proposal.votersVoted = BigInt.zero();
     proposal.isDP = false;

@@ -1535,6 +1535,12 @@
         "internalType": "uint256",
         "name": "delegatedVote",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isVoteFor",
+        "type": "bool"
       }
     ],
     "name": "Voted",

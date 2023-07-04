@@ -184,7 +184,7 @@ templates:
           handler: onProposalCreated
         - event: Delegated(address,address,uint256,uint256[],bool)
           handler: onDelegated
-        - event: Voted(uint256,address,uint256,uint256)
+        - event: Voted(uint256,address,uint256,uint256,bool)
           handler: onVoted
         - event: ProposalExecuted(uint256,address)
           handler: onProposalExecuted
@@ -212,7 +212,7 @@ templates:
         - name: DaoValidators
           file: ./abis/DaoValidators.json
       eventHandlers:
-        - event: Voted(uint256,address,uint256,bool) # id, msg.sender, vote
+        - event: Voted(uint256,address,uint256,bool,bool) # id, msg.sender, vote
           handler: onVoted
         - event: InternalProposalCreated(uint256,string,uint256,address)
           handler: onInternalProposalCreated

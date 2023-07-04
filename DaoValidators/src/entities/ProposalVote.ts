@@ -8,7 +8,8 @@ export function getProposalVote(
   timestamp: BigInt,
   proposal: Proposal,
   amount: BigInt,
-  voter: ValidatorInProposal
+  voter: ValidatorInProposal,
+  isVoteFor: boolean
 ): ProposalVote {
   let counter = getInteractionCount(hash);
   let id = hash.concatI32(counter.count.toI32());
@@ -22,6 +23,8 @@ export function getProposalVote(
     vote.amount = amount;
 
     vote.voter = voter.id;
+
+    vote.isVoteFor = isVoteFor;
 
     increaseCounter(counter);
   }

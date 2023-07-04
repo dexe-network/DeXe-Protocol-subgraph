@@ -142,13 +142,30 @@ export function onVoted(event: Voted): void {
     voterInProposal,
     event.block.timestamp,
     event.params.personalVote,
-    event.params.delegatedVote
+    event.params.delegatedVote,
+    event.params.isVoteFor
   );
 
-  voterInProposal.totalDelegatedVoteAmount = voterInProposal.totalDelegatedVoteAmount.plus(event.params.delegatedVote);
-  voterInProposal.totalVoteAmount = voterInProposal.totalVoteAmount.plus(event.params.personalVote);
+  if (proposalVote.isVoteFor) {
+    voterInProposal.totalDelegatedVoteForAmount = voterInProposal.totalDelegatedVoteForAmount.plus(
+      event.params.delegatedVote
+    );
+    voterInProposal.totalVoteForAmount = voterInProposal.totalVoteForAmount.plus(event.params.personalVote);
 
-  proposal.currentVotes = proposal.currentVotes.plus(event.params.personalVote).plus(event.params.delegatedVote);
+    proposal.currentVotesFor = proposal.currentVotesFor
+      .plus(event.params.personalVote)
+      .plus(event.params.delegatedVote);
+  } else {
+    voterInProposal.totalDelegatedVoteAgainstAmount = voterInProposal.totalDelegatedVoteAgainstAmount.plus(
+      event.params.delegatedVote
+    );
+    voterInProposal.totalVoteAgainstAmount = voterInProposal.totalVoteAgainstAmount.plus(event.params.personalVote);
+
+    proposal.currentVotesAgainst = proposal.currentVotesAgainst
+      .plus(event.params.personalVote)
+      .plus(event.params.delegatedVote);
+  }
+
   let newVoters = extendArray<Bytes>(proposal.voters, [voter.id]);
 
   if (proposal.voters.length < newVoters.length) {

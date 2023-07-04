@@ -11,8 +11,10 @@ export function getVoterInProposal(proposal: Proposal, voterInPool: VoterInPool)
     voterInProposal.proposal = proposal.id;
     voterInProposal.voter = voterInPool.id;
 
-    voterInProposal.totalVoteAmount = BigInt.zero();
-    voterInProposal.totalDelegatedVoteAmount = BigInt.zero();
+    voterInProposal.totalVoteForAmount = BigInt.zero();
+    voterInProposal.totalVoteAgainstAmount = BigInt.zero();
+    voterInProposal.totalDelegatedVoteForAmount = BigInt.zero();
+    voterInProposal.totalDelegatedVoteAgainstAmount = BigInt.zero();
 
     voterInProposal.claimedRewardUSD = BigInt.zero();
     voterInProposal.claimedDpRewardUSD = BigInt.zero();

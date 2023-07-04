@@ -103,6 +103,7 @@ function createVoted(
   sender: Address,
   personalVote: BigInt,
   delegatedVote: BigInt,
+  isVoteFor: boolean,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
@@ -114,6 +115,7 @@ function createVoted(
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
   event.parameters.push(new ethereum.EventParam("personalVote", ethereum.Value.fromUnsignedBigInt(personalVote)));
   event.parameters.push(new ethereum.EventParam("delegatedVote", ethereum.Value.fromUnsignedBigInt(delegatedVote)));
+  event.parameters.push(new ethereum.EventParam("isVoteFor", ethereum.Value.fromBoolean(isVoteFor)));
 
   event.block = block;
   event.transaction = tx;
@@ -417,7 +419,13 @@ describe("DaoPool", () => {
       "executionTimestamp",
       "0"
     );
-    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "currentVotes", "0");
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "currentVotesFor", "0");
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "currentVotesAgainst",
+      "0"
+    );
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "quorum", "100");
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "votersVoted", "0");
     assert.fieldEquals(
@@ -599,18 +607,28 @@ describe("DaoPool", () => {
   test("should handle voted", () => {
     let proposalId = BigInt.fromI32(1);
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
-    let personalVote = BigInt.fromI32(1000);
-    let delegatedVote = BigInt.fromI32(100);
+    let personalVoteFor = BigInt.fromI32(1000);
+    let delegatedVoteFor = BigInt.fromI32(100);
+    let isVoteFor = true;
 
-    let event = createVoted(proposalId, sender, personalVote, delegatedVote, contractSender, block, tx);
+    let event = createVoted(
+      proposalId,
+      sender,
+      personalVoteFor,
+      delegatedVoteFor,
+      isVoteFor,
+      contractSender,
+      block,
+      tx
+    );
 
     onVoted(event);
 
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "currentVotes",
-      personalVote.plus(delegatedVote).toString()
+      "currentVotesFor",
+      personalVoteFor.plus(delegatedVoteFor).toString()
     );
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "votersVoted", "1");
     assert.fieldEquals(
@@ -634,14 +652,101 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "totalVoteAmount",
-      personalVote.toString()
+      "totalVoteForAmount",
+      personalVoteFor.toString()
     );
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "totalDelegatedVoteAmount",
-      delegatedVote.toString()
+      "totalVoteAgainstAmount",
+      "0"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "totalDelegatedVoteForAmount",
+      delegatedVoteFor.toString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "totalDelegatedVoteAgainstAmount",
+      "0"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "claimedRewardUSD",
+      BigInt.zero().toString()
+    );
+
+    let personalVoteAgainst = BigInt.fromI32(200);
+    let delegatedVoteAgainst = BigInt.fromI32(50);
+    isVoteFor = false;
+
+    const nextTx = getTransaction(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromI32(1))));
+
+    event = createVoted(
+      proposalId,
+      sender,
+      personalVoteAgainst,
+      delegatedVoteAgainst,
+      isVoteFor,
+      contractSender,
+      block,
+      nextTx
+    );
+
+    onVoted(event);
+
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "currentVotesAgainst",
+      personalVoteAgainst.plus(delegatedVoteAgainst).toString()
+    );
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "votersVoted", "1");
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "voter",
+      sender.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "totalVoteForAmount",
+      personalVoteFor.toString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "totalVoteAgainstAmount",
+      personalVoteAgainst.toString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "totalDelegatedVoteForAmount",
+      delegatedVoteFor.toString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "totalDelegatedVoteAgainstAmount",
+      delegatedVoteAgainst.toString()
     );
     assert.fieldEquals(
       "VoterInProposal",

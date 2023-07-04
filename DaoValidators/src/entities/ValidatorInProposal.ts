@@ -9,7 +9,8 @@ export function getValidatorInProposal(validator: ValidatorInPool, proposal: Pro
     validatorInProposal = new ValidatorInProposal(id);
     validatorInProposal.pool = validator.pool;
     validatorInProposal.proposal = proposal.id;
-    validatorInProposal.totalVote = BigInt.zero();
+    validatorInProposal.totalVoteFor = BigInt.zero();
+    validatorInProposal.totalVoteAgainst = BigInt.zero();
 
     validatorInProposal.validator = validator.id;
   }

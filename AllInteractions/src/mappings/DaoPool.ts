@@ -75,7 +75,8 @@ export function onVoted(event: Voted): void {
     event.transaction.hash,
     event.address,
     event.params.personalVote.plus(event.params.delegatedVote),
-    transaction.interactionsCount
+    transaction.interactionsCount,
+    event.params.isVoteFor
   );
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_PROPOSAL_VOTED)]);
