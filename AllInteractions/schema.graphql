@@ -53,7 +53,7 @@ type Transaction @entity {
 
   insuranceStake: [InsuranceStake!]! @derivedFrom(field: "transaction")
 
-  getPerfomanceFee: [GetPerfomanceFee!]! @derivedFrom(field: "transaction")
+  GetPerformanceFee: [GetPerformanceFee!]! @derivedFrom(field: "transaction")
 
   onlyPool: [OnlyPool!]! @derivedFrom(field: "transaction")
 }
@@ -256,7 +256,7 @@ type InsuranceStake @entity(immutable: true) {
 # @param baseAmount the amount in base token
 # @param lpAmount the amount in lp token
 # @param transaction the transaction entity id
-type GetPerfomanceFee @entity(immutable: true) {
+type GetPerformanceFee @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
   baseAmount: BigInt!
   lpAmount: BigInt!
@@ -362,13 +362,13 @@ type DaoPoolRewardClaim @entity(immutable: true) {
   transaction: Transaction!
 }
 
-# @notice The entity holds information about deposit
+# @notice The entity holds information about deposit/withdraw
 # @param id forms from tx hash + interactionCount
 # @param pool the pool address
 # @param nfts the array of nft ids
 # @param amount the amount of deposit
 # @param transaction the transaction entity id
-type DaoPoolDeposit @entity(immutable: true) {
+type DaoPoolVest @entity(immutable: true) {
   id: Bytes!
   pool: Bytes!
 

@@ -1,4 +1,4 @@
-import { Address, ethereum, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, ethereum, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import {
   afterEach,
   assert,
@@ -20,7 +20,7 @@ import {
   InternalProposalExecuted,
 } from "../generated/templates/DaoValidators/DaoValidators";
 
-import { assertTransaction, getBlock, getTransaction } from "./utils";
+import { assertTransaction, getBlock, getNextTx, getTransaction } from "./utils";
 import { DaoPoolDeployed } from "../generated/PoolFactory/PoolFactory";
 import { onDaoPoolDeployed } from "../src/mappings/PoolFactory";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
@@ -137,7 +137,7 @@ describe("DaoValidators", () => {
   });
 
   test("should handle InternalProposalExecuted", () => {
-    let proposalId = BigInt.fromI32(2);
+    let proposalId = BigInt.fromI32(1);
     let quorum = BigInt.fromI32(100);
     let description = "d";
     let sender = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181675");
@@ -164,9 +164,56 @@ describe("DaoValidators", () => {
       "proposalId",
       proposalId.toString()
     );
+    assert.fieldEquals(
+      "DaoValidatorProposalExecute",
+      tx.hash.concatI32(1).toHexString(),
+      "transaction",
+      tx.hash.toHexString()
+    );
 
     assertTransaction(
       tx.hash,
+      event.params.executor,
+      block,
+      `[${TransactionType.DAO_VALIDATORS_PROPOSAL_CREATED}, ${TransactionType.DAO_VALIDATORS_PROPOSAL_EXECUTED}]`,
+      BigInt.fromI32(2)
+    );
+
+    const nextTx = getNextTx(tx);
+    proposalId = BigInt.fromI32(2);
+    sender = Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE");
+
+    createEvent = createInternalProposalCreated(proposalId, description, quorum, sender, contractSender, block, nextTx);
+
+    onInternalProposalCreated(createEvent);
+
+    executor = Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE");
+
+    event = createInternalProposalExecuted(proposalId, executor, contractSender, block, nextTx);
+
+    onInternalProposalExecuted(event);
+
+    assert.fieldEquals(
+      "DaoValidatorProposalExecute",
+      nextTx.hash.concatI32(1).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals(
+      "DaoValidatorProposalExecute",
+      nextTx.hash.concatI32(1).toHexString(),
+      "proposalId",
+      proposalId.toString()
+    );
+    assert.fieldEquals(
+      "DaoValidatorProposalExecute",
+      nextTx.hash.concatI32(1).toHexString(),
+      "transaction",
+      nextTx.hash.toHexString()
+    );
+
+    assertTransaction(
+      nextTx.hash,
       event.params.executor,
       block,
       `[${TransactionType.DAO_VALIDATORS_PROPOSAL_CREATED}, ${TransactionType.DAO_VALIDATORS_PROPOSAL_EXECUTED}]`,

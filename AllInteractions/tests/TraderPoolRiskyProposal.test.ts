@@ -8,7 +8,7 @@ import {
   ProposalInvested,
   ProposalRestrictionsChanged,
 } from "../generated/templates/TraderPoolRiskyProposal/TraderPoolRiskyProposal";
-import { assertTransaction, getBlock, getTransaction } from "./utils";
+import { assertTransaction, getBlock, getNextTx, getTransaction } from "./utils";
 import {
   onProposalCreated,
   onProposalDivest,
@@ -282,6 +282,30 @@ describe("TraderPoolRiskyProposal", () => {
 
     assertTransaction(
       tx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.RISKY_PROPOSAL_EDIT}]`,
+      BigInt.fromI32(1)
+    );
+
+    const nextTx = getNextTx(tx);
+    user = Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE");
+
+    event = createProposalRestrictionsChanged(proposalId, user, sender, block, nextTx);
+
+    onProposalRestrictionsChanged(event);
+
+    assert.fieldEquals("ProposalEdit", nextTx.hash.concatI32(0).toHexString(), "proposalId", proposalId.toString());
+    assert.fieldEquals("ProposalEdit", nextTx.hash.concatI32(0).toHexString(), "pool", pool.toHexString());
+    assert.fieldEquals(
+      "ProposalEdit",
+      nextTx.hash.concatI32(0).toHexString(),
+      "transaction",
+      nextTx.hash.toHexString()
+    );
+
+    assertTransaction(
+      nextTx.hash,
       event.params.sender,
       block,
       `[${TransactionType.RISKY_PROPOSAL_EDIT}]`,

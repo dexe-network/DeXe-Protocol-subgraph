@@ -16,7 +16,7 @@ import { getVest } from "../entities/trader-pool/Vest";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getOnlyPool } from "../entities/transaction/OnlyPool";
 import { getProposalVest } from "../entities/trader-pool/risky-proposal/ProposalVest";
-import { getGetPerfomaneFee } from "../entities/transaction/GetPerfomanceFee";
+import { getGetPerformanceFee } from "../entities/transaction/GetPerformanceFee";
 import { extendArray } from "../helpers/ArrayHelper";
 
 export function onExchange(event: Exchanged): void {
@@ -162,7 +162,7 @@ export function onCommissionClaimed(event: CommissionClaimed): void {
     event.params.sender
   );
 
-  let perfomanceFee = getGetPerfomaneFee(
+  let perfomanceFee = getGetPerformanceFee(
     event.transaction.hash,
     event.params.traderBaseClaimed,
     event.params.traderLpClaimed,

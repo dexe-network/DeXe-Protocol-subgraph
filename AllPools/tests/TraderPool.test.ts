@@ -260,26 +260,49 @@ describe("TraderPool", () => {
   });
 
   test("should handle Left", () => {
-    let expectedInvestor = Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679");
-    let eventJoined = createJoined(expectedInvestor, sender, block, tx);
+    let expectedInvestor1 = Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679");
+    let expectedInvestor2 = Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE");
+    let eventJoined = createJoined(expectedInvestor1, sender, block, tx);
 
     onJoined(eventJoined);
 
-    let eventLeft = createLeft(expectedInvestor, sender, block, tx);
+    eventJoined = createJoined(expectedInvestor2, sender, block, tx);
+
+    onJoined(eventJoined);
+
+    let eventLeft = createLeft(expectedInvestor1, sender, block, tx);
 
     onLeft(eventLeft);
 
-    assert.fieldEquals("Investor", expectedInvestor.toHexString(), "activePools", "[]");
-    assert.fieldEquals("Investor", expectedInvestor.toHexString(), "allPools", `[${sender.toHexString()}]`);
-    assert.fieldEquals("TraderPool", sender.toHexString(), "investors", "[]");
+    assert.fieldEquals("Investor", expectedInvestor1.toHexString(), "activePools", "[]");
+    assert.fieldEquals("Investor", expectedInvestor1.toHexString(), "allPools", `[${sender.toHexString()}]`);
+    assert.fieldEquals("TraderPool", sender.toHexString(), "investors", `[${expectedInvestor2.toHexString()}]`);
+    assert.fieldEquals("TraderPool", sender.toHexString(), "investorsCount", BigInt.fromI32(1).toString());
+
+    eventLeft = createLeft(expectedInvestor2, sender, block, tx);
+
+    onLeft(eventLeft);
+
+    assert.fieldEquals("Investor", expectedInvestor2.toHexString(), "activePools", "[]");
+    assert.fieldEquals("Investor", expectedInvestor2.toHexString(), "allPools", `[${sender.toHexString()}]`);
+    assert.fieldEquals("TraderPool", sender.toHexString(), "investors", `[]`);
     assert.fieldEquals("TraderPool", sender.toHexString(), "investorsCount", BigInt.zero().toString());
   });
 
   test("should handle DescriptionURLChanged", () => {
     let expectedInvestor = Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679");
-    let expectedUrl = "URL";
+    let expectedUrl = "URL_1";
 
     let event = createDescriptionURLChanged(expectedInvestor, expectedUrl, sender, block, tx);
+
+    onDescriptionURLChanged(event);
+
+    assert.fieldEquals("TraderPool", sender.toHexString(), "descriptionURL", expectedUrl);
+
+    expectedInvestor = Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE");
+    expectedUrl = "URL_2";
+
+    event = createDescriptionURLChanged(expectedInvestor, expectedUrl, sender, block, tx);
 
     onDescriptionURLChanged(event);
 
@@ -288,10 +311,29 @@ describe("TraderPool", () => {
 
   test("should handle ModifiedAdmins", () => {
     let expectedUser = Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679");
-    let expectedAdmins = [Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679")];
+    let expectedAdmins = [
+      Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679"),
+      Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE"),
+    ];
     let add = true;
 
     let event = createModifiedAdmins(expectedUser, expectedAdmins, add, sender, block, tx);
+
+    onModifiedAdmins(event);
+
+    assert.fieldEquals(
+      "TraderPool",
+      sender.toHexString(),
+      "admins",
+      `[${getTraderPool(
+        sender
+      ).trader.toHexString()}, ${expectedAdmins[0].toHexString()}, ${expectedAdmins[1].toHexString()}]`
+    );
+
+    add = false;
+    expectedAdmins = [Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE")];
+
+    event = createModifiedAdmins(expectedUser, expectedAdmins, add, sender, block, tx);
 
     onModifiedAdmins(event);
 
@@ -307,10 +349,27 @@ describe("TraderPool", () => {
 
   test("should handle ModifiedPrivateInvestors", () => {
     let expectedUser = Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679");
-    let expectedPrivateInvestors = [Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679")];
+    let expectedPrivateInvestors = [
+      Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679"),
+      Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE"),
+    ];
     let add = true;
 
     let event = createModifiedPrivateInvestors(expectedUser, expectedPrivateInvestors, add, sender, block, tx);
+
+    onModifiedPrivateInvestors(event);
+
+    assert.fieldEquals(
+      "TraderPool",
+      sender.toHexString(),
+      "privateInvestors",
+      `[${expectedPrivateInvestors[0].toHexString()}, ${expectedPrivateInvestors[1].toHexString()}]`
+    );
+
+    add = false;
+    expectedPrivateInvestors = [Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE")];
+
+    event = createModifiedPrivateInvestors(expectedUser, expectedPrivateInvestors, add, sender, block, tx);
 
     onModifiedPrivateInvestors(event);
 
@@ -346,12 +405,26 @@ describe("TraderPool", () => {
 
     onExchange(event);
 
+    assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString() + "_0", "hash", tx.hash.toHexString());
+    assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString() + "_0", "timestamp", block.timestamp.toString());
     assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString() + "_0", "fromToken", fromToken.toHexString());
     assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString() + "_0", "toToken", toToken.toHexString());
     assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString() + "_0", "fromVolume", fromVolume.toString());
     assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString() + "_0", "toVolume", toVolume.toString());
     assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString() + "_0", "usdVolume", expectedUSD.toString());
+    assert.fieldEquals(
+      "Exchange",
+      tx.hash.concatI32(0).toHexString() + "_0",
+      "position",
+      sender.toHexString() + toToken.toHexString() + "0"
+    );
     assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString() + "_0", "opening", "true");
+
+    const day = block.timestamp.div(BigInt.fromI32(86400));
+    const exchangeHistoryId = sender.toHexString() + day.toString();
+
+    assert.fieldEquals("ExchangeHistory", exchangeHistoryId, "traderPool", sender.toHexString());
+    assert.fieldEquals("ExchangeHistory", exchangeHistoryId, "day", day.toString());
 
     assert.fieldEquals(
       "Position",
@@ -366,6 +439,9 @@ describe("TraderPool", () => {
       fromVolume.toString()
     );
     assert.fieldEquals("InteractionCount", tx.hash.toHexString(), "count", "1");
+
+    assert.fieldEquals("TraderPool", sender.toHexString(), "totalTrades", "1");
+    assert.fieldEquals("TraderPool", sender.toHexString(), "averageTrades", "1");
   });
 
   test("should handle PositionClosed event", () => {
@@ -443,7 +519,7 @@ describe("TraderPool", () => {
     assert.fieldEquals("FeeHistory", historyId, "PNL", "0");
     assert.fieldEquals("FeeHistory", historyId, "fundProfit", fundProfit.toString());
     assert.fieldEquals("FeeHistory", historyId, "perfomanceFee", perfomanceFee.toString());
-    assert.fieldEquals("FeeHistory", historyId, "day", "0");
+    assert.fieldEquals("FeeHistory", historyId, "day", block.timestamp.div(BigInt.fromI32(86400)).toString());
     assert.fieldEquals("FeeHistory", historyId, "prevHistory", "");
   });
 

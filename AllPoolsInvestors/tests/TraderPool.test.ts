@@ -22,7 +22,7 @@ import {
   Joined,
   Left,
 } from "../generated/templates/TraderPool/TraderPool";
-import { getBlock, getTransaction } from "./utils";
+import { getBlock, getNextTx, getTransaction } from "./utils";
 import {
   onDivest,
   onInvest,
@@ -214,9 +214,17 @@ describe("TraderPool", () => {
 
     onInvest(event);
 
+    assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "hash", tx.hash.toHexString());
+    assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "isInvest", "true");
+    assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "timestamp", block.timestamp.toString());
+    assert.fieldEquals(
+      "Vest",
+      tx.hash.concatI32(0).toHexString(),
+      "investorPoolPosition",
+      user.toHexString() + sender.toHexString() + "0"
+    );
     assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "volumeBase", investedBase.toString());
     assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "volumeLP", receivedLP.toString());
-    assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "hash", tx.hash.toHexString());
 
     assert.fieldEquals(
       "InvestorPoolPosition",
@@ -256,7 +264,7 @@ describe("TraderPool", () => {
       "currentLpAmount",
       receivedLP.toString()
     );
-    logStore();
+
     assert.fieldEquals(
       "InvestorAmountHistory",
       user.toHexString() + "0",
@@ -275,6 +283,23 @@ describe("TraderPool", () => {
       "totalBTCInvestVolume",
       expectedBTC.toString()
     );
+
+    const nextTx = getNextTx(tx);
+    event = createInvestedEvent(user, investedBase, receivedLP, sender, block, nextTx);
+
+    onInvest(event);
+
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "hash", nextTx.hash.toHexString());
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "isInvest", "true");
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "timestamp", block.timestamp.toString());
+    assert.fieldEquals(
+      "Vest",
+      nextTx.hash.concatI32(0).toHexString(),
+      "investorPoolPosition",
+      user.toHexString() + sender.toHexString() + "0"
+    );
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "volumeBase", investedBase.toString());
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "volumeLP", receivedLP.toString());
   });
 
   test("should handle divested event", () => {
@@ -286,6 +311,9 @@ describe("TraderPool", () => {
 
     onDivest(event);
 
+    assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "hash", tx.hash.toHexString());
+    assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "isInvest", "false");
+    assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "timestamp", block.timestamp.toString());
     assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "volumeBase", receivedBase.toString());
     assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "volumeLP", divestedLP.toString());
     assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "hash", tx.hash.toHexString());
@@ -347,6 +375,18 @@ describe("TraderPool", () => {
       "totalBTCDivestVolume",
       expectedBTC.toString()
     );
+
+    let nextTx = getNextTx(tx);
+    event = createDivestedEvent(user, receivedBase, divestedLP, sender, block, nextTx);
+
+    onDivest(event);
+
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "hash", nextTx.hash.toHexString());
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "isInvest", "false");
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "timestamp", block.timestamp.toString());
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "volumeBase", receivedBase.toString());
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "volumeLP", divestedLP.toString());
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "hash", nextTx.hash.toHexString());
   });
 
   test("should handle ProposalDivested event", () => {
@@ -419,13 +459,42 @@ describe("TraderPool", () => {
   });
 
   test("should handle Left event", () => {
-    let investor = Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670");
+    let investors = [
+      Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670"),
+      Address.fromString("0x065049652b9d7C9fE9dD582970dB63a058788688"),
+    ];
 
-    let eventAdded = createJoinedEvent(investor, sender, block, tx);
-    let eventRemoved = createLeftEvent(investor, sender, block, tx);
-
+    let eventAdded = createJoinedEvent(investors[0], sender, block, tx);
     onJoined(eventAdded);
+
+    eventAdded = createJoinedEvent(investors[1], sender, block, tx);
+    onJoined(eventAdded);
+
+    assert.fieldEquals(
+      "TraderPool",
+      sender.toHexString(),
+      "investors",
+      `[${investors[0].toHexString()}, ${investors[1].toHexString()}]`
+    );
+    assert.fieldEquals("TraderPool", sender.toHexString(), "investorsCount", "2");
+
+    assert.fieldEquals("Investor", investors[0].toHexString(), "activePools", `[${sender.toHexString()}]`);
+    assert.fieldEquals("Investor", investors[0].toHexString(), "allPools", `[${sender.toHexString()}]`);
+
+    assert.fieldEquals("Investor", investors[1].toHexString(), "activePools", `[${sender.toHexString()}]`);
+    assert.fieldEquals("Investor", investors[1].toHexString(), "allPools", `[${sender.toHexString()}]`);
+
+    let eventRemoved = createLeftEvent(investors[0], sender, block, tx);
     onLeft(eventRemoved);
+
+    eventRemoved = createLeftEvent(investors[1], sender, block, tx);
+    onLeft(eventRemoved);
+
+    assert.fieldEquals("Investor", investors[0].toHexString(), "activePools", "[]");
+    assert.fieldEquals("Investor", investors[0].toHexString(), "allPools", `[${sender.toHexString()}]`);
+
+    assert.fieldEquals("Investor", investors[1].toHexString(), "activePools", "[]");
+    assert.fieldEquals("Investor", investors[1].toHexString(), "allPools", `[${sender.toHexString()}]`);
 
     assert.fieldEquals("TraderPool", sender.toHexString(), "investors", "[]");
     assert.fieldEquals("TraderPool", sender.toHexString(), "investorsCount", "0");
