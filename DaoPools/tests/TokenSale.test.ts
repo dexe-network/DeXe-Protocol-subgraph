@@ -89,13 +89,37 @@ describe("TokenSale", () => {
 
     onTierCreated(event);
 
+    assert.fieldEquals("TokenSale", contractSender.toHexString(), "token", poolAddress.toHexString());
+    assert.fieldEquals("TokenSale", contractSender.toHexString(), "pool", poolAddress.toHexString());
+
     assert.fieldEquals(
       "TokenSaleTier",
       contractSender.concatI32(tierId.toI32()).toHexString(),
       "tokenSale",
       contractSender.toHexString()
     );
+    assert.fieldEquals(
+      "TokenSaleTier",
+      contractSender.concatI32(tierId.toI32()).toHexString(),
+      "tierToken",
+      token.toHexString()
+    );
 
+    tierId = BigInt.fromI32(6);
+    token = Address.fromString("0xfF42F3B569cdB6dF9dC260473Ec2ef63Ca971d63");
+    event = createTierCreated(tierId, token, contractSender, block, tx);
+
+    onTierCreated(event);
+
+    assert.fieldEquals("TokenSale", contractSender.toHexString(), "token", poolAddress.toHexString());
+    assert.fieldEquals("TokenSale", contractSender.toHexString(), "pool", poolAddress.toHexString());
+
+    assert.fieldEquals(
+      "TokenSaleTier",
+      contractSender.concatI32(tierId.toI32()).toHexString(),
+      "tokenSale",
+      contractSender.toHexString()
+    );
     assert.fieldEquals(
       "TokenSaleTier",
       contractSender.concatI32(tierId.toI32()).toHexString(),
@@ -106,8 +130,8 @@ describe("TokenSale", () => {
 
   test("should handle bought", () => {
     let tierId = BigInt.fromI32(5);
-    let user = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181672");
-    let event = createBought(tierId, user, contractSender, block, tx);
+    let user1 = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181672");
+    let event = createBought(tierId, user1, contractSender, block, tx);
 
     onBought(event);
 
@@ -122,7 +146,26 @@ describe("TokenSale", () => {
       "TokenSaleTier",
       contractSender.concatI32(tierId.toI32()).toHexString(),
       "voters",
-      `[${user.concat(poolAddress).toHexString()}]`
+      `[${user1.concat(poolAddress).toHexString()}]`
+    );
+
+    let user2 = Address.fromString("0xfF42F3B569cdB6dF9dC260473Ec2ef63Ca971d63");
+    event = createBought(tierId, user2, contractSender, block, tx);
+
+    onBought(event);
+
+    assert.fieldEquals(
+      "TokenSaleTier",
+      contractSender.concatI32(tierId.toI32()).toHexString(),
+      "tokenSale",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals("TokenSaleTier", contractSender.concatI32(tierId.toI32()).toHexString(), "totalUserCount", "2");
+    assert.fieldEquals(
+      "TokenSaleTier",
+      contractSender.concatI32(tierId.toI32()).toHexString(),
+      "voters",
+      `[${user1.concat(poolAddress).toHexString()}, ${user2.concat(poolAddress).toHexString()}]`
     );
   });
 

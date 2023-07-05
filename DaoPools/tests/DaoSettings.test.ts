@@ -57,7 +57,7 @@ describe("DaoSettings", () => {
   });
 
   test("should handle SettingsChanged", () => {
-    let description = "d";
+    let description = "d1";
 
     let event = createSettingsChanged(settingsId, description, contractSender, block, tx);
 
@@ -75,12 +75,68 @@ describe("DaoSettings", () => {
       "executorDescription",
       description
     );
+    assert.fieldEquals(
+      "ProposalSettings",
+      poolAddress.concatI32(settingsId.toI32()).toHexString(),
+      "pool",
+      poolAddress.toHexString()
+    );
+
+    description = "d2";
+
+    event = createSettingsChanged(settingsId, description, contractSender, block, tx);
+
+    onSettingsChanged(event);
+
+    assert.fieldEquals(
+      "ProposalSettings",
+      poolAddress.concatI32(settingsId.toI32()).toHexString(),
+      "settingsId",
+      settingsId.toString()
+    );
+    assert.fieldEquals(
+      "ProposalSettings",
+      poolAddress.concatI32(settingsId.toI32()).toHexString(),
+      "executorDescription",
+      description
+    );
+    assert.fieldEquals(
+      "ProposalSettings",
+      poolAddress.concatI32(settingsId.toI32()).toHexString(),
+      "pool",
+      poolAddress.toHexString()
+    );
   });
 
   test("should handle ExecutorChanged", () => {
     let executorAddress = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181672");
 
     let event = createExecutorChanged(settingsId, executorAddress, contractSender, block, tx);
+
+    onExecutorChanged(event);
+
+    assert.fieldEquals(
+      "Executor",
+      poolAddress.concat(executorAddress).toHexString(),
+      "executorAddress",
+      executorAddress.toHexString()
+    );
+    assert.fieldEquals(
+      "Executor",
+      poolAddress.concat(executorAddress).toHexString(),
+      "settings",
+      poolAddress.concatI32(settingsId.toI32()).toHexString()
+    );
+    assert.fieldEquals(
+      "Executor",
+      poolAddress.concat(executorAddress).toHexString(),
+      "pool",
+      poolAddress.toHexString()
+    );
+
+    executorAddress = Address.fromString("0xfF42F3B569cdB6dF9dC260473Ec2ef63Ca971d63");
+
+    event = createExecutorChanged(settingsId, executorAddress, contractSender, block, tx);
 
     onExecutorChanged(event);
 
