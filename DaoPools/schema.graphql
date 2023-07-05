@@ -202,11 +202,13 @@ type VoterInProposal @entity {
   totalDelegatedVoteForAmount: BigInt!
   totalDelegatedVoteAgainstAmount: BigInt!
 
-  unclaimedRewardUSD: BigInt!
-  unclaimedRewardFromDelegationsUSD: BigInt!
+  unclaimedRewardForUSD: BigInt!
+  unclaimedRewardAgainstUSD: BigInt!
+  unclaimedRewardForFromDelegationsUSD: BigInt!
+  unclaimedRewardAgainstFromDelegationsUSD: BigInt!
 
-  claimedRewardUSD: BigInt!
-  claimedDpRewardUSD: BigInt!
+  claimedRewardForUSD: BigInt!
+  claimedDpRewardAgainstUSD: BigInt!
 
   votes: [ProposalVote!]! @derivedFrom(field: "voter")
 }

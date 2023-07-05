@@ -20,7 +20,13 @@ import { getVoter } from "../entities/Voters/Voter";
 import { getVoterInPool } from "../entities/Voters/VoterInPool";
 import { getVoterInProposal } from "../entities/Voters/VoterInProposal";
 import { PriceFeed } from "../../generated/templates/DaoPool/PriceFeed";
-import { PERCENTAGE_NUMERATOR, PRICE_FEED_ADDRESS, REWARD_TYPE_VOTE_DELEGATED, YEAR } from "../entities/global/globals";
+import {
+  PERCENTAGE_NUMERATOR,
+  PRICE_FEED_ADDRESS,
+  REWARD_TYPE_VOTE_AGAINST_DELEGATED,
+  REWARD_TYPE_VOTE_FOR_DELEGATED,
+  YEAR,
+} from "../entities/global/globals";
 import { Proposal, VoterInPool, VoterInProposal } from "../../generated/schema";
 import { extendArray, reduceArray } from "../helpers/ArrayHelper";
 import { getProposalSettings } from "../entities/Settings/ProposalSettings";
@@ -235,7 +241,10 @@ export function onRewardCredited(event: RewardCredited): void {
 
   let usdAmount = getUSDValue(event.params.rewardToken, event.params.amount);
 
-  if (event.params.rewardType == REWARD_TYPE_VOTE_DELEGATED) {
+  if (
+    event.params.rewardType == REWARD_TYPE_VOTE_FOR_DELEGATED ||
+    event.params.rewardType == REWARD_TYPE_VOTE_AGAINST_DELEGATED
+  ) {
     voterInProposal.unclaimedRewardFromDelegationsUSD =
       voterInProposal.unclaimedRewardFromDelegationsUSD.plus(usdAmount);
     voterInPool.totalDelegationRewardUSD = voterInPool.totalDelegationRewardUSD.plus(usdAmount);
