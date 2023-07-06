@@ -53,7 +53,7 @@ type Transaction @entity {
 
   insuranceStake: [InsuranceStake!]! @derivedFrom(field: "transaction")
 
-  GetPerformanceFee: [GetPerformanceFee!]! @derivedFrom(field: "transaction")
+  getPerformanceFee: [GetPerformanceFee!]! @derivedFrom(field: "transaction")
 
   onlyPool: [OnlyPool!]! @derivedFrom(field: "transaction")
 }
