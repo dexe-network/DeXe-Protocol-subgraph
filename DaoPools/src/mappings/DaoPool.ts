@@ -23,8 +23,11 @@ import { PriceFeed } from "../../generated/templates/DaoPool/PriceFeed";
 import {
   PERCENTAGE_NUMERATOR,
   PRICE_FEED_ADDRESS,
-  REWARD_TYPE_VOTE_AGAINST_DELEGATED,
+  REWARD_TYPE_CREATE,
+  REWARD_TYPE_VOTE_FOR,
+  REWARD_TYPE_VOTE_AGAINST,
   REWARD_TYPE_VOTE_FOR_DELEGATED,
+  REWARD_TYPE_VOTE_AGAINST_DELEGATED,
   YEAR,
 } from "../entities/global/globals";
 import { Proposal, VoterInPool, VoterInProposal } from "../../generated/schema";
@@ -205,6 +208,7 @@ export function onProposalExecuted(event: ProposalExecuted): void {
   let pool = getDaoPool(event.address);
   let proposal = getProposal(pool, event.params.proposalId);
 
+  proposal.isFor = event.params.isFor;
   proposal.executor = event.params.sender;
   proposal.executionTimestamp = event.block.timestamp;
 
@@ -241,16 +245,26 @@ export function onRewardCredited(event: RewardCredited): void {
 
   let usdAmount = getUSDValue(event.params.rewardToken, event.params.amount);
 
-  if (
-    event.params.rewardType == REWARD_TYPE_VOTE_FOR_DELEGATED ||
-    event.params.rewardType == REWARD_TYPE_VOTE_AGAINST_DELEGATED
-  ) {
-    voterInProposal.unclaimedRewardFromDelegationsUSD =
-      voterInProposal.unclaimedRewardFromDelegationsUSD.plus(usdAmount);
-    voterInPool.totalDelegationRewardUSD = voterInPool.totalDelegationRewardUSD.plus(usdAmount);
+  const rewardType = event.params.rewardType;
+
+  if (rewardType == REWARD_TYPE_VOTE_FOR_DELEGATED) {
+    voterInProposal.unclaimedRewardFromDelegationsUSDFor =
+      voterInProposal.unclaimedRewardFromDelegationsUSDFor.plus(usdAmount);
+    voterInPool.totalDelegationRewardUSDFor = voterInPool.totalDelegationRewardUSDFor.plus(usdAmount);
+  } else if (rewardType == REWARD_TYPE_VOTE_AGAINST_DELEGATED) {
+    voterInProposal.unclaimedRewardFromDelegationsUSDAgainst =
+      voterInProposal.unclaimedRewardFromDelegationsUSDAgainst.plus(usdAmount);
+    voterInPool.totalDelegationRewardUSDAgainst = voterInPool.totalDelegationRewardUSDAgainst.plus(usdAmount);
   }
 
-  voterInProposal.unclaimedRewardUSD = voterInProposal.unclaimedRewardUSD.plus(usdAmount);
+  if (rewardType == REWARD_TYPE_VOTE_FOR || rewardType == REWARD_TYPE_VOTE_FOR_DELEGATED) {
+    voterInProposal.unclaimedRewardUSDFor = voterInProposal.unclaimedRewardUSDFor.plus(usdAmount);
+  } else if (rewardType == REWARD_TYPE_VOTE_AGAINST || rewardType == REWARD_TYPE_VOTE_AGAINST_DELEGATED) {
+    voterInProposal.unclaimedRewardUSDAgainst = voterInProposal.unclaimedRewardUSDAgainst.plus(usdAmount);
+  } else {
+    voterInProposal.unclaimedRewardUSDFor = voterInProposal.unclaimedRewardUSDFor.plus(usdAmount);
+    voterInProposal.unclaimedRewardUSDAgainst = voterInProposal.unclaimedRewardUSDAgainst.plus(usdAmount);
+  }
 
   recalculateAPR(voterInPool, usdAmount, event.block.timestamp);
 

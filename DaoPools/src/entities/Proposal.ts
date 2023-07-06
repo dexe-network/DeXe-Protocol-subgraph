@@ -18,6 +18,7 @@ export function getProposal(
 
     proposal.proposalId = proposalId;
     proposal.creator = creator;
+    proposal.isFor = false;
     proposal.executor = Bytes.empty();
     proposal.executionTimestamp = BigInt.zero();
     proposal.currentVotesFor = BigInt.zero();

@@ -7,6 +7,7 @@ export const DAY = 86400;
 export const YEAR = BigInt.fromI32(DAY).times(BigInt.fromI32(365));
 export const PERCENTAGE_NUMERATOR = 10000;
 
+export const REWARD_TYPE_CREATE = 0;
 export const REWARD_TYPE_VOTE_FOR = 1;
 export const REWARD_TYPE_VOTE_AGAINST = 2;
 export const REWARD_TYPE_VOTE_FOR_DELEGATED = 3;

@@ -70,6 +70,7 @@ type Voter @entity {
 # @param id forms from pool address + proposalId
 # @param isDP the bool flag, if true proposal is DP
 # @param creator the address of creator
+# @param isFor bool flag, if true - proposal succeded, if false - proposal defeated
 # @param executor the address of executor
 # @param executionTimestamp the timestamp of execution
 # @param currentVotes the current number of votes
@@ -87,6 +88,7 @@ type Proposal @entity {
 
   creator: Bytes!
 
+  isFor: Boolean!
   executor: Bytes!
   executionTimestamp: BigInt!
 
@@ -136,7 +138,8 @@ type VoterInPool @entity {
   totalDPClaimed: BigInt!
   totalClaimedUSD: BigInt!
 
-  totalDelegationRewardUSD: BigInt!
+  totalDelegationRewardUSDFor: BigInt!
+  totalDelegationRewardUSDAgainst: BigInt!
 
   currentDelegatorsCount: BigInt!
 
@@ -202,13 +205,13 @@ type VoterInProposal @entity {
   totalDelegatedVoteForAmount: BigInt!
   totalDelegatedVoteAgainstAmount: BigInt!
 
-  unclaimedRewardForUSD: BigInt!
-  unclaimedRewardAgainstUSD: BigInt!
-  unclaimedRewardForFromDelegationsUSD: BigInt!
-  unclaimedRewardAgainstFromDelegationsUSD: BigInt!
+  unclaimedRewardUSDFor: BigInt!
+  unclaimedRewardUSDAgainst: BigInt!
+  unclaimedRewardFromDelegationsUSDFor: BigInt!
+  unclaimedRewardFromDelegationsUSDAgainst: BigInt!
 
-  claimedRewardForUSD: BigInt!
-  claimedDpRewardAgainstUSD: BigInt!
+  claimedRewardUSD: BigInt!
+  claimedDpRewardUSD: BigInt!
 
   votes: [ProposalVote!]! @derivedFrom(field: "voter")
 }

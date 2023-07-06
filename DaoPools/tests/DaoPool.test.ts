@@ -36,7 +36,14 @@ import {
   onStakingRewardClaimed,
 } from "../src/mappings/DaoPool";
 import { ProposalType } from "../src/entities/global/ProposalTypes";
-import { PRICE_FEED_ADDRESS, REWARD_TYPE_VOTE_DELEGATED } from "../src/entities/global/globals";
+import {
+  PRICE_FEED_ADDRESS,
+  REWARD_TYPE_CREATE,
+  REWARD_TYPE_VOTE_AGAINST,
+  REWARD_TYPE_VOTE_AGAINST_DELEGATED,
+  REWARD_TYPE_VOTE_FOR,
+  REWARD_TYPE_VOTE_FOR_DELEGATED,
+} from "../src/entities/global/globals";
 import { ProposalSettings } from "../generated/schema";
 import { createSetERC20 } from "./UserKeeper.test";
 import { getUserKeeperContract } from "../src/entities/UserKeeperContract";
@@ -150,6 +157,7 @@ function createDPCreated(
 
 function createProposalExecuted(
   proposalId: BigInt,
+  isFor: boolean,
   sender: Address,
   contractSender: Address,
   block: ethereum.Block,
@@ -159,6 +167,7 @@ function createProposalExecuted(
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
+  event.parameters.push(new ethereum.EventParam("isFor", ethereum.Value.fromBoolean(isFor)));
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
   event.block = block;
@@ -789,12 +798,14 @@ describe("DaoPool", () => {
 
   test("should handle ProposalExecuted", () => {
     let proposalId = BigInt.fromI32(1);
+    let isFor = true;
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
 
-    let event = createProposalExecuted(proposalId, sender, contractSender, block, tx);
+    let event = createProposalExecuted(proposalId, isFor, sender, contractSender, block, tx);
 
     onProposalExecuted(event);
 
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "isFor", "true");
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
@@ -860,7 +871,7 @@ describe("DaoPool", () => {
 
     let event = createRewardCredited(
       proposalId,
-      BigInt.fromI32(REWARD_TYPE_VOTE_DELEGATED - 1),
+      BigInt.fromI32(REWARD_TYPE_CREATE),
       rewardToken,
       amount,
       sender,
@@ -874,18 +885,30 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "unclaimedRewardUSD",
+      "unclaimedRewardUSDFor",
       "200"
     );
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "unclaimedRewardFromDelegationsUSD",
+      "unclaimedRewardUSDAgainst",
+      "200"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardFromDelegationsUSDFor",
+      "0"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardFromDelegationsUSDAgainst",
       "0"
     );
   });
 
-  test("should handle RewardCredited when reward type", () => {
+  test("should handle RewardCredited when reward type vote for/against", () => {
     let proposalId = BigInt.fromI32(1);
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
     let rewardToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181676");
@@ -893,7 +916,7 @@ describe("DaoPool", () => {
 
     let event = createRewardCredited(
       proposalId,
-      BigInt.fromI32(REWARD_TYPE_VOTE_DELEGATED),
+      BigInt.fromI32(REWARD_TYPE_VOTE_FOR),
       rewardToken,
       amount,
       sender,
@@ -907,16 +930,186 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "unclaimedRewardFromDelegationsUSD",
+      "unclaimedRewardFromDelegationsUSDFor",
+      "0"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardFromDelegationsUSDAgainst",
+      "0"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardUSDFor",
       "200"
     );
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "unclaimedRewardUSD",
+      "unclaimedRewardUSDAgainst",
+      "0"
+    );
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalDelegationRewardUSDFor", "0");
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "totalDelegationRewardUSDAgainst",
+      "0"
+    );
+
+    event = createRewardCredited(
+      proposalId,
+      BigInt.fromI32(REWARD_TYPE_VOTE_AGAINST),
+      rewardToken,
+      amount,
+      sender,
+      contractSender,
+      block,
+      tx
+    );
+
+    onRewardCredited(event);
+
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardFromDelegationsUSDFor",
+      "0"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardFromDelegationsUSDAgainst",
+      "0"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardUSDFor",
       "200"
     );
-    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalDelegationRewardUSD", "200");
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardUSDAgainst",
+      "200"
+    );
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalDelegationRewardUSDFor", "0");
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "totalDelegationRewardUSDAgainst",
+      "0"
+    );
+  });
+
+  test("should handle RewardCredited when reward type vote for/against delegated", () => {
+    let proposalId = BigInt.fromI32(1);
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let rewardToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181676");
+    let amount = BigInt.fromI32(1000);
+
+    let event = createRewardCredited(
+      proposalId,
+      BigInt.fromI32(REWARD_TYPE_VOTE_FOR_DELEGATED),
+      rewardToken,
+      amount,
+      sender,
+      contractSender,
+      block,
+      tx
+    );
+
+    onRewardCredited(event);
+
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardFromDelegationsUSDFor",
+      "200"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardFromDelegationsUSDAgainst",
+      "0"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardUSDFor",
+      "200"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardUSDAgainst",
+      "0"
+    );
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "totalDelegationRewardUSDFor",
+      "200"
+    );
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "totalDelegationRewardUSDAgainst",
+      "0"
+    );
+
+    event = createRewardCredited(
+      proposalId,
+      BigInt.fromI32(REWARD_TYPE_VOTE_AGAINST_DELEGATED),
+      rewardToken,
+      amount,
+      sender,
+      contractSender,
+      block,
+      tx
+    );
+
+    onRewardCredited(event);
+
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardFromDelegationsUSDFor",
+      "200"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardFromDelegationsUSDAgainst",
+      "200"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardUSDFor",
+      "200"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "unclaimedRewardUSDAgainst",
+      "200"
+    );
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "totalDelegationRewardUSDFor",
+      "200"
+    );
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "totalDelegationRewardUSDAgainst",
+      "200"
+    );
   });
 
   test("should deposit", () => {
@@ -988,7 +1181,7 @@ describe("DaoPool", () => {
 
     let event = createRewardCredited(
       proposalId,
-      BigInt.fromI32(REWARD_TYPE_VOTE_DELEGATED - 1),
+      BigInt.fromI32(REWARD_TYPE_VOTE_FOR),
       rewardToken,
       amount2,
       sender,
