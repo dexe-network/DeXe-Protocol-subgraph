@@ -3,6 +3,7 @@ import {
   Delegated,
   Deposited,
   DPCreated,
+  OffchainResultsSaved,
   ProposalCreated,
   ProposalExecuted,
   RewardClaimed,
@@ -317,6 +318,14 @@ export function onStakingRewardClaimed(event: StakingRewardClaimed): void {
 
   voterInPool.save();
   voter.save();
+  pool.save();
+}
+
+export function onOffchainResultsSaved(event: OffchainResultsSaved): void {
+  let pool = getDaoPool(event.address);
+
+  pool.offchainResultsHash = event.params.resultsHash;
+
   pool.save();
 }
 

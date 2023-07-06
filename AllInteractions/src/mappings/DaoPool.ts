@@ -3,6 +3,7 @@ import {
   Delegated,
   Deposited,
   MovedToValidators,
+  OffchainResultsSaved,
   ProposalCreated,
   ProposalExecuted,
   RewardClaimed,
@@ -19,6 +20,7 @@ import { getDaoProposalCreate } from "../entities/dao-pool/DaoProposalCreate";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getTransaction } from "../entities/transaction/Transaction";
 import { extendArray } from "../helpers/ArrayHelper";
+import { getDaoPoolOffchainResult } from "../entities/dao-pool/DaoOffchainResults";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let transaction = getTransaction(
@@ -199,4 +201,28 @@ export function onMovedToValidators(event: MovedToValidators): void {
 
   transaction.save();
   moved.save();
+}
+
+export function onOffchainResultsSaved(event: OffchainResultsSaved): void {
+  let transaction = getTransaction(
+    event.transaction.hash,
+    event.block.number,
+    event.block.timestamp,
+    event.params.sender
+  );
+
+  let offchainResultsSaved = getDaoPoolOffchainResult(
+    event.transaction.hash,
+    event.address,
+    transaction.interactionsCount
+  );
+
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
+  transaction.type = extendArray<BigInt>(transaction.type, [
+    getEnumBigInt(TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED),
+  ]);
+  offchainResultsSaved.transaction = transaction.id;
+
+  transaction.save();
+  offchainResultsSaved.save();
 }

@@ -52,6 +52,8 @@ type DaoPool @entity {
   totalCurrentTokenDelegatees: BigInt!
   totalCurrentNFTDelegatees: BigInt!
 
+  offchainResultsHash: String!
+
   voters: [VoterInPool!]! @derivedFrom(field: "pool")
   proposals: [Proposal!]! @derivedFrom(field: "pool")
   settings: [ProposalSettings!]! @derivedFrom(field: "pool")

@@ -196,6 +196,8 @@ templates:
           handler: onWithdrawn
         - event: MovedToValidators(uint256,address)
           handler: onMovedToValidators
+        - event: OffchainResultsSaved(string,address)
+          handler: onOffchainResultsSaved
   - kind: ethereum/contract
     name: DaoValidators
     network: chapel

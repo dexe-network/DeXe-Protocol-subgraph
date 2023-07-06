@@ -22,6 +22,7 @@ import {
   RewardCredited,
   Voted,
   StakingRewardClaimed,
+  OffchainResultsSaved,
 } from "../generated/templates/DaoPool/DaoPool";
 import {
   onDelegated,
@@ -34,6 +35,7 @@ import {
   onDeposited,
   onWithdrawn,
   onStakingRewardClaimed,
+  onOffchainResultsSaved,
 } from "../src/mappings/DaoPool";
 import { ProposalType } from "../src/entities/global/ProposalTypes";
 import {
@@ -286,6 +288,26 @@ function createStakingRewardClaimed(
   event.parameters.push(new ethereum.EventParam("user", ethereum.Value.fromAddress(user)));
   event.parameters.push(new ethereum.EventParam("token", ethereum.Value.fromAddress(token)));
   event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createOffchainResultsSaved(
+  sender: Address,
+  resultsHash: string,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): OffchainResultsSaved {
+  let event = changetype<OffchainResultsSaved>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("resultsHash", ethereum.Value.fromString(resultsHash)));
+  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
   event.block = block;
   event.transaction = tx;
@@ -1205,5 +1227,23 @@ describe("DaoPool", () => {
     onStakingRewardClaimed(event);
 
     assert.fieldEquals("VoterInPool", user.concat(contractSender).toHexString(), "totalStakingReward", "1500");
+  });
+
+  test("should handle OffchainResultsSaved event", () => {
+    let user = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let resultsHash = "hash1";
+
+    let event = createOffchainResultsSaved(user, resultsHash, contractSender, block, tx);
+
+    onOffchainResultsSaved(event);
+
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "offchainResultsHash", resultsHash);
+
+    resultsHash = "hash2";
+    event = createOffchainResultsSaved(user, resultsHash, contractSender, block, tx);
+
+    onOffchainResultsSaved(event);
+
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "offchainResultsHash", resultsHash);
   });
 });

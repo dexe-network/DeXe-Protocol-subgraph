@@ -60,6 +60,8 @@ templates:
           handler: onRewardCredited
         - event: StakingRewardClaimed(address,address,uint256)
           handler: onStakingRewardClaimed
+        - event: OffchainResultsSaved(string,address)
+          handler: onOffchainResultsSaved
 
   - kind: ethereum/contract
     name: DistributionProposal
