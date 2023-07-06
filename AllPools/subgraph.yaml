@@ -41,7 +41,7 @@ dataSources:
         - name: PoolRegistry
           file: ./abis/PoolRegistry.json
       blockHandlers:
-        - handler: handl
+        - handler: handleBlock
 
 templates:
   - kind: ethereum/contract

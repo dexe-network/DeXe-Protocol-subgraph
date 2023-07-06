@@ -9,7 +9,7 @@ import {
   newMockEvent,
   test,
 } from "matchstick-as/assembly/index";
-import { assertTransaction, getBlock, getTransaction } from "./utils";
+import { assertTransaction, getBlock, getNextTx, getTransaction } from "./utils";
 import {
   Delegated,
   Deposited,
@@ -335,9 +335,34 @@ describe("DaoPool", () => {
 
     assert.fieldEquals("DaoPoolExecute", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals("DaoPoolExecute", tx.hash.concatI32(0).toHexString(), "proposalId", proposalId.toString());
+    assert.fieldEquals("DaoPoolExecute", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
     assertTransaction(
       tx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.DAO_POOL_PROPOSAL_EXECUTED}]`,
+      BigInt.fromI32(1)
+    );
+
+    const nextTx = getNextTx(tx);
+    proposalId = BigInt.fromI32(2);
+
+    event = createProposalExecuted(proposalId, sender, contractSender, block, nextTx);
+
+    onProposalExecuted(event);
+
+    assert.fieldEquals("DaoPoolExecute", nextTx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
+    assert.fieldEquals("DaoPoolExecute", nextTx.hash.concatI32(0).toHexString(), "proposalId", proposalId.toString());
+    assert.fieldEquals(
+      "DaoPoolExecute",
+      nextTx.hash.concatI32(0).toHexString(),
+      "transaction",
+      nextTx.hash.toHexString()
+    );
+
+    assertTransaction(
+      nextTx.hash,
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_PROPOSAL_EXECUTED}]`,
@@ -365,9 +390,43 @@ describe("DaoPool", () => {
       "proposalId",
       proposalIds[0].toString()
     );
+    assert.fieldEquals("DaoPoolRewardClaim", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
     assertTransaction(
       tx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.DAO_POOL_REWARD_CLAIMED}]`,
+      BigInt.fromI32(1)
+    );
+
+    const nextTx = getNextTx(tx);
+
+    event = createRewardClaimed(proposalIds[1], sender, tokens[1], amounts[1], contractSender, block, nextTx);
+
+    onRewardClaimed(event);
+
+    assert.fieldEquals(
+      "DaoPoolRewardClaim",
+      nextTx.hash.concatI32(0).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals(
+      "DaoPoolRewardClaim",
+      nextTx.hash.concatI32(0).toHexString(),
+      "proposalId",
+      proposalIds[1].toString()
+    );
+    assert.fieldEquals(
+      "DaoPoolRewardClaim",
+      nextTx.hash.concatI32(0).toHexString(),
+      "transaction",
+      nextTx.hash.toHexString()
+    );
+
+    assertTransaction(
+      nextTx.hash,
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_REWARD_CLAIMED}]`,
@@ -384,12 +443,32 @@ describe("DaoPool", () => {
 
     onDeposited(event);
 
-    assert.fieldEquals("DaoPoolDeposit", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
-    assert.fieldEquals("DaoPoolDeposit", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
-    assert.fieldEquals("DaoPoolDeposit", tx.hash.concatI32(0).toHexString(), "nfts", `[${nfts[0]}, ${nfts[1]}]`);
+    assert.fieldEquals("DaoPoolVest", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
+    assert.fieldEquals("DaoPoolVest", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
+    assert.fieldEquals("DaoPoolVest", tx.hash.concatI32(0).toHexString(), "nfts", `[${nfts[0]}, ${nfts[1]}]`);
 
     assertTransaction(
       tx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.DAO_POOL_DEPOSITED}]`,
+      BigInt.fromI32(1)
+    );
+
+    const nextTx = getNextTx(tx);
+    amount = BigInt.fromI32(50).pow(18);
+    nfts = [BigInt.fromI32(3), BigInt.fromI32(4)];
+
+    event = createDeposited(amount, nfts, to, contractSender, block, nextTx);
+
+    onDeposited(event);
+
+    assert.fieldEquals("DaoPoolVest", nextTx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
+    assert.fieldEquals("DaoPoolVest", nextTx.hash.concatI32(0).toHexString(), "amount", amount.toString());
+    assert.fieldEquals("DaoPoolVest", nextTx.hash.concatI32(0).toHexString(), "nfts", `[${nfts[0]}, ${nfts[1]}]`);
+
+    assertTransaction(
+      nextTx.hash,
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_DEPOSITED}]`,
@@ -406,12 +485,32 @@ describe("DaoPool", () => {
 
     onWithdrawn(event);
 
-    assert.fieldEquals("DaoPoolDeposit", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
-    assert.fieldEquals("DaoPoolDeposit", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
-    assert.fieldEquals("DaoPoolDeposit", tx.hash.concatI32(0).toHexString(), "nfts", `[${nfts[0]}, ${nfts[1]}]`);
+    assert.fieldEquals("DaoPoolVest", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
+    assert.fieldEquals("DaoPoolVest", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
+    assert.fieldEquals("DaoPoolVest", tx.hash.concatI32(0).toHexString(), "nfts", `[${nfts[0]}, ${nfts[1]}]`);
 
     assertTransaction(
       tx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.DAO_POOL_WITHDRAWN}]`,
+      BigInt.fromI32(1)
+    );
+
+    const nextTx = getNextTx(tx);
+    amount = BigInt.fromI32(50).pow(18);
+    nfts = [BigInt.fromI32(3), BigInt.fromI32(4)];
+
+    event = createWithdrawn(amount, nfts, to, contractSender, block, nextTx);
+
+    onWithdrawn(event);
+
+    assert.fieldEquals("DaoPoolVest", nextTx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
+    assert.fieldEquals("DaoPoolVest", nextTx.hash.concatI32(0).toHexString(), "amount", amount.toString());
+    assert.fieldEquals("DaoPoolVest", nextTx.hash.concatI32(0).toHexString(), "nfts", `[${nfts[0]}, ${nfts[1]}]`);
+
+    assertTransaction(
+      nextTx.hash,
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_WITHDRAWN}]`,
@@ -442,6 +541,34 @@ describe("DaoPool", () => {
 
     assertTransaction(
       tx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.DAO_POOL_MOVED_TO_VALIDATORS}]`,
+      BigInt.fromI32(1)
+    );
+
+    const nextTx = getNextTx(tx);
+    proposalId = BigInt.fromI32(2);
+
+    event = createMovedToValidators(proposalId, sender, contractSender, block, nextTx);
+
+    onMovedToValidators(event);
+
+    assert.fieldEquals(
+      "DaoPoolMovedToValidators",
+      nextTx.hash.concatI32(0).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals(
+      "DaoPoolMovedToValidators",
+      nextTx.hash.concatI32(0).toHexString(),
+      "proposalId",
+      proposalId.toString()
+    );
+
+    assertTransaction(
+      nextTx.hash,
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_MOVED_TO_VALIDATORS}]`,

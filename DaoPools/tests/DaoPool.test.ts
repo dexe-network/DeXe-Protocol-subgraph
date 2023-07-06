@@ -785,6 +785,33 @@ describe("DaoPool", () => {
       contractSender.concatI32(proposalId.toI32()).toHexString()
     );
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "isDP", "true");
+
+    proposalId = BigInt.fromI32(2);
+    token = Address.fromString("0xfF42F3B569cdB6dF9dC260473Ec2ef63Ca971d63");
+
+    event = createDPCreated(proposalId, sender, token, amount, contractSender, block, tx);
+
+    onDPCreated(event);
+
+    assert.fieldEquals(
+      "DistributionProposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "token",
+      token.toHexString()
+    );
+    assert.fieldEquals(
+      "DistributionProposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "amount",
+      amount.toString()
+    );
+    assert.fieldEquals(
+      "DistributionProposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString()
+    );
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "isDP", "true");
   });
 
   test("should handle ProposalExecuted", () => {
@@ -792,6 +819,24 @@ describe("DaoPool", () => {
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
 
     let event = createProposalExecuted(proposalId, sender, contractSender, block, tx);
+
+    onProposalExecuted(event);
+
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "executor",
+      sender.toHexString()
+    );
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "executionTimestamp",
+      block.timestamp.toString()
+    );
+
+    proposalId = BigInt.fromI32(2);
+    event = createProposalExecuted(proposalId, sender, contractSender, block, tx);
 
     onProposalExecuted(event);
 
@@ -1012,5 +1057,9 @@ describe("DaoPool", () => {
     onStakingRewardClaimed(event);
 
     assert.fieldEquals("VoterInPool", user.concat(contractSender).toHexString(), "totalStakingReward", "1500");
+
+    onStakingRewardClaimed(event);
+
+    assert.fieldEquals("VoterInPool", user.concat(contractSender).toHexString(), "totalStakingReward", "3000");
   });
 });

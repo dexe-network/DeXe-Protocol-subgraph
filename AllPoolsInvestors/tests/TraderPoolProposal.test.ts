@@ -7,6 +7,7 @@ import {
   clearStore,
   createMockedFunction,
   describe,
+  logStore,
   newMockEvent,
   test,
 } from "matchstick-as";
@@ -179,15 +180,24 @@ describe("TraderPoolProposal", () => {
 
     let proposalEntityId = sender.toHexString() + user.toHexString() + proposalId.toString() + "_" + "0";
 
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "hash", tx.hash.toHexString());
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "isInvest", "true");
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "timestamp", block.timestamp.toString());
     assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "baseVolume", investedBase.toString());
     assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "lpVolume", investedLP.toString());
     assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "lp2Volume", receivedLP2.toString());
     assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "usdVolume", expectedUSD.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "proposal", proposalEntityId);
 
+    assert.fieldEquals("ProposalPosition", proposalEntityId, "proposalId", proposalId.toString());
+    assert.fieldEquals("ProposalPosition", proposalEntityId, "isClosed", "false");
     assert.fieldEquals("ProposalPosition", proposalEntityId, "totalBaseOpenVolume", investedBase.toString());
     assert.fieldEquals("ProposalPosition", proposalEntityId, "totalLPOpenVolume", investedLP.toString());
     assert.fieldEquals("ProposalPosition", proposalEntityId, "totalLP2OpenVolume", receivedLP2.toString());
     assert.fieldEquals("ProposalPosition", proposalEntityId, "totalUSDOpenVolume", expectedUSD.toString());
+
+    assert.fieldEquals("ProposalPosition", proposalEntityId, "proposalContract", sender.toHexString());
+    assert.fieldEquals("ProposalPosition", proposalEntityId, "investor", user.toHexString());
   });
 
   test("should handle ProposalDivested event", () => {
@@ -202,15 +212,24 @@ describe("TraderPoolProposal", () => {
 
     let proposalEntityId = sender.toHexString() + user.toHexString() + proposalId.toString() + "_" + "0";
 
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "hash", tx.hash.toHexString());
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "isInvest", "false");
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "timestamp", block.timestamp.toString());
     assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "baseVolume", receivedBase.toString());
     assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "lpVolume", receivedLP.toString());
     assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "lp2Volume", divestedLP2.toString());
     assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "usdVolume", expectedUSD.toString());
+    assert.fieldEquals("ProposalVest", tx.hash.concatI32(0).toHexString(), "proposal", proposalEntityId);
 
+    assert.fieldEquals("ProposalPosition", proposalEntityId, "proposalId", proposalId.toString());
+    assert.fieldEquals("ProposalPosition", proposalEntityId, "isClosed", "false");
     assert.fieldEquals("ProposalPosition", proposalEntityId, "totalBaseCloseVolume", receivedBase.toString());
     assert.fieldEquals("ProposalPosition", proposalEntityId, "totalLPCloseVolume", receivedLP.toString());
     assert.fieldEquals("ProposalPosition", proposalEntityId, "totalLP2CloseVolume", divestedLP2.toString());
     assert.fieldEquals("ProposalPosition", proposalEntityId, "totalUSDCloseVolume", expectedUSD.toString());
+
+    assert.fieldEquals("ProposalPosition", proposalEntityId, "proposalContract", sender.toHexString());
+    assert.fieldEquals("ProposalPosition", proposalEntityId, "investor", user.toHexString());
   });
 
   test("should handle ProposalClaimed event", () => {
@@ -227,7 +246,7 @@ describe("TraderPoolProposal", () => {
     let proposalEntityId = sender.toHexString() + user.toHexString() + proposalId.toString() + "_" + "0";
 
     assert.fieldEquals("ProposalClaim", tx.hash.concatI32(0).toHexString(), "hash", tx.hash.toHexString());
-    assert.fieldEquals("ProposalClaim", tx.hash.concatI32(0).toHexString(), "timestamp", "1");
+    assert.fieldEquals("ProposalClaim", tx.hash.concatI32(0).toHexString(), "timestamp", block.timestamp.toString());
     assert.fieldEquals("ProposalClaim", tx.hash.concatI32(0).toHexString(), "proposal", proposalEntityId);
     assert.fieldEquals(
       "ProposalClaim",
@@ -255,18 +274,37 @@ describe("TraderPoolProposal", () => {
     assert.fieldEquals("ProposalPosition", proposalEntityId, "isClosed", "false");
     assert.fieldEquals("ProposalPosition", proposalEntityId, "proposalId", proposalId.toString());
     assert.fieldEquals("ProposalPosition", proposalEntityId, "investor", user.toHexString());
+    assert.fieldEquals("ProposalPosition", proposalEntityId, "proposalContract", sender.toHexString());
+
+    assert.fieldEquals("Investor", user.toHexString(), "activePools", "[]");
+    assert.fieldEquals("Investor", user.toHexString(), "allPools", "[]");
   });
 
   test("should handle ProposalInvestorRemoved event", () => {
-    let user = Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670");
+    let users = [
+      Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670"),
+      Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE"),
+    ];
 
-    let eventAdded = createProposalInvestorAdded(proposalId, user, sender, block, tx);
-    let eventRemoved = createProposalInvestorRemoved(proposalId, user, sender, block, tx);
-
+    let proposalEntityId = sender.toHexString() + users[0].toHexString() + proposalId.toString() + "_" + "0";
+    let eventAdded = createProposalInvestorAdded(proposalId, users[0], sender, block, tx);
     onProposalJoined(eventAdded);
+
+    assert.fieldEquals("ProposalPosition", proposalEntityId, "isClosed", "false");
+
+    let eventRemoved = createProposalInvestorRemoved(proposalId, users[0], sender, block, tx);
     onProposalLeft(eventRemoved);
 
-    let proposalEntityId = sender.toHexString() + user.toHexString() + proposalId.toString() + "_" + "0";
+    assert.fieldEquals("ProposalPosition", proposalEntityId, "isClosed", "true");
+
+    proposalEntityId = sender.toHexString() + users[1].toHexString() + proposalId.toString() + "_" + "0";
+    eventAdded = createProposalInvestorAdded(proposalId, users[1], sender, block, tx);
+    onProposalJoined(eventAdded);
+
+    assert.fieldEquals("ProposalPosition", proposalEntityId, "isClosed", "false");
+
+    eventRemoved = createProposalInvestorRemoved(proposalId, users[1], sender, block, tx);
+    onProposalLeft(eventRemoved);
 
     assert.fieldEquals("ProposalPosition", proposalEntityId, "isClosed", "true");
   });

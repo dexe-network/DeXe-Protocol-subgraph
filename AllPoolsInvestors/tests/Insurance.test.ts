@@ -90,19 +90,39 @@ describe("Insurance", () => {
       "stake",
       expectedAmount.toString()
     );
+    assert.fieldEquals("InsuranceHistory", event.params.investor.toHexString() + "0", "claimedAmount", "0");
     assert.fieldEquals("InsuranceHistory", event.params.investor.toHexString() + "0", "day", "0");
   });
 
   test("should handle withdraw event", () => {
-    let expectedAmount = BigInt.fromI32(100).pow(18);
+    let depositedAmount = BigInt.fromI32(100).pow(18);
+    let withdrawedAmount = BigInt.fromI32(100).pow(18).div(BigInt.fromI32(2));
     let expectedInvestor = Address.fromString("0x76e98f7d84603AEb97cd1c89A80A9e914f181679");
     let expectedSender = Address.fromString("0x86e98f7d84603AEb97cd1c89A80A9e914f181679");
 
-    let depositEvent = createDepositEvent(expectedAmount, expectedInvestor, expectedSender, block, tx);
-    let withdrawEvent = createWithdrawEvent(expectedAmount, expectedInvestor, expectedSender, block, tx);
+    let depositEvent = createDepositEvent(depositedAmount, expectedInvestor, expectedSender, block, tx);
+    let withdrawEvent = createWithdrawEvent(withdrawedAmount, expectedInvestor, expectedSender, block, tx);
 
     onDeposit(depositEvent);
 
+    onWithdraw(withdrawEvent);
+
+    assert.fieldEquals(
+      "InsuranceHistory",
+      withdrawEvent.params.investor.toHexString() + "0",
+      "stake",
+      depositedAmount.minus(withdrawedAmount).toString()
+    );
+    assert.fieldEquals(
+      "InsuranceHistory",
+      withdrawEvent.params.investor.toHexString() + "0",
+      "investor",
+      withdrawEvent.params.investor.toHexString()
+    );
+    assert.fieldEquals("InsuranceHistory", withdrawEvent.params.investor.toHexString() + "0", "claimedAmount", "0");
+    assert.fieldEquals("InsuranceHistory", withdrawEvent.params.investor.toHexString() + "0", "day", "0");
+
+    withdrawEvent = createWithdrawEvent(withdrawedAmount, expectedInvestor, expectedSender, block, tx);
     onWithdraw(withdrawEvent);
 
     assert.fieldEquals("InsuranceHistory", withdrawEvent.params.investor.toHexString() + "0", "stake", "0");
@@ -112,6 +132,7 @@ describe("Insurance", () => {
       "investor",
       withdrawEvent.params.investor.toHexString()
     );
+    assert.fieldEquals("InsuranceHistory", withdrawEvent.params.investor.toHexString() + "0", "claimedAmount", "0");
     assert.fieldEquals("InsuranceHistory", withdrawEvent.params.investor.toHexString() + "0", "day", "0");
   });
 
@@ -144,6 +165,33 @@ describe("Insurance", () => {
       "claimedAmount",
       payout.toString()
     );
-    assert.fieldEquals("InsuranceHistory", event.params.investor.toHexString() + "0", "day", "0");
+    assert.fieldEquals(
+      "InsuranceHistory",
+      event.params.investor.toHexString() + "0",
+      "day",
+      block.timestamp.div(BigInt.fromI32(86400)).toString()
+    );
+
+    onPayout(event);
+
+    assert.fieldEquals(
+      "InsuranceHistory",
+      event.params.investor.toHexString() + "0",
+      "investor",
+      event.params.investor.toHexString()
+    );
+    assert.fieldEquals("InsuranceHistory", event.params.investor.toHexString() + "0", "stake", "0");
+    assert.fieldEquals(
+      "InsuranceHistory",
+      event.params.investor.toHexString() + "0",
+      "claimedAmount",
+      payout.times(BigInt.fromI32(2)).toString()
+    );
+    assert.fieldEquals(
+      "InsuranceHistory",
+      event.params.investor.toHexString() + "0",
+      "day",
+      block.timestamp.div(BigInt.fromI32(86400)).toString()
+    );
   });
 });

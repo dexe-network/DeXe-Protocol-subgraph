@@ -100,7 +100,7 @@ function updatePools(block: ethereum.Block, type: string): void {
   }
 }
 
-export function handl(block: ethereum.Block): void {
+export function handleBlock(block: ethereum.Block): void {
   if (block.number.mod(BigInt.fromU64(CHECK_PER_BLOCK)).equals(BigInt.zero())) {
     updatePools(block, BASIC_POOL_NAME);
     updatePools(block, INVEST_POOL_NAME);

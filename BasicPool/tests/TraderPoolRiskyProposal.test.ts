@@ -162,6 +162,7 @@ describe("TraderPoolRiskyProposal", () => {
   });
 
   test("should handle ProposalCreated event", () => {
+    let proposalId = BigInt.fromI32(1);
     let token = Address.fromString("0x86e08f7d84603AEb97cd1c89A85A9e914f181679");
     let proposalLimits = new ProposalCreatedProposalLimitsStruct(3);
     proposalLimits[0] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(1));
@@ -169,6 +170,20 @@ describe("TraderPoolRiskyProposal", () => {
     proposalLimits[2] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(3));
 
     let event = createProposalCreated(proposalId, token, proposalLimits, sender, block, tx);
+
+    onProposalCreated(event);
+
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "basicPool", pool.toHexString());
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "token", token.toHexString());
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "proposalId", proposalId.toString());
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "timestampLimit", "1");
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "investLPLimit", "2");
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "maxTokenPriceLimit", "3");
+
+    proposalId = BigInt.fromI32(2);
+    token = Address.fromString("0x065049652b9d7C9fE9dD582970dB63a058788688");
+
+    event = createProposalCreated(proposalId, token, proposalLimits, sender, block, tx);
 
     onProposalCreated(event);
 
@@ -224,9 +239,25 @@ describe("TraderPoolRiskyProposal", () => {
   });
 
   test("should handle ProposalPositionClosed event", () => {
+    let proposalId = BigInt.fromI32(1);
     let token = Address.fromString("0x86e08f7d84603AEb97cd1c89A85A9e914f181679");
 
     let event = createProposalPositionClosed(proposalId, token, sender, block, tx);
+
+    onProposalPositionClosed(event);
+
+    assert.fieldEquals(
+      "ProposalPosition",
+      sender.toHexString() + proposalId.toString() + "_" + "0",
+      "isClosed",
+      "true"
+    );
+    assert.fieldEquals("ProposalPositionOffset", sender.toHexString() + proposalId.toString(), "offset", "1");
+
+    proposalId = BigInt.fromI32(2);
+    token = Address.fromString("0x065049652b9d7C9fE9dD582970dB63a058788688");
+
+    event = createProposalPositionClosed(proposalId, token, sender, block, tx);
 
     onProposalPositionClosed(event);
 

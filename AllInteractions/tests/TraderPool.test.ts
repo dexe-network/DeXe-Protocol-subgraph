@@ -10,7 +10,7 @@ import {
   ModifiedPrivateInvestors,
   CommissionClaimed,
 } from "../generated/templates/TraderPool/TraderPool";
-import { assertTransaction, getBlock, getTransaction } from "./utils";
+import { assertTransaction, getBlock, getNextTx, getTransaction } from "./utils";
 import {
   onCommissionClaimed,
   onDescriptionURLChanged,
@@ -252,6 +252,23 @@ describe("TraderPool", () => {
     assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
     assertTransaction(tx.hash, event.params.user, block, `[${TransactionType.INVEST}]`, BigInt.fromI32(1));
+
+    const nextTx = getNextTx(tx);
+
+    user = Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE");
+    investedBase = BigInt.fromI32(50).pow(18);
+    receivedLP = BigInt.fromI32(5).pow(18);
+
+    event = createInvestedEvent(user, investedBase, receivedLP, sender, block, nextTx);
+
+    onInvest(event);
+
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "pool", sender.toHexString());
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "baseAmount", investedBase.toString());
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "lpAmount", receivedLP.toString());
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "transaction", nextTx.hash.toHexString());
+
+    assertTransaction(nextTx.hash, event.params.user, block, `[${TransactionType.INVEST}]`, BigInt.fromI32(1));
   });
 
   test("should handle divested event", () => {
@@ -269,11 +286,28 @@ describe("TraderPool", () => {
     assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
     assertTransaction(tx.hash, event.params.user, block, `[${TransactionType.DIVEST}]`, BigInt.fromI32(1));
+
+    const nextTx = getNextTx(tx);
+
+    user = Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE");
+    receivedBase = BigInt.fromI32(50).pow(18);
+    divestedLP = BigInt.fromI32(5).pow(18);
+
+    event = createDivestedEvent(user, receivedBase, divestedLP, sender, block, nextTx);
+
+    onDivest(event);
+
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "pool", sender.toHexString());
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "baseAmount", receivedBase.toString());
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "lpAmount", divestedLP.toString());
+    assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "transaction", nextTx.hash.toHexString());
+
+    assertTransaction(nextTx.hash, event.params.user, block, `[${TransactionType.DIVEST}]`, BigInt.fromI32(1));
   });
 
   test("should handle DescriptionURLChanged event", () => {
     let user = Address.fromString("0x86e08f7d84603AAb97cd1c89A80A9e914f181670");
-    let descriptionURL = "URL";
+    let descriptionURL = "URL_1";
 
     let event = createDescriptionURLChanged(user, descriptionURL, sender, block, tx);
 
@@ -283,6 +317,20 @@ describe("TraderPool", () => {
     assert.fieldEquals("OnlyPool", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
     assertTransaction(tx.hash, event.params.sender, block, `[${TransactionType.POOL_EDIT}]`, BigInt.fromI32(1));
+
+    const nextTx = getNextTx(tx);
+
+    user = Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE");
+    descriptionURL = "URL_2";
+
+    event = createDescriptionURLChanged(user, descriptionURL, sender, block, nextTx);
+
+    onDescriptionURLChanged(event);
+
+    assert.fieldEquals("OnlyPool", nextTx.hash.concatI32(0).toHexString(), "pool", sender.toHexString());
+    assert.fieldEquals("OnlyPool", nextTx.hash.concatI32(0).toHexString(), "transaction", nextTx.hash.toHexString());
+
+    assertTransaction(nextTx.hash, event.params.sender, block, `[${TransactionType.POOL_EDIT}]`, BigInt.fromI32(1));
   });
 
   test("should handle ProposalDivested event", () => {
@@ -332,6 +380,24 @@ describe("TraderPool", () => {
       `[${TransactionType.POOL_UPDATE_INVESTORS}]`,
       BigInt.fromI32(1)
     );
+
+    const nextTx = getNextTx(tx);
+    user = Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE");
+
+    event = createModifiedPrivateInvestors(user, privateInvestors, true, sender, block, nextTx);
+
+    onModifiedPrivateInvestors(event);
+
+    assert.fieldEquals("OnlyPool", nextTx.hash.concatI32(0).toHexString(), "pool", sender.toHexString());
+    assert.fieldEquals("OnlyPool", nextTx.hash.concatI32(0).toHexString(), "transaction", nextTx.hash.toHexString());
+
+    assertTransaction(
+      nextTx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.POOL_UPDATE_INVESTORS}]`,
+      BigInt.fromI32(1)
+    );
   });
 
   test("should handle ModifiedAdmins event", () => {
@@ -355,6 +421,24 @@ describe("TraderPool", () => {
       `[${TransactionType.POOL_UPDATE_MANAGERS}]`,
       BigInt.fromI32(1)
     );
+
+    const nextTx = getNextTx(tx);
+    user = Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE");
+
+    event = createModifiedAdmins(user, admins, true, sender, block, nextTx);
+
+    onModifiedAdmins(event);
+
+    assert.fieldEquals("OnlyPool", nextTx.hash.concatI32(0).toHexString(), "pool", sender.toHexString());
+    assert.fieldEquals("OnlyPool", nextTx.hash.concatI32(0).toHexString(), "transaction", nextTx.hash.toHexString());
+
+    assertTransaction(
+      nextTx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.POOL_UPDATE_MANAGERS}]`,
+      BigInt.fromI32(1)
+    );
   });
 
   test("should handle CommissionClaimed event", () => {
@@ -367,13 +451,13 @@ describe("TraderPool", () => {
     onCommissionClaimed(event);
 
     assert.fieldEquals(
-      "GetPerfomanceFee",
+      "GetPerformanceFee",
       tx.hash.concatI32(0).toHexString(),
       "baseAmount",
       traderBaseClaimed.toString()
     );
-    assert.fieldEquals("GetPerfomanceFee", tx.hash.concatI32(0).toHexString(), "lpAmount", traderLpClaimed.toString());
-    assert.fieldEquals("GetPerfomanceFee", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
+    assert.fieldEquals("GetPerformanceFee", tx.hash.concatI32(0).toHexString(), "lpAmount", traderLpClaimed.toString());
+    assert.fieldEquals("GetPerformanceFee", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
     assertTransaction(
       tx.hash,

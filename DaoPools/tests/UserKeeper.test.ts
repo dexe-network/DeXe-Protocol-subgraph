@@ -58,11 +58,25 @@ describe("UserKeeper", () => {
     onSetERC20(event);
 
     assert.fieldEquals("DaoPool", poolAddress.toHexString(), "erc20Token", tokenAddress.toHexString());
+
+    tokenAddress = Address.fromString("0xfF42F3B569cdB6dF9dC260473Ec2ef63Ca971d63");
+    event = createSetERC20(tokenAddress, contractSender, block, tx);
+
+    onSetERC20(event);
+
+    assert.fieldEquals("DaoPool", poolAddress.toHexString(), "erc20Token", tokenAddress.toHexString());
   });
 
   test("should handle SetERC721", () => {
     let tokenAddress = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181675");
     let event = createSetERC721(tokenAddress, contractSender, block, tx);
+
+    onSetERC721(event);
+
+    assert.fieldEquals("DaoPool", poolAddress.toHexString(), "erc721Token", tokenAddress.toHexString());
+
+    tokenAddress = Address.fromString("0xfF42F3B569cdB6dF9dC260473Ec2ef63Ca971d63");
+    event = createSetERC721(tokenAddress, contractSender, block, tx);
 
     onSetERC721(event);
 
