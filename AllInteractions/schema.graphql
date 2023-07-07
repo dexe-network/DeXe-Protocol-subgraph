@@ -392,6 +392,17 @@ type DaoPoolMovedToValidators @entity(immutable: true) {
   transaction: Transaction!
 }
 
+# @notice The entity holds information about save offchain results
+# @param id forms from tx hash + interactionCount
+# @param pool the pool address
+# @param transaction the transaction entity id
+type DaoPoolOffchainResultsSaved @entity(immutable: true) {
+  id: Bytes!
+  pool: Bytes!
+
+  transaction: Transaction!
+}
+
 # @notice The entity holds information about vote in dao pool
 # @param id forms from tx hash + interactionCount
 # @param pool the pool address

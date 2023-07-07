@@ -52,6 +52,8 @@ type DaoPool @entity {
   totalCurrentTokenDelegatees: BigInt!
   totalCurrentNFTDelegatees: BigInt!
 
+  offchainResultsHash: String!
+
   voters: [VoterInPool!]! @derivedFrom(field: "pool")
   proposals: [Proposal!]! @derivedFrom(field: "pool")
   settings: [ProposalSettings!]! @derivedFrom(field: "pool")
@@ -70,6 +72,7 @@ type Voter @entity {
 # @param id forms from pool address + proposalId
 # @param isDP the bool flag, if true proposal is DP
 # @param creator the address of creator
+# @param isFor bool flag, if true - proposal succeded for, if false - proposal succeded against
 # @param executor the address of executor
 # @param executionTimestamp the timestamp of execution
 # @param currentVotes the current number of votes
@@ -87,6 +90,7 @@ type Proposal @entity {
 
   creator: Bytes!
 
+  isFor: Boolean!
   executor: Bytes!
   executionTimestamp: BigInt!
 
@@ -136,7 +140,8 @@ type VoterInPool @entity {
   totalDPClaimed: BigInt!
   totalClaimedUSD: BigInt!
 
-  totalDelegationRewardUSD: BigInt!
+  totalDelegationRewardUSDFor: BigInt!
+  totalDelegationRewardUSDAgainst: BigInt!
 
   currentDelegatorsCount: BigInt!
 
@@ -202,8 +207,10 @@ type VoterInProposal @entity {
   totalDelegatedVoteForAmount: BigInt!
   totalDelegatedVoteAgainstAmount: BigInt!
 
-  unclaimedRewardUSD: BigInt!
-  unclaimedRewardFromDelegationsUSD: BigInt!
+  unclaimedRewardUSDFor: BigInt!
+  unclaimedRewardUSDAgainst: BigInt!
+  unclaimedRewardFromDelegationsUSDFor: BigInt!
+  unclaimedRewardFromDelegationsUSDAgainst: BigInt!
 
   claimedRewardUSD: BigInt!
   claimedDpRewardUSD: BigInt!

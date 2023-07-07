@@ -15,6 +15,7 @@ import {
   Deposited,
   DPCreated,
   MovedToValidators,
+  OffchainResultsSaved,
   ProposalCreated,
   ProposalExecuted,
   RewardClaimed,
@@ -30,6 +31,7 @@ import {
   onDeposited,
   onWithdrawn,
   onMovedToValidators,
+  onOffchainResultsSaved,
 } from "../src/mappings/DaoPool";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
 
@@ -214,6 +216,25 @@ function createMovedToValidators(
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
+  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createOffchainResultsSaved(
+  sender: Address,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): OffchainResultsSaved {
+  let event = changetype<OffchainResultsSaved>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("resultsHash", ethereum.Value.fromString("")));
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
   event.block = block;
@@ -573,6 +594,60 @@ describe("DaoPool", () => {
       block,
       `[${TransactionType.DAO_POOL_MOVED_TO_VALIDATORS}]`,
       BigInt.fromI32(1)
+    );
+  });
+
+  test("should handle OffchainResultsSaved", () => {
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+
+    let event = createOffchainResultsSaved(sender, contractSender, block, tx);
+
+    onOffchainResultsSaved(event);
+
+    assert.fieldEquals(
+      "DaoPoolOffchainResultsSaved",
+      tx.hash.concatI32(0).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+
+    assert.fieldEquals(
+      "DaoPoolOffchainResultsSaved",
+      tx.hash.concatI32(0).toHexString(),
+      "transaction",
+      tx.hash.toHexString()
+    );
+
+    assertTransaction(
+      tx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED}]`,
+      BigInt.fromI32(1)
+    );
+
+    onOffchainResultsSaved(event);
+
+    assert.fieldEquals(
+      "DaoPoolOffchainResultsSaved",
+      tx.hash.concatI32(1).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+
+    assert.fieldEquals(
+      "DaoPoolOffchainResultsSaved",
+      tx.hash.concatI32(1).toHexString(),
+      "transaction",
+      tx.hash.toHexString()
+    );
+
+    assertTransaction(
+      tx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED}]`,
+      BigInt.fromI32(2)
     );
   });
 });

@@ -25,6 +25,8 @@ export function getDaoPool(
 
     pool.totalCurrentTokenDelegatees = BigInt.zero();
     pool.totalCurrentNFTDelegatees = BigInt.zero();
+
+    pool.offchainResultsHash = "";
   }
 
   return pool;
