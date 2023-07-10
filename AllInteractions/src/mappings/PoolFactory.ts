@@ -1,4 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
+import { pushUnique } from "@dlsl/graph-modules";
 import { DaoPoolDeployed, TraderPoolDeployed } from "../../generated/PoolFactory/PoolFactory";
 import { DaoPool, DaoValidators, TraderPool, TraderPoolInvestProposal } from "../../generated/templates";
 import { TraderPoolRiskyProposal } from "../../generated/templates";
@@ -9,7 +10,6 @@ import { getPoolCreate } from "../entities/trader-pool/PoolCreate";
 import { getProposalContract } from "../entities/trader-pool/ProposalContract";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getTransaction } from "../entities/transaction/Transaction";
-import { extendArray } from "../helpers/ArrayHelper";
 
 export function onTraderPoolDeployed(event: TraderPoolDeployed): void {
   getTraderPool(event.params.at, event.params.proposalContract, event.params.trader).save();
@@ -37,7 +37,7 @@ export function onTraderPoolDeployed(event: TraderPoolDeployed): void {
   );
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
-  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.POOL_CREATE)]);
+  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.POOL_CREATE)]);
 
   create.transaction = transaction.id;
 
@@ -64,7 +64,7 @@ export function onDaoPoolDeployed(event: DaoPoolDeployed): void {
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_CREATED)]);
+  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_CREATED)]);
   daoCreate.transaction = transaction.id;
 
   transaction.save();

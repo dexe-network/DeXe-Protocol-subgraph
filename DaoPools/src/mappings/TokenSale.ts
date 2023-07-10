@@ -1,11 +1,11 @@
 import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { pushUnique } from "@dlsl/graph-modules";
 import { Bought, TierCreated, Whitelisted } from "../../generated/templates/TokenSale/TokenSaleProposal";
 import { getDaoPool } from "../entities/DaoPool";
 import { getTokenSale } from "../entities/TokenSale";
 import { getTokenSaleTier } from "../entities/TokenSaleTier";
 import { getVoter } from "../entities/Voters/Voter";
 import { getVoterInPool } from "../entities/Voters/VoterInPool";
-import { extendArray } from "../helpers/ArrayHelper";
 
 export function onTierCreated(event: TierCreated): void {
   let tokenSale = getTokenSale(event.address);
@@ -20,7 +20,7 @@ export function onBought(event: Bought): void {
   let tier = getTokenSaleTier(tokenSale, event.params.tierId);
   let pool = getDaoPool(Address.fromBytes(tokenSale.pool));
 
-  tier.voters = extendArray<Bytes>(tier.voters, [
+  tier.voters = pushUnique<Bytes>(tier.voters, [
     getVoterInPool(pool, getVoter(event.params.buyer), event.block.timestamp).id,
   ]);
 
@@ -37,7 +37,7 @@ export function onWhitelisted(event: Whitelisted): void {
   let tokenSale = getTokenSale(event.address);
   let tier = getTokenSaleTier(tokenSale, event.params.tierId);
 
-  tier.userWhitelist = extendArray(tier.userWhitelist, [event.params.user]);
+  tier.userWhitelist = pushUnique(tier.userWhitelist, [event.params.user]);
 
   tier.save();
   tokenSale.save();

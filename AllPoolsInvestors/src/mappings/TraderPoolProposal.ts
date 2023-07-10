@@ -10,11 +10,11 @@ import { getProposalVest } from "../entities/trader-pool/proposal/ProposalVest";
 import { getProposalContract } from "../entities/trader-pool/proposal/ProposalContract";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { Address, Bytes, BigInt, log } from "@graphprotocol/graph-ts";
+import { upcastCopy } from "@dlsl/graph-modules";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { getInvestor } from "../entities/trader-pool/Investor";
 import { getProposalPositionOffset } from "../entities/global/ProposalPositionOffset";
-import { upcastCopy } from "../helpers/ArrayHelper";
 import { getProposalClaim } from "../entities/trader-pool/proposal/ProposalClaim";
 import { getUSDValue } from "../helpers/PriceFeedInteractions";
 

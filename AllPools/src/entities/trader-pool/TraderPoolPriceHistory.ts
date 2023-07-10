@@ -1,6 +1,6 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { TraderPool, TraderPoolPriceHistory } from "../../../generated/schema";
-import { findPrevHistory } from "../../helpers/HistorySearcher";
+import { findPrevHistory } from "@dlsl/graph-modules";
 import { BLOCK_PER_YEAR, CHECK_PER_BLOCK, DECIMAL, PERCENTAGE_DENOMINATOR } from "../global/globals";
 import { getTraderPool } from "./TraderPool";
 import { PERCENTAGE_NUMERATOR } from "../global/globals";
@@ -82,7 +82,7 @@ export function getTraderPoolPriceHistory(
         pool.id,
         prevBlock,
         BigInt.fromI32(CHECK_PER_BLOCK),
-        pool.creationBlock
+        pool.creationBlock.toI32()
       );
 
       if (lastYearHistory != null) {
@@ -105,7 +105,7 @@ export function getPrevPriceHistory(currentPH: TraderPoolPriceHistory): TraderPo
     currentPH.pool,
     currentPH.block,
     BigInt.fromI32(CHECK_PER_BLOCK),
-    pool.creationBlock
+    pool.creationBlock.toI32()
   );
 
   return prevHistory;

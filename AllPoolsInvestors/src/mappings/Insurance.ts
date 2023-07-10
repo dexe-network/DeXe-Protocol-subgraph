@@ -3,7 +3,8 @@ import { Deposited, Paidout, Withdrawn } from "../../generated/Insurance/Insuran
 import { InsuranceHistory, Investor } from "../../generated/schema";
 import { getInsuranceHistory } from "../entities/trader-pool/history/InsuranceHistory";
 import { getInvestor } from "../entities/trader-pool/Investor";
-import { findPrevHistory } from "../helpers/HistorySearcher";
+import { findPrevHistory } from "@dlsl/graph-modules";
+import { MAX_SEARCH_DEPTH } from "../entities/global/globals";
 
 export function onDeposit(event: Deposited): void {
   let investor = getInvestor(event.params.investor);
@@ -47,7 +48,8 @@ function injectPrevHistory(history: InsuranceHistory, investor: Investor): void 
       InsuranceHistory.load,
       investor.id.toHexString(),
       history.day,
-      BigInt.fromI32(1)
+      BigInt.fromI32(MAX_SEARCH_DEPTH),
+      1
     );
     if (prevHistory != null) {
       history.prevHistory = prevHistory.id;
