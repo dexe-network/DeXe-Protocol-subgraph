@@ -9,7 +9,7 @@ import {
   newMockEvent,
   test,
 } from "matchstick-as/assembly/index";
-import { getBlock, getTransaction } from "./utils";
+import { getBlock, getNextTx, getTransaction } from "./utils";
 import { Address, ethereum, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   ProposalClaimed,
@@ -238,6 +238,7 @@ describe("TraderPoolInvestProposal", () => {
   });
 
   test("should handle ProposalCreated event", () => {
+    let proposalId = BigInt.fromI32(1);
     let proposalLimits = new ProposalCreatedProposalLimitsStruct(3);
     proposalLimits[0] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(1));
     proposalLimits[1] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(2));
@@ -256,6 +257,25 @@ describe("TraderPoolInvestProposal", () => {
     assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "totalUSDSupply", "0");
     assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "firstSupplyTimestamp", "0");
     assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "APR", "0");
+
+    proposalId = BigInt.fromI32(2);
+    proposalLimits[0] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(3));
+    proposalLimits[1] = ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(4));
+
+    event = createProposalCreated(proposalId, proposalLimits, sender, block, tx);
+
+    onProposalCreated(event);
+
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "investPool", pool.toHexString());
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "proposalId", proposalId.toString());
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "timestampLimit", "3");
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "investLPLimit", "4");
+
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "leftTokens", "[]");
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "leftAmounts", "[]");
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "totalUSDSupply", "0");
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "firstSupplyTimestamp", "0");
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "APR", "0");
   });
 
   test("should handle ProposalWithdrawn event", () => {
@@ -267,6 +287,39 @@ describe("TraderPoolInvestProposal", () => {
     onProposalWithdrawn(event);
 
     assert.fieldEquals("Withdraw", event.transaction.hash.concatI32(0).toHexString(), "amountBase", amount.toString());
+    assert.fieldEquals(
+      "Withdraw",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "timestamp",
+      block.timestamp.toString()
+    );
+    assert.fieldEquals(
+      "Withdraw",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "proposal",
+      sender.toHexString() + proposalId.toString()
+    );
+    assert.fieldEquals(
+      "Withdraw",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "hash",
+      event.transaction.hash.toHexString()
+    );
+
+    const nextTx = getNextTx(tx);
+    user = Address.fromString("0x065049652b9d7C9fE9dD582970dB63a058788688");
+
+    event = createProposalWithdrawn(proposalId, user, amount, sender, block, nextTx);
+
+    onProposalWithdrawn(event);
+
+    assert.fieldEquals("Withdraw", event.transaction.hash.concatI32(0).toHexString(), "amountBase", amount.toString());
+    assert.fieldEquals(
+      "Withdraw",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "timestamp",
+      block.timestamp.toString()
+    );
     assert.fieldEquals(
       "Withdraw",
       event.transaction.hash.concatI32(0).toHexString(),
@@ -369,6 +422,14 @@ describe("TraderPoolInvestProposal", () => {
       "leftAmounts",
       `[${amountsToClaim[0]}]`
     );
+
+    amountsToClaim.pop();
+    claimEvent = createProposalClaimed(proposalId, user, amountsToClaim, tokens, sender, block, tx);
+
+    onProposalClaimed(claimEvent);
+
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "leftTokens", "[]");
+    assert.fieldEquals("Proposal", sender.toHexString() + proposalId.toString(), "leftAmounts", "[]");
   });
 
   test("should handle ProposalConverted", () => {
@@ -377,6 +438,52 @@ describe("TraderPoolInvestProposal", () => {
     let baseToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A85A9e914f181670");
 
     let event = createProposalConverted(proposalId, user, amount, baseToken, sender, block, tx);
+
+    onProposalConverted(event);
+
+    assert.fieldEquals("Withdraw", event.transaction.hash.concatI32(0).toHexString(), "amountBase", amount.toString());
+    assert.fieldEquals(
+      "Withdraw",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "proposal",
+      sender.toHexString() + proposalId.toString()
+    );
+    assert.fieldEquals(
+      "Withdraw",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "hash",
+      event.transaction.hash.toHexString()
+    );
+
+    assert.fieldEquals(
+      "Supply",
+      event.transaction.hash.concatI32(1).toHexString(),
+      "dividendsTokens",
+      `[${baseToken.toHexString()}]`
+    );
+    assert.fieldEquals(
+      "Supply",
+      event.transaction.hash.concatI32(1).toHexString(),
+      "amountDividendsTokens",
+      `[${amount}]`
+    );
+    assert.fieldEquals("Supply", event.transaction.hash.concatI32(1).toHexString(), "timestamp", "1");
+    assert.fieldEquals(
+      "Supply",
+      event.transaction.hash.concatI32(1).toHexString(),
+      "proposal",
+      sender.toHexString() + proposalId.toString()
+    );
+    assert.fieldEquals(
+      "Supply",
+      event.transaction.hash.concatI32(1).toHexString(),
+      "hash",
+      event.transaction.hash.toHexString()
+    );
+
+    const nextTx = getNextTx(tx);
+    user = Address.fromString("0x065049652b9d7C9fE9dD582970dB63a058788688");
+    event = createProposalConverted(proposalId, user, amount, baseToken, sender, block, nextTx);
 
     onProposalConverted(event);
 

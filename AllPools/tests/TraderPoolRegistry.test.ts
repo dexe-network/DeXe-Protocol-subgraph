@@ -12,7 +12,7 @@ import {
 } from "matchstick-as";
 import { getBlock, getNextBlock, getTransaction } from "./utils";
 import { getTraderPool } from "../src/entities/trader-pool/TraderPool";
-import { handl } from "../src/mappings/TraderPoolRegistry";
+import { handleBlock } from "../src/mappings/TraderPoolRegistry";
 import {
   BASIC_POOL_NAME,
   CHECK_PER_BLOCK,
@@ -92,7 +92,7 @@ describe("TraderPoolRegistry", () => {
     test("should handle block 100", () => {
       for (let i = 1; i <= 100; i++) {
         block = getBlock(BigInt.fromI32(i), BigInt.fromI32(i * 1000));
-        handl(block);
+        handleBlock(block);
       }
 
       assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "100", "timestamp", "100000");
@@ -177,7 +177,7 @@ describe("TraderPoolRegistry", () => {
     test("should handle day block range", () => {
       for (let i = 1; i <= 288; i++) {
         block = getBlock(BigInt.fromU64(i * 100), BigInt.fromU64(i * 1000));
-        handl(block);
+        handleBlock(block);
       }
 
       assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "100", "timestamp", "1000");
@@ -349,15 +349,15 @@ describe("TraderPoolRegistry", () => {
 
     test("should handle every 200th block in range 1000", () => {
       block = getBlock(BigInt.fromU64(200), BigInt.fromU64(2 * 1000));
-      handl(block);
+      handleBlock(block);
       block = getBlock(BigInt.fromU64(400), BigInt.fromU64(4 * 1000));
-      handl(block);
+      handleBlock(block);
       block = getBlock(BigInt.fromU64(600), BigInt.fromU64(6 * 1000));
-      handl(block);
+      handleBlock(block);
       block = getBlock(BigInt.fromU64(800), BigInt.fromU64(8 * 1000));
-      handl(block);
+      handleBlock(block);
       block = getBlock(BigInt.fromU64(1000), BigInt.fromU64(10 * 1000));
-      handl(block);
+      handleBlock(block);
 
       assert.fieldEquals("TraderPoolPriceHistory", pools[0].toHexString() + "200", "timestamp", "2000");
       assert.fieldEquals(

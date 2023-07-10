@@ -83,6 +83,12 @@ describe("PoolFactory", () => {
     assert.fieldEquals("TraderPool", expectedAt.toHexString(), "investorsCount", BigInt.zero().toString());
     assert.fieldEquals("TraderPool", expectedAt.toHexString(), "privateInvestors", "[]");
     assert.fieldEquals("TraderPool", expectedAt.toHexString(), "investorsCount", BigInt.zero().toString());
+    assert.fieldEquals(
+      "TraderPool",
+      expectedAt.toHexString(),
+      "proposalContract",
+      expectedProposalContract.toHexString()
+    );
 
     assert.fieldEquals(
       "ProposalContract",
@@ -91,5 +97,57 @@ describe("PoolFactory", () => {
       expectedAt.toHexString()
     );
     assert.fieldEquals("ProposalContract", expectedProposalContract.toHexString(), "proposalType", RISKY_PROPOSAL_NAME);
+    assert.fieldEquals(
+      "ProposalContract",
+      expectedProposalContract.toHexString(),
+      "traderPool",
+      expectedAt.toHexString()
+    );
+
+    expectedAt = Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE");
+    expectedProposalContract = Address.fromString("0x065049652b9d7C9fE9dD582970dB63a058788688");
+
+    event = createTraderPoolDeployed(
+      expectedPoolType,
+      expectedSymbol,
+      expectedName,
+      expectedAt,
+      expectedProposalContract,
+      expectedTrader,
+      expectedBasicToken,
+      expectedCommission,
+      expectedDescriptionURL,
+      block,
+      tx
+    );
+
+    onDeployed(event);
+
+    assert.fieldEquals("TraderPool", expectedAt.toHexString(), "type", expectedPoolType);
+    assert.fieldEquals("TraderPool", expectedAt.toHexString(), "token", expectedBasicToken.toHexString());
+    assert.fieldEquals("TraderPool", expectedAt.toHexString(), "investors", "[]");
+    assert.fieldEquals("TraderPool", expectedAt.toHexString(), "investorsCount", BigInt.zero().toString());
+    assert.fieldEquals("TraderPool", expectedAt.toHexString(), "privateInvestors", "[]");
+    assert.fieldEquals("TraderPool", expectedAt.toHexString(), "investorsCount", BigInt.zero().toString());
+    assert.fieldEquals(
+      "TraderPool",
+      expectedAt.toHexString(),
+      "proposalContract",
+      expectedProposalContract.toHexString()
+    );
+
+    assert.fieldEquals(
+      "ProposalContract",
+      expectedProposalContract.toHexString(),
+      "traderPool",
+      expectedAt.toHexString()
+    );
+    assert.fieldEquals("ProposalContract", expectedProposalContract.toHexString(), "proposalType", RISKY_PROPOSAL_NAME);
+    assert.fieldEquals(
+      "ProposalContract",
+      expectedProposalContract.toHexString(),
+      "traderPool",
+      expectedAt.toHexString()
+    );
   });
 });

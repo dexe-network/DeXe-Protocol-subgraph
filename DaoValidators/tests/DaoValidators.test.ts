@@ -26,7 +26,7 @@ import {
   InternalProposalExecuted,
 } from "../generated/templates/DaoValidators/DaoValidators";
 
-import { getBlock, getTransaction } from "./utils";
+import { getBlock, getNextTx, getTransaction } from "./utils";
 import { DaoPoolDeployed } from "../generated/PoolFactory/PoolFactory";
 import { onDeployed } from "../src/mappings/PoolFactory";
 
@@ -186,9 +186,53 @@ describe("DaoValidators", () => {
   });
 
   test("should handle ExternalProposalCreated", () => {
-    let proposalId = BigInt.fromI32(2);
+    let proposalId = BigInt.fromI32(1);
     let quorum = BigInt.fromI32(100);
     let event = createExternalProposalCreated(proposalId, quorum, contractSender, block, tx);
+
+    onExternalProposalCreated(event);
+
+    assert.fieldEquals(
+      "Proposal",
+      poolAddress.toHexString() + proposalId.toString() + "_" + "0",
+      "proposalId",
+      proposalId.toString()
+    );
+    assert.fieldEquals(
+      "Proposal",
+      poolAddress.toHexString() + proposalId.toString() + "_" + "0",
+      "isInternal",
+      "false"
+    );
+    assert.fieldEquals("Proposal", poolAddress.toHexString() + proposalId.toString() + "_" + "0", "description", "");
+    assert.fieldEquals(
+      "Proposal",
+      poolAddress.toHexString() + proposalId.toString() + "_" + "0",
+      "quorum",
+      quorum.toString()
+    );
+    assert.fieldEquals("Proposal", poolAddress.toHexString() + proposalId.toString() + "_" + "0", "totalVoteFor", "0");
+    assert.fieldEquals(
+      "Proposal",
+      poolAddress.toHexString() + proposalId.toString() + "_" + "0",
+      "totalVoteAgainst",
+      "0"
+    );
+    assert.fieldEquals(
+      "Proposal",
+      poolAddress.toHexString() + proposalId.toString() + "_" + "0",
+      "executor",
+      Bytes.empty().toHexString()
+    );
+    assert.fieldEquals(
+      "Proposal",
+      poolAddress.toHexString() + proposalId.toString() + "_" + "0",
+      "creator",
+      Bytes.empty().toHexString()
+    );
+
+    proposalId = BigInt.fromI32(2);
+    event = createExternalProposalCreated(proposalId, quorum, contractSender, block, tx);
 
     onExternalProposalCreated(event);
 
@@ -283,7 +327,7 @@ describe("DaoValidators", () => {
   });
 
   test("should handle InternalProposalExecuted", () => {
-    let proposalId = BigInt.fromI32(2);
+    let proposalId = BigInt.fromI32(1);
     let quorum = BigInt.fromI32(100);
     let description = "d";
     let sender = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181675");
@@ -298,6 +342,24 @@ describe("DaoValidators", () => {
 
     onInternalProposalExecuted(event);
 
+    assert.fieldEquals("Proposal", poolAddress.toHexString() + proposalId.toString() + "_" + "1", "isInternal", "true");
+    assert.fieldEquals(
+      "Proposal",
+      poolAddress.toHexString() + proposalId.toString() + "_" + "1",
+      "executor",
+      executor.toHexString()
+    );
+
+    proposalId = BigInt.fromI32(2);
+    createEvent = createInternalProposalCreated(proposalId, description, quorum, sender, contractSender, block, tx);
+
+    onInternalProposalCreated(createEvent);
+
+    event = createInternalProposalExecuted(proposalId, executor, contractSender, block, tx);
+
+    onInternalProposalExecuted(event);
+
+    assert.fieldEquals("Proposal", poolAddress.toHexString() + proposalId.toString() + "_" + "1", "isInternal", "true");
     assert.fieldEquals(
       "Proposal",
       poolAddress.toHexString() + proposalId.toString() + "_" + "1",

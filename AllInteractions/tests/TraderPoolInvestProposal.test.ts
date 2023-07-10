@@ -1,6 +1,6 @@
 import { Address, BigInt, ethereum, Bytes } from "@graphprotocol/graph-ts";
 import { afterEach, assert, beforeEach, clearStore, describe, newMockEvent, test } from "matchstick-as";
-import { assertTransaction, getBlock, getTransaction } from "./utils";
+import { assertTransaction, getBlock, getNextTx, getTransaction } from "./utils";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
 import { getTraderPool } from "../src/entities/trader-pool/TraderPool";
 import { getProposalContract } from "../src/entities/trader-pool/ProposalContract";
@@ -291,6 +291,53 @@ describe("TraderPoolInvestProposal", () => {
       `[${TransactionType.INVEST_PROPOSAL_SUPPLY}]`,
       BigInt.fromI32(1)
     );
+
+    const nextTx = getNextTx(tx);
+
+    user = Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE");
+
+    event = createProposalSupplied(proposalId, user, amounts, tokens, sender, block, nextTx);
+
+    onProposalSupplied(event);
+
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      nextTx.hash.concatI32(0).toHexString(),
+      "pool",
+      pool.toHexString()
+    );
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      nextTx.hash.concatI32(0).toHexString(),
+      "proposalId",
+      proposalId.toString()
+    );
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      nextTx.hash.concatI32(0).toHexString(),
+      "amounts",
+      `[${amounts[0]}]`
+    );
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      tx.hash.concatI32(0).toHexString(),
+      "tokens",
+      `[${tokens[0].toHexString()}]`
+    );
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      nextTx.hash.concatI32(0).toHexString(),
+      "transaction",
+      nextTx.hash.toHexString()
+    );
+
+    assertTransaction(
+      nextTx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.INVEST_PROPOSAL_SUPPLY}]`,
+      BigInt.fromI32(1)
+    );
   });
 
   test("should handle ProposalClaimed event", () => {
@@ -325,6 +372,53 @@ describe("TraderPoolInvestProposal", () => {
 
     assertTransaction(
       tx.hash,
+      event.params.user,
+      block,
+      `[${TransactionType.INVEST_PROPOSAL_CLAIM}]`,
+      BigInt.fromI32(1)
+    );
+
+    const nextTx = getNextTx(tx);
+
+    user = Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE");
+
+    event = createProposalClaimed(proposalId, user, amounts, tokens, sender, block, nextTx);
+
+    onProposalClaimed(event);
+
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      nextTx.hash.concatI32(0).toHexString(),
+      "pool",
+      pool.toHexString()
+    );
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      nextTx.hash.concatI32(0).toHexString(),
+      "proposalId",
+      proposalId.toString()
+    );
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      nextTx.hash.concatI32(0).toHexString(),
+      "amounts",
+      `[${amounts[0]}]`
+    );
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      nextTx.hash.concatI32(0).toHexString(),
+      "tokens",
+      `[${tokens[0].toHexString()}]`
+    );
+    assert.fieldEquals(
+      "InvestProposalClaimOrSupply",
+      nextTx.hash.concatI32(0).toHexString(),
+      "transaction",
+      nextTx.hash.toHexString()
+    );
+
+    assertTransaction(
+      nextTx.hash,
       event.params.user,
       block,
       `[${TransactionType.INVEST_PROPOSAL_CLAIM}]`,

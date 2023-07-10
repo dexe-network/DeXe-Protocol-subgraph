@@ -816,6 +816,33 @@ describe("DaoPool", () => {
       contractSender.concatI32(proposalId.toI32()).toHexString()
     );
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "isDP", "true");
+
+    proposalId = BigInt.fromI32(2);
+    token = Address.fromString("0xfF42F3B569cdB6dF9dC260473Ec2ef63Ca971d63");
+
+    event = createDPCreated(proposalId, sender, token, amount, contractSender, block, tx);
+
+    onDPCreated(event);
+
+    assert.fieldEquals(
+      "DistributionProposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "token",
+      token.toHexString()
+    );
+    assert.fieldEquals(
+      "DistributionProposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "amount",
+      amount.toString()
+    );
+    assert.fieldEquals(
+      "DistributionProposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString()
+    );
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "isDP", "true");
   });
 
   test("should handle ProposalExecuted", () => {
@@ -828,6 +855,26 @@ describe("DaoPool", () => {
     onProposalExecuted(event);
 
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "isFor", "true");
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "executor",
+      sender.toHexString()
+    );
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "executionTimestamp",
+      block.timestamp.toString()
+    );
+
+    proposalId = BigInt.fromI32(2);
+    isFor = false;
+    event = createProposalExecuted(proposalId, isFor, sender, contractSender, block, tx);
+
+    onProposalExecuted(event);
+
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "isFor", "false");
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
@@ -1276,6 +1323,28 @@ describe("DaoPool", () => {
     onStakingRewardClaimed(event);
 
     assert.fieldEquals("VoterInPool", user.concat(contractSender).toHexString(), "totalStakingReward", "1500");
+
+    onStakingRewardClaimed(event);
+
+    assert.fieldEquals("VoterInPool", user.concat(contractSender).toHexString(), "totalStakingReward", "3000");
+  });
+
+  test("should handle OffchainResultsSaved event", () => {
+    let user = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let resultsHash = "hash1";
+
+    let event = createOffchainResultsSaved(user, resultsHash, contractSender, block, tx);
+
+    onOffchainResultsSaved(event);
+
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "offchainResultsHash", resultsHash);
+
+    resultsHash = "hash2";
+    event = createOffchainResultsSaved(user, resultsHash, contractSender, block, tx);
+
+    onOffchainResultsSaved(event);
+
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "offchainResultsHash", resultsHash);
   });
 
   test("should handle OffchainResultsSaved event", () => {

@@ -11,7 +11,7 @@ import {
   Withdrawn,
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPoolDelegate } from "../entities/dao-pool/DaoPoolDelegate";
-import { getDaoPoolDeposit } from "../entities/dao-pool/DaoPoolDeposit";
+import { getDaoPoolVest } from "../entities/dao-pool/DaoPoolVest";
 import { getDaoPoolMovedToValidators } from "../entities/dao-pool/DaoPoolMovedToValidators";
 import { getDaoPoolExecute } from "../entities/dao-pool/DaoPoolProposalExecute";
 import { getDaoPoolRewardClaim } from "../entities/dao-pool/DaoPoolRewardClaim";
@@ -138,7 +138,7 @@ export function onDeposited(event: Deposited): void {
     event.params.sender
   );
 
-  let deposit = getDaoPoolDeposit(
+  let deposit = getDaoPoolVest(
     event.transaction.hash,
     event.address,
     event.params.amount,
@@ -162,7 +162,7 @@ export function onWithdrawn(event: Withdrawn): void {
     event.params.sender
   );
 
-  let withdrawn = getDaoPoolDeposit(
+  let withdrawn = getDaoPoolVest(
     event.transaction.hash,
     event.address,
     event.params.amount,
