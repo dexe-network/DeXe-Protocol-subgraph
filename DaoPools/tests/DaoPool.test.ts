@@ -869,10 +869,12 @@ describe("DaoPool", () => {
     );
 
     proposalId = BigInt.fromI32(2);
-    event = createProposalExecuted(proposalId, sender, contractSender, block, tx);
+    isFor = false;
+    event = createProposalExecuted(proposalId, isFor, sender, contractSender, block, tx);
 
     onProposalExecuted(event);
 
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "isFor", "false");
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),

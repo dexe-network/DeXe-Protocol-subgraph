@@ -1,4 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
+import { pushUnique } from "@dlsl/graph-modules";
 import {
   Delegated,
   Deposited,
@@ -19,7 +20,6 @@ import { getDaoPoolVote } from "../entities/dao-pool/DaoPoolVote";
 import { getDaoProposalCreate } from "../entities/dao-pool/DaoProposalCreate";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getTransaction } from "../entities/transaction/Transaction";
-import { extendArray } from "../helpers/ArrayHelper";
 import { getDaoPoolOffchainResult } from "../entities/dao-pool/DaoOffchainResults";
 
 export function onProposalCreated(event: ProposalCreated): void {
@@ -36,7 +36,7 @@ export function onProposalCreated(event: ProposalCreated): void {
     transaction.interactionsCount
   );
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_PROPOSAL_CREATED)]);
+  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_PROPOSAL_CREATED)]);
   proposalCreated.transaction = transaction.id;
 
   transaction.save();
@@ -57,7 +57,7 @@ export function onDelegated(event: Delegated): void {
     transaction.interactionsCount
   );
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [
+  transaction.type = pushUnique<BigInt>(transaction.type, [
     getEnumBigInt(event.params.isDelegate ? TransactionType.DAO_POOL_DELEGATED : TransactionType.DAO_POOL_UNDELEGATED),
   ]);
   delegated.transaction = transaction.id;
@@ -81,7 +81,7 @@ export function onVoted(event: Voted): void {
     event.params.isVoteFor
   );
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_PROPOSAL_VOTED)]);
+  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_PROPOSAL_VOTED)]);
   voted.transaction = transaction.id;
 
   transaction.save();
@@ -102,7 +102,7 @@ export function onProposalExecuted(event: ProposalExecuted): void {
     transaction.interactionsCount
   );
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_PROPOSAL_EXECUTED)]);
+  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_PROPOSAL_EXECUTED)]);
   executed.transaction = transaction.id;
 
   transaction.save();
@@ -123,7 +123,7 @@ export function onRewardClaimed(event: RewardClaimed): void {
     transaction.interactionsCount
   );
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_REWARD_CLAIMED)]);
+  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_REWARD_CLAIMED)]);
   claimed.transaction = transaction.id;
 
   transaction.save();
@@ -147,7 +147,7 @@ export function onDeposited(event: Deposited): void {
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_DEPOSITED)]);
+  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_DEPOSITED)]);
   deposit.transaction = transaction.id;
 
   transaction.save();
@@ -171,7 +171,7 @@ export function onWithdrawn(event: Withdrawn): void {
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_WITHDRAWN)]);
+  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_WITHDRAWN)]);
   withdrawn.transaction = transaction.id;
 
   transaction.save();
@@ -194,7 +194,7 @@ export function onMovedToValidators(event: MovedToValidators): void {
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [
+  transaction.type = pushUnique<BigInt>(transaction.type, [
     getEnumBigInt(TransactionType.DAO_POOL_MOVED_TO_VALIDATORS),
   ]);
   moved.transaction = transaction.id;
@@ -218,7 +218,7 @@ export function onOffchainResultsSaved(event: OffchainResultsSaved): void {
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [
+  transaction.type = pushUnique<BigInt>(transaction.type, [
     getEnumBigInt(TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED),
   ]);
   offchainResultsSaved.transaction = transaction.id;

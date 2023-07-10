@@ -1,6 +1,6 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { pushUnique } from "@dlsl/graph-modules";
 import { TraderPool } from "../../../generated/schema";
-import { extendArray } from "../../helpers/ArrayHelper";
 
 export function getTraderPool(
   poolAddress: Address,
@@ -42,7 +42,7 @@ export function getTraderPool(
 
     traderPool.priceHistoryCount = BigInt.zero();
 
-    traderPool.admins = extendArray<Bytes>(new Array<Bytes>(), [trader]);
+    traderPool.admins = pushUnique<Bytes>(new Array<Bytes>(), [trader]);
     traderPool.trader = trader;
 
     traderPool.commission = commission;

@@ -1,4 +1,5 @@
 import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { pushUnique } from "@dlsl/graph-modules";
 import { PriceFeed } from "../../generated/templates/DistributionProposal/PriceFeed";
 import { DistributionProposalClaimed } from "../../generated/templates/DistributionProposal/DistributionProposal";
 import { getDaoPool } from "../entities/DaoPool";
@@ -6,7 +7,6 @@ import { getDPContract } from "../entities/DPContract";
 import { getProposal } from "../entities/Proposal";
 import { getVoter } from "../entities/Voters/Voter";
 import { getVoterInPool } from "../entities/Voters/VoterInPool";
-import { extendArray } from "../helpers/ArrayHelper";
 import { BNB_ADDRESS, PRICE_FEED_ADDRESS, WBNB_ADDRESS } from "../entities/global/globals";
 import { getDistributionProposal } from "../entities/DistributionProposal";
 import { getVoterInProposal } from "../entities/Voters/VoterInProposal";
@@ -28,7 +28,7 @@ export function onDistributionProposalClaimed(event: DistributionProposalClaimed
     event.params.amount
   );
 
-  voterInPool.claimedDPs = extendArray(voterInPool.claimedDPs, [proposal.id]);
+  voterInPool.claimedDPs = pushUnique(voterInPool.claimedDPs, [proposal.id]);
   voterInPool.totalDPClaimed = voterInPool.totalDPClaimed.plus(usdAmount);
   voterInProposal.claimedDpRewardUSD = usdAmount;
 
