@@ -32,10 +32,11 @@ import {
   YEAR,
 } from "../entities/global/globals";
 import { Proposal, VoterInPool, VoterInProposal } from "../../generated/schema";
-import { extendArray, reduceArray } from "../helpers/ArrayHelper";
+import { extendArray, findIndex, reduceArray } from "../helpers/ArrayHelper";
 import { getProposalSettings } from "../entities/Settings/ProposalSettings";
 import { getVoterInPoolPair } from "../entities/Voters/VoterInPoolPair";
 import { getUSDValue } from "../helpers/PriceFeedInteractions";
+import { getVoterOffchain } from "../entities/Voters/VoterOffchain";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let pool = getDaoPool(event.address);
@@ -222,13 +223,31 @@ export function onRewardClaimed(event: RewardClaimed): void {
   let voter = getVoter(event.params.sender);
   let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
   let proposal = getProposal(pool, event.params.proposalId);
-  let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
   let usdAmount = getUSDValue(event.params.token, event.params.amount);
 
-  voterInProposal.claimedRewardUSD = usdAmount;
+  if (event.params.proposalId.notEqual(BigInt.zero())) {
+    let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
-  voterInProposal.save();
+    voterInProposal.claimedRewardUSD = usdAmount;
+
+    voterInProposal.save();
+  } else {
+    let voterOffchain = getVoterOffchain(voter, pool);
+    voterOffchain.tokens = extendArray<Bytes>(voterOffchain.tokens, [event.params.token]);
+
+    const index = findIndex(voterOffchain.tokens, event.params.token, bytesEquals);
+
+    if (index >= voterOffchain.rewardsUSD.length) {
+      let rewards = voterOffchain.rewardsUSD;
+      rewards.push(usdAmount);
+      voterOffchain.rewardsUSD = rewards;
+    } else {
+      voterOffchain.rewardsUSD[index] = usdAmount;
+    }
+
+    voterOffchain.save();
+  }
 
   voterInPool.totalClaimedUSD = voterInPool.totalClaimedUSD.plus(usdAmount);
 
@@ -242,34 +261,52 @@ export function onRewardCredited(event: RewardCredited): void {
   let voter = getVoter(event.params.sender);
   let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
   let proposal = getProposal(pool, event.params.proposalId);
-  let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
   let usdAmount = getUSDValue(event.params.rewardToken, event.params.amount);
 
-  const rewardType = event.params.rewardType;
+  if (event.params.proposalId.notEqual(BigInt.zero())) {
+    let voterInProposal = getVoterInProposal(proposal, voterInPool);
+    const rewardType = event.params.rewardType;
 
-  if (rewardType == REWARD_TYPE_VOTE_FOR_DELEGATED) {
-    voterInProposal.unclaimedRewardFromDelegationsUSDFor =
-      voterInProposal.unclaimedRewardFromDelegationsUSDFor.plus(usdAmount);
-    voterInPool.totalDelegationRewardUSDFor = voterInPool.totalDelegationRewardUSDFor.plus(usdAmount);
-  } else if (rewardType == REWARD_TYPE_VOTE_AGAINST_DELEGATED) {
-    voterInProposal.unclaimedRewardFromDelegationsUSDAgainst =
-      voterInProposal.unclaimedRewardFromDelegationsUSDAgainst.plus(usdAmount);
-    voterInPool.totalDelegationRewardUSDAgainst = voterInPool.totalDelegationRewardUSDAgainst.plus(usdAmount);
-  }
+    if (rewardType == REWARD_TYPE_VOTE_FOR_DELEGATED) {
+      voterInProposal.unclaimedRewardFromDelegationsUSDFor =
+        voterInProposal.unclaimedRewardFromDelegationsUSDFor.plus(usdAmount);
+      voterInPool.totalDelegationRewardUSDFor = voterInPool.totalDelegationRewardUSDFor.plus(usdAmount);
+    } else if (rewardType == REWARD_TYPE_VOTE_AGAINST_DELEGATED) {
+      voterInProposal.unclaimedRewardFromDelegationsUSDAgainst =
+        voterInProposal.unclaimedRewardFromDelegationsUSDAgainst.plus(usdAmount);
+      voterInPool.totalDelegationRewardUSDAgainst = voterInPool.totalDelegationRewardUSDAgainst.plus(usdAmount);
+    }
 
-  if (rewardType == REWARD_TYPE_VOTE_FOR || rewardType == REWARD_TYPE_VOTE_FOR_DELEGATED) {
-    voterInProposal.unclaimedRewardUSDFor = voterInProposal.unclaimedRewardUSDFor.plus(usdAmount);
-  } else if (rewardType == REWARD_TYPE_VOTE_AGAINST || rewardType == REWARD_TYPE_VOTE_AGAINST_DELEGATED) {
-    voterInProposal.unclaimedRewardUSDAgainst = voterInProposal.unclaimedRewardUSDAgainst.plus(usdAmount);
+    if (rewardType == REWARD_TYPE_VOTE_FOR || rewardType == REWARD_TYPE_VOTE_FOR_DELEGATED) {
+      voterInProposal.unclaimedRewardUSDFor = voterInProposal.unclaimedRewardUSDFor.plus(usdAmount);
+    } else if (rewardType == REWARD_TYPE_VOTE_AGAINST || rewardType == REWARD_TYPE_VOTE_AGAINST_DELEGATED) {
+      voterInProposal.unclaimedRewardUSDAgainst = voterInProposal.unclaimedRewardUSDAgainst.plus(usdAmount);
+    } else {
+      voterInProposal.unclaimedRewardUSDFor = voterInProposal.unclaimedRewardUSDFor.plus(usdAmount);
+      voterInProposal.unclaimedRewardUSDAgainst = voterInProposal.unclaimedRewardUSDAgainst.plus(usdAmount);
+    }
+
+    recalculateAPR(voterInPool, usdAmount, event.block.timestamp);
+
+    voterInProposal.save();
   } else {
-    voterInProposal.unclaimedRewardUSDFor = voterInProposal.unclaimedRewardUSDFor.plus(usdAmount);
-    voterInProposal.unclaimedRewardUSDAgainst = voterInProposal.unclaimedRewardUSDAgainst.plus(usdAmount);
+    let voterOffchain = getVoterOffchain(voter, pool);
+
+    voterOffchain.tokens = extendArray<Bytes>(voterOffchain.tokens, [event.params.rewardToken]);
+
+    const index = findIndex(voterOffchain.tokens, event.params.rewardToken, bytesEquals);
+
+    if (index >= voterOffchain.rewardsUSD.length) {
+      let rewards = voterOffchain.rewardsUSD;
+      rewards.push(usdAmount);
+      voterOffchain.rewardsUSD = rewards;
+    } else {
+      voterOffchain.rewardsUSD[index] = usdAmount;
+    }
+
+    voterOffchain.save();
   }
-
-  recalculateAPR(voterInPool, usdAmount, event.block.timestamp);
-
-  voterInProposal.save();
   voterInPool.save();
   voter.save();
   pool.save();
@@ -346,3 +383,7 @@ function recalculateAPR(voterInPool: VoterInPool, rewardCredited: BigInt, curren
     voterInPool.lastUpdate = currentTimestamp;
   }
 }
+
+const bytesEquals = (v1: Bytes, v2: Bytes): bool => {
+  return v1.equals(v2);
+};

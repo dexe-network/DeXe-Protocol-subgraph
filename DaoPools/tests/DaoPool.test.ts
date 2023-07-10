@@ -885,6 +885,27 @@ describe("DaoPool", () => {
     );
   });
 
+  test("should handle offchain RewardClaimed", () => {
+    let proposalId = BigInt.zero();
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let rewardToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181676");
+    let amount = BigInt.fromI32(1000);
+
+    let event = createRewardClaimed(proposalId, sender, rewardToken, amount, contractSender, block, tx);
+
+    onRewardClaimed(event);
+
+    assert.fieldEquals(
+      "VoterOffchain",
+      sender.concat(contractSender).toHexString(),
+      "tokens",
+      `[${rewardToken.toHexString()}]`
+    );
+    assert.fieldEquals("VoterOffchain", sender.concat(contractSender).toHexString(), "rewardsUSD", `[200]`);
+
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalClaimedUSD", "200");
+  });
+
   test("should handle RewardCredited", () => {
     let proposalId = BigInt.fromI32(1);
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
@@ -1132,6 +1153,34 @@ describe("DaoPool", () => {
       "totalDelegationRewardUSDAgainst",
       "200"
     );
+  });
+
+  test("should handle offchain RewardCredited", () => {
+    let proposalId = BigInt.zero();
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let rewardToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181676");
+    let amount = BigInt.fromI32(1000);
+
+    let event = createRewardCredited(
+      proposalId,
+      BigInt.fromI32(REWARD_TYPE_VOTE_AGAINST_DELEGATED),
+      rewardToken,
+      amount,
+      sender,
+      contractSender,
+      block,
+      tx
+    );
+
+    onRewardCredited(event);
+
+    assert.fieldEquals(
+      "VoterOffchain",
+      sender.concat(contractSender).toHexString(),
+      "tokens",
+      `[${rewardToken.toHexString()}]`
+    );
+    assert.fieldEquals("VoterOffchain", sender.concat(contractSender).toHexString(), "rewardsUSD", `[200]`);
   });
 
   test("should deposit", () => {

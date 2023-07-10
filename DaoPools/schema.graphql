@@ -61,6 +61,19 @@ type DaoPool @entity {
   tokenSales: [TokenSale!]! @derivedFrom(field: "pool")
 }
 
+# @notice The entity holds information about voter offchain results
+# @param id forms from voter address and pool address
+# @param tokens the reward tokens
+# @param rewardsUSD the rewards in USD by tokens
+type VoterOffchain @entity {
+  id: Bytes! # voter address + pool address
+  voter: Voter!
+  pool: DaoPool!
+
+  tokens: [Bytes!]!
+  rewardsUSD: [BigInt!]!
+}
+
 # @notice The entity holds information about voter
 # @param id forms from user address
 type Voter @entity {
@@ -196,7 +209,7 @@ type ProposalVote @entity(immutable: true) {
 # @param claimedRewardUSD the amount of claimed reward
 # @param claimedDpRewardUSD the amount of dp rewards in usd
 type VoterInProposal @entity {
-  id: Bytes! # voter in voter address + proposal entity id
+  id: Bytes! # voter address + proposal entity id
   pool: DaoPool!
   proposal: Proposal!
   voter: VoterInPool!

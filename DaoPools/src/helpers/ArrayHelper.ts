@@ -31,3 +31,15 @@ export function upcastCopy<T extends V, V>(array: Array<T>): Array<V> {
 
   return newArr;
 }
+
+export function findIndex<T>(array: Array<T>, value: T, callback: (v1: T, v2: T) => bool): i32 {
+  let index: i32 = -1;
+  for (let i = 0; i < array.length; i++) {
+    if (callback(array[i], value)) {
+      index = i;
+      break;
+    }
+  }
+
+  return index;
+}
