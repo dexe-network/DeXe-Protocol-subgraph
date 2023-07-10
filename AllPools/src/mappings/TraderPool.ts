@@ -13,7 +13,7 @@ import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPosition } from "../entities/trader-pool/Position";
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
-import { pushUnique, remove, upcastCopy } from "@dlsl/graph-modules";
+import { pushUnique, remove, upcastCopy, findPrevHistory } from "@dlsl/graph-modules";
 import { getPositionId } from "../helpers/Position";
 import {
   DAY,
@@ -23,13 +23,13 @@ import {
   PRICE_FEED_ADDRESS,
   PERCENTAGE_DENOMINATOR,
   PERCENTAGE_NUMERATOR,
+  MAX_SEARCH_DEPTH,
 } from "../entities/global/globals";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { Exchange, FeeHistory, Position, TraderPool, TraderPoolPriceHistory } from "../../generated/schema";
 import { getInvestor } from "../entities/trader-pool/Investor";
 import { getExchange } from "../entities/trader-pool/Exchange";
 import { getExchangeHistory } from "../entities/trader-pool/history/ExchangeHistory";
-import { findPrevHistory } from "../helpers/HistorySearcher";
 import { getFeeHistory } from "../entities/trader-pool/history/FeeHistory";
 import { roundCheckUp } from "../entities/trader-pool/TraderPoolPriceHistory";
 import { getTokenValue, getUSDValue } from "../helpers/PriceFeedInteractions";
@@ -191,7 +191,8 @@ export function onTraderCommissionMinted(event: CommissionClaimed): void {
     TraderPoolPriceHistory.load,
     pool.id,
     roundCheckUp(event.block.number),
-    BigInt.fromI32(100)
+    BigInt.fromI32(MAX_SEARCH_DEPTH),
+    100
   );
   let currentPNL = priceHistory == null ? BigInt.zero() : priceHistory.percPNLUSD;
   let currentLpCost = priceHistory == null ? BigInt.fromI32(1) : priceHistory.usdTVL.div(priceHistory.supply);
@@ -202,7 +203,8 @@ export function onTraderCommissionMinted(event: CommissionClaimed): void {
       FeeHistory.load,
       event.address.toHexString(),
       history.day,
-      BigInt.fromI32(1)
+      BigInt.fromI32(MAX_SEARCH_DEPTH),
+      1
     );
     history.prevHistory = prevHistory == null ? "" : prevHistory.id;
     history.PNL = currentPNL;
@@ -351,7 +353,8 @@ function recalculateOrderSize(baseVolume: BigInt, pool: TraderPool, block: BigIn
     TraderPoolPriceHistory.load,
     pool.id,
     block,
-    BigInt.fromI32(100)
+    BigInt.fromI32(MAX_SEARCH_DEPTH),
+    100
   );
   let currentPercentage: BigInt;
   if (lastHistory == null || lastHistory.baseTVL.equals(BigInt.zero())) {
