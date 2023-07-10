@@ -63,15 +63,13 @@ type DaoPool @entity {
 
 # @notice The entity holds information about voter offchain results
 # @param id forms from voter address and pool address
-# @param tokens the reward tokens
-# @param rewardsUSD the rewards in USD by tokens
+# @param rewardUSD the rewards in USD
 type VoterOffchain @entity {
   id: Bytes! # voter address + pool address
   voter: Voter!
   pool: DaoPool!
 
-  tokens: [Bytes!]!
-  rewardsUSD: [BigInt!]!
+  rewardUSD: BigInt!
 }
 
 # @notice The entity holds information about voter

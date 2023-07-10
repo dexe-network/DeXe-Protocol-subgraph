@@ -234,17 +234,8 @@ export function onRewardClaimed(event: RewardClaimed): void {
     voterInProposal.save();
   } else {
     let voterOffchain = getVoterOffchain(voter, pool);
-    voterOffchain.tokens = extendArray<Bytes>(voterOffchain.tokens, [event.params.token]);
 
-    const index = findIndex(voterOffchain.tokens, event.params.token, bytesEquals);
-
-    if (index >= voterOffchain.rewardsUSD.length) {
-      let rewards = voterOffchain.rewardsUSD;
-      rewards.push(usdAmount);
-      voterOffchain.rewardsUSD = rewards;
-    } else {
-      voterOffchain.rewardsUSD[index] = usdAmount;
-    }
+    voterOffchain.rewardUSD = usdAmount;
 
     voterOffchain.save();
   }
@@ -293,17 +284,7 @@ export function onRewardCredited(event: RewardCredited): void {
   } else {
     let voterOffchain = getVoterOffchain(voter, pool);
 
-    voterOffchain.tokens = extendArray<Bytes>(voterOffchain.tokens, [event.params.rewardToken]);
-
-    const index = findIndex(voterOffchain.tokens, event.params.rewardToken, bytesEquals);
-
-    if (index >= voterOffchain.rewardsUSD.length) {
-      let rewards = voterOffchain.rewardsUSD;
-      rewards.push(usdAmount);
-      voterOffchain.rewardsUSD = rewards;
-    } else {
-      voterOffchain.rewardsUSD[index] = usdAmount;
-    }
+    voterOffchain.rewardUSD = usdAmount;
 
     voterOffchain.save();
   }
