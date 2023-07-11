@@ -1,4 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
+import { pushUnique } from "@dlsl/graph-modules";
 import {
   Voted,
   InternalProposalCreated,
@@ -9,7 +10,6 @@ import { getDaoValidatorProposalCreate } from "../entities/dao-pool/DaoValidator
 import { getDaoValidatorProposalExecute } from "../entities/dao-pool/DaoValidatorProposalExecute";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getTransaction } from "../entities/transaction/Transaction";
-import { extendArray } from "../helpers/ArrayHelper";
 
 export function onVoted(event: Voted): void {
   let transaction = getTransaction(
@@ -29,7 +29,7 @@ export function onVoted(event: Voted): void {
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_VALIDATORS_VOTED)]);
+  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_VALIDATORS_VOTED)]);
   voted.transaction = transaction.id;
 
   transaction.save();
@@ -52,7 +52,7 @@ export function onInternalProposalCreated(event: InternalProposalCreated): void 
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [
+  transaction.type = pushUnique<BigInt>(transaction.type, [
     getEnumBigInt(TransactionType.DAO_VALIDATORS_PROPOSAL_CREATED),
   ]);
   created.transaction = transaction.id;
@@ -77,7 +77,7 @@ export function onInternalProposalExecuted(event: InternalProposalExecuted): voi
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [
+  transaction.type = pushUnique<BigInt>(transaction.type, [
     getEnumBigInt(TransactionType.DAO_VALIDATORS_PROPOSAL_EXECUTED),
   ]);
   executed.transaction = transaction.id;

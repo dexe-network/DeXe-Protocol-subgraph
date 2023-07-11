@@ -1,4 +1,5 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
+import { upcastCopy } from "@dlsl/graph-modules";
 import {
   ProposalCreated,
   ProposalWithdrawn,
@@ -14,7 +15,7 @@ import { getProposal } from "../entities/invest-pool/proposal/Proposal";
 import { getProposalContract } from "../entities/invest-pool/proposal/ProposalContract";
 import { getSupply } from "../entities/invest-pool/proposal/ProposalSupply";
 import { getWithdraw } from "../entities/invest-pool/proposal/ProposalWithdraw";
-import { deleteByIndex, extendArray, upcastCopy } from "../helpers/ArrayHelper";
+import { deleteByIndex } from "../helpers/ArrayHelper";
 import { getUSDValue } from "../helpers/PriceFeedInteractions";
 
 export function onProposalCreated(event: ProposalCreated): void {

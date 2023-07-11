@@ -1,4 +1,5 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
+import { pushUnique, remove } from "@dlsl/graph-modules";
 import {
   Delegated,
   Deposited,
@@ -32,7 +33,6 @@ import {
   YEAR,
 } from "../entities/global/globals";
 import { Proposal, VoterInPool, VoterInProposal } from "../../generated/schema";
-import { extendArray, findIndex, reduceArray } from "../helpers/ArrayHelper";
 import { getProposalSettings } from "../entities/Settings/ProposalSettings";
 import { getVoterInPoolPair } from "../entities/Voters/VoterInPoolPair";
 import { getUSDValue } from "../helpers/PriceFeedInteractions";
@@ -89,7 +89,7 @@ export function onDelegated(event: Delegated): void {
 
   if (event.params.isDelegate) {
     toVoterInPool.receivedDelegation = toVoterInPool.receivedDelegation.plus(event.params.amount);
-    toVoterInPool.receivedNFTDelegation = extendArray<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
+    toVoterInPool.receivedNFTDelegation = pushUnique<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
     toVoterInPool.receivedNFTDelegationCount = BigInt.fromI32(toVoterInPool.receivedNFTDelegation.length);
 
     if (pair.delegateAmount.equals(BigInt.zero()) && pair.delegateNfts.length == 0) {
@@ -97,24 +97,24 @@ export function onDelegated(event: Delegated): void {
     }
 
     pair.delegateAmount = pair.delegateAmount.plus(event.params.amount);
-    pair.delegateNfts = extendArray<BigInt>(pair.delegateNfts, event.params.nfts);
+    pair.delegateNfts = pushUnique<BigInt>(pair.delegateNfts, event.params.nfts);
 
     pool.totalCurrentTokenDelegated = pool.totalCurrentTokenDelegated.plus(event.params.amount);
-    pool.totalCurrentNFTDelegated = extendArray<BigInt>(pool.totalCurrentNFTDelegated, event.params.nfts);
+    pool.totalCurrentNFTDelegated = pushUnique<BigInt>(pool.totalCurrentNFTDelegated, event.params.nfts);
   } else {
     toVoterInPool.receivedDelegation = toVoterInPool.receivedDelegation.minus(event.params.amount);
-    toVoterInPool.receivedNFTDelegation = reduceArray<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
+    toVoterInPool.receivedNFTDelegation = remove<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
     toVoterInPool.receivedNFTDelegationCount = BigInt.fromI32(toVoterInPool.receivedNFTDelegation.length);
 
     pair.delegateAmount = pair.delegateAmount.minus(event.params.amount);
-    pair.delegateNfts = reduceArray<BigInt>(pair.delegateNfts, event.params.nfts);
+    pair.delegateNfts = remove<BigInt>(pair.delegateNfts, event.params.nfts);
 
     if (pair.delegateAmount.equals(BigInt.zero()) && pair.delegateNfts.length == 0) {
       toVoterInPool.currentDelegatorsCount = toVoterInPool.currentDelegatorsCount.minus(BigInt.fromI32(1));
     }
 
     pool.totalCurrentTokenDelegated = pool.totalCurrentTokenDelegated.minus(event.params.amount);
-    pool.totalCurrentNFTDelegated = reduceArray<BigInt>(pool.totalCurrentNFTDelegated, event.params.nfts);
+    pool.totalCurrentNFTDelegated = remove<BigInt>(pool.totalCurrentNFTDelegated, event.params.nfts);
   }
 
   if (event.params.amount.gt(BigInt.zero())) {
@@ -177,7 +177,7 @@ export function onVoted(event: Voted): void {
       .plus(event.params.delegatedVote);
   }
 
-  let newVoters = extendArray<Bytes>(proposal.voters, [voter.id]);
+  let newVoters = pushUnique<Bytes>(proposal.voters, [voter.id]);
 
   if (proposal.voters.length < newVoters.length) {
     proposal.voters = newVoters;

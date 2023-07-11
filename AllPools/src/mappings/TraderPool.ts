@@ -13,6 +13,7 @@ import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPosition } from "../entities/trader-pool/Position";
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
+import { pushUnique, remove, upcastCopy, findPrevHistory } from "@dlsl/graph-modules";
 import { getPositionId } from "../helpers/Position";
 import {
   DAY,
@@ -22,14 +23,13 @@ import {
   PRICE_FEED_ADDRESS,
   PERCENTAGE_DENOMINATOR,
   PERCENTAGE_NUMERATOR,
+  MAX_SEARCH_DEPTH,
 } from "../entities/global/globals";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { Exchange, FeeHistory, Position, TraderPool, TraderPoolPriceHistory } from "../../generated/schema";
-import { upcastCopy, extendArray, reduceArray } from "../helpers/ArrayHelper";
 import { getInvestor } from "../entities/trader-pool/Investor";
 import { getExchange } from "../entities/trader-pool/Exchange";
 import { getExchangeHistory } from "../entities/trader-pool/history/ExchangeHistory";
-import { findPrevHistory } from "../helpers/HistorySearcher";
 import { getFeeHistory } from "../entities/trader-pool/history/FeeHistory";
 import { roundCheckUp } from "../entities/trader-pool/TraderPoolPriceHistory";
 import { getTokenValue, getUSDValue } from "../helpers/PriceFeedInteractions";
@@ -129,11 +129,11 @@ export function onJoined(event: Joined): void {
   let pool = getTraderPool(event.address);
 
   let investor = getInvestor(event.params.user);
-  pool.investors = extendArray(pool.investors, [investor.id]);
+  pool.investors = pushUnique(pool.investors, [investor.id]);
   pool.investorsCount = pool.investorsCount.plus(BigInt.fromI32(1));
 
-  investor.activePools = extendArray(investor.activePools, [pool.id]);
-  investor.allPools = extendArray(investor.allPools, [pool.id]);
+  investor.activePools = pushUnique(investor.activePools, [pool.id]);
+  investor.allPools = pushUnique(investor.allPools, [pool.id]);
 
   investor.save();
   pool.save();
@@ -143,10 +143,10 @@ export function onLeft(event: Left): void {
   let pool = getTraderPool(event.address);
 
   let investor = getInvestor(event.params.user);
-  pool.investors = reduceArray(pool.investors, [investor.id]);
+  pool.investors = remove(pool.investors, [investor.id]);
   pool.investorsCount = pool.investorsCount.minus(BigInt.fromI32(1));
 
-  investor.activePools = reduceArray(investor.activePools, [pool.id]);
+  investor.activePools = remove(investor.activePools, [pool.id]);
 
   investor.save();
   pool.save();
@@ -164,12 +164,12 @@ export function onModifiedAdmins(event: ModifiedAdmins): void {
   let admins = upcastCopy<Address, Bytes>(event.params.admins);
 
   if (event.params.add) {
-    pool.admins = extendArray<Bytes>(pool.admins, admins);
+    pool.admins = pushUnique<Bytes>(pool.admins, admins);
   } else {
-    pool.admins = reduceArray<Bytes>(pool.admins, admins);
+    pool.admins = remove<Bytes>(pool.admins, admins);
   }
 
-  pool.admins = extendArray(pool.admins, [pool.trader]);
+  pool.admins = pushUnique(pool.admins, [pool.trader]);
   pool.save();
 }
 
@@ -177,9 +177,9 @@ export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): voi
   let pool = getTraderPool(event.address);
   let upcastedArray = upcastCopy<Address, Bytes>(event.params.privateInvestors);
   if (event.params.add) {
-    pool.privateInvestors = extendArray(pool.privateInvestors, upcastedArray);
+    pool.privateInvestors = pushUnique(pool.privateInvestors, upcastedArray);
   } else {
-    pool.privateInvestors = reduceArray(pool.privateInvestors, upcastedArray);
+    pool.privateInvestors = remove(pool.privateInvestors, upcastedArray);
   }
   pool.save();
 }
@@ -191,7 +191,8 @@ export function onTraderCommissionMinted(event: CommissionClaimed): void {
     TraderPoolPriceHistory.load,
     pool.id,
     roundCheckUp(event.block.number),
-    BigInt.fromI32(100)
+    BigInt.fromI32(MAX_SEARCH_DEPTH),
+    100
   );
   let currentPNL = priceHistory == null ? BigInt.zero() : priceHistory.percPNLUSD;
   let currentLpCost = priceHistory == null ? BigInt.fromI32(1) : priceHistory.usdTVL.div(priceHistory.supply);
@@ -202,7 +203,8 @@ export function onTraderCommissionMinted(event: CommissionClaimed): void {
       FeeHistory.load,
       event.address.toHexString(),
       history.day,
-      BigInt.fromI32(1)
+      BigInt.fromI32(MAX_SEARCH_DEPTH),
+      1
     );
     history.prevHistory = prevHistory == null ? "" : prevHistory.id;
     history.PNL = currentPNL;
@@ -351,7 +353,8 @@ function recalculateOrderSize(baseVolume: BigInt, pool: TraderPool, block: BigIn
     TraderPoolPriceHistory.load,
     pool.id,
     block,
-    BigInt.fromI32(100)
+    BigInt.fromI32(MAX_SEARCH_DEPTH),
+    100
   );
   let currentPercentage: BigInt;
   if (lastHistory == null || lastHistory.baseTVL.equals(BigInt.zero())) {

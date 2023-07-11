@@ -1,7 +1,7 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { DAY } from "../../global/globals";
+import { DAY, MAX_SEARCH_DEPTH } from "../../global/globals";
 import { Investor, InvestorAmountHistory } from "../../../../generated/schema";
-import { findPrevHistory } from "../../../helpers/HistorySearcher";
+import { findPrevHistory } from "@dlsl/graph-modules";
 
 export function getInvestorAmountHistory(investor: Investor, timestamp: BigInt): InvestorAmountHistory {
   let day = timestamp.div(BigInt.fromI32(DAY));
@@ -32,7 +32,8 @@ export function injectPrevInvestorAmountHistory(history: InvestorAmountHistory, 
       InvestorAmountHistory.load,
       investor.id.toHexString(),
       history.day,
-      BigInt.fromI32(1)
+      BigInt.fromI32(MAX_SEARCH_DEPTH),
+      1
     );
     if (prevHistory != null) {
       history.prevHistory = prevHistory.id;
