@@ -12,6 +12,7 @@ export function getVoterOffchain(voter: Voter, pool: DaoPool): VoterOffchain {
     voterOffchain.pool = pool.id;
 
     voterOffchain.rewardUSD = BigInt.zero();
+    voterOffchain.claimedRewardUSD = BigInt.zero();
   }
 
   return voterOffchain;

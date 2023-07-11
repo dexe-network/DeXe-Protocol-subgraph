@@ -70,6 +70,7 @@ type VoterOffchain @entity {
   pool: DaoPool!
 
   rewardUSD: BigInt!
+  claimedRewardUSD: BigInt!
 }
 
 # @notice The entity holds information about voter

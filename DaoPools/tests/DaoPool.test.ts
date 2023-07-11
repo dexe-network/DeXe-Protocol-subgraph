@@ -942,7 +942,7 @@ describe("DaoPool", () => {
 
     onRewardClaimed(event);
 
-    assert.fieldEquals("VoterOffchain", sender.concat(contractSender).toHexString(), "rewardUSD", `200`);
+    assert.fieldEquals("VoterOffchain", sender.concat(contractSender).toHexString(), "claimedRewardUSD", `200`);
 
     assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalClaimedUSD", "200");
   });
@@ -1216,6 +1216,7 @@ describe("DaoPool", () => {
     onRewardCredited(event);
 
     assert.fieldEquals("VoterOffchain", sender.concat(contractSender).toHexString(), "rewardUSD", "200");
+    assert.fieldEquals("VoterOffchain", sender.concat(contractSender).toHexString(), "claimedRewardUSD", "0");
   });
 
   test("should deposit", () => {

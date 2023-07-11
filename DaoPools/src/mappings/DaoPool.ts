@@ -235,7 +235,7 @@ export function onRewardClaimed(event: RewardClaimed): void {
   } else {
     let voterOffchain = getVoterOffchain(voter, pool);
 
-    voterOffchain.rewardUSD = usdAmount;
+    voterOffchain.claimedRewardUSD = voterOffchain.claimedRewardUSD.plus(usdAmount);
 
     voterOffchain.save();
   }
@@ -278,16 +278,17 @@ export function onRewardCredited(event: RewardCredited): void {
       voterInProposal.unclaimedRewardUSDAgainst = voterInProposal.unclaimedRewardUSDAgainst.plus(usdAmount);
     }
 
-    recalculateAPR(voterInPool, usdAmount, event.block.timestamp);
-
     voterInProposal.save();
   } else {
     let voterOffchain = getVoterOffchain(voter, pool);
 
-    voterOffchain.rewardUSD = usdAmount;
+    voterOffchain.rewardUSD = voterOffchain.rewardUSD.plus(usdAmount);
 
     voterOffchain.save();
   }
+
+  recalculateAPR(voterInPool, usdAmount, event.block.timestamp);
+
   voterInPool.save();
   voter.save();
   pool.save();
@@ -364,7 +365,3 @@ function recalculateAPR(voterInPool: VoterInPool, rewardCredited: BigInt, curren
     voterInPool.lastUpdate = currentTimestamp;
   }
 }
-
-const bytesEquals = (v1: Bytes, v2: Bytes): bool => {
-  return v1.equals(v2);
-};
