@@ -650,4 +650,58 @@ describe("DaoPool", () => {
       BigInt.fromI32(2)
     );
   });
+
+  test("should handle OffchainResultsSaved", () => {
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+
+    let event = createOffchainResultsSaved(sender, contractSender, block, tx);
+
+    onOffchainResultsSaved(event);
+
+    assert.fieldEquals(
+      "DaoPoolOffchainResultsSaved",
+      tx.hash.concatI32(0).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+
+    assert.fieldEquals(
+      "DaoPoolOffchainResultsSaved",
+      tx.hash.concatI32(0).toHexString(),
+      "transaction",
+      tx.hash.toHexString()
+    );
+
+    assertTransaction(
+      tx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED}]`,
+      BigInt.fromI32(1)
+    );
+
+    onOffchainResultsSaved(event);
+
+    assert.fieldEquals(
+      "DaoPoolOffchainResultsSaved",
+      tx.hash.concatI32(1).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+
+    assert.fieldEquals(
+      "DaoPoolOffchainResultsSaved",
+      tx.hash.concatI32(1).toHexString(),
+      "transaction",
+      tx.hash.toHexString()
+    );
+
+    assertTransaction(
+      tx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED}]`,
+      BigInt.fromI32(2)
+    );
+  });
 });
