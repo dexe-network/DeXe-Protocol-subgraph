@@ -396,6 +396,8 @@ export function onRequested(event: Requested): void {
   pair.requestAmount = pair.requestAmount.plus(event.params.amount);
   pair.requestNfts = pushUnique<BigInt>(pair.requestNfts, event.params.nfts);
 
+  delegateHistory.pair = pair.id;
+
   pair.save();
   fromVoterInPool.save();
   toVoterInPool.save();

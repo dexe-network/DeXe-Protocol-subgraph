@@ -23,6 +23,7 @@ import {
   Voted,
   StakingRewardClaimed,
   OffchainResultsSaved,
+  Requested,
 } from "../generated/templates/DaoPool/DaoPool";
 import {
   onDelegated,
@@ -36,6 +37,7 @@ import {
   onWithdrawn,
   onStakingRewardClaimed,
   onOffchainResultsSaved,
+  onRequested,
 } from "../src/mappings/DaoPool";
 import { ProposalType } from "../src/entities/global/ProposalTypes";
 import {
@@ -50,6 +52,7 @@ import { ProposalSettings } from "../generated/schema";
 import { createSetERC20 } from "./UserKeeper.test";
 import { getUserKeeperContract } from "../src/entities/UserKeeperContract";
 import { onSetERC20 } from "../src/mappings/UserKeeper";
+import { DelegationType } from "../src/entities/global/DelegationTypeEnum";
 
 function createProposalCreated(
   proposalId: BigInt,
@@ -316,6 +319,30 @@ function createOffchainResultsSaved(
   return event;
 }
 
+function createRequested(
+  from: Address,
+  to: Address,
+  amount: BigInt,
+  nfts: BigInt[],
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): Requested {
+  let event = changetype<Requested>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("from", ethereum.Value.fromAddress(from)));
+  event.parameters.push(new ethereum.EventParam("to", ethereum.Value.fromAddress(to)));
+  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("nfts", ethereum.Value.fromUnsignedBigIntArray(nfts)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
 const block = getBlock(BigInt.fromI32(1), BigInt.fromI32(1));
 const tx = getTransaction(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromI32(1))));
 const contractSender = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181670");
@@ -531,7 +558,12 @@ describe("DaoPool", () => {
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "to", to.toHexString());
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "nfts", `[${nfts[0]}, ${nfts[1]}]`);
-    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "isDelegate", "true");
+    assert.fieldEquals(
+      "DelegationHistory",
+      tx.hash.concatI32(0).toHexString(),
+      "type",
+      DelegationType.DELEGATE.toString()
+    );
 
     assert.fieldEquals(
       "VoterInPoolPair",
@@ -607,7 +639,12 @@ describe("DaoPool", () => {
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "to", to.toHexString());
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "amount", amount2.toString());
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "nfts", `[${nfts2[0]}]`);
-    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "isDelegate", "false");
+    assert.fieldEquals(
+      "DelegationHistory",
+      tx.hash.concatI32(1).toHexString(),
+      "type",
+      DelegationType.UNDELEGATE.toString()
+    );
 
     assert.fieldEquals(
       "VoterInPoolPair",
@@ -1352,5 +1389,188 @@ describe("DaoPool", () => {
     onOffchainResultsSaved(event);
 
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "offchainResultsHash", resultsHash);
+  });
+
+  test("should handle Requested event", () => {
+    let from = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let to = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
+
+    let amount = BigInt.fromI32(100).pow(18);
+    let nfts = [BigInt.fromI32(1)];
+
+    let delegatedEvent = createDelegated(from, to, amount, nfts, true, contractSender, block, tx);
+
+    onDelegated(delegatedEvent);
+
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentNFTDelegated", `[${nfts[0]}]`);
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentTokenDelegatees", "1");
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentNFTDelegatees", "1");
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedDelegation", amount.toString());
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedNFTDelegation", `[${nfts[0]}]`);
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "currentDelegatorsCount", "1");
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedNFTDelegationCount", "1");
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "requestedTokensAmount", "0");
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "requestedNft", `[]`);
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "requestedNftCount", `0`);
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
+    assert.fieldEquals(
+      "DelegationHistory",
+      tx.hash.concatI32(0).toHexString(),
+      "timestamp",
+      delegatedEvent.block.timestamp.toString()
+    );
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "from", from.toHexString());
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "to", to.toHexString());
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "nfts", `[${nfts[0]}]`);
+    assert.fieldEquals(
+      "DelegationHistory",
+      tx.hash.concatI32(0).toHexString(),
+      "type",
+      DelegationType.DELEGATE.toString()
+    );
+
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "from",
+      from.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "to",
+      to.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "delegateAmount",
+      amount.toString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "delegateNfts",
+      `[${nfts[0]}]`
+    );
+    assert.fieldEquals("VoterInPoolPair", contractSender.concat(from).concat(to).toHexString(), "requestAmount", "0");
+    assert.fieldEquals("VoterInPoolPair", contractSender.concat(from).concat(to).toHexString(), "requestNfts", `[]`);
+
+    let event = createRequested(from, to, amount, nfts, contractSender, block, tx);
+
+    onRequested(event);
+
+    assert.fieldEquals(
+      "VoterInPool",
+      to.concat(contractSender).toHexString(),
+      "requestedTokensAmount",
+      amount.toString()
+    );
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "requestedNft", `[${nfts[0]}]`);
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "requestedNftCount", `1`);
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "pool", contractSender.toHexString());
+    assert.fieldEquals(
+      "DelegationHistory",
+      tx.hash.concatI32(1).toHexString(),
+      "timestamp",
+      event.block.timestamp.toString()
+    );
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "from", from.toHexString());
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "to", to.toHexString());
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "amount", amount.toString());
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "nfts", `[${nfts[0]}]`);
+    assert.fieldEquals(
+      "DelegationHistory",
+      tx.hash.concatI32(1).toHexString(),
+      "type",
+      DelegationType.REQUEST.toString()
+    );
+
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "from",
+      from.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "to",
+      to.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "delegateAmount",
+      amount.toString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "delegateNfts",
+      `[${nfts[0]}]`
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "requestAmount",
+      amount.toString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "requestNfts",
+      `[${nfts[0]}]`
+    );
+
+    let undelegatedEvent = createDelegated(from, to, amount, nfts, false, contractSender, block, tx);
+
+    onDelegated(undelegatedEvent);
+
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentNFTDelegated", `[]`);
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentTokenDelegatees", "0");
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentNFTDelegatees", "0");
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedDelegation", "0");
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedNFTDelegation", `[]`);
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "currentDelegatorsCount", "0");
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedNFTDelegationCount", "0");
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "requestedTokensAmount", "0");
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "requestedNft", `[]`);
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "requestedNftCount", `0`);
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(2).toHexString(), "pool", contractSender.toHexString());
+    assert.fieldEquals(
+      "DelegationHistory",
+      tx.hash.concatI32(2).toHexString(),
+      "timestamp",
+      undelegatedEvent.block.timestamp.toString()
+    );
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(2).toHexString(), "from", from.toHexString());
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(2).toHexString(), "to", to.toHexString());
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(2).toHexString(), "amount", amount.toString());
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(2).toHexString(), "nfts", `[${nfts[0]}]`);
+    assert.fieldEquals(
+      "DelegationHistory",
+      tx.hash.concatI32(2).toHexString(),
+      "type",
+      DelegationType.UNDELEGATE.toString()
+    );
+
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "from",
+      from.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "to",
+      to.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals("VoterInPoolPair", contractSender.concat(from).concat(to).toHexString(), "delegateAmount", "0");
+    assert.fieldEquals("VoterInPoolPair", contractSender.concat(from).concat(to).toHexString(), "delegateNfts", `[]`);
+    assert.fieldEquals("VoterInPoolPair", contractSender.concat(from).concat(to).toHexString(), "requestAmount", "0");
+    assert.fieldEquals("VoterInPoolPair", contractSender.concat(from).concat(to).toHexString(), "requestNfts", `[]`);
   });
 });
