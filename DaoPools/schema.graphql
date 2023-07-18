@@ -149,6 +149,11 @@ type VoterInPool @entity {
   receivedDelegation: BigInt!
   receivedNFTDelegation: [BigInt!]!
   receivedNFTDelegationCount: BigInt!
+
+  requestedTokensAmount: BigInt!
+  requestedNft: [BigInt!]!
+  requestedNftCount: BigInt!
+
   totalDPClaimed: BigInt!
   totalClaimedUSD: BigInt!
 
@@ -260,7 +265,7 @@ type DelegationHistory @entity(immutable: true) {
 
   from: Voter!
   to: Voter!
-  isDelegate: Boolean!
+  type: BigInt!
 
   amount: BigInt!
   nfts: [BigInt!]!
@@ -310,6 +315,8 @@ type VoterInPoolPair @entity {
 
   delegateAmount: BigInt!
   delegateNfts: [BigInt!]!
+  requestAmount: BigInt!
+  requestNfts: [BigInt!]!
 
   history: [DelegationHistory!]! @derivedFrom(field: "pair")
 }
