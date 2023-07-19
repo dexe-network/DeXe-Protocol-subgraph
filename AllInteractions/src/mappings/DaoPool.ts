@@ -10,6 +10,7 @@ import {
   RewardClaimed,
   Voted,
   Withdrawn,
+  Requested,
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPoolDelegate } from "../entities/dao-pool/DaoPoolDelegate";
 import { getDaoPoolVest } from "../entities/dao-pool/DaoPoolVest";
@@ -60,6 +61,27 @@ export function onDelegated(event: Delegated): void {
   transaction.type = pushUnique<BigInt>(transaction.type, [
     getEnumBigInt(event.params.isDelegate ? TransactionType.DAO_POOL_DELEGATED : TransactionType.DAO_POOL_UNDELEGATED),
   ]);
+  delegated.transaction = transaction.id;
+
+  transaction.save();
+  delegated.save();
+}
+
+export function onRequested(event: Requested): void {
+  let transaction = getTransaction(
+    event.transaction.hash,
+    event.block.number,
+    event.block.timestamp,
+    event.params.from
+  );
+  let delegated = getDaoPoolDelegate(
+    event.transaction.hash,
+    event.address,
+    event.params.amount,
+    transaction.interactionsCount
+  );
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
+  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_REQUESTED)]);
   delegated.transaction = transaction.id;
 
   transaction.save();

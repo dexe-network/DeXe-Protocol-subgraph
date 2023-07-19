@@ -21,9 +21,11 @@ import {
   RewardClaimed,
   Voted,
   Withdrawn,
+  Requested,
 } from "../generated/templates/DaoPool/DaoPool";
 import {
   onDelegated,
+  onRequested,
   onProposalCreated,
   onProposalExecuted,
   onVoted,
@@ -83,6 +85,31 @@ function createDelegated(
   event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
   event.parameters.push(new ethereum.EventParam("nfts", ethereum.Value.fromUnsignedBigIntArray(nfts)));
   event.parameters.push(new ethereum.EventParam("isDelegate", ethereum.Value.fromBoolean(flag)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createRequested(
+  from: Address,
+  to: Address,
+  amount: BigInt,
+  nfts: Array<BigInt>,
+  flag: boolean,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): Requested {
+  let event = changetype<Requested>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("from", ethereum.Value.fromAddress(from)));
+  event.parameters.push(new ethereum.EventParam("to", ethereum.Value.fromAddress(to)));
+  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("nfts", ethereum.Value.fromUnsignedBigIntArray(nfts)));
 
   event.block = block;
   event.transaction = tx;
@@ -315,6 +342,31 @@ describe("DaoPool", () => {
       `[${TransactionType.DAO_POOL_DELEGATED}, ${TransactionType.DAO_POOL_UNDELEGATED}]`,
       BigInt.fromI32(2)
     );
+  });
+
+  test("should handle Requested", () => {
+    let from = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let to = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
+    let amount = BigInt.fromI32(100).pow(18);
+    let nfts = [BigInt.fromI32(1), BigInt.fromI32(2)];
+
+    let event0 = createRequested(from, to, amount, nfts, true, contractSender, block, tx);
+
+    onRequested(event0);
+
+    assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
+    assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
+
+    assertTransaction(tx.hash, event0.params.from, block, `[${TransactionType.DAO_POOL_REQUESTED}]`, BigInt.fromI32(1));
+
+    let event1 = createRequested(from, to, amount, nfts, false, contractSender, block, tx);
+
+    onRequested(event1);
+
+    assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
+    assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
+
+    assertTransaction(tx.hash, event1.params.from, block, `[${TransactionType.DAO_POOL_REQUESTED}]`, BigInt.fromI32(2));
   });
 
   test("should handle Voted", () => {
