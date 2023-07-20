@@ -198,6 +198,8 @@ templates:
           handler: onMovedToValidators
         - event: OffchainResultsSaved(string,address)
           handler: onOffchainResultsSaved
+        - event: Requested(address,address,uint256,uint256[])
+          handler: onRequested
   - kind: ethereum/contract
     name: DaoValidators
     network: chapel

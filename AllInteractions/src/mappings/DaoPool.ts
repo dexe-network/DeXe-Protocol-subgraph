@@ -1,5 +1,4 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { pushUnique } from "@dlsl/graph-modules";
 import {
   Delegated,
   Deposited,
@@ -10,6 +9,7 @@ import {
   RewardClaimed,
   Voted,
   Withdrawn,
+  Requested,
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPoolDelegate } from "../entities/dao-pool/DaoPoolDelegate";
 import { getDaoPoolVest } from "../entities/dao-pool/DaoPoolVest";
@@ -21,6 +21,7 @@ import { getDaoProposalCreate } from "../entities/dao-pool/DaoProposalCreate";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getTransaction } from "../entities/transaction/Transaction";
 import { getDaoPoolOffchainResult } from "../entities/dao-pool/DaoOffchainResults";
+import { push } from "../helpers/ArrayHelper";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let transaction = getTransaction(
@@ -36,7 +37,7 @@ export function onProposalCreated(event: ProposalCreated): void {
     transaction.interactionsCount
   );
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_PROPOSAL_CREATED)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_POOL_PROPOSAL_CREATED));
   proposalCreated.transaction = transaction.id;
 
   transaction.save();
@@ -57,9 +58,31 @@ export function onDelegated(event: Delegated): void {
     transaction.interactionsCount
   );
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = pushUnique<BigInt>(transaction.type, [
-    getEnumBigInt(event.params.isDelegate ? TransactionType.DAO_POOL_DELEGATED : TransactionType.DAO_POOL_UNDELEGATED),
-  ]);
+  transaction.type = push<BigInt>(
+    transaction.type,
+    getEnumBigInt(event.params.isDelegate ? TransactionType.DAO_POOL_DELEGATED : TransactionType.DAO_POOL_UNDELEGATED)
+  );
+  delegated.transaction = transaction.id;
+
+  transaction.save();
+  delegated.save();
+}
+
+export function onRequested(event: Requested): void {
+  let transaction = getTransaction(
+    event.transaction.hash,
+    event.block.number,
+    event.block.timestamp,
+    event.params.from
+  );
+  let delegated = getDaoPoolDelegate(
+    event.transaction.hash,
+    event.address,
+    event.params.amount,
+    transaction.interactionsCount
+  );
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_POOL_REQUESTED));
   delegated.transaction = transaction.id;
 
   transaction.save();
@@ -81,7 +104,7 @@ export function onVoted(event: Voted): void {
     event.params.isVoteFor
   );
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_PROPOSAL_VOTED)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_POOL_PROPOSAL_VOTED));
   voted.transaction = transaction.id;
 
   transaction.save();
@@ -102,7 +125,7 @@ export function onProposalExecuted(event: ProposalExecuted): void {
     transaction.interactionsCount
   );
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_PROPOSAL_EXECUTED)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_POOL_PROPOSAL_EXECUTED));
   executed.transaction = transaction.id;
 
   transaction.save();
@@ -123,7 +146,7 @@ export function onRewardClaimed(event: RewardClaimed): void {
     transaction.interactionsCount
   );
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_REWARD_CLAIMED)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_POOL_REWARD_CLAIMED));
   claimed.transaction = transaction.id;
 
   transaction.save();
@@ -147,7 +170,7 @@ export function onDeposited(event: Deposited): void {
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_DEPOSITED)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_POOL_DEPOSITED));
   deposit.transaction = transaction.id;
 
   transaction.save();
@@ -171,7 +194,7 @@ export function onWithdrawn(event: Withdrawn): void {
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_POOL_WITHDRAWN)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_POOL_WITHDRAWN));
   withdrawn.transaction = transaction.id;
 
   transaction.save();
@@ -194,9 +217,7 @@ export function onMovedToValidators(event: MovedToValidators): void {
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = pushUnique<BigInt>(transaction.type, [
-    getEnumBigInt(TransactionType.DAO_POOL_MOVED_TO_VALIDATORS),
-  ]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_POOL_MOVED_TO_VALIDATORS));
   moved.transaction = transaction.id;
 
   transaction.save();
@@ -218,9 +239,7 @@ export function onOffchainResultsSaved(event: OffchainResultsSaved): void {
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = pushUnique<BigInt>(transaction.type, [
-    getEnumBigInt(TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED),
-  ]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED));
   offchainResultsSaved.transaction = transaction.id;
 
   transaction.save();

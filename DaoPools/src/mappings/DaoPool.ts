@@ -7,6 +7,7 @@ import {
   OffchainResultsSaved,
   ProposalCreated,
   ProposalExecuted,
+  Requested,
   RewardClaimed,
   RewardCredited,
   StakingRewardClaimed,
@@ -37,6 +38,7 @@ import { getProposalSettings } from "../entities/Settings/ProposalSettings";
 import { getVoterInPoolPair } from "../entities/Voters/VoterInPoolPair";
 import { getUSDValue } from "../helpers/PriceFeedInteractions";
 import { getVoterOffchain } from "../entities/Voters/VoterOffchain";
+import { DelegationType } from "../entities/global/DelegationTypeEnum";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let pool = getDaoPool(event.address);
@@ -78,7 +80,7 @@ export function onDelegated(event: Delegated): void {
     to,
     event.params.amount,
     event.params.nfts,
-    event.params.isDelegate
+    event.params.isDelegate ? DelegationType.DELEGATE : DelegationType.UNDELEGATE
   );
   let toVoterInPool = getVoterInPool(pool, to, event.block.timestamp);
   let fromVoterInPool = getVoterInPool(pool, from, event.block.timestamp);
@@ -88,6 +90,9 @@ export function onDelegated(event: Delegated): void {
   delegateHistory.pair = pair.id;
 
   if (event.params.isDelegate) {
+    const amountToUnrequest = pair.requestAmount.lt(event.params.amount) ? pair.requestAmount : event.params.amount;
+    const availableAmount = event.params.amount.minus(amountToUnrequest);
+
     toVoterInPool.receivedDelegation = toVoterInPool.receivedDelegation.plus(event.params.amount);
     toVoterInPool.receivedNFTDelegation = pushUnique<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
     toVoterInPool.receivedNFTDelegationCount = BigInt.fromI32(toVoterInPool.receivedNFTDelegation.length);
@@ -96,11 +101,17 @@ export function onDelegated(event: Delegated): void {
       toVoterInPool.currentDelegatorsCount = toVoterInPool.currentDelegatorsCount.plus(BigInt.fromI32(1));
     }
 
-    pair.delegateAmount = pair.delegateAmount.plus(event.params.amount);
+    pair.delegateAmount = pair.delegateAmount.plus(availableAmount);
     pair.delegateNfts = pushUnique<BigInt>(pair.delegateNfts, event.params.nfts);
 
-    pool.totalCurrentTokenDelegated = pool.totalCurrentTokenDelegated.plus(event.params.amount);
+    pool.totalCurrentTokenDelegated = pool.totalCurrentTokenDelegated.plus(availableAmount);
     pool.totalCurrentNFTDelegated = pushUnique<BigInt>(pool.totalCurrentNFTDelegated, event.params.nfts);
+
+    pair.requestAmount = pair.requestAmount.minus(amountToUnrequest);
+    pair.requestNfts = remove<BigInt>(pair.requestNfts, event.params.nfts);
+    toVoterInPool.requestedTokensAmount = toVoterInPool.requestedTokensAmount.minus(amountToUnrequest);
+    toVoterInPool.requestedNft = remove<BigInt>(toVoterInPool.requestedNft, event.params.nfts);
+    toVoterInPool.requestedNftCount = BigInt.fromI32(toVoterInPool.requestedNft.length);
   } else {
     toVoterInPool.receivedDelegation = toVoterInPool.receivedDelegation.minus(event.params.amount);
     toVoterInPool.receivedNFTDelegation = remove<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
@@ -115,6 +126,17 @@ export function onDelegated(event: Delegated): void {
 
     pool.totalCurrentTokenDelegated = pool.totalCurrentTokenDelegated.minus(event.params.amount);
     pool.totalCurrentNFTDelegated = remove<BigInt>(pool.totalCurrentNFTDelegated, event.params.nfts);
+
+    let amountToUnrequest = pair.requestAmount.lt(event.params.amount) ? pair.requestAmount : event.params.amount;
+    pair.requestAmount = pair.requestAmount.minus(amountToUnrequest);
+    pair.requestNfts = remove<BigInt>(pair.requestNfts, event.params.nfts);
+
+    amountToUnrequest = toVoterInPool.requestedTokensAmount.lt(event.params.amount)
+      ? toVoterInPool.requestedTokensAmount
+      : event.params.amount;
+    toVoterInPool.requestedTokensAmount = toVoterInPool.requestedTokensAmount.minus(amountToUnrequest);
+    toVoterInPool.requestedNft = remove<BigInt>(toVoterInPool.requestedNft, event.params.nfts);
+    toVoterInPool.requestedNftCount = BigInt.fromI32(toVoterInPool.requestedNft.length);
   }
 
   if (event.params.amount.gt(BigInt.zero())) {
@@ -346,6 +368,43 @@ export function onOffchainResultsSaved(event: OffchainResultsSaved): void {
   pool.offchainResultsHash = event.params.resultsHash;
 
   pool.save();
+}
+
+export function onRequested(event: Requested): void {
+  let from = getVoter(event.params.from);
+  let to = getVoter(event.params.to);
+  let pool = getDaoPool(event.address);
+  let delegateHistory = getDelegationHistory(
+    event.transaction.hash,
+    pool,
+    event.block.timestamp,
+    from,
+    to,
+    event.params.amount,
+    event.params.nfts,
+    DelegationType.REQUEST
+  );
+  let toVoterInPool = getVoterInPool(pool, to, event.block.timestamp);
+  let fromVoterInPool = getVoterInPool(pool, from, event.block.timestamp);
+
+  let pair = getVoterInPoolPair(fromVoterInPool, toVoterInPool);
+
+  toVoterInPool.requestedTokensAmount = toVoterInPool.requestedTokensAmount.plus(event.params.amount);
+  toVoterInPool.requestedNft = pushUnique<BigInt>(toVoterInPool.requestedNft, event.params.nfts);
+  toVoterInPool.requestedNftCount = BigInt.fromI32(toVoterInPool.requestedNft.length);
+
+  pair.requestAmount = pair.requestAmount.plus(event.params.amount);
+  pair.requestNfts = pushUnique<BigInt>(pair.requestNfts, event.params.nfts);
+
+  delegateHistory.pair = pair.id;
+
+  pair.save();
+  fromVoterInPool.save();
+  toVoterInPool.save();
+  delegateHistory.save();
+  pool.save();
+  to.save();
+  from.save();
 }
 
 function recalculateAPR(voterInPool: VoterInPool, rewardCredited: BigInt, currentTimestamp: BigInt): void {

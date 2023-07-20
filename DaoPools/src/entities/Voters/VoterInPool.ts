@@ -17,6 +17,10 @@ export function getVoterInPool(pool: DaoPool, voter: Voter, timestamp: BigInt): 
     voterInPool.receivedNFTDelegation = new Array<BigInt>();
     voterInPool.receivedNFTDelegationCount = BigInt.zero();
 
+    voterInPool.requestedTokensAmount = BigInt.zero();
+    voterInPool.requestedNft = new Array<BigInt>();
+    voterInPool.requestedNftCount = BigInt.zero();
+
     voterInPool.totalDelegationRewardUSDFor = BigInt.zero();
     voterInPool.totalDelegationRewardUSDAgainst = BigInt.zero();
 

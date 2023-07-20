@@ -1,5 +1,4 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { pushUnique } from "@dlsl/graph-modules";
 import {
   ProposalCreated,
   ProposalExchanged,
@@ -15,6 +14,7 @@ import { getRiskyProposalExchange } from "../entities/trader-pool/risky-proposal
 import { getProposalVest } from "../entities/trader-pool/risky-proposal/ProposalVest";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getTransaction } from "../entities/transaction/Transaction";
+import { push } from "../helpers/ArrayHelper";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let proposalContract = getProposalContract(event.address);
@@ -35,7 +35,7 @@ export function onProposalCreated(event: ProposalCreated): void {
   );
 
   proposalCreate.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.RISKY_PROPOSAL_CREATE)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.RISKY_PROPOSAL_CREATE));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   proposalCreate.save();
@@ -62,7 +62,7 @@ export function onProposalExchange(event: ProposalExchanged): void {
   );
 
   exchange.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.RISKY_PROPOSAL_SWAP)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.RISKY_PROPOSAL_SWAP));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   exchange.save();
@@ -87,7 +87,7 @@ export function onProposalInvest(event: ProposalInvested): void {
     transaction.interactionsCount
   );
   vest.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.RISKY_PROPOSAL_INVEST)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.RISKY_PROPOSAL_INVEST));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   vest.save();
@@ -113,7 +113,7 @@ export function onProposalDivest(event: ProposalDivested): void {
   );
 
   vest.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.RISKY_PROPOSAL_DIVEST)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.RISKY_PROPOSAL_DIVEST));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   vest.save();
@@ -137,7 +137,7 @@ export function onProposalRestrictionsChanged(event: ProposalRestrictionsChanged
   );
 
   edit.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.RISKY_PROPOSAL_EDIT)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.RISKY_PROPOSAL_EDIT));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   edit.save();

@@ -4,6 +4,7 @@ import { Deposited, Paidout, Withdrawn } from "../../generated/Insurance/Insuran
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getInsuranceStake } from "../entities/insurance/InsuranceStake";
 import { getTransaction } from "../entities/transaction/Transaction";
+import { push } from "../helpers/ArrayHelper";
 
 export function onDeposit(event: Deposited): void {
   let transaction = getTransaction(
@@ -30,7 +31,7 @@ export function onWithdraw(event: Withdrawn): void {
   );
   let stake = getInsuranceStake(event.transaction.hash, event.params.amount, transaction.interactionsCount);
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.INSURANCE_UNSTAKE)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.INSURANCE_UNSTAKE));
   stake.transaction = transaction.id;
 
   transaction.save();
