@@ -1,5 +1,5 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { pushUnique, upcastCopy } from "@dlsl/graph-modules";
+import { upcastCopy } from "@dlsl/graph-modules";
 import {
   ProposalClaimed,
   ProposalConverted,
@@ -19,6 +19,7 @@ import { getProposalContract } from "../entities/trader-pool/ProposalContract";
 import { getProposalVest } from "../entities/trader-pool/risky-proposal/ProposalVest";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getTransaction } from "../entities/transaction/Transaction";
+import { push } from "../helpers/ArrayHelper";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let proposalContract = getProposalContract(event.address);
@@ -36,7 +37,7 @@ export function onProposalCreated(event: ProposalCreated): void {
   );
 
   proposalCreate.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.INVEST_PROPOSAL_CREATE)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.INVEST_PROPOSAL_CREATE));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   proposalCreate.save();
@@ -60,7 +61,7 @@ export function onProposalWithdrawn(event: ProposalWithdrawn): void {
   );
 
   withdraw.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.INVEST_PROPOSAL_WITHDRAW)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.INVEST_PROPOSAL_WITHDRAW));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   withdraw.save();
@@ -87,7 +88,7 @@ export function onProposalSupplied(event: ProposalSupplied): void {
   );
 
   supply.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.INVEST_PROPOSAL_SUPPLY)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.INVEST_PROPOSAL_SUPPLY));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   supply.save();
@@ -113,7 +114,7 @@ export function onProposalClaimed(event: ProposalClaimed): void {
   );
 
   supply.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.INVEST_PROPOSAL_CLAIM)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.INVEST_PROPOSAL_CLAIM));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   supply.save();
@@ -136,7 +137,7 @@ export function onProposalRestrictionsChanged(event: ProposalRestrictionsChanged
     transaction.interactionsCount
   );
   edit.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.INVEST_PROPOSAL_EDIT)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.INVEST_PROPOSAL_EDIT));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   edit.save();
@@ -162,7 +163,7 @@ export function onProposalInvest(event: ProposalInvested): void {
     transaction.interactionsCount
   );
   vest.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.INVEST_PROPOSAL_INVEST)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.INVEST_PROPOSAL_INVEST));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   vest.save();
@@ -189,9 +190,10 @@ export function onProposalConverted(event: ProposalConverted): void {
   );
 
   convertToDividends.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [
-    getEnumBigInt(TransactionType.INVEST_PROPOSAL_CONVERT_TO_DIVIDENDS),
-  ]);
+  transaction.type = push<BigInt>(
+    transaction.type,
+    getEnumBigInt(TransactionType.INVEST_PROPOSAL_CONVERT_TO_DIVIDENDS)
+  );
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   convertToDividends.save();

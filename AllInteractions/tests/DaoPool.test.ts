@@ -98,7 +98,6 @@ function createRequested(
   to: Address,
   amount: BigInt,
   nfts: Array<BigInt>,
-  flag: boolean,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
@@ -350,7 +349,7 @@ describe("DaoPool", () => {
     let amount = BigInt.fromI32(100).pow(18);
     let nfts = [BigInt.fromI32(1), BigInt.fromI32(2)];
 
-    let event0 = createRequested(from, to, amount, nfts, true, contractSender, block, tx);
+    let event0 = createRequested(from, to, amount, nfts, contractSender, block, tx);
 
     onRequested(event0);
 
@@ -359,14 +358,20 @@ describe("DaoPool", () => {
 
     assertTransaction(tx.hash, event0.params.from, block, `[${TransactionType.DAO_POOL_REQUESTED}]`, BigInt.fromI32(1));
 
-    let event1 = createRequested(from, to, amount, nfts, false, contractSender, block, tx);
+    let event1 = createRequested(from, to, amount, nfts, contractSender, block, tx);
 
     onRequested(event1);
 
     assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
 
-    assertTransaction(tx.hash, event1.params.from, block, `[${TransactionType.DAO_POOL_REQUESTED}]`, BigInt.fromI32(2));
+    assertTransaction(
+      tx.hash,
+      event1.params.from,
+      block,
+      `[${TransactionType.DAO_POOL_REQUESTED}, ${TransactionType.DAO_POOL_REQUESTED}]`,
+      BigInt.fromI32(2)
+    );
   });
 
   test("should handle Voted", () => {
@@ -698,61 +703,7 @@ describe("DaoPool", () => {
       tx.hash,
       event.params.sender,
       block,
-      `[${TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED}]`,
-      BigInt.fromI32(2)
-    );
-  });
-
-  test("should handle OffchainResultsSaved", () => {
-    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
-
-    let event = createOffchainResultsSaved(sender, contractSender, block, tx);
-
-    onOffchainResultsSaved(event);
-
-    assert.fieldEquals(
-      "DaoPoolOffchainResultsSaved",
-      tx.hash.concatI32(0).toHexString(),
-      "pool",
-      contractSender.toHexString()
-    );
-
-    assert.fieldEquals(
-      "DaoPoolOffchainResultsSaved",
-      tx.hash.concatI32(0).toHexString(),
-      "transaction",
-      tx.hash.toHexString()
-    );
-
-    assertTransaction(
-      tx.hash,
-      event.params.sender,
-      block,
-      `[${TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED}]`,
-      BigInt.fromI32(1)
-    );
-
-    onOffchainResultsSaved(event);
-
-    assert.fieldEquals(
-      "DaoPoolOffchainResultsSaved",
-      tx.hash.concatI32(1).toHexString(),
-      "pool",
-      contractSender.toHexString()
-    );
-
-    assert.fieldEquals(
-      "DaoPoolOffchainResultsSaved",
-      tx.hash.concatI32(1).toHexString(),
-      "transaction",
-      tx.hash.toHexString()
-    );
-
-    assertTransaction(
-      tx.hash,
-      event.params.sender,
-      block,
-      `[${TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED}]`,
+      `[${TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED}, ${TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED}]`,
       BigInt.fromI32(2)
     );
   });

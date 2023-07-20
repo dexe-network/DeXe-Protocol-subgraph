@@ -1,5 +1,4 @@
 import { Bytes, BigInt, Address } from "@graphprotocol/graph-ts";
-import { pushUnique } from "@dlsl/graph-modules";
 import { Transaction } from "../../generated/schema";
 import {
   CommissionClaimed,
@@ -18,6 +17,7 @@ import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTy
 import { getOnlyPool } from "../entities/transaction/OnlyPool";
 import { getProposalVest } from "../entities/trader-pool/risky-proposal/ProposalVest";
 import { getGetPerformanceFee } from "../entities/transaction/GetPerformanceFee";
+import { push } from "../helpers/ArrayHelper";
 
 export function onExchange(event: Exchanged): void {
   let transaction = getTransaction(
@@ -36,7 +36,7 @@ export function onExchange(event: Exchanged): void {
     transaction.interactionsCount
   );
 
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.SWAP)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.SWAP));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   exchange.transaction = transaction.id;
 
@@ -91,7 +91,7 @@ export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
   let onlyPool = getOnlyPool(event.transaction.hash, event.address, transaction.interactionsCount);
 
   onlyPool.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.POOL_EDIT)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.POOL_EDIT));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   transaction.save();
   onlyPool.save();
@@ -114,7 +114,7 @@ export function onProposalDivest(event: ProposalDivested): void {
     transaction.interactionsCount
   );
   proposalVest.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.RISKY_PROPOSAL_DIVEST)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.RISKY_PROPOSAL_DIVEST));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   proposalVest.save();
   transaction.save();
@@ -131,7 +131,7 @@ export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): voi
   let onlyPool = getOnlyPool(event.transaction.hash, event.address, transaction.interactionsCount);
 
   onlyPool.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.POOL_UPDATE_INVESTORS)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.POOL_UPDATE_INVESTORS));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   transaction.save();
   onlyPool.save();
@@ -148,7 +148,7 @@ export function onModifiedAdmins(event: ModifiedAdmins): void {
   let onlyPool = getOnlyPool(event.transaction.hash, event.address, transaction.interactionsCount);
 
   onlyPool.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.POOL_UPDATE_MANAGERS)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.POOL_UPDATE_MANAGERS));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   transaction.save();
   onlyPool.save();
@@ -170,7 +170,7 @@ export function onCommissionClaimed(event: CommissionClaimed): void {
   );
 
   perfomanceFee.transaction = transaction.id;
-  transaction.type = pushUnique<BigInt>(transaction.type, [getEnumBigInt(TransactionType.TRADER_GET_PERFOMANCE_FEE)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.TRADER_GET_PERFOMANCE_FEE));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   transaction.save();
   perfomanceFee.save();
@@ -187,7 +187,7 @@ function setupVest(
 ): void {
   let vest = getVest(hash, baseAmount, lpAmount, pool, count);
 
-  transaction.type = pushUnique<BigInt>(transaction.type, [type]);
+  transaction.type = push<BigInt>(transaction.type, type);
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   vest.transaction = transaction.id;
 
