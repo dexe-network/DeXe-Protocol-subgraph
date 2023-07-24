@@ -41,6 +41,12 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "localExpertNft",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "sender",
         "type": "address"
       }

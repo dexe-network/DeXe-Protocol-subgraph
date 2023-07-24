@@ -20,7 +20,7 @@ dataSources:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
       eventHandlers:
-        - event: DaoPoolDeployed(string,address,address,address,address,address,address)
+        - event: DaoPoolDeployed(string,address,address,address,address,address,address,address)
           handler: onDeployed
         - event: DaoTokenSaleDeployed(address,address,address)
           handler: onTokenSaleDeployed
@@ -148,3 +148,25 @@ templates:
           handler: onBought
         - event: Whitelisted(uint256,address)
           handler: onWhitelisted
+  - kind: ethereum/contract
+    name: ERC721Expert
+    network: chapel
+    source:
+      abi: ERC721Expert
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/ERC721Expert.ts
+      entities:
+        - ExpertNFTContract
+        - Expert
+        - ExpertInPool
+      abis:
+        - name: ERC721Expert
+          file: ./abis/ERC721Expert.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: onTransfer
+        - event: TagsAdded(indexed uint256,string[])
+          handler: onTagsAdded
