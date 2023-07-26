@@ -173,7 +173,9 @@ type VoterInPool @entity {
   pool: DaoPool!
   voter: Voter!
 
-  proposals: [VoterInProposal!]! @derivedFrom(field: "voter")
+  proposalsCount: BigInt!
+
+  proposals: [VoterInProposal!]!
   claimedDPs: [DistributionProposal!]!
 }
 
