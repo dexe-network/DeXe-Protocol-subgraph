@@ -58,6 +58,7 @@ type DaoPool @entity {
   proposals: [Proposal!]! @derivedFrom(field: "pool")
   settings: [ProposalSettings!]! @derivedFrom(field: "pool")
   executors: [Executor!]! @derivedFrom(field: "pool")
+  experts: [ExpertInPool!]! @derivedFrom(field: "pool")
   tokenSales: [TokenSale!]! @derivedFrom(field: "pool")
 }
 
@@ -358,4 +359,37 @@ type TokenSaleTier @entity {
 type InteractionCount @entity {
   id: Bytes!
   count: BigInt!
+}
+
+type ExpertNftContract @entity(immutable: true) {
+  id: Bytes! # contract address
+  daoPool: DaoPool!
+}
+
+type GlobalExpert @entity {
+  id: Bytes! # voter address
+  nft: ExpertNft!
+}
+
+type Expert @entity {
+  id: Bytes! # voter address
+  pools: [Bytes!]!
+
+  nfts: [ExpertNft!]! @derivedFrom(field: "expert")
+}
+
+type ExpertInPool @entity {
+  id: Bytes! # voter address + pool address
+  tokenId: BigInt!
+
+  pool: DaoPool!
+  expert: Voter!
+}
+
+type ExpertNft @entity {
+  id: Bytes! # ExpertNft address + token id
+  expert: Expert!
+
+  tokenId: BigInt!
+  tags: [String!]!
 }
