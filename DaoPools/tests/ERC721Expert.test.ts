@@ -73,10 +73,6 @@ describe("ERC721Expert", () => {
     nft.save();
   });
 
-  afterEach(() => {
-    // clearStore();
-  });
-
   test("should handle Transfer (mint)", () => {
     const from = Address.zero();
     const to = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181671");
