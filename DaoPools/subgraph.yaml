@@ -24,6 +24,30 @@ dataSources:
           handler: onDeployed
         - event: DaoTokenSaleDeployed(address,address,address)
           handler: onTokenSaleDeployed
+  - kind: ethereum/contract
+    name: ERC721Expert
+    network: chapel
+    source:
+      address: "0x47eEcd37B2b684EaD7Aca8081Bd46a0AfC19269b"
+      abi: ERC721Expert
+      startBlock: 27518585
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/GlobalERC721Expert.ts
+      entities:
+        - ExpertNFTContract
+        - GlobalExpert
+        - ExpertNft
+      abis:
+        - name: ERC721Expert
+          file: ./abis/ERC721Expert.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: onTransfer
+        - event: TagsAdded(indexed uint256,string[])
+          handler: onTagsAdded
 
 templates:
   - kind: ethereum/contract
@@ -162,6 +186,7 @@ templates:
         - ExpertNFTContract
         - Expert
         - ExpertInPool
+        - ExpertNft
       abis:
         - name: ERC721Expert
           file: ./abis/ERC721Expert.json

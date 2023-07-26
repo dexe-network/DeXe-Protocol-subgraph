@@ -1,22 +1,9 @@
 import { Address, ethereum, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import {
-  assert,
-  beforeAll,
-  beforeEach,
-  afterEach,
-  createMockedFunction,
-  describe,
-  logStore,
-  clearStore,
-  newMockEvent,
-  test,
-} from "matchstick-as";
+import { assert, beforeAll, afterEach, describe, newMockEvent, test } from "matchstick-as";
 import { TagsAdded, Transfer } from "../generated/templates/ERC721Expert/ERC721Expert";
-import { DistributionProposalClaimed } from "../generated/templates/DistributionProposal/DistributionProposal";
 import { getBlock, getTransaction } from "./utils";
 import { onTagsAdded, onTransfer } from "../src/mappings/ERC721Expert";
-import { PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
-import { DaoPool, DistributionProposal, DPContract, ExpertNftContract } from "../generated/schema";
+import { ExpertNftContract } from "../generated/schema";
 import { getDaoPool } from "../src/entities/DaoPool";
 
 function createTransfer(

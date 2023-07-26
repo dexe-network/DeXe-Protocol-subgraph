@@ -366,6 +366,11 @@ type ExpertNftContract @entity(immutable: true) {
   daoPool: DaoPool!
 }
 
+type GlobalExpert @entity {
+  id: Bytes! # voter address
+  nft: ExpertNft!
+}
+
 type Expert @entity {
   id: Bytes! # voter address
   pools: [Bytes!]!
