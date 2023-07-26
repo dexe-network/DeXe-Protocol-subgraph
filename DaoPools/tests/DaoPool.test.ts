@@ -970,13 +970,6 @@ describe("DaoPool", () => {
       "totalClaimedUSD",
       amounts[0].toString()
     );
-    assert.fieldEquals(
-      "VoterInPool",
-      sender.concat(contractSender).toHexString(),
-      "proposals",
-      `[${sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString()}]`
-    );
-    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "proposalsCount", "1");
 
     onRewardClaimed(event1);
 
@@ -992,16 +985,6 @@ describe("DaoPool", () => {
       "totalClaimedUSD",
       amounts[0].plus(amounts[1]).toString()
     );
-    assert.fieldEquals(
-      "VoterInPool",
-      sender.concat(contractSender).toHexString(),
-      "proposals",
-      `[${sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString()}, ${sender
-        .concat(contractSender)
-        .concatI32(proposalIds[1].toI32())
-        .toHexString()}]`
-    );
-    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "proposalsCount", "2");
   });
 
   test("should handle offchain RewardClaimed", () => {

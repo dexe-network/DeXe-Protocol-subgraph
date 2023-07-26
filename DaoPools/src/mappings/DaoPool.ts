@@ -253,8 +253,6 @@ export function onRewardClaimed(event: RewardClaimed): void {
 
   if (event.params.proposalId.notEqual(BigInt.zero())) {
     let voterInProposal = getVoterInProposal(proposal, voterInPool);
-    voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
-    voterInPool.proposalsCount = BigInt.fromI32(voterInPool.proposals.length);
 
     voterInProposal.claimedRewardUSD = usdAmount;
 
