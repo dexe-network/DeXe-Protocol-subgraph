@@ -699,6 +699,15 @@ describe("DaoPool", () => {
       personalVoteFor.plus(delegatedVoteFor).toString()
     );
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "votersVoted", "1");
+
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "proposals",
+      `[${sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString()}]`
+    );
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "proposalsCount", "1");
+
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
@@ -774,6 +783,15 @@ describe("DaoPool", () => {
       personalVoteAgainst.plus(delegatedVoteAgainst).toString()
     );
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "votersVoted", "1");
+
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "proposals",
+      `[${sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString()}]`
+    );
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "proposalsCount", "1");
+
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
@@ -1027,6 +1045,13 @@ describe("DaoPool", () => {
       "unclaimedRewardFromDelegationsUSDAgainst",
       "0"
     );
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "proposals",
+      `[${sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString()}]`
+    );
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "proposalsCount", "1");
   });
 
   test("should handle RewardCredited when reward type vote for/against", () => {
@@ -1079,6 +1104,13 @@ describe("DaoPool", () => {
       "totalDelegationRewardUSDAgainst",
       "0"
     );
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "proposals",
+      `[${sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString()}]`
+    );
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "proposalsCount", "1");
 
     event = createRewardCredited(
       proposalId,
@@ -1124,6 +1156,13 @@ describe("DaoPool", () => {
       "totalDelegationRewardUSDAgainst",
       "0"
     );
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "proposals",
+      `[${sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString()}]`
+    );
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "proposalsCount", "1");
   });
 
   test("should handle RewardCredited when reward type vote for/against delegated", () => {
@@ -1181,6 +1220,13 @@ describe("DaoPool", () => {
       "totalDelegationRewardUSDAgainst",
       "0"
     );
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "proposals",
+      `[${sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString()}]`
+    );
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "proposalsCount", "1");
 
     event = createRewardCredited(
       proposalId,
@@ -1231,6 +1277,13 @@ describe("DaoPool", () => {
       "totalDelegationRewardUSDAgainst",
       "200"
     );
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "proposals",
+      `[${sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString()}]`
+    );
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "proposalsCount", "1");
   });
 
   test("should handle offchain RewardCredited", () => {

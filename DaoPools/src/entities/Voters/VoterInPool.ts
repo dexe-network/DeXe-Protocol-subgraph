@@ -37,6 +37,9 @@ export function getVoterInPool(pool: DaoPool, voter: Voter, timestamp: BigInt): 
 
     voterInPool.totalStakingReward = BigInt.zero();
 
+    voterInPool.proposalsCount = BigInt.zero();
+    voterInPool.proposals = new Array<Bytes>();
+
     pool.votersCount = pool.votersCount.plus(BigInt.fromI32(1));
   }
 

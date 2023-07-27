@@ -208,6 +208,9 @@ export function onVoted(event: Voted): void {
 
   proposal.votesCount = proposal.votesCount.plus(BigInt.fromI32(1));
 
+  voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
+  voterInPool.proposalsCount = BigInt.fromI32(voterInPool.proposals.length);
+
   proposalVote.save();
   voterInProposal.save();
   voterInPool.save();
@@ -299,6 +302,9 @@ export function onRewardCredited(event: RewardCredited): void {
       voterInProposal.unclaimedRewardUSDFor = voterInProposal.unclaimedRewardUSDFor.plus(usdAmount);
       voterInProposal.unclaimedRewardUSDAgainst = voterInProposal.unclaimedRewardUSDAgainst.plus(usdAmount);
     }
+
+    voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
+    voterInPool.proposalsCount = BigInt.fromI32(voterInPool.proposals.length);
 
     voterInProposal.save();
   } else {
