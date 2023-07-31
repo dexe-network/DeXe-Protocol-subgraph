@@ -28,7 +28,8 @@ export function onProposalCreated(event: ProposalCreated): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
   let proposalCreated = getDaoProposalCreate(
     event.transaction.hash,
@@ -49,7 +50,8 @@ export function onDelegated(event: Delegated): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.from
+    event.params.from,
+    event.address
   );
   let delegated = getDaoPoolDelegate(
     event.transaction.hash,
@@ -73,7 +75,8 @@ export function onRequested(event: Requested): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.from
+    event.params.from,
+    event.address
   );
   let delegated = getDaoPoolDelegate(
     event.transaction.hash,
@@ -94,7 +97,8 @@ export function onVoted(event: Voted): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
   let voted = getDaoPoolVote(
     event.transaction.hash,
@@ -116,7 +120,8 @@ export function onProposalExecuted(event: ProposalExecuted): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
   let executed = getDaoPoolExecute(
     event.transaction.hash,
@@ -137,7 +142,8 @@ export function onRewardClaimed(event: RewardClaimed): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
   let claimed = getDaoPoolRewardClaim(
     event.transaction.hash,
@@ -158,7 +164,8 @@ export function onDeposited(event: Deposited): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
 
   let deposit = getDaoPoolVest(
@@ -182,7 +189,8 @@ export function onWithdrawn(event: Withdrawn): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
 
   let withdrawn = getDaoPoolVest(
@@ -206,7 +214,8 @@ export function onMovedToValidators(event: MovedToValidators): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
 
   let moved = getDaoPoolMovedToValidators(
@@ -229,7 +238,8 @@ export function onOffchainResultsSaved(event: OffchainResultsSaved): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
 
   let offchainResultsSaved = getDaoPoolOffchainResult(

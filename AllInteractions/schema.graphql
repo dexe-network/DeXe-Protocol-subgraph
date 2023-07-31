@@ -34,6 +34,8 @@ type Transaction @entity {
 
   user: Bytes!
 
+  interactedWithPool: Pool!
+
   interactionsCount: BigInt!
 
   exchange: [Exchange!]! @derivedFrom(field: "transaction")
@@ -56,6 +58,20 @@ type Transaction @entity {
   getPerformanceFee: [GetPerformanceFee!]! @derivedFrom(field: "transaction")
 
   onlyPool: [OnlyPool!]! @derivedFrom(field: "transaction")
+
+  daoPoolCreate: [DaoPoolCreate!]! @derivedFrom(field: "transaction")
+  daoPoolDelegate: [DaoPoolDelegate!]! @derivedFrom(field: "transaction")
+  daoPoolVote: [DaoPoolVote!]! @derivedFrom(field: "transaction")
+  daoProposalCreate: [DaoProposalCreate!]! @derivedFrom(field: "transaction")
+  daoPoolExecute: [DaoPoolExecute!]! @derivedFrom(field: "transaction")
+  daoPoolRewardClaim: [DaoPoolRewardClaim!]! @derivedFrom(field: "transaction")
+  daoPoolVest: [DaoPoolVest!]! @derivedFrom(field: "transaction")
+  daoPoolMovedToValidators: [DaoPoolMovedToValidators!]! @derivedFrom(field: "transaction")
+  daoPoolOffchainResultsSaved: [DaoPoolOffchainResultsSaved!]! @derivedFrom(field: "transaction")
+
+  daoValidatorProposalCreate: [DaoValidatorProposalCreate!]! @derivedFrom(field: "transaction")
+  daoValidatorProposalVote: [DaoValidatorProposalVote!]! @derivedFrom(field: "transaction")
+  daoValidatorProposalExecute: [DaoValidatorProposalExecute!]! @derivedFrom(field: "transaction")
 }
 
 # @notice The entity holds information about exchange

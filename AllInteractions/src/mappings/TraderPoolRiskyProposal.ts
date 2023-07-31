@@ -23,7 +23,8 @@ export function onProposalCreated(event: ProposalCreated): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    getTraderPool(Address.fromBytes(proposalContract.pool)).trader
+    getTraderPool(Address.fromBytes(proposalContract.pool)).trader,
+    proposalContract.pool
   );
 
   let proposalCreate = getRiskyProposalCreate(
@@ -48,7 +49,8 @@ export function onProposalExchange(event: ProposalExchanged): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    pool
   );
   let exchange = getRiskyProposalExchange(
     event.transaction.hash,
@@ -76,7 +78,8 @@ export function onProposalInvest(event: ProposalInvested): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    pool
   );
   let vest = getProposalVest(
     event.transaction.hash,
@@ -101,7 +104,8 @@ export function onProposalDivest(event: ProposalDivested): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    pool
   );
   let vest = getProposalVest(
     event.transaction.hash,
@@ -126,7 +130,8 @@ export function onProposalRestrictionsChanged(event: ProposalRestrictionsChanged
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    pool
   );
 
   let edit = getRiskyProposalEdited(

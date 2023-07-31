@@ -16,7 +16,8 @@ export function onVoted(event: Voted): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
 
   let voted = getDaoVaildatorProposalVote(
@@ -41,7 +42,8 @@ export function onInternalProposalCreated(event: InternalProposalCreated): void 
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
 
   let created = getDaoValidatorProposalCreate(
@@ -64,7 +66,8 @@ export function onInternalProposalExecuted(event: InternalProposalExecuted): voi
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.executor
+    event.params.executor,
+    event.address
   );
 
   let executed = getDaoValidatorProposalExecute(

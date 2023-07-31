@@ -132,7 +132,8 @@ describe("DaoValidators", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_VALIDATORS_PROPOSAL_CREATED}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      contractSender
     );
   });
 
@@ -176,7 +177,8 @@ describe("DaoValidators", () => {
       event.params.executor,
       block,
       `[${TransactionType.DAO_VALIDATORS_PROPOSAL_CREATED}, ${TransactionType.DAO_VALIDATORS_PROPOSAL_EXECUTED}]`,
-      BigInt.fromI32(2)
+      BigInt.fromI32(2),
+      contractSender
     );
 
     const nextTx = getNextTx(tx);
@@ -217,7 +219,8 @@ describe("DaoValidators", () => {
       event.params.executor,
       block,
       `[${TransactionType.DAO_VALIDATORS_PROPOSAL_CREATED}, ${TransactionType.DAO_VALIDATORS_PROPOSAL_EXECUTED}]`,
-      BigInt.fromI32(2)
+      BigInt.fromI32(2),
+      contractSender
     );
   });
 
@@ -257,7 +260,8 @@ describe("DaoValidators", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_VALIDATORS_VOTED}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      contractSender
     );
   });
 });

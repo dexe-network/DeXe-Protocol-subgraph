@@ -234,7 +234,7 @@ describe("TraderPool", () => {
     assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString(), "toVolume", toVolume.toString());
     assert.fieldEquals("Exchange", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(tx.hash, event.params.sender, block, `[${TransactionType.SWAP}]`, BigInt.fromI32(1));
+    assertTransaction(tx.hash, event.params.sender, block, `[${TransactionType.SWAP}]`, BigInt.fromI32(1), sender);
   });
 
   test("should handle invested event", () => {
@@ -251,7 +251,7 @@ describe("TraderPool", () => {
     assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "lpAmount", receivedLP.toString());
     assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(tx.hash, event.params.user, block, `[${TransactionType.INVEST}]`, BigInt.fromI32(1));
+    assertTransaction(tx.hash, event.params.user, block, `[${TransactionType.INVEST}]`, BigInt.fromI32(1), sender);
 
     const nextTx = getNextTx(tx);
 
@@ -268,7 +268,7 @@ describe("TraderPool", () => {
     assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "lpAmount", receivedLP.toString());
     assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "transaction", nextTx.hash.toHexString());
 
-    assertTransaction(nextTx.hash, event.params.user, block, `[${TransactionType.INVEST}]`, BigInt.fromI32(1));
+    assertTransaction(nextTx.hash, event.params.user, block, `[${TransactionType.INVEST}]`, BigInt.fromI32(1), sender);
   });
 
   test("should handle divested event", () => {
@@ -285,7 +285,7 @@ describe("TraderPool", () => {
     assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "lpAmount", divestedLP.toString());
     assert.fieldEquals("Vest", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(tx.hash, event.params.user, block, `[${TransactionType.DIVEST}]`, BigInt.fromI32(1));
+    assertTransaction(tx.hash, event.params.user, block, `[${TransactionType.DIVEST}]`, BigInt.fromI32(1), sender);
 
     const nextTx = getNextTx(tx);
 
@@ -302,7 +302,7 @@ describe("TraderPool", () => {
     assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "lpAmount", divestedLP.toString());
     assert.fieldEquals("Vest", nextTx.hash.concatI32(0).toHexString(), "transaction", nextTx.hash.toHexString());
 
-    assertTransaction(nextTx.hash, event.params.user, block, `[${TransactionType.DIVEST}]`, BigInt.fromI32(1));
+    assertTransaction(nextTx.hash, event.params.user, block, `[${TransactionType.DIVEST}]`, BigInt.fromI32(1), sender);
   });
 
   test("should handle DescriptionURLChanged event", () => {
@@ -316,7 +316,7 @@ describe("TraderPool", () => {
     assert.fieldEquals("OnlyPool", tx.hash.concatI32(0).toHexString(), "pool", sender.toHexString());
     assert.fieldEquals("OnlyPool", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(tx.hash, event.params.sender, block, `[${TransactionType.POOL_EDIT}]`, BigInt.fromI32(1));
+    assertTransaction(tx.hash, event.params.sender, block, `[${TransactionType.POOL_EDIT}]`, BigInt.fromI32(1), sender);
 
     const nextTx = getNextTx(tx);
 
@@ -330,7 +330,14 @@ describe("TraderPool", () => {
     assert.fieldEquals("OnlyPool", nextTx.hash.concatI32(0).toHexString(), "pool", sender.toHexString());
     assert.fieldEquals("OnlyPool", nextTx.hash.concatI32(0).toHexString(), "transaction", nextTx.hash.toHexString());
 
-    assertTransaction(nextTx.hash, event.params.sender, block, `[${TransactionType.POOL_EDIT}]`, BigInt.fromI32(1));
+    assertTransaction(
+      nextTx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.POOL_EDIT}]`,
+      BigInt.fromI32(1),
+      sender
+    );
   });
 
   test("should handle ProposalDivested event", () => {
@@ -355,7 +362,8 @@ describe("TraderPool", () => {
       event.params.user,
       block,
       `[${TransactionType.RISKY_PROPOSAL_DIVEST}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      sender
     );
   });
 
@@ -378,7 +386,8 @@ describe("TraderPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.POOL_UPDATE_INVESTORS}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      sender
     );
 
     const nextTx = getNextTx(tx);
@@ -396,7 +405,8 @@ describe("TraderPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.POOL_UPDATE_INVESTORS}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      sender
     );
   });
 
@@ -419,7 +429,8 @@ describe("TraderPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.POOL_UPDATE_MANAGERS}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      sender
     );
 
     const nextTx = getNextTx(tx);
@@ -437,7 +448,8 @@ describe("TraderPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.POOL_UPDATE_MANAGERS}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      sender
     );
   });
 
@@ -464,7 +476,8 @@ describe("TraderPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.TRADER_GET_PERFOMANCE_FEE}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      Bytes.empty()
     );
   });
 });
