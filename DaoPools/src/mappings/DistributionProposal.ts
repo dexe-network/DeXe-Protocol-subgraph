@@ -32,6 +32,8 @@ export function onDistributionProposalClaimed(event: DistributionProposalClaimed
   voterInPool.totalDPClaimed = voterInPool.totalDPClaimed.plus(usdAmount);
   voterInProposal.claimedDpRewardUSD = usdAmount;
 
+  voter.totalClaimedUSD = voter.totalClaimedUSD.plus(usdAmount);
+
   proposal.save();
   voterInProposal.save();
   voterInPool.save();

@@ -96,5 +96,12 @@ describe("DistributionProposal", () => {
       "totalDPClaimed",
       BigInt.fromU64(10000000000000000000).toString()
     );
+
+    assert.fieldEquals(
+      "Voter",
+      sender.toHexString(),
+      "totalClaimedUSD",
+      BigInt.fromU64(10000000000000000000).toString()
+    );
   });
 });
