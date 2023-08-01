@@ -264,24 +264,41 @@
                     "type": "uint256"
                   },
                   {
-                    "internalType": "address",
-                    "name": "rewardToken",
-                    "type": "address"
+                    "internalType": "uint64",
+                    "name": "executionDelay",
+                    "type": "uint64"
                   },
                   {
-                    "internalType": "uint256",
-                    "name": "creationReward",
-                    "type": "uint256"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "executionReward",
-                    "type": "uint256"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "voteRewardsCoefficient",
-                    "type": "uint256"
+                    "components": [
+                      {
+                        "internalType": "address",
+                        "name": "rewardToken",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "creationReward",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "executionReward",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "voteForRewardsCoefficient",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "voteAgainstRewardsCoefficient",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct IGovSettings.RewardsInfo",
+                    "name": "rewardsInfo",
+                    "type": "tuple"
                   },
                   {
                     "internalType": "string",
@@ -316,14 +333,26 @@
                 "type": "string"
               },
               {
-                "internalType": "uint64",
-                "name": "duration",
-                "type": "uint64"
-              },
-              {
-                "internalType": "uint128",
-                "name": "quorum",
-                "type": "uint128"
+                "components": [
+                  {
+                    "internalType": "uint64",
+                    "name": "duration",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "executionDelay",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint128",
+                    "name": "quorum",
+                    "type": "uint128"
+                  }
+                ],
+                "internalType": "struct IGovValidators.ProposalSettings",
+                "name": "proposalSettings",
+                "type": "tuple"
               },
               {
                 "internalType": "address[]",
@@ -371,6 +400,16 @@
             "internalType": "address",
             "name": "nftMultiplierAddress",
             "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "regularVoteModifier",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expertVoteModifier",
+            "type": "uint256"
           },
           {
             "internalType": "address",
@@ -457,24 +496,41 @@
                     "type": "uint256"
                   },
                   {
-                    "internalType": "address",
-                    "name": "rewardToken",
-                    "type": "address"
+                    "internalType": "uint64",
+                    "name": "executionDelay",
+                    "type": "uint64"
                   },
                   {
-                    "internalType": "uint256",
-                    "name": "creationReward",
-                    "type": "uint256"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "executionReward",
-                    "type": "uint256"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "voteRewardsCoefficient",
-                    "type": "uint256"
+                    "components": [
+                      {
+                        "internalType": "address",
+                        "name": "rewardToken",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "creationReward",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "executionReward",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "voteForRewardsCoefficient",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "voteAgainstRewardsCoefficient",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct IGovSettings.RewardsInfo",
+                    "name": "rewardsInfo",
+                    "type": "tuple"
                   },
                   {
                     "internalType": "string",
@@ -509,14 +565,26 @@
                 "type": "string"
               },
               {
-                "internalType": "uint64",
-                "name": "duration",
-                "type": "uint64"
-              },
-              {
-                "internalType": "uint128",
-                "name": "quorum",
-                "type": "uint128"
+                "components": [
+                  {
+                    "internalType": "uint64",
+                    "name": "duration",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "executionDelay",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint128",
+                    "name": "quorum",
+                    "type": "uint128"
+                  }
+                ],
+                "internalType": "struct IGovValidators.ProposalSettings",
+                "name": "proposalSettings",
+                "type": "tuple"
               },
               {
                 "internalType": "address[]",
@@ -564,6 +632,16 @@
             "internalType": "address",
             "name": "nftMultiplierAddress",
             "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "regularVoteModifier",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expertVoteModifier",
+            "type": "uint256"
           },
           {
             "internalType": "address",
@@ -627,6 +705,11 @@
                 "type": "uint64"
               },
               {
+                "internalType": "uint64",
+                "name": "claimLockDuration",
+                "type": "uint64"
+              },
+              {
                 "internalType": "address",
                 "name": "saleTokenAddress",
                 "type": "address"
@@ -677,9 +760,26 @@
                 "internalType": "struct ITokenSaleProposal.VestingSettings",
                 "name": "vestingSettings",
                 "type": "tuple"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "enum ITokenSaleProposal.ParticipationType",
+                    "name": "participationType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "bytes",
+                    "name": "data",
+                    "type": "bytes"
+                  }
+                ],
+                "internalType": "struct ITokenSaleProposal.ParticipationDetails",
+                "name": "participationDetails",
+                "type": "tuple"
               }
             ],
-            "internalType": "struct ITokenSaleProposal.TierView[]",
+            "internalType": "struct ITokenSaleProposal.TierInitParams[]",
             "name": "tiersParams",
             "type": "tuple[]"
           },
@@ -854,8 +954,18 @@
         "type": "string"
       }
     ],
-    "name": "predictGovAddress",
+    "name": "predictGovAddresses",
     "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
       {
         "internalType": "address",
         "name": "",

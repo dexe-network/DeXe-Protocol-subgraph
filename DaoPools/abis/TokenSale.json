@@ -48,6 +48,19 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "tierId",
         "type": "uint256"
@@ -180,6 +193,11 @@
         "internalType": "address",
         "name": "_govAddress",
         "type": "address"
+      },
+      {
+        "internalType": "contract ISBT721",
+        "name": "_babt",
+        "type": "address"
       }
     ],
     "name": "__TokenSaleProposal_init",
@@ -215,6 +233,19 @@
     "name": "addToWhitelist",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "babt",
+    "outputs": [
+      {
+        "internalType": "contract ISBT721",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -291,6 +322,19 @@
   {
     "inputs": [
       {
+        "internalType": "uint256[]",
+        "name": "tierIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "claim",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "components": [
           {
             "components": [
@@ -322,6 +366,11 @@
           {
             "internalType": "uint64",
             "name": "saleEndTime",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "claimLockDuration",
             "type": "uint64"
           },
           {
@@ -375,10 +424,27 @@
             "internalType": "struct ITokenSaleProposal.VestingSettings",
             "name": "vestingSettings",
             "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum ITokenSaleProposal.ParticipationType",
+                "name": "participationType",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct ITokenSaleProposal.ParticipationDetails",
+            "name": "participationDetails",
+            "type": "tuple"
           }
         ],
-        "internalType": "struct ITokenSaleProposal.TierView[]",
-        "name": "tiers",
+        "internalType": "struct ITokenSaleProposal.TierInitParams[]",
+        "name": "tierInitParams",
         "type": "tuple[]"
       }
     ],
@@ -401,6 +467,30 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "tierIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "getClaimAmounts",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "claimAmounts",
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -472,119 +562,165 @@
         "type": "uint256"
       }
     ],
-    "name": "getTiers",
+    "name": "getTierViews",
     "outputs": [
       {
         "components": [
           {
             "components": [
               {
-                "internalType": "string",
-                "name": "name",
-                "type": "string"
+                "components": [
+                  {
+                    "internalType": "string",
+                    "name": "name",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "description",
+                    "type": "string"
+                  }
+                ],
+                "internalType": "struct ITokenSaleProposal.TierMetadata",
+                "name": "metadata",
+                "type": "tuple"
               },
               {
-                "internalType": "string",
-                "name": "description",
-                "type": "string"
-              }
-            ],
-            "internalType": "struct ITokenSaleProposal.TierMetadata",
-            "name": "metadata",
-            "type": "tuple"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalTokenProvided",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint64",
-            "name": "saleStartTime",
-            "type": "uint64"
-          },
-          {
-            "internalType": "uint64",
-            "name": "saleEndTime",
-            "type": "uint64"
-          },
-          {
-            "internalType": "address",
-            "name": "saleTokenAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "address[]",
-            "name": "purchaseTokenAddresses",
-            "type": "address[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "exchangeRates",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "minAllocationPerUser",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "maxAllocationPerUser",
-            "type": "uint256"
-          },
-          {
-            "components": [
-              {
                 "internalType": "uint256",
-                "name": "vestingPercentage",
+                "name": "totalTokenProvided",
                 "type": "uint256"
               },
               {
                 "internalType": "uint64",
-                "name": "vestingDuration",
+                "name": "saleStartTime",
                 "type": "uint64"
               },
               {
                 "internalType": "uint64",
-                "name": "cliffPeriod",
+                "name": "saleEndTime",
                 "type": "uint64"
               },
               {
                 "internalType": "uint64",
-                "name": "unlockStep",
+                "name": "claimLockDuration",
                 "type": "uint64"
+              },
+              {
+                "internalType": "address",
+                "name": "saleTokenAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "address[]",
+                "name": "purchaseTokenAddresses",
+                "type": "address[]"
+              },
+              {
+                "internalType": "uint256[]",
+                "name": "exchangeRates",
+                "type": "uint256[]"
+              },
+              {
+                "internalType": "uint256",
+                "name": "minAllocationPerUser",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "maxAllocationPerUser",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "uint256",
+                    "name": "vestingPercentage",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "vestingDuration",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "cliffPeriod",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "unlockStep",
+                    "type": "uint64"
+                  }
+                ],
+                "internalType": "struct ITokenSaleProposal.VestingSettings",
+                "name": "vestingSettings",
+                "type": "tuple"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "enum ITokenSaleProposal.ParticipationType",
+                    "name": "participationType",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "bytes",
+                    "name": "data",
+                    "type": "bytes"
+                  }
+                ],
+                "internalType": "struct ITokenSaleProposal.ParticipationDetails",
+                "name": "participationDetails",
+                "type": "tuple"
               }
             ],
-            "internalType": "struct ITokenSaleProposal.VestingSettings",
-            "name": "vestingSettings",
+            "internalType": "struct ITokenSaleProposal.TierInitParams",
+            "name": "tierInitParams",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bool",
+                "name": "isOff",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalSold",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "uri",
+                "type": "string"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "uint64",
+                    "name": "vestingStartTime",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "vestingEndTime",
+                    "type": "uint64"
+                  }
+                ],
+                "internalType": "struct ITokenSaleProposal.VestingTierInfo",
+                "name": "vestingTierInfo",
+                "type": "tuple"
+              }
+            ],
+            "internalType": "struct ITokenSaleProposal.TierInfo",
+            "name": "tierInfo",
             "type": "tuple"
           }
         ],
         "internalType": "struct ITokenSaleProposal.TierView[]",
         "name": "tierViews",
-        "type": "tuple[]"
-      },
-      {
-        "components": [
-          {
-            "internalType": "bool",
-            "name": "isOff",
-            "type": "bool"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalSold",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "uri",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct ITokenSaleProposal.TierInfoView[]",
-        "name": "tierInfoViews",
         "type": "tuple[]"
       }
     ],
@@ -604,62 +740,72 @@
         "type": "uint256[]"
       }
     ],
-    "name": "getUserInfos",
+    "name": "getUserViews",
     "outputs": [
       {
         "components": [
           {
             "internalType": "bool",
-            "name": "isWhitelisted",
+            "name": "canParticipate",
             "type": "bool"
           },
           {
             "components": [
               {
-                "internalType": "uint64",
-                "name": "purchaseTime",
-                "type": "uint64"
+                "internalType": "bool",
+                "name": "isClaimed",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "canClaim",
+                "type": "bool"
               },
               {
                 "internalType": "uint64",
-                "name": "latestVestingWithdraw",
+                "name": "claimUnlockTime",
                 "type": "uint64"
               },
               {
-                "internalType": "address",
-                "name": "tokenBoughtWith",
-                "type": "address"
-              },
-              {
                 "internalType": "uint256",
-                "name": "amountBought",
+                "name": "claimTotalAmount",
                 "type": "uint256"
               },
               {
                 "internalType": "uint256",
-                "name": "vestingTotalAmount",
+                "name": "boughtTotalAmount",
                 "type": "uint256"
               },
               {
                 "internalType": "uint256",
-                "name": "vestingWithdrawnAmount",
+                "name": "lockedAmount",
                 "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "lockedId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address[]",
+                "name": "purchaseTokenAddresses",
+                "type": "address[]"
+              },
+              {
+                "internalType": "uint256[]",
+                "name": "purchaseTokenAmounts",
+                "type": "uint256[]"
               }
             ],
-            "internalType": "struct ITokenSaleProposal.Purchase",
-            "name": "purchase",
+            "internalType": "struct ITokenSaleProposal.PurchaseView",
+            "name": "purchaseView",
             "type": "tuple"
           },
           {
             "components": [
               {
                 "internalType": "uint64",
-                "name": "cliffEndTime",
-                "type": "uint64"
-              },
-              {
-                "internalType": "uint64",
-                "name": "vestingEndTime",
+                "name": "latestVestingWithdraw",
                 "type": "uint64"
               },
               {
@@ -674,6 +820,16 @@
               },
               {
                 "internalType": "uint256",
+                "name": "vestingTotalAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "vestingWithdrawnAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
                 "name": "amountToWithdraw",
                 "type": "uint256"
               },
@@ -683,13 +839,13 @@
                 "type": "uint256"
               }
             ],
-            "internalType": "struct ITokenSaleProposal.VestingView",
-            "name": "vestingView",
+            "internalType": "struct ITokenSaleProposal.VestingUserView",
+            "name": "vestingUserView",
             "type": "tuple"
           }
         ],
-        "internalType": "struct ITokenSaleProposal.UserInfo[]",
-        "name": "userInfos",
+        "internalType": "struct ITokenSaleProposal.UserView[]",
+        "name": "userViews",
         "type": "tuple[]"
       }
     ],
@@ -773,6 +929,74 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "tierId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "lockParticipationNft",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tierId",
+        "type": "uint256"
+      }
+    ],
+    "name": "lockParticipationTokens",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tierId",
+        "type": "uint256"
+      }
+    ],
+    "name": "mint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes[]",
+        "name": "data",
+        "type": "bytes[]"
+      }
+    ],
+    "name": "multicall",
+    "outputs": [
+      {
+        "internalType": "bytes[]",
+        "name": "results",
+        "type": "bytes[]"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256[]",
         "name": "tierIds",
         "type": "uint256[]"
@@ -780,6 +1004,40 @@
     ],
     "name": "offTiers",
     "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "onERC721Received",
+    "outputs": [
+      {
+        "internalType": "bytes4",
+        "name": "",
+        "type": "bytes4"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -916,6 +1174,32 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tierId",
+        "type": "uint256"
+      }
+    ],
+    "name": "unlockParticipationNft",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tierId",
+        "type": "uint256"
+      }
+    ],
+    "name": "unlockParticipationTokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
