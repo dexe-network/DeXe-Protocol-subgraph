@@ -3,6 +3,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
@@ -81,6 +94,40 @@
       },
       {
         "internalType": "bool",
+        "name": "useDelegated",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "requiredVotes",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "snapshotId",
+        "type": "uint256"
+      }
+    ],
+    "name": "canCreate",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "voter",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
         "name": "isMicropool",
         "type": "bool"
       },
@@ -100,7 +147,7 @@
         "type": "uint256"
       }
     ],
-    "name": "canParticipate",
+    "name": "canVote",
     "outputs": [
       {
         "internalType": "bool",
@@ -210,6 +257,16 @@
           {
             "internalType": "uint256[]",
             "name": "perNftPower",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "requestedTokens",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "requestedNfts",
             "type": "uint256[]"
           }
         ],
@@ -390,21 +447,9 @@
         "type": "address"
       },
       {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "values",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "length",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ShrinkableArray.UintArray",
+        "internalType": "uint256[]",
         "name": "lockedProposals",
-        "type": "tuple"
+        "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
@@ -420,21 +465,9 @@
         "type": "uint256"
       },
       {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "values",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "length",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ShrinkableArray.UintArray",
+        "internalType": "uint256[]",
         "name": "undelegateableNfts",
-        "type": "tuple"
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -448,21 +481,9 @@
         "type": "address"
       },
       {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "values",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "length",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ShrinkableArray.UintArray",
+        "internalType": "uint256[]",
         "name": "lockedProposals",
-        "type": "tuple"
+        "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
@@ -478,21 +499,9 @@
         "type": "uint256"
       },
       {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "values",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "length",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ShrinkableArray.UintArray",
+        "internalType": "uint256[]",
         "name": "withdrawableNfts",
-        "type": "tuple"
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -752,6 +761,52 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "delegator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "nftIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "requestNfts",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "delegator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "requestTokens",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -22,6 +22,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
@@ -35,6 +48,19 @@
       }
     ],
     "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "hash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "SetDocumentHash",
     "type": "event"
   },
   {
@@ -195,21 +221,28 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "user",
         "type": "address"
       }
     ],
     "name": "userInfos",
     "outputs": [
       {
-        "internalType": "string",
-        "name": "profileURL",
-        "type": "string"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "signatureHash",
-        "type": "bytes32"
+        "components": [
+          {
+            "internalType": "string",
+            "name": "profileURL",
+            "type": "string"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "signatureHash",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct IUserRegistry.UserInfo",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",

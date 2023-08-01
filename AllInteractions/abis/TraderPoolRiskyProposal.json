@@ -29,6 +29,19 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "proposalId",
         "type": "uint256"
@@ -275,6 +288,25 @@
       }
     ],
     "name": "ProposalPositionClosed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "positionToken",
+        "type": "address"
+      }
+    ],
+    "name": "ProposalPositionOpened",
     "type": "event"
   },
   {
@@ -632,7 +664,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "minPositionOut",
+        "name": "minBaseOut",
         "type": "uint256"
       }
     ],
