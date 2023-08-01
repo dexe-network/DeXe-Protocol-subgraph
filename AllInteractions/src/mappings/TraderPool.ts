@@ -166,7 +166,8 @@ export function onCommissionClaimed(event: CommissionClaimed): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
 
   let perfomanceFee = getGetPerformanceFee(
