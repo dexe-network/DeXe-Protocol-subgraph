@@ -24,7 +24,8 @@ export function onExchange(event: Exchanged): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
   let exchange = getExchange(
     event.transaction.hash,
@@ -49,7 +50,8 @@ export function onInvest(event: Invested): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    event.address
   );
   setupVest(
     transaction,
@@ -67,7 +69,8 @@ export function onDivest(event: Divested): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    event.address
   );
   setupVest(
     transaction,
@@ -85,7 +88,8 @@ export function onDescriptionURLChanged(event: DescriptionURLChanged): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
 
   let onlyPool = getOnlyPool(event.transaction.hash, event.address, transaction.interactionsCount);
@@ -102,7 +106,8 @@ export function onProposalDivest(event: ProposalDivested): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    event.address
   );
 
   let proposalVest = getProposalVest(
@@ -125,7 +130,8 @@ export function onModifiedPrivateInvestors(event: ModifiedPrivateInvestors): voi
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
 
   let onlyPool = getOnlyPool(event.transaction.hash, event.address, transaction.interactionsCount);
@@ -142,7 +148,8 @@ export function onModifiedAdmins(event: ModifiedAdmins): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
 
   let onlyPool = getOnlyPool(event.transaction.hash, event.address, transaction.interactionsCount);
@@ -159,7 +166,8 @@ export function onCommissionClaimed(event: CommissionClaimed): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
 
   let perfomanceFee = getGetPerformanceFee(

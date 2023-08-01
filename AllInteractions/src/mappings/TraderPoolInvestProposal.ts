@@ -27,7 +27,8 @@ export function onProposalCreated(event: ProposalCreated): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    getTraderPool(Address.fromBytes(proposalContract.pool)).trader
+    getTraderPool(Address.fromBytes(proposalContract.pool)).trader,
+    proposalContract.pool
   );
   let proposalCreate = getInvestProposalCreate(
     event.transaction.hash,
@@ -50,7 +51,8 @@ export function onProposalWithdrawn(event: ProposalWithdrawn): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    pool
   );
   let withdraw = getInvestProposalWithdraw(
     event.transaction.hash,
@@ -75,7 +77,8 @@ export function onProposalSupplied(event: ProposalSupplied): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    pool
   );
 
   let supply = getInvestProposalClaimOrSupply(
@@ -102,7 +105,8 @@ export function onProposalClaimed(event: ProposalClaimed): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    pool
   );
   let supply = getInvestProposalClaimOrSupply(
     event.transaction.hash,
@@ -127,7 +131,8 @@ export function onProposalRestrictionsChanged(event: ProposalRestrictionsChanged
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    pool
   );
 
   let edit = getInvestProposalEdited(
@@ -151,7 +156,8 @@ export function onProposalInvest(event: ProposalInvested): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    pool
   );
 
   let vest = getProposalVest(
@@ -177,7 +183,8 @@ export function onProposalConverted(event: ProposalConverted): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.user
+    event.params.user,
+    pool
   );
 
   let convertToDividends = getInvestProposalConvertToDividends(

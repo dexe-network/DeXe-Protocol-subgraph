@@ -174,7 +174,7 @@ describe("TraderPoolRiskyProposal", () => {
     assert.fieldEquals("RiskyProposalCreate", tx.hash.concatI32(0).toHexString(), "token", token.toHexString());
     assert.fieldEquals("RiskyProposalCreate", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
 
-    assertTransaction(tx.hash, trader, block, `[${TransactionType.RISKY_PROPOSAL_CREATE}]`, BigInt.fromI32(1));
+    assertTransaction(tx.hash, trader, block, `[${TransactionType.RISKY_PROPOSAL_CREATE}]`, BigInt.fromI32(1), pool);
   });
 
   test("should handle ProposalExchanged event", () => {
@@ -216,7 +216,7 @@ describe("TraderPoolRiskyProposal", () => {
       tx.hash.toHexString()
     );
 
-    assertTransaction(tx.hash, user, block, `[${TransactionType.RISKY_PROPOSAL_SWAP}]`, BigInt.fromI32(1));
+    assertTransaction(tx.hash, user, block, `[${TransactionType.RISKY_PROPOSAL_SWAP}]`, BigInt.fromI32(1), pool);
   });
 
   test("should handle ProposalInvested event", () => {
@@ -240,7 +240,8 @@ describe("TraderPoolRiskyProposal", () => {
       event.params.user,
       block,
       `[${TransactionType.RISKY_PROPOSAL_INVEST}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      pool
     );
   });
 
@@ -265,7 +266,8 @@ describe("TraderPoolRiskyProposal", () => {
       event.params.user,
       block,
       `[${TransactionType.RISKY_PROPOSAL_DIVEST}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      pool
     );
   });
 
@@ -285,7 +287,8 @@ describe("TraderPoolRiskyProposal", () => {
       event.params.sender,
       block,
       `[${TransactionType.RISKY_PROPOSAL_EDIT}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      pool
     );
 
     const nextTx = getNextTx(tx);
@@ -309,7 +312,8 @@ describe("TraderPoolRiskyProposal", () => {
       event.params.sender,
       block,
       `[${TransactionType.RISKY_PROPOSAL_EDIT}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      pool
     );
   });
 });

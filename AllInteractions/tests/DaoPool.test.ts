@@ -308,7 +308,8 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_PROPOSAL_CREATED}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      contractSender
     );
   });
 
@@ -325,7 +326,14 @@ describe("DaoPool", () => {
     assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
 
-    assertTransaction(tx.hash, event0.params.from, block, `[${TransactionType.DAO_POOL_DELEGATED}]`, BigInt.fromI32(1));
+    assertTransaction(
+      tx.hash,
+      event0.params.from,
+      block,
+      `[${TransactionType.DAO_POOL_DELEGATED}]`,
+      BigInt.fromI32(1),
+      contractSender
+    );
 
     let event1 = createDelegated(from, to, amount, nfts, false, contractSender, block, tx);
 
@@ -339,7 +347,8 @@ describe("DaoPool", () => {
       event1.params.from,
       block,
       `[${TransactionType.DAO_POOL_DELEGATED}, ${TransactionType.DAO_POOL_UNDELEGATED}]`,
-      BigInt.fromI32(2)
+      BigInt.fromI32(2),
+      contractSender
     );
   });
 
@@ -356,7 +365,14 @@ describe("DaoPool", () => {
     assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
 
-    assertTransaction(tx.hash, event0.params.from, block, `[${TransactionType.DAO_POOL_REQUESTED}]`, BigInt.fromI32(1));
+    assertTransaction(
+      tx.hash,
+      event0.params.from,
+      block,
+      `[${TransactionType.DAO_POOL_REQUESTED}]`,
+      BigInt.fromI32(1),
+      contractSender
+    );
 
     let event1 = createRequested(from, to, amount, nfts, contractSender, block, tx);
 
@@ -370,7 +386,8 @@ describe("DaoPool", () => {
       event1.params.from,
       block,
       `[${TransactionType.DAO_POOL_REQUESTED}, ${TransactionType.DAO_POOL_REQUESTED}]`,
-      BigInt.fromI32(2)
+      BigInt.fromI32(2),
+      contractSender
     );
   });
 
@@ -399,7 +416,8 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_PROPOSAL_VOTED}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      contractSender
     );
   });
 
@@ -420,7 +438,8 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_PROPOSAL_EXECUTED}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      contractSender
     );
 
     const nextTx = getNextTx(tx);
@@ -444,7 +463,8 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_PROPOSAL_EXECUTED}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      contractSender
     );
   });
 
@@ -475,7 +495,8 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_REWARD_CLAIMED}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      contractSender
     );
 
     const nextTx = getNextTx(tx);
@@ -508,7 +529,8 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_REWARD_CLAIMED}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      contractSender
     );
   });
 
@@ -530,7 +552,8 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_DEPOSITED}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      contractSender
     );
 
     const nextTx = getNextTx(tx);
@@ -550,7 +573,8 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_DEPOSITED}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      contractSender
     );
   });
 
@@ -572,7 +596,8 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_WITHDRAWN}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      contractSender
     );
 
     const nextTx = getNextTx(tx);
@@ -592,7 +617,8 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_WITHDRAWN}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      contractSender
     );
   });
 
@@ -622,7 +648,8 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_MOVED_TO_VALIDATORS}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      contractSender
     );
 
     const nextTx = getNextTx(tx);
@@ -650,7 +677,8 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_MOVED_TO_VALIDATORS}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      contractSender
     );
   });
 
@@ -680,7 +708,8 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      contractSender
     );
 
     onOffchainResultsSaved(event);
@@ -704,7 +733,8 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED}, ${TransactionType.DAO_POOL_OFFCHAIN_RESULTS_SAVED}]`,
-      BigInt.fromI32(2)
+      BigInt.fromI32(2),
+      contractSender
     );
   });
 });

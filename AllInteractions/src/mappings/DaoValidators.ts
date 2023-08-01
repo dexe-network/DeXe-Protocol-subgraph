@@ -4,7 +4,7 @@ import {
   InternalProposalCreated,
   InternalProposalExecuted,
 } from "../../generated/templates/DaoValidators/DaoValidators";
-import { getDaoVaildatorProposalVote } from "../entities/dao-pool/DaoValidatorProposalVote";
+import { getDaoValidatorProposalVote } from "../entities/dao-pool/DaoValidatorProposalVote";
 import { getDaoValidatorProposalCreate } from "../entities/dao-pool/DaoValidatorProposalCreate";
 import { getDaoValidatorProposalExecute } from "../entities/dao-pool/DaoValidatorProposalExecute";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
@@ -16,10 +16,11 @@ export function onVoted(event: Voted): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
 
-  let voted = getDaoVaildatorProposalVote(
+  let vote = getDaoValidatorProposalVote(
     event.transaction.hash,
     event.address,
     event.params.proposalId,
@@ -30,10 +31,10 @@ export function onVoted(event: Voted): void {
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_VALIDATORS_VOTED));
-  voted.transaction = transaction.id;
+  vote.transaction = transaction.id;
 
   transaction.save();
-  voted.save();
+  vote.save();
 }
 
 export function onInternalProposalCreated(event: InternalProposalCreated): void {
@@ -41,7 +42,8 @@ export function onInternalProposalCreated(event: InternalProposalCreated): void 
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
 
   let created = getDaoValidatorProposalCreate(
@@ -64,7 +66,8 @@ export function onInternalProposalExecuted(event: InternalProposalExecuted): voi
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.executor
+    event.params.executor,
+    event.address
   );
 
   let executed = getDaoValidatorProposalExecute(

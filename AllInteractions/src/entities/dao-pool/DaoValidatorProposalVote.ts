@@ -1,7 +1,7 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { DaoValidatorProposalVote } from "../../../generated/schema";
 
-export function getDaoVaildatorProposalVote(
+export function getDaoValidatorProposalVote(
   hash: Bytes,
   pool: Address,
   proposalId: BigInt,

@@ -53,7 +53,8 @@ describe("UserRegistry", () => {
       event.params.user,
       block,
       `[${TransactionType.USER_AGREED_TO_PRIVACY_POLICY}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      Bytes.empty()
     );
 
     const nextTx = getNextTx(tx);
@@ -68,7 +69,8 @@ describe("UserRegistry", () => {
       event.params.user,
       block,
       `[${TransactionType.USER_AGREED_TO_PRIVACY_POLICY}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      Bytes.empty()
     );
   });
 
@@ -85,7 +87,8 @@ describe("UserRegistry", () => {
       event.params.user,
       block,
       `[${TransactionType.USER_AGREED_TO_PRIVACY_POLICY}, ${TransactionType.UPDATED_USER_CREDENTIALS}]`,
-      BigInt.fromI32(2)
+      BigInt.fromI32(2),
+      Bytes.empty()
     );
 
     const nextTx = getNextTx(tx);
@@ -101,7 +104,8 @@ describe("UserRegistry", () => {
       event.params.user,
       block,
       `[${TransactionType.USER_AGREED_TO_PRIVACY_POLICY}, ${TransactionType.UPDATED_USER_CREDENTIALS}]`,
-      BigInt.fromI32(2)
+      BigInt.fromI32(2),
+      Bytes.empty()
     );
   });
 });

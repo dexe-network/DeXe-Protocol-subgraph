@@ -219,7 +219,7 @@ describe("TraderPoolInvestProposal", () => {
       tx.hash.toHexString()
     );
 
-    assertTransaction(tx.hash, trader, block, `[${TransactionType.INVEST_PROPOSAL_CREATE}]`, BigInt.fromI32(1));
+    assertTransaction(tx.hash, trader, block, `[${TransactionType.INVEST_PROPOSAL_CREATE}]`, BigInt.fromI32(1), pool);
   });
 
   test("should handle ProposalWithdrawn event", () => {
@@ -250,7 +250,8 @@ describe("TraderPoolInvestProposal", () => {
       event.params.sender,
       block,
       `[${TransactionType.INVEST_PROPOSAL_WITHDRAW}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      pool
     );
   });
 
@@ -289,7 +290,8 @@ describe("TraderPoolInvestProposal", () => {
       event.params.sender,
       block,
       `[${TransactionType.INVEST_PROPOSAL_SUPPLY}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      pool
     );
 
     const nextTx = getNextTx(tx);
@@ -336,7 +338,8 @@ describe("TraderPoolInvestProposal", () => {
       event.params.sender,
       block,
       `[${TransactionType.INVEST_PROPOSAL_SUPPLY}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      pool
     );
   });
 
@@ -375,7 +378,8 @@ describe("TraderPoolInvestProposal", () => {
       event.params.user,
       block,
       `[${TransactionType.INVEST_PROPOSAL_CLAIM}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      pool
     );
 
     const nextTx = getNextTx(tx);
@@ -422,7 +426,8 @@ describe("TraderPoolInvestProposal", () => {
       event.params.user,
       block,
       `[${TransactionType.INVEST_PROPOSAL_CLAIM}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      pool
     );
   });
 
@@ -447,7 +452,8 @@ describe("TraderPoolInvestProposal", () => {
       event.params.user,
       block,
       `[${TransactionType.INVEST_PROPOSAL_INVEST}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      pool
     );
   });
 
@@ -496,7 +502,8 @@ describe("TraderPoolInvestProposal", () => {
       event.params.user,
       block,
       `[${TransactionType.INVEST_PROPOSAL_CONVERT_TO_DIVIDENDS}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      pool
     );
   });
 
@@ -516,7 +523,8 @@ describe("TraderPoolInvestProposal", () => {
       event.params.sender,
       block,
       `[${TransactionType.INVEST_PROPOSAL_EDIT}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      pool
     );
   });
 });

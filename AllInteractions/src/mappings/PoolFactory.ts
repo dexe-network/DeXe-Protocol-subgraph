@@ -27,7 +27,8 @@ export function onTraderPoolDeployed(event: TraderPoolDeployed): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.trader
+    event.params.trader,
+    event.params.at
   );
   let create = getPoolCreate(
     event.transaction.hash,
@@ -53,7 +54,8 @@ export function onDaoPoolDeployed(event: DaoPoolDeployed): void {
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.params.govPool
   );
 
   let daoCreate = getDaoPoolCreate(
