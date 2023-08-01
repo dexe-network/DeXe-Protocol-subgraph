@@ -477,7 +477,7 @@ describe("TraderPool", () => {
       block,
       `[${TransactionType.TRADER_GET_PERFOMANCE_FEE}]`,
       BigInt.fromI32(1),
-      Bytes.empty()
+      sender
     );
   });
 });
