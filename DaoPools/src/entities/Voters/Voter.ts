@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { Voter } from "../../../generated/schema";
 
 export function getVoter(voterAddress: Address): Voter {
@@ -6,6 +6,11 @@ export function getVoter(voterAddress: Address): Voter {
 
   if (voter == null) {
     voter = new Voter(voterAddress);
+
+    voter.totalProposalsCreated = BigInt.zero();
+    voter.totalClaimedUSD = BigInt.zero();
+    voter.totalVotedProposals = BigInt.zero();
+    voter.totalVotes = BigInt.zero();
   }
 
   return voter;

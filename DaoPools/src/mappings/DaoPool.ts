@@ -63,6 +63,11 @@ export function onProposalCreated(event: ProposalCreated): void {
 
   pool.proposalCount = pool.proposalCount.plus(BigInt.fromI32(1));
 
+  let voter = getVoter(Address.fromBytes(proposal.creator));
+
+  voter.totalProposalsCreated = voter.totalProposalsCreated.plus(BigInt.fromI32(1));
+
+  voter.save();
   settings.save();
   pool.save();
   proposal.save();
@@ -204,12 +209,16 @@ export function onVoted(event: Voted): void {
   if (proposal.voters.length < newVoters.length) {
     proposal.voters = newVoters;
     proposal.votersVoted = proposal.votersVoted.plus(BigInt.fromI32(1));
+
+    voter.totalVotedProposals = voter.totalVotedProposals.plus(BigInt.fromI32(1));
   }
 
   proposal.votesCount = proposal.votesCount.plus(BigInt.fromI32(1));
 
   voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
   voterInPool.proposalsCount = BigInt.fromI32(voterInPool.proposals.length);
+
+  voter.totalVotes = voter.totalVotes.plus(event.params.personalVote).plus(event.params.delegatedVote);
 
   proposalVote.save();
   voterInProposal.save();
@@ -266,6 +275,7 @@ export function onRewardClaimed(event: RewardClaimed): void {
   }
 
   voterInPool.totalClaimedUSD = voterInPool.totalClaimedUSD.plus(usdAmount);
+  voter.totalClaimedUSD = voter.totalClaimedUSD.plus(usdAmount);
 
   voterInPool.save();
   voter.save();
@@ -359,9 +369,10 @@ export function onStakingRewardClaimed(event: StakingRewardClaimed): void {
   let voter = getVoter(event.params.user);
   let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
 
-  voterInPool.totalStakingReward = voterInPool.totalStakingReward.plus(
-    getUSDValue(event.params.token, event.params.amount)
-  );
+  const usdAmount = getUSDValue(event.params.token, event.params.amount);
+  voter.totalClaimedUSD = voter.totalClaimedUSD.plus(usdAmount);
+
+  voterInPool.totalStakingReward = voterInPool.totalStakingReward.plus(usdAmount);
 
   voterInPool.save();
   voter.save();

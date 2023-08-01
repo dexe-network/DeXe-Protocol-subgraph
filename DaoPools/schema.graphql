@@ -78,6 +78,11 @@ type VoterOffchain @entity {
 # @param id forms from user address
 type Voter @entity {
   id: Bytes! # voter address
+  totalProposalsCreated: BigInt!
+  totalClaimedUSD: BigInt!
+  totalVotedProposals: BigInt!
+  totalVotes: BigInt!
+
   pools: [VoterInPool!]! @derivedFrom(field: "voter")
 }
 

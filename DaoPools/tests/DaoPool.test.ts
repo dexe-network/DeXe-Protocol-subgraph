@@ -453,6 +453,9 @@ describe("DaoPool", () => {
     onProposalCreated(event);
 
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "votersCount", "0");
+
+    assert.fieldEquals("Voter", sender.toHexString(), "totalProposalsCreated", "1");
+
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
@@ -692,6 +695,8 @@ describe("DaoPool", () => {
 
     onVoted(event);
 
+    assert.fieldEquals("Voter", sender.toHexString(), "totalVotedProposals", "1");
+    assert.fieldEquals("Voter", sender.toHexString(), "totalVotes", personalVoteFor.plus(delegatedVoteFor).toString());
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
@@ -776,6 +781,13 @@ describe("DaoPool", () => {
 
     onVoted(event);
 
+    assert.fieldEquals("Voter", sender.toHexString(), "totalVotedProposals", "1");
+    assert.fieldEquals(
+      "Voter",
+      sender.toHexString(),
+      "totalVotes",
+      personalVoteFor.plus(delegatedVoteFor).plus(personalVoteAgainst).plus(delegatedVoteAgainst).toString()
+    );
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
@@ -958,6 +970,7 @@ describe("DaoPool", () => {
 
     onRewardClaimed(event0);
 
+    assert.fieldEquals("Voter", sender.toHexString(), "totalClaimedUSD", amounts[0].toString());
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
@@ -973,6 +986,7 @@ describe("DaoPool", () => {
 
     onRewardClaimed(event1);
 
+    assert.fieldEquals("Voter", sender.toHexString(), "totalClaimedUSD", amounts[0].plus(amounts[1]).toString());
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),
@@ -996,6 +1010,8 @@ describe("DaoPool", () => {
     let event = createRewardClaimed(proposalId, sender, rewardToken, amount, contractSender, block, tx);
 
     onRewardClaimed(event);
+
+    assert.fieldEquals("Voter", sender.toHexString(), "totalClaimedUSD", "200");
 
     assert.fieldEquals("VoterOffchain", sender.concat(contractSender).toHexString(), "claimedRewardUSD", `200`);
 
@@ -1401,10 +1417,12 @@ describe("DaoPool", () => {
 
     onStakingRewardClaimed(event);
 
+    assert.fieldEquals("Voter", user.toHexString(), "totalClaimedUSD", "1500");
     assert.fieldEquals("VoterInPool", user.concat(contractSender).toHexString(), "totalStakingReward", "1500");
 
     onStakingRewardClaimed(event);
 
+    assert.fieldEquals("Voter", user.toHexString(), "totalClaimedUSD", amount.toString());
     assert.fieldEquals("VoterInPool", user.concat(contractSender).toHexString(), "totalStakingReward", "3000");
   });
 
