@@ -7,10 +7,10 @@
     "build": "graph build",
     "test": "graph test",
     "coverage": "graph test -c",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ volodymyrzolotukhin/dexe",
-    "create-local": "graph create --node http://localhost:8020/ volodymyrzolotukhin/dexe",
-    "remove-local": "graph remove --node http://localhost:8020/ volodymyrzolotukhin/dexe",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 volodymyrzolotukhin/dexe"
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ kevandee/dexe-allinteractions",
+    "create-local": "graph create --node http://localhost:8020/ kevandee/dexe-allinteractions",
+    "remove-local": "graph remove --node http://localhost:8020/ kevandee/dexe-allinteractions",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 kevandee/dexe-allinteractions"
   },
   "dependencies": {
     "@dlsl/graph-modules": "^1.0.0-rc.3",

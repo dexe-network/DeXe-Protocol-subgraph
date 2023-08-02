@@ -7,10 +7,10 @@
     "build": "graph build",
     "test": "graph test",
     "coverage": "graph test -c",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ volodymyrzolotukhin/dexe",
-    "create-local": "graph create --node http://localhost:8020/ volodymyrzolotukhin/dexe",
-    "remove-local": "graph remove --node http://localhost:8020/ volodymyrzolotukhin/dexe",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 volodymyrzolotukhin/dexe"
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ kevandee/dexe-daovalidators",
+    "create-local": "graph create --node http://localhost:8020/ kevandee/dexe-daovalidators",
+    "remove-local": "graph remove --node http://localhost:8020/ kevandee/dexe-daovalidators",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 kevandee/dexe-daovalidators"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.32.0",
