@@ -184,7 +184,7 @@ templates:
           handler: onProposalCreated
         - event: Delegated(address,address,uint256,uint256[],bool)
           handler: onDelegated
-        - event: Voted(uint256,address,uint256,uint256,bool)
+        - event: Voted(uint256,address,uint8,uint256,bool)
           handler: onVoted
         - event: ProposalExecuted(uint256,bool,address)
           handler: onProposalExecuted

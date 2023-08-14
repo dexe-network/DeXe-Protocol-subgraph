@@ -4,6 +4,7 @@ import { DaoPoolVote } from "../../../generated/schema";
 export function getDaoPoolVote(
   hash: Bytes,
   pool: Address,
+  voteType: BigInt,
   amount: BigInt,
   count: BigInt,
   isVoteFor: boolean
@@ -14,6 +15,7 @@ export function getDaoPoolVote(
   if (daoPoolVote == null) {
     daoPoolVote = new DaoPoolVote(id);
     daoPoolVote.pool = pool;
+    daoPoolVote.voteType = voteType;
     daoPoolVote.amount = amount;
     daoPoolVote.isVoteFor = isVoteFor;
 
