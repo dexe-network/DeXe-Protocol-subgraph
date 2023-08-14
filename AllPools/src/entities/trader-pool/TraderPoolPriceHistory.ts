@@ -1,6 +1,6 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { TraderPool, TraderPoolPriceHistory } from "../../../generated/schema";
-import { findPrevHistory } from "@dlsl/graph-modules";
+import { findPrevHistory } from "@solarity/graph-lib";
 import { BLOCK_PER_YEAR, CHECK_PER_BLOCK, DECIMAL, PERCENTAGE_DENOMINATOR } from "../global/globals";
 import { getTraderPool } from "./TraderPool";
 import { PERCENTAGE_NUMERATOR } from "../global/globals";

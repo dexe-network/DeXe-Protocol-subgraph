@@ -3,7 +3,7 @@ import { Deposited, Paidout, Withdrawn } from "../../generated/Insurance/Insuran
 import { InsuranceHistory, Investor } from "../../generated/schema";
 import { getInsuranceHistory } from "../entities/trader-pool/history/InsuranceHistory";
 import { getInvestor } from "../entities/trader-pool/Investor";
-import { findPrevHistory } from "@dlsl/graph-modules";
+import { findPrevHistory } from "@solarity/graph-lib";
 import { MAX_SEARCH_DEPTH } from "../entities/global/globals";
 
 export function onDeposit(event: Deposited): void {

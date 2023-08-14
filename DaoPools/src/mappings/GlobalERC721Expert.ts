@@ -1,4 +1,4 @@
-import { pushUnique } from "@dlsl/graph-modules";
+import { pushUnique } from "@solarity/graph-lib";
 import { Transfer, TagsAdded } from "../../generated/templates/ERC721Expert/ERC721Expert";
 import { getExpertNft } from "../entities/ExpertNft/ExpertNft";
 import { Address, Bytes, store } from "@graphprotocol/graph-ts";

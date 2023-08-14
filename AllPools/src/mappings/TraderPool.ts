@@ -13,7 +13,7 @@ import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { getPositionOffset } from "../entities/global/PositionOffset";
 import { getPosition } from "../entities/trader-pool/Position";
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
-import { pushUnique, remove, upcastCopy, findPrevHistory } from "@dlsl/graph-modules";
+import { pushUnique, remove, upcastCopy, findPrevHistory } from "@solarity/graph-lib";
 import { getPositionId } from "../helpers/Position";
 import {
   DAY,

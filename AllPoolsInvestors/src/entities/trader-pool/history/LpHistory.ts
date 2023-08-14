@@ -1,7 +1,7 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { InvestorPoolPosition, LpHistory } from "../../../../generated/schema";
 import { DAY, MAX_SEARCH_DEPTH } from "../../global/globals";
-import { findPrevHistory } from "@dlsl/graph-modules";
+import { findPrevHistory } from "@solarity/graph-lib";
 
 export function getLpHistory(investorPoolPosition: InvestorPoolPosition, timestamp: BigInt): LpHistory {
   let day = timestamp.div(BigInt.fromI32(DAY));

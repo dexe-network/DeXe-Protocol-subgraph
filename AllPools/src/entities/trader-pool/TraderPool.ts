@@ -1,5 +1,5 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { pushUnique } from "@dlsl/graph-modules";
+import { pushUnique } from "@solarity/graph-lib";
 import { TraderPool } from "../../../generated/schema";
 
 export function getTraderPool(
