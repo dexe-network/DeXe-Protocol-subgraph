@@ -72,7 +72,7 @@ templates:
           handler: onProposalCreated
         - event: Delegated(address,address,uint256,uint256[],bool) # from, to, amount, nfts, isDelegate
           handler: onDelegated
-        - event: Voted(uint256,address,uint256,uint256,bool) # id, msg.sender, personalVote, delegatedVote
+        - event: Voted(uint256,address,uint8,uint256,bool) # id, msg.sender, personalVote, delegatedVote
           handler: onVoted
         - event: DPCreated(uint256,address,address,uint256) # id, msg.sender, token, amount
           handler: onDPCreated

@@ -23,6 +23,9 @@ export function getDaoPool(
     pool.totalCurrentTokenDelegated = BigInt.zero();
     pool.totalCurrentNFTDelegated = new Array<BigInt>();
 
+    pool.totalCurrentTokenDelegatedTreasury = BigInt.zero();
+    pool.totalCurrentNFTDelegatedTreasury = new Array<BigInt>();
+
     pool.totalCurrentTokenDelegatees = BigInt.zero();
     pool.totalCurrentNFTDelegatees = BigInt.zero();
 
