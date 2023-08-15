@@ -123,7 +123,7 @@ export function onDelegated(event: Delegated): void {
     toVoterInPool.requestedNft = remove<BigInt>(toVoterInPool.requestedNft, event.params.nfts);
     toVoterInPool.requestedNftCount = BigInt.fromI32(toVoterInPool.requestedNft.length);
   } else {
-    if (usdAmount.gt(from.totalLockedFundsUSD)) {
+    if (usdAmount.gt(from.totalDelegatedUSD)) {
       from.totalDelegatedUSD = BigInt.zero();
     } else {
       from.totalDelegatedUSD = from.totalDelegatedUSD.minus(usdAmount);
