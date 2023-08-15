@@ -47,6 +47,12 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "nftMultiplier",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "sender",
         "type": "address"
       }

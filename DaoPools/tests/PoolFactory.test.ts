@@ -12,6 +12,7 @@ function createDaoPoolDeployed(
   settings: Address,
   govUserKeeper: Address,
   expertNft: Address,
+  nftMultiplier: Address,
   sender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
@@ -26,6 +27,7 @@ function createDaoPoolDeployed(
   event.parameters.push(new ethereum.EventParam("settings", ethereum.Value.fromAddress(settings)));
   event.parameters.push(new ethereum.EventParam("govUserKeeper", ethereum.Value.fromAddress(govUserKeeper)));
   event.parameters.push(new ethereum.EventParam("localExpertNft", ethereum.Value.fromAddress(expertNft)));
+  event.parameters.push(new ethereum.EventParam("nftMultiplier", ethereum.Value.fromAddress(nftMultiplier)));
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
   event.block = block;
@@ -64,6 +66,7 @@ describe("PoolFactory", () => {
     let settings = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
     let govUserKeeper = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181673");
     let expertNft = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181673");
+    let nftMultiplier = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181673");
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181674");
 
     let event = createDaoPoolDeployed(
@@ -74,6 +77,7 @@ describe("PoolFactory", () => {
       settings,
       govUserKeeper,
       expertNft,
+      nftMultiplier,
       sender,
       block,
       tx
@@ -85,6 +89,7 @@ describe("PoolFactory", () => {
     assert.fieldEquals("DaoPool", govPool.toHexString(), "votersCount", BigInt.zero().toString());
     assert.fieldEquals("DaoPool", govPool.toHexString(), "creationTime", block.timestamp.toString());
     assert.fieldEquals("DaoPool", govPool.toHexString(), "creationBlock", block.number.toString());
+    assert.fieldEquals("DaoPool", govPool.toHexString(), "nftMultiplier", nftMultiplier.toHexString());
 
     assert.fieldEquals("DPContract", dp.toHexString(), "daoPool", govPool.toHexString());
     assert.fieldEquals("SettingsContract", settings.toHexString(), "daoPool", govPool.toHexString());
