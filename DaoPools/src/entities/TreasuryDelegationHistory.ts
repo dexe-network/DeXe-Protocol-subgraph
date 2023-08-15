@@ -1,5 +1,5 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { DaoPool, TreasuryDelegationHistory, Voter } from "../../generated/schema";
+import { DaoPool, TreasuryDelegationHistory, Voter, VoterInPool } from "../../generated/schema";
 import { getInteractionCount } from "./global/InteractionCount";
 import { increaseCounter } from "../helpers/IncreaseCounter";
 import { TreasuryDelegationType, getEnumBigInt } from "./global/TreasuryDelegationTypeEnum";
@@ -8,7 +8,7 @@ export function getTreasuryDelegationHistory(
   hash: Bytes,
   pool: DaoPool,
   timestamp: BigInt,
-  to: Voter,
+  to: VoterInPool,
   amount: BigInt,
   nfts: Array<BigInt>,
   type: TreasuryDelegationType

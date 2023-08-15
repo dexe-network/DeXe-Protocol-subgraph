@@ -765,7 +765,12 @@ describe("DaoPool", () => {
       "timestamp",
       event.block.timestamp.toString()
     );
-    assert.fieldEquals("TreasuryDelegationHistory", tx.hash.concatI32(0).toHexString(), "to", to.toHexString());
+    assert.fieldEquals(
+      "TreasuryDelegationHistory",
+      tx.hash.concatI32(0).toHexString(),
+      "to",
+      to.concat(contractSender).toHexString()
+    );
     assert.fieldEquals("TreasuryDelegationHistory", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
     assert.fieldEquals(
       "TreasuryDelegationHistory",
@@ -778,25 +783,6 @@ describe("DaoPool", () => {
       tx.hash.concatI32(0).toHexString(),
       "type",
       TreasuryDelegationType.DELEGATE.toString()
-    );
-
-    assert.fieldEquals(
-      "VoterInPoolTreasury",
-      to.concat(contractSender).toHexString(),
-      "voter",
-      to.concat(contractSender).toHexString()
-    );
-    assert.fieldEquals(
-      "VoterInPoolTreasury",
-      to.concat(contractSender).toHexString(),
-      "delegateTreasuryAmount",
-      amount.toString()
-    );
-    assert.fieldEquals(
-      "VoterInPoolTreasury",
-      to.concat(contractSender).toHexString(),
-      "delegateTreasuryNfts",
-      `[${nfts[0]}, ${nfts[1]}]`
     );
   });
 
@@ -852,7 +838,12 @@ describe("DaoPool", () => {
       "timestamp",
       event2.block.timestamp.toString()
     );
-    assert.fieldEquals("TreasuryDelegationHistory", tx.hash.concatI32(1).toHexString(), "to", to.toHexString());
+    assert.fieldEquals(
+      "TreasuryDelegationHistory",
+      tx.hash.concatI32(1).toHexString(),
+      "to",
+      to.concat(contractSender).toHexString()
+    );
     assert.fieldEquals("TreasuryDelegationHistory", tx.hash.concatI32(1).toHexString(), "amount", amount2.toString());
     assert.fieldEquals("TreasuryDelegationHistory", tx.hash.concatI32(1).toHexString(), "nfts", `[${nfts2[0]}]`);
     assert.fieldEquals(
@@ -860,25 +851,6 @@ describe("DaoPool", () => {
       tx.hash.concatI32(1).toHexString(),
       "type",
       TreasuryDelegationType.UNDELEGATE.toString()
-    );
-
-    assert.fieldEquals(
-      "VoterInPoolTreasury",
-      to.concat(contractSender).toHexString(),
-      "voter",
-      to.concat(contractSender).toHexString()
-    );
-    assert.fieldEquals(
-      "VoterInPoolTreasury",
-      to.concat(contractSender).toHexString(),
-      "delegateTreasuryAmount",
-      amount1.minus(amount2).toString()
-    );
-    assert.fieldEquals(
-      "VoterInPoolTreasury",
-      to.concat(contractSender).toHexString(),
-      "delegateTreasuryNfts",
-      `[${nfts1[1]}]`
     );
   });
 

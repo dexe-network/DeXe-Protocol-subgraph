@@ -42,7 +42,6 @@ import { getVoterOffchain } from "../entities/Voters/VoterOffchain";
 import { DelegationType } from "../entities/global/DelegationTypeEnum";
 import { VoteType, getEnumBigInt } from "../entities/global/VoteTypeEnum";
 import { TreasuryDelegationType } from "../entities/global/TreasuryDelegationTypeEnum";
-import { getVoterInPoolTreasury } from "../entities/Voters/VoterInPoolTreasury";
 import { getTreasuryDelegationHistory } from "../entities/TreasuryDelegationHistory";
 
 export function onProposalCreated(event: ProposalCreated): void {
@@ -177,20 +176,16 @@ export function onDelegated(event: Delegated): void {
 export function onDelegatedTreasury(event: DelegatedTreasury): void {
   let to = getVoter(event.params.to);
   let pool = getDaoPool(event.address);
+  let toVoterInPool = getVoterInPool(pool, to, event.block.timestamp);
   let delegateHistory = getTreasuryDelegationHistory(
     event.transaction.hash,
     pool,
     event.block.timestamp,
-    to,
+    toVoterInPool,
     event.params.amount,
     event.params.nfts,
     event.params.isDelegate ? TreasuryDelegationType.DELEGATE : TreasuryDelegationType.UNDELEGATE
   );
-  let toVoterInPool = getVoterInPool(pool, to, event.block.timestamp);
-
-  let treasury = getVoterInPoolTreasury(toVoterInPool);
-
-  delegateHistory.treasury = treasury.id;
 
   if (event.params.isDelegate) {
     toVoterInPool.receivedTreasuryDelegation = toVoterInPool.receivedTreasuryDelegation.plus(event.params.amount);
@@ -201,9 +196,6 @@ export function onDelegatedTreasury(event: DelegatedTreasury): void {
     toVoterInPool.receivedTreasuryNFTDelegationCount = BigInt.fromI32(
       toVoterInPool.receivedTreasuryNFTDelegation.length
     );
-
-    treasury.delegateTreasuryAmount = treasury.delegateTreasuryAmount.plus(event.params.amount);
-    treasury.delegateTreasuryNfts = pushUnique<BigInt>(treasury.delegateTreasuryNfts, event.params.nfts);
 
     pool.totalCurrentTokenDelegatedTreasury = pool.totalCurrentTokenDelegatedTreasury.plus(event.params.amount);
     pool.totalCurrentNFTDelegatedTreasury = pushUnique<BigInt>(
@@ -219,9 +211,6 @@ export function onDelegatedTreasury(event: DelegatedTreasury): void {
     toVoterInPool.receivedTreasuryNFTDelegationCount = BigInt.fromI32(
       toVoterInPool.receivedTreasuryNFTDelegation.length
     );
-
-    treasury.delegateTreasuryAmount = treasury.delegateTreasuryAmount.minus(event.params.amount);
-    treasury.delegateTreasuryNfts = remove<BigInt>(treasury.delegateTreasuryNfts, event.params.nfts);
 
     pool.totalCurrentTokenDelegatedTreasury = pool.totalCurrentTokenDelegatedTreasury.minus(event.params.amount);
     pool.totalCurrentNFTDelegatedTreasury = remove<BigInt>(pool.totalCurrentNFTDelegatedTreasury, event.params.nfts);
@@ -243,7 +232,6 @@ export function onDelegatedTreasury(event: DelegatedTreasury): void {
     }
   }
 
-  treasury.save();
   toVoterInPool.save();
   delegateHistory.save();
   pool.save();

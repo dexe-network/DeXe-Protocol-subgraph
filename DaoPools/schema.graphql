@@ -189,6 +189,8 @@ type VoterInPool @entity {
 
   proposals: [VoterInProposal!]!
   claimedDPs: [DistributionProposal!]!
+
+  treasuryDelegationHistory: [TreasuryDelegationHistory!]! @derivedFrom(field: "to")
 }
 
 # @notice The entity holds information about vote
@@ -297,23 +299,11 @@ type TreasuryDelegationHistory @entity(immutable: true) {
   pool: DaoPool!
   timestamp: BigInt!
 
-  to: Voter!
+  to: VoterInPool!
   type: BigInt!
 
   amount: BigInt!
   nfts: [BigInt!]!
-
-  treasury: VoterInPoolTreasury!
-}
-
-type VoterInPoolTreasury @entity {
-  id: Bytes! # voter address + pool address
-  voter: VoterInPool!
-
-  delegateTreasuryAmount: BigInt!
-  delegateTreasuryNfts: [BigInt!]!
-
-  history: [TreasuryDelegationHistory!]! @derivedFrom(field: "treasury")
 }
 
 # @notice The entity holds historical information proposal settings
