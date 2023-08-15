@@ -1,5 +1,5 @@
 import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { pushUnique } from "@dlsl/graph-modules";
+import { pushUnique } from "@solarity/graph-lib";
 import { Bought, TierCreated, Whitelisted } from "../../generated/templates/TokenSale/TokenSaleProposal";
 import { getDaoPool } from "../entities/DaoPool";
 import { getTokenSale } from "../entities/TokenSale";

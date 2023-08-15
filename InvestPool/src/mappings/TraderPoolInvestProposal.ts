@@ -1,5 +1,5 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
-import { upcastCopy } from "@dlsl/graph-modules";
+import { upcastCopy } from "@solarity/graph-lib";
 import {
   ProposalCreated,
   ProposalWithdrawn,

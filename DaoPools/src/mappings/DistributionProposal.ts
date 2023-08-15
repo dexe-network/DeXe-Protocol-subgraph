@@ -1,5 +1,5 @@
 import { Address, BigInt, log } from "@graphprotocol/graph-ts";
-import { pushUnique } from "@dlsl/graph-modules";
+import { pushUnique } from "@solarity/graph-lib";
 import { PriceFeed } from "../../generated/templates/DistributionProposal/PriceFeed";
 import { DistributionProposalClaimed } from "../../generated/templates/DistributionProposal/DistributionProposal";
 import { getDaoPool } from "../entities/DaoPool";
