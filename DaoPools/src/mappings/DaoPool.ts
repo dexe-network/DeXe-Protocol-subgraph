@@ -324,8 +324,6 @@ export function onRewardCredited(event: RewardCredited): void {
       voterInProposal.unclaimedRewardUSDAgainst = voterInProposal.unclaimedRewardUSDAgainst.plus(usdAmount);
     }
 
-    voter.totalUnclaimedUSD = voter.totalUnclaimedUSD.plus(usdAmount);
-
     voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
     voterInPool.proposalsCount = BigInt.fromI32(voterInPool.proposals.length);
 
@@ -337,6 +335,8 @@ export function onRewardCredited(event: RewardCredited): void {
 
     voterOffchain.save();
   }
+
+  voter.totalUnclaimedUSD = voter.totalUnclaimedUSD.plus(usdAmount);
 
   recalculateAPR(voterInPool, usdAmount, event.block.timestamp);
 

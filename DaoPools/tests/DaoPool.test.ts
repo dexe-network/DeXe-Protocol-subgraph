@@ -1338,6 +1338,8 @@ describe("DaoPool", () => {
 
     onRewardCredited(event);
 
+    assert.fieldEquals("Voter", sender.toHexString(), "totalUnclaimedUSD", "200");
+
     assert.fieldEquals("VoterOffchain", sender.concat(contractSender).toHexString(), "rewardUSD", "200");
     assert.fieldEquals("VoterOffchain", sender.concat(contractSender).toHexString(), "claimedRewardUSD", "0");
   });
