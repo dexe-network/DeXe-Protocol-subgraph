@@ -1,5 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { pushUnique } from "@dlsl/graph-modules";
+import { pushUnique } from "@solarity/graph-lib";
 import { Deposited, Paidout, Withdrawn } from "../../generated/Insurance/Insurance";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getInsuranceStake } from "../entities/insurance/InsuranceStake";

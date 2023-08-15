@@ -10,7 +10,7 @@ import { getProposalVest } from "../entities/trader-pool/proposal/ProposalVest";
 import { getProposalContract } from "../entities/trader-pool/proposal/ProposalContract";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { Address, Bytes, BigInt, log } from "@graphprotocol/graph-ts";
-import { upcastCopy } from "@dlsl/graph-modules";
+import { upcastCopy } from "@solarity/graph-lib";
 import { PriceFeed } from "../../generated/templates/TraderPool/PriceFeed";
 import { PRICE_FEED_ADDRESS } from "../entities/global/globals";
 import { getInvestor } from "../entities/trader-pool/Investor";

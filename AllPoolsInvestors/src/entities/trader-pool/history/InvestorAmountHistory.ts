@@ -1,7 +1,7 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { DAY, MAX_SEARCH_DEPTH } from "../../global/globals";
 import { Investor, InvestorAmountHistory } from "../../../../generated/schema";
-import { findPrevHistory } from "@dlsl/graph-modules";
+import { findPrevHistory } from "@solarity/graph-lib";
 
 export function getInvestorAmountHistory(investor: Investor, timestamp: BigInt): InvestorAmountHistory {
   let day = timestamp.div(BigInt.fromI32(DAY));

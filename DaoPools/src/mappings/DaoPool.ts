@@ -1,5 +1,5 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
-import { pushUnique, remove } from "@dlsl/graph-modules";
+import { pushUnique, remove } from "@solarity/graph-lib";
 import {
   Delegated,
   DelegatedTreasury,

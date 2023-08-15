@@ -8,7 +8,7 @@ import {
 } from "../../generated/templates/TraderPool/TraderPool";
 import { getTraderPool } from "../entities/trader-pool/TraderPool";
 import { Address, BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts";
-import { pushUnique, remove, upcastCopy } from "@dlsl/graph-modules";
+import { pushUnique, remove, upcastCopy } from "@solarity/graph-lib";
 import { getInvestor } from "../entities/trader-pool/Investor";
 import { getTraderPoolHistory } from "../entities/trader-pool/history/TraderPoolHistory";
 import { getInvestorPoolPosition } from "../entities/trader-pool/InvestorPoolPosition";
