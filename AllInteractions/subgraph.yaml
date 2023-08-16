@@ -22,7 +22,7 @@ dataSources:
       eventHandlers:
         - event: TraderPoolDeployed(string,string,string,address,address,address,address,uint256,string)
           handler: onTraderPoolDeployed
-        - event: DaoPoolDeployed(string,address,address,address,address,address,address,address)
+        - event: DaoPoolDeployed(string,address,address,address,address,address,address,address,address)
           handler: onDaoPoolDeployed
 
   - kind: ethereum/contract
@@ -184,7 +184,7 @@ templates:
           handler: onProposalCreated
         - event: Delegated(address,address,uint256,uint256[],bool)
           handler: onDelegated
-        - event: Voted(uint256,address,uint256,uint256,bool)
+        - event: Voted(uint256,address,uint8,uint256,bool)
           handler: onVoted
         - event: ProposalExecuted(uint256,bool,address)
           handler: onProposalExecuted
