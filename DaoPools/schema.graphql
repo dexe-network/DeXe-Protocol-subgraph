@@ -39,6 +39,7 @@ type DaoPool @entity {
 
   erc20Token: Bytes!
   erc721Token: Bytes!
+  nftMultiplier: Bytes!
 
   votersCount: BigInt!
   creationTime: BigInt!
