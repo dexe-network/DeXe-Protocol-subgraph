@@ -138,6 +138,7 @@ export function onDelegated(event: Delegated): void {
 
     if (pair.delegateAmount.equals(BigInt.zero()) && pair.delegateNfts.length == 0) {
       toVoterInPool.currentDelegatorsCount = toVoterInPool.currentDelegatorsCount.minus(BigInt.fromI32(1));
+      to.delegatorsCount = to.delegatorsCount.minus(BigInt.fromI32(1));
     }
 
     pool.totalCurrentTokenDelegated = pool.totalCurrentTokenDelegated.minus(event.params.amount);
