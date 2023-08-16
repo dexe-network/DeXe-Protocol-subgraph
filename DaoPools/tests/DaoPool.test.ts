@@ -41,7 +41,6 @@ import {
   onRequested,
   onDelegatedTreasury,
 } from "../src/mappings/DaoPool";
-import { ProposalType } from "../src/entities/global/ProposalTypes";
 import {
   PRICE_FEED_ADDRESS,
   REWARD_TYPE_CREATE,
@@ -50,11 +49,12 @@ import {
   REWARD_TYPE_VOTE_FOR,
   REWARD_TYPE_VOTE_FOR_DELEGATED,
 } from "../src/entities/global/globals";
-import { ProposalSettings, TreasuryDelegationHistory } from "../generated/schema";
+import { ProposalSettings } from "../generated/schema";
 import { createSetERC20 } from "./UserKeeper.test";
 import { getUserKeeperContract } from "../src/entities/UserKeeperContract";
 import { onSetERC20 } from "../src/mappings/UserKeeper";
 import { DelegationType } from "../src/entities/global/DelegationTypeEnum";
+import { getDaoPool } from "../src/entities/DaoPool";
 import { VoteType, getEnumBigInt } from "../src/entities/global/VoteTypeEnum";
 import { TreasuryDelegationType } from "../src/entities/global/TreasuryDelegationTypeEnum";
 
@@ -540,9 +540,13 @@ describe("DaoPool", () => {
   });
 
   test("should handle Delegated", () => {
+    let pool = getDaoPool(contractSender);
+    pool.erc20Token = Bytes.fromHexString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676");
+    pool.save();
+
     let from = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
     let to = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
-    let amount = BigInt.fromI32(100).pow(18);
+    let amount = BigInt.fromI32(1000);
     let nfts = [BigInt.fromI32(1), BigInt.fromI32(2)];
 
     let event = createDelegated(from, to, amount, nfts, true, contractSender, block, tx);
@@ -550,7 +554,9 @@ describe("DaoPool", () => {
     onDelegated(event);
 
     assert.fieldEquals("Voter", from.toHexString(), "id", from.toHexString());
+    assert.fieldEquals("Voter", from.toHexString(), "totalDelegatedUSD", "200");
     assert.fieldEquals("Voter", to.toHexString(), "id", to.toHexString());
+    assert.fieldEquals("Voter", to.toHexString(), "delegatorsCount", "1");
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "votersCount", "2");
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentTokenDelegated", amount.toString());
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentNFTDelegated", `[${nfts[0]}, ${nfts[1]}]`);
@@ -623,10 +629,14 @@ describe("DaoPool", () => {
   });
 
   test("should handle Undelegated", () => {
+    let pool = getDaoPool(contractSender);
+    pool.erc20Token = Bytes.fromHexString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676");
+    pool.save();
+
     let from = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
     let to = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
-    let amount1 = BigInt.fromI32(100).pow(18);
-    let amount2 = BigInt.fromI32(50).pow(18);
+    let amount1 = BigInt.fromI32(1000);
+    let amount2 = BigInt.fromI32(500);
     let nfts1 = [BigInt.fromI32(1), BigInt.fromI32(2)];
     let nfts2 = [BigInt.fromI32(1)];
 
@@ -636,6 +646,10 @@ describe("DaoPool", () => {
     onDelegated(event1);
     onDelegated(event2);
 
+    assert.fieldEquals("Voter", from.toHexString(), "id", from.toHexString());
+    assert.fieldEquals("Voter", from.toHexString(), "totalDelegatedUSD", "100");
+    assert.fieldEquals("Voter", to.toHexString(), "id", to.toHexString());
+    assert.fieldEquals("Voter", to.toHexString(), "delegatorsCount", "1");
     assert.fieldEquals(
       "DaoPool",
       contractSender.toHexString(),
@@ -1397,6 +1411,8 @@ describe("DaoPool", () => {
 
     onRewardCredited(event);
 
+    assert.fieldEquals("Voter", sender.toHexString(), "totalUnclaimedUSD", "200");
+
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
@@ -1681,6 +1697,8 @@ describe("DaoPool", () => {
 
     onRewardCredited(event);
 
+    assert.fieldEquals("Voter", sender.toHexString(), "totalUnclaimedUSD", "200");
+
     assert.fieldEquals("VoterOffchain", sender.concat(contractSender).toHexString(), "rewardUSD", "200");
     assert.fieldEquals("VoterOffchain", sender.concat(contractSender).toHexString(), "claimedRewardUSD", "0");
   });
@@ -1701,8 +1719,9 @@ describe("DaoPool", () => {
 
     onDeposited(event);
 
-    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalLockedFundsUSD", "200");
+    assert.fieldEquals("Voter", sender.toHexString(), "totalLockedFundsUSD", "200");
 
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalLockedFundsUSD", "200");
     assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "0");
   });
 
@@ -1727,8 +1746,9 @@ describe("DaoPool", () => {
 
     onWithdrawn(event2);
 
-    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalLockedFundsUSD", "100");
+    assert.fieldEquals("Voter", sender.toHexString(), "totalLockedFundsUSD", "100");
 
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalLockedFundsUSD", "100");
     assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "0");
   });
 
@@ -1823,10 +1843,14 @@ describe("DaoPool", () => {
   });
 
   test("should handle Requested event", () => {
+    let pool = getDaoPool(contractSender);
+    pool.erc20Token = Bytes.fromHexString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676");
+    pool.save();
+
     let from = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
     let to = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
 
-    let amount = BigInt.fromI32(100).pow(18);
+    let amount = BigInt.fromI32(1000);
     let nfts = [BigInt.fromI32(1)];
 
     let delegatedEvent = createDelegated(from, to, amount, nfts, true, contractSender, block, tx);

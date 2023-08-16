@@ -96,11 +96,15 @@ export function onDelegated(event: Delegated): void {
 
   let pair = getVoterInPoolPair(fromVoterInPool, toVoterInPool);
 
+  const usdAmount = getUSDValue(pool.erc20Token, event.params.amount);
+
   delegateHistory.pair = pair.id;
 
   if (event.params.isDelegate) {
     const amountToUnrequest = pair.requestAmount.lt(event.params.amount) ? pair.requestAmount : event.params.amount;
     const availableAmount = event.params.amount.minus(amountToUnrequest);
+
+    from.totalDelegatedUSD = from.totalDelegatedUSD.plus(usdAmount);
 
     toVoterInPool.receivedDelegation = toVoterInPool.receivedDelegation.plus(event.params.amount);
     toVoterInPool.receivedNFTDelegation = pushUnique<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
@@ -108,6 +112,7 @@ export function onDelegated(event: Delegated): void {
 
     if (pair.delegateAmount.equals(BigInt.zero()) && pair.delegateNfts.length == 0) {
       toVoterInPool.currentDelegatorsCount = toVoterInPool.currentDelegatorsCount.plus(BigInt.fromI32(1));
+      to.delegatorsCount = to.delegatorsCount.plus(BigInt.fromI32(1));
     }
 
     pair.delegateAmount = pair.delegateAmount.plus(availableAmount);
@@ -122,6 +127,12 @@ export function onDelegated(event: Delegated): void {
     toVoterInPool.requestedNft = remove<BigInt>(toVoterInPool.requestedNft, event.params.nfts);
     toVoterInPool.requestedNftCount = BigInt.fromI32(toVoterInPool.requestedNft.length);
   } else {
+    if (usdAmount.gt(from.totalDelegatedUSD)) {
+      from.totalDelegatedUSD = BigInt.zero();
+    } else {
+      from.totalDelegatedUSD = from.totalDelegatedUSD.minus(usdAmount);
+    }
+
     toVoterInPool.receivedDelegation = toVoterInPool.receivedDelegation.minus(event.params.amount);
     toVoterInPool.receivedNFTDelegation = remove<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
     toVoterInPool.receivedNFTDelegationCount = BigInt.fromI32(toVoterInPool.receivedNFTDelegation.length);
@@ -131,6 +142,7 @@ export function onDelegated(event: Delegated): void {
 
     if (pair.delegateAmount.equals(BigInt.zero()) && pair.delegateNfts.length == 0) {
       toVoterInPool.currentDelegatorsCount = toVoterInPool.currentDelegatorsCount.minus(BigInt.fromI32(1));
+      to.delegatorsCount = to.delegatorsCount.minus(BigInt.fromI32(1));
     }
 
     pool.totalCurrentTokenDelegated = pool.totalCurrentTokenDelegated.minus(event.params.amount);
@@ -414,6 +426,8 @@ export function onRewardCredited(event: RewardCredited): void {
     voterOffchain.save();
   }
 
+  voter.totalUnclaimedUSD = voter.totalUnclaimedUSD.plus(usdAmount);
+
   recalculateAPR(voterInPool, usdAmount, event.block.timestamp);
 
   voterInPool.save();
@@ -425,10 +439,10 @@ export function onDeposited(event: Deposited): void {
   let pool = getDaoPool(event.address);
   let voter = getVoter(event.params.sender);
   let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
+  let usdAmount = getUSDValue(pool.erc20Token, event.params.amount);
 
-  voterInPool.totalLockedFundsUSD = voterInPool.totalLockedFundsUSD.plus(
-    getUSDValue(pool.erc20Token, event.params.amount)
-  );
+  voter.totalLockedFundsUSD = voter.totalLockedFundsUSD.plus(usdAmount);
+  voterInPool.totalLockedFundsUSD = voterInPool.totalLockedFundsUSD.plus(usdAmount);
 
   voterInPool.save();
   voter.save();
@@ -441,6 +455,12 @@ export function onWithdrawn(event: Withdrawn): void {
   let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
 
   let usdAmount = getUSDValue(pool.erc20Token, event.params.amount);
+
+  if (usdAmount.gt(voter.totalLockedFundsUSD)) {
+    voter.totalLockedFundsUSD = BigInt.zero();
+  } else {
+    voter.totalLockedFundsUSD = voter.totalLockedFundsUSD.minus(usdAmount);
+  }
 
   if (usdAmount.gt(voterInPool.totalLockedFundsUSD)) {
     voterInPool.totalLockedFundsUSD = BigInt.zero();

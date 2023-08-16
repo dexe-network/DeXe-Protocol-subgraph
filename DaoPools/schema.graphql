@@ -84,10 +84,16 @@ type Voter @entity {
   id: Bytes! # voter address
   totalProposalsCreated: BigInt!
   totalClaimedUSD: BigInt!
+  totalUnclaimedUSD: BigInt!
+  totalDelegatedUSD: BigInt!
+  totalLockedFundsUSD: BigInt!
   totalVotedProposals: BigInt!
   totalVotes: BigInt!
 
+  delegatorsCount: BigInt!
+
   pools: [VoterInPool!]! @derivedFrom(field: "voter")
+  createdProposals: [Proposal!]! @derivedFrom(field: "creator")
 }
 
 # @notice The entity holds information about proposal
@@ -110,7 +116,7 @@ type Proposal @entity {
   isDP: Boolean!
   rewardToken: Bytes!
 
-  creator: Bytes!
+  creator: Voter!
 
   isFor: Boolean!
   executor: Bytes!

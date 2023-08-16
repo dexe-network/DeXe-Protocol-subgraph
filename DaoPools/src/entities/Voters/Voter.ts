@@ -9,8 +9,12 @@ export function getVoter(voterAddress: Address): Voter {
 
     voter.totalProposalsCreated = BigInt.zero();
     voter.totalClaimedUSD = BigInt.zero();
+    voter.totalUnclaimedUSD = BigInt.zero();
+    voter.totalDelegatedUSD = BigInt.zero();
+    voter.totalLockedFundsUSD = BigInt.zero();
     voter.totalVotedProposals = BigInt.zero();
     voter.totalVotes = BigInt.zero();
+    voter.delegatorsCount = BigInt.zero();
   }
 
   return voter;
