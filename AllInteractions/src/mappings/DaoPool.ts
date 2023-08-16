@@ -10,6 +10,7 @@ import {
   Voted,
   Withdrawn,
   Requested,
+  DelegatedTreasury,
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPoolDelegate } from "../entities/dao-pool/DaoPoolDelegate";
 import { getDaoPoolVest } from "../entities/dao-pool/DaoPoolVest";
@@ -103,7 +104,8 @@ export function onVoted(event: Voted): void {
   let voted = getDaoPoolVote(
     event.transaction.hash,
     event.address,
-    event.params.personalVote.plus(event.params.delegatedVote),
+    getEnumBigInt(event.params.voteType),
+    event.params.amount,
     transaction.interactionsCount,
     event.params.isVoteFor
   );

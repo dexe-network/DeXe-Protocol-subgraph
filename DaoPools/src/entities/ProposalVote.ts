@@ -7,8 +7,8 @@ export function getProposalVote(
   hash: Bytes,
   voterInProposal: VoterInProposal,
   timestamp: BigInt,
-  personalAmount: BigInt,
-  delegatedAmount: BigInt,
+  voteType: BigInt,
+  amount: BigInt,
   isVoteFor: boolean
 ): ProposalVote {
   let counter = getInteractionCount(hash);
@@ -20,8 +20,8 @@ export function getProposalVote(
     proposalVote.hash = hash;
     proposalVote.timestamp = timestamp;
 
-    proposalVote.delegatedAmount = delegatedAmount;
-    proposalVote.personalAmount = personalAmount;
+    proposalVote.voteType = voteType;
+    proposalVote.amount = amount;
 
     proposalVote.isVoteFor = isVoteFor;
 

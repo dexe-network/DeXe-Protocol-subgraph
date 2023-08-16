@@ -330,6 +330,7 @@ type DaoPoolVote @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
   pool: Bytes!
 
+  voteType: BigInt!
   isVoteFor: Boolean!
   amount: BigInt!
 

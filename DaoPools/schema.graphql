@@ -49,6 +49,9 @@ type DaoPool @entity {
   totalCurrentTokenDelegated: BigInt!
   totalCurrentNFTDelegated: [BigInt!]!
 
+  totalCurrentTokenDelegatedTreasury: BigInt!
+  totalCurrentNFTDelegatedTreasury: [BigInt!]!
+
   totalCurrentTokenDelegatees: BigInt!
   totalCurrentNFTDelegatees: BigInt!
 
@@ -156,6 +159,10 @@ type VoterInPool @entity {
   receivedNFTDelegation: [BigInt!]!
   receivedNFTDelegationCount: BigInt!
 
+  receivedTreasuryDelegation: BigInt!
+  receivedTreasuryNFTDelegation: [BigInt!]!
+  receivedTreasuryNFTDelegationCount: BigInt!
+
   requestedTokensAmount: BigInt!
   requestedNft: [BigInt!]!
   requestedNftCount: BigInt!
@@ -182,6 +189,8 @@ type VoterInPool @entity {
 
   proposals: [VoterInProposal!]!
   claimedDPs: [DistributionProposal!]!
+
+  treasuryDelegationHistory: [TreasuryDelegationHistory!]! @derivedFrom(field: "to")
 }
 
 # @notice The entity holds information about vote
@@ -200,8 +209,9 @@ type ProposalVote @entity(immutable: true) {
 
   isVoteFor: Boolean!
 
-  personalAmount: BigInt!
-  delegatedAmount: BigInt!
+  voteType: BigInt!
+
+  amount: BigInt!
 
   voter: VoterInProposal!
   proposal: Proposal!
@@ -231,6 +241,9 @@ type VoterInProposal @entity {
 
   totalDelegatedVoteForAmount: BigInt!
   totalDelegatedVoteAgainstAmount: BigInt!
+
+  totalTreasuryVoteForAmount: BigInt!
+  totalTreasuryVoteAgainstAmount: BigInt!
 
   unclaimedRewardUSDFor: BigInt!
   unclaimedRewardUSDAgainst: BigInt!
@@ -279,6 +292,18 @@ type DelegationHistory @entity(immutable: true) {
   nfts: [BigInt!]!
 
   pair: VoterInPoolPair!
+}
+
+type TreasuryDelegationHistory @entity(immutable: true) {
+  id: Bytes! # tx hash + counter
+  pool: DaoPool!
+  timestamp: BigInt!
+
+  to: VoterInPool!
+  type: BigInt!
+
+  amount: BigInt!
+  nfts: [BigInt!]!
 }
 
 # @notice The entity holds historical information proposal settings

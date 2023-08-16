@@ -5,6 +5,37 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "nfts",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isDelegate",
+        "type": "bool"
+      }
+    ],
+    "name": "DelegatedTreasury",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "user",
         "type": "address"
       },
@@ -147,14 +178,14 @@
       },
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "personalVote",
-        "type": "uint256"
+        "internalType": "enum IGovPool.VoteType",
+        "name": "voteType",
+        "type": "uint8"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "delegatedVote",
+        "name": "amount",
         "type": "uint256"
       },
       {

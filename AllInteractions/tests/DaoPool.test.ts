@@ -36,6 +36,7 @@ import {
   onOffchainResultsSaved,
 } from "../src/mappings/DaoPool";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
+import { VoteType, getEnumBigInt } from "../../DaoPools/src/entities/global/VoteTypeEnum";
 
 function createProposalCreated(
   proposalId: BigInt,
@@ -120,8 +121,8 @@ function createRequested(
 function createVoted(
   proposalId: BigInt,
   sender: Address,
-  personalVote: BigInt,
-  delegatedVote: BigInt,
+  voteType: BigInt,
+  amount: BigInt,
   isVoteFor: boolean,
   contractSender: Address,
   block: ethereum.Block,
@@ -132,8 +133,8 @@ function createVoted(
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
-  event.parameters.push(new ethereum.EventParam("personalVote", ethereum.Value.fromUnsignedBigInt(personalVote)));
-  event.parameters.push(new ethereum.EventParam("delegatedVote", ethereum.Value.fromUnsignedBigInt(delegatedVote)));
+  event.parameters.push(new ethereum.EventParam("voteType", ethereum.Value.fromUnsignedBigInt(voteType)));
+  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
   event.parameters.push(new ethereum.EventParam("isVoteFor", ethereum.Value.fromBoolean(isVoteFor)));
 
   event.block = block;
@@ -395,21 +396,17 @@ describe("DaoPool", () => {
   test("should handle Voted", () => {
     let proposalId = BigInt.fromI32(1);
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
-    let personalVote = BigInt.fromI32(1000);
-    let delegatedVote = BigInt.fromI32(100);
+    let voteType = getEnumBigInt(VoteType.PERSONAL);
+    let amount = BigInt.fromI32(1000);
     let isVoteFor = true;
 
-    let event = createVoted(proposalId, sender, personalVote, delegatedVote, isVoteFor, contractSender, block, tx);
+    let event = createVoted(proposalId, sender, voteType, amount, isVoteFor, contractSender, block, tx);
 
     onVoted(event);
 
     assert.fieldEquals("DaoPoolVote", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
-    assert.fieldEquals(
-      "DaoPoolVote",
-      tx.hash.concatI32(0).toHexString(),
-      "amount",
-      personalVote.plus(delegatedVote).toString()
-    );
+    assert.fieldEquals("DaoPoolVote", tx.hash.concatI32(0).toHexString(), "voteType", voteType.toString());
+    assert.fieldEquals("DaoPoolVote", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
     assert.fieldEquals("DaoPoolVote", tx.hash.concatI32(0).toHexString(), "isVoteFor", isVoteFor.toString());
 
     assertTransaction(
