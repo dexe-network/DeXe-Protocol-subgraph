@@ -10,8 +10,10 @@ import { getDaoValidatorProposalExecute } from "../entities/dao-pool/DaoValidato
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getTransaction } from "../entities/transaction/Transaction";
 import { push } from "../helpers/ArrayHelper";
+import { getPool } from "../entities/dao-pool/Pool";
 
 export function onVoted(event: Voted): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
@@ -38,6 +40,7 @@ export function onVoted(event: Voted): void {
 }
 
 export function onInternalProposalCreated(event: InternalProposalCreated): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
@@ -62,6 +65,7 @@ export function onInternalProposalCreated(event: InternalProposalCreated): void 
 }
 
 export function onInternalProposalExecuted(event: InternalProposalExecuted): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,

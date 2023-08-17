@@ -1,6 +1,6 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { Bought, TierCreated, Whitelisted } from "../generated/templates/TokenSale/TokenSaleProposal";
-import { afterAll, afterEach, assert, beforeAll, describe, newMockEvent, test } from "matchstick-as";
+import { afterEach, assert, beforeAll, describe, newMockEvent, test } from "matchstick-as";
 import { getBlock, getNextBlock, getNextTx, getTransaction } from "./utils";
 import { getDaoPool } from "../src/entities/DaoPool";
 import { getTokenSale } from "../src/entities/TokenSale";

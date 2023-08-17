@@ -10,7 +10,6 @@ import {
   Voted,
   Withdrawn,
   Requested,
-  DelegatedTreasury,
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPoolDelegate } from "../entities/dao-pool/DaoPoolDelegate";
 import { getDaoPoolVest } from "../entities/dao-pool/DaoPoolVest";
@@ -23,8 +22,10 @@ import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTy
 import { getTransaction } from "../entities/transaction/Transaction";
 import { getDaoPoolOffchainResult } from "../entities/dao-pool/DaoOffchainResults";
 import { push } from "../helpers/ArrayHelper";
+import { getPool } from "../entities/dao-pool/Pool";
 
 export function onProposalCreated(event: ProposalCreated): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
@@ -47,6 +48,7 @@ export function onProposalCreated(event: ProposalCreated): void {
 }
 
 export function onDelegated(event: Delegated): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
@@ -72,6 +74,7 @@ export function onDelegated(event: Delegated): void {
 }
 
 export function onRequested(event: Requested): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
@@ -94,6 +97,7 @@ export function onRequested(event: Requested): void {
 }
 
 export function onVoted(event: Voted): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
@@ -118,6 +122,7 @@ export function onVoted(event: Voted): void {
 }
 
 export function onProposalExecuted(event: ProposalExecuted): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
@@ -140,6 +145,7 @@ export function onProposalExecuted(event: ProposalExecuted): void {
 }
 
 export function onRewardClaimed(event: RewardClaimed): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
@@ -162,6 +168,7 @@ export function onRewardClaimed(event: RewardClaimed): void {
 }
 
 export function onDeposited(event: Deposited): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
@@ -187,6 +194,7 @@ export function onDeposited(event: Deposited): void {
 }
 
 export function onWithdrawn(event: Withdrawn): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
@@ -212,6 +220,7 @@ export function onWithdrawn(event: Withdrawn): void {
 }
 
 export function onMovedToValidators(event: MovedToValidators): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
@@ -236,6 +245,7 @@ export function onMovedToValidators(event: MovedToValidators): void {
 }
 
 export function onOffchainResultsSaved(event: OffchainResultsSaved): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,

@@ -1,5 +1,5 @@
 import { Address, Bytes } from "@graphprotocol/graph-ts";
-import { DaoPool, TokenSale } from "../../generated/schema";
+import { TokenSale } from "../../generated/schema";
 
 export function getTokenSale(
   tokenSaleAddress: Address,

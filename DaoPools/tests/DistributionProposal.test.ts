@@ -1,14 +1,5 @@
 import { Address, ethereum, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import {
-  assert,
-  beforeAll,
-  beforeEach,
-  createMockedFunction,
-  describe,
-  logStore,
-  newMockEvent,
-  test,
-} from "matchstick-as";
+import { assert, beforeEach, createMockedFunction, describe, newMockEvent, test } from "matchstick-as";
 import { DistributionProposalClaimed } from "../generated/templates/DistributionProposal/DistributionProposal";
 import { getBlock, getTransaction } from "./utils";
 import { onDistributionProposalClaimed } from "../src/mappings/DistributionProposal";

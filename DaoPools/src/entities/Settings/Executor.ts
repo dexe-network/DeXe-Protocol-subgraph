@@ -1,6 +1,5 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { DaoPool, Executor, Proposal } from "../../../generated/schema";
-import { getProposalSettings } from "./ProposalSettings";
+import { Address, Bytes } from "@graphprotocol/graph-ts";
+import { DaoPool, Executor } from "../../../generated/schema";
 
 export function getExecutor(pool: DaoPool, executorAddress: Address): Executor {
   let id = pool.id.concat(executorAddress);

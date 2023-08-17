@@ -1,16 +1,5 @@
 import { Address, ethereum, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import {
-  afterEach,
-  assert,
-  beforeAll,
-  beforeEach,
-  clearStore,
-  createMockedFunction,
-  describe,
-  logStore,
-  newMockEvent,
-  test,
-} from "matchstick-as/assembly/index";
+import { afterEach, assert, beforeEach, clearStore, describe, newMockEvent, test } from "matchstick-as/assembly/index";
 import {
   onChangedValidatorsBalances,
   onExternalProposalCreated,
@@ -26,7 +15,7 @@ import {
   InternalProposalExecuted,
 } from "../generated/templates/DaoValidators/DaoValidators";
 
-import { getBlock, getNextTx, getTransaction } from "./utils";
+import { getBlock, getTransaction } from "./utils";
 import { DaoPoolDeployed } from "../generated/PoolFactory/PoolFactory";
 import { onDeployed } from "../src/mappings/PoolFactory";
 

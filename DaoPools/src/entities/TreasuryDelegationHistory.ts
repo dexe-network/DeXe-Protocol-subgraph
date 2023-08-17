@@ -1,5 +1,5 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { DaoPool, TreasuryDelegationHistory, Voter, VoterInPool } from "../../generated/schema";
+import { DaoPool, TreasuryDelegationHistory, VoterInPool } from "../../generated/schema";
 import { getInteractionCount } from "./global/InteractionCount";
 import { increaseCounter } from "../helpers/IncreaseCounter";
 import { TreasuryDelegationType, getEnumBigInt } from "./global/TreasuryDelegationTypeEnum";

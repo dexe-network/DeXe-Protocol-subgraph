@@ -1,5 +1,5 @@
 import { Address, ethereum, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { assert, beforeAll, afterEach, describe, newMockEvent, test } from "matchstick-as";
+import { assert, beforeAll, describe, newMockEvent, test } from "matchstick-as";
 import { TagsAdded, Transfer } from "../generated/templates/ERC721Expert/ERC721Expert";
 import { getBlock, getTransaction } from "./utils";
 import { onTagsAdded, onTransfer } from "../src/mappings/ERC721Expert";

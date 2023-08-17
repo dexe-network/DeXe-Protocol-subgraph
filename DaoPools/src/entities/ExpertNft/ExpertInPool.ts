@@ -1,5 +1,5 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { DaoPool, Expert, ExpertInPool } from "../../../generated/schema";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Expert, ExpertInPool } from "../../../generated/schema";
 
 export function getExpertInPool(expert: Expert, pool: Bytes, tokenId: BigInt = BigInt.zero()): ExpertInPool {
   const id = expert.id.concat(pool);
