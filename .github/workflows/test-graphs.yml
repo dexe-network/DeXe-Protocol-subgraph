@@ -27,4 +27,4 @@ jobs:
         run: npm run install-all
 
       - name: Run tests
-        run: npm run compile-all && npm run test-all
+        run: npm run codegen-all && npm run test-all

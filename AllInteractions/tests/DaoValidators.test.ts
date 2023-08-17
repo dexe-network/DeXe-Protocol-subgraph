@@ -1,28 +1,13 @@
-import { Address, ethereum, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
-import {
-  afterEach,
-  assert,
-  beforeAll,
-  beforeEach,
-  clearStore,
-  createMockedFunction,
-  describe,
-  logStore,
-  newMockEvent,
-  test,
-} from "matchstick-as/assembly/index";
+import { Address, ethereum, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { afterEach, assert, clearStore, describe, newMockEvent, test } from "matchstick-as/assembly/index";
 import { onInternalProposalCreated, onInternalProposalExecuted, onVoted } from "../src/mappings/DaoValidators";
 import {
   Voted,
-  ChangedValidatorsBalances,
-  ExternalProposalCreated,
   InternalProposalCreated,
   InternalProposalExecuted,
 } from "../generated/templates/DaoValidators/DaoValidators";
 
 import { assertTransaction, getBlock, getNextTx, getTransaction } from "./utils";
-import { DaoPoolDeployed } from "../generated/PoolFactory/PoolFactory";
-import { onDaoPoolDeployed } from "../src/mappings/PoolFactory";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
 
 function createInternalProposalCreated(
@@ -114,6 +99,7 @@ describe("DaoValidators", () => {
 
     onInternalProposalCreated(event);
 
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
     assert.fieldEquals(
       "DaoValidatorProposalCreate",
       tx.hash.concatI32(0).toHexString(),
@@ -153,6 +139,7 @@ describe("DaoValidators", () => {
 
     onInternalProposalExecuted(event);
 
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
     assert.fieldEquals(
       "DaoValidatorProposalExecute",
       tx.hash.concatI32(1).toHexString(),
@@ -235,6 +222,7 @@ describe("DaoValidators", () => {
 
     onVoted(event);
 
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
     assert.fieldEquals(
       "DaoValidatorProposalVote",
       tx.hash.concatI32(0).toHexString(),

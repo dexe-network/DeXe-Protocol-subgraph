@@ -1,19 +1,9 @@
 import { Address, ethereum, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import {
-  afterEach,
-  assert,
-  beforeAll,
-  clearStore,
-  describe,
-  logStore,
-  newMockEvent,
-  test,
-} from "matchstick-as/assembly/index";
+import { afterEach, assert, clearStore, describe, newMockEvent, test } from "matchstick-as/assembly/index";
 import { assertTransaction, getBlock, getNextTx, getTransaction } from "./utils";
 import {
   Delegated,
   Deposited,
-  DPCreated,
   MovedToValidators,
   OffchainResultsSaved,
   ProposalCreated,
@@ -302,6 +292,7 @@ describe("DaoPool", () => {
 
     onProposalCreated(event);
 
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
     assert.fieldEquals("DaoProposalCreate", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals("DaoProposalCreate", tx.hash.concatI32(0).toHexString(), "proposalId", proposalId.toString());
 
@@ -325,6 +316,7 @@ describe("DaoPool", () => {
 
     onDelegated(event0);
 
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
     assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
 
@@ -341,6 +333,7 @@ describe("DaoPool", () => {
 
     onDelegated(event1);
 
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
     assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
 
@@ -364,6 +357,7 @@ describe("DaoPool", () => {
 
     onRequested(event0);
 
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
     assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
 
@@ -404,6 +398,7 @@ describe("DaoPool", () => {
 
     onVoted(event);
 
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
     assert.fieldEquals("DaoPoolVote", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals("DaoPoolVote", tx.hash.concatI32(0).toHexString(), "voteType", voteType.toString());
     assert.fieldEquals("DaoPoolVote", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
@@ -427,6 +422,7 @@ describe("DaoPool", () => {
 
     onProposalExecuted(event);
 
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
     assert.fieldEquals("DaoPoolExecute", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals("DaoPoolExecute", tx.hash.concatI32(0).toHexString(), "proposalId", proposalId.toString());
     assert.fieldEquals("DaoPoolExecute", tx.hash.concatI32(0).toHexString(), "transaction", tx.hash.toHexString());
@@ -479,6 +475,7 @@ describe("DaoPool", () => {
 
     onRewardClaimed(event);
 
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
     assert.fieldEquals("DaoPoolRewardClaim", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals(
       "DaoPoolRewardClaim",
@@ -541,6 +538,7 @@ describe("DaoPool", () => {
 
     onDeposited(event);
 
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
     assert.fieldEquals("DaoPoolVest", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals("DaoPoolVest", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
     assert.fieldEquals("DaoPoolVest", tx.hash.concatI32(0).toHexString(), "nfts", `[${nfts[0]}, ${nfts[1]}]`);
@@ -585,6 +583,7 @@ describe("DaoPool", () => {
 
     onWithdrawn(event);
 
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
     assert.fieldEquals("DaoPoolVest", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
     assert.fieldEquals("DaoPoolVest", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
     assert.fieldEquals("DaoPoolVest", tx.hash.concatI32(0).toHexString(), "nfts", `[${nfts[0]}, ${nfts[1]}]`);
@@ -628,6 +627,7 @@ describe("DaoPool", () => {
 
     onMovedToValidators(event);
 
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
     assert.fieldEquals(
       "DaoPoolMovedToValidators",
       tx.hash.concatI32(0).toHexString(),
@@ -687,6 +687,7 @@ describe("DaoPool", () => {
 
     onOffchainResultsSaved(event);
 
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
     assert.fieldEquals(
       "DaoPoolOffchainResultsSaved",
       tx.hash.concatI32(0).toHexString(),

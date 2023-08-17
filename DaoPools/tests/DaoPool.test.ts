@@ -6,7 +6,6 @@ import {
   clearStore,
   createMockedFunction,
   describe,
-  logStore,
   newMockEvent,
   test,
 } from "matchstick-as/assembly/index";

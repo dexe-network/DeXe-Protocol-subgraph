@@ -1,22 +1,3 @@
-####################################  Pool <-> Proposal  ####################################
-# @notice The entity holds information about trader pool
-# @param id forms from pool address
-# @param trader the address of trader
-# @param proposalContract the address of proposal contract
-type Pool @entity(immutable: true) {
-  id: Bytes! # pool address
-  trader: Bytes!
-  proposalContract: Bytes!
-}
-
-# @notice The entity holds information about proposal contract
-# @param id forms from proposal contract address
-# @param pool the address of pool
-type ProposalContract @entity(immutable: true) {
-  id: Bytes! # proposal contract address
-  pool: Bytes!
-}
-
 #################################### Transaction History ####################################
 
 # @noitce The entity holds information about Transaction
@@ -38,27 +19,6 @@ type Transaction @entity {
 
   interactionsCount: BigInt!
 
-  exchange: [Exchange!]! @derivedFrom(field: "transaction")
-  vest: [Vest!]! @derivedFrom(field: "transaction")
-  poolCreate: [PoolCreate!]! @derivedFrom(field: "transaction")
-
-  proposalEdit: [ProposalEdit!]! @derivedFrom(field: "transaction")
-
-  riskyProposalCreate: [RiskyProposalCreate!]! @derivedFrom(field: "transaction")
-  riskyProposalExchange: [RiskyProposalExchange!]! @derivedFrom(field: "transaction")
-  riskyProposalVest: [ProposalVest!]! @derivedFrom(field: "transaction")
-
-  investProposalClaimSupply: [InvestProposalClaimOrSupply!]! @derivedFrom(field: "transaction")
-  investProposalCreate: [InvestProposalCreate!]! @derivedFrom(field: "transaction")
-  investProposalWithdraw: [InvestProposalWithdraw!]! @derivedFrom(field: "transaction")
-  investProposalConvertToDividends: [InvestProposalConvertToDividends!]! @derivedFrom(field: "transaction")
-
-  insuranceStake: [InsuranceStake!]! @derivedFrom(field: "transaction")
-
-  getPerformanceFee: [GetPerformanceFee!]! @derivedFrom(field: "transaction")
-
-  onlyPool: [OnlyPool!]! @derivedFrom(field: "transaction")
-
   daoPoolCreate: [DaoPoolCreate!]! @derivedFrom(field: "transaction")
   daoPoolDelegate: [DaoPoolDelegate!]! @derivedFrom(field: "transaction")
   daoPoolVote: [DaoPoolVote!]! @derivedFrom(field: "transaction")
@@ -74,224 +34,12 @@ type Transaction @entity {
   daoValidatorProposalExecute: [DaoValidatorProposalExecute!]! @derivedFrom(field: "transaction")
 }
 
-# @notice The entity holds information about exchange
-# @param id forms from tx hash + interactionCount
-# @param pool the address of pool
-# @param fromToken the address of from token
-# @param toToken the address of to token
-# @param fromVolume the volume of from token
-# @param toVolume the volume of to token
-# @param transaction the transaction entity id
-type Exchange @entity(immutable: true) {
-  id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
-
-  fromToken: Bytes!
-  toToken: Bytes!
-
-  fromVolume: BigInt!
-  toVolume: BigInt!
-
-  transaction: Transaction!
-}
-
-# @notice The entity holds information about invest/divest in pool
-# @param id forms from tx hash + interactionCount
-# @param pool the address of pool
-# @param baseAmount the amount in base token
-# @param lpAmount the amount in lp token
-# @param transaction the transaction entity id
-type Vest @entity(immutable: true) {
-  id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
-  baseAmount: BigInt!
-  lpAmount: BigInt!
-
-  transaction: Transaction!
-}
-
-# @notice The entity holds information about pool creation
-# @param id forms from tx hash + interactionCount
-# @param pool the address of pool
-# @param symbol the string with pool's symbol
-# @param transaction the transaction entity id
-type PoolCreate @entity(immutable: true) {
-  id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
-  symbol: String!
-
-  transaction: Transaction!
-}
-# @notice The entity holds information about creation of risky proposal
-# @param id forms from tx hash + interactionCount
-# @param pool the address of pool
-# @param proposalId the internal id of proposal
-# @param token the address of token
-# @param transaction the transaction entity id
-type RiskyProposalCreate @entity(immutable: true) {
-  id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
-  proposalId: BigInt!
-  token: Bytes!
-
-  transaction: Transaction!
-}
-
-# @notice The entity holds information about changes in pool
-# @param id forms from tx hash + interactionCount
-# @param pool the address of pool
-# @param proposalId the internal id of proposal
-# @param transaction the transaction entity id
-type ProposalEdit @entity(immutable: true) {
-  id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
-  proposalId: BigInt!
-
-  transaction: Transaction!
-}
-
-# @notice The entity holds information about invest/divest in proposal
-# @param id forms from tx hash + interactionCount
-# @param pool the address of pool
-# @param proposalId the internal id of proposal
-# @param baseAmount the amount in base token
-# @param lp2Amount the amount in lp2 token
-# @param transaction the transaction entity id
-type ProposalVest @entity(immutable: true) {
-  id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
-  proposalId: BigInt!
-
-  baseAmount: BigInt!
-  lp2Amount: BigInt!
-
-  transaction: Transaction!
-}
-
-# @notice The entity holds information about exchange in risky proposal
-# @param id forms from tx hash + interactionCount
-# @param pool the address of pool
-# @param proposalId the internal id of proposal
-# @param fromToken the address of from token
-# @param toToken the address of to token
-# @param fromVolume the volume of from token
-# @param toVolume the volume of to token
-# @param transaction the transaction entity id
-type RiskyProposalExchange @entity(immutable: true) {
-  id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
-  proposalId: BigInt!
-
-  fromToken: Bytes!
-  toToken: Bytes!
-
-  fromVolume: BigInt!
-  toVolume: BigInt!
-
-  transaction: Transaction!
-}
-
-# @notice The entity holds information about creation of invest proposal
-# @param id forms from tx hash + interactionCount
-# @param pool the address of pool
-# @param proposalId the internal id of proposal
-# @param transaction the transaction entity id
-type InvestProposalCreate @entity(immutable: true) {
-  id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
-  proposalId: BigInt!
-
-  transaction: Transaction!
-}
-
-# @notice The entity holds information about withdraw in invest proposal
-# @param id forms from tx hash + interactionCount
-# @param pool the address of pool
-# @param proposalId the internal id of proposal
-# @param amount the amount of withdraw
-# @param transaction the transaction entity id
-type InvestProposalWithdraw @entity(immutable: true) {
-  id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
-  proposalId: BigInt!
-
-  amount: BigInt!
-
-  transaction: Transaction!
-}
-
-# @notice The entity holds information about claim/supply in invest proposal
-# @param id forms from tx hash + interactionCount
-# @param pool the address of pool
-# @param proposalId the internal id of proposal
-# @param tokens the tokens of claim/supply
-# @param amounts the amounts of claim/supply
-# @param transaction the transaction entity id
-type InvestProposalClaimOrSupply @entity(immutable: true) {
-  id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
-  proposalId: BigInt!
-
-  tokens: [Bytes!]!
-  amounts: [BigInt!]!
-
-  transaction: Transaction!
-}
-
-# @notice The entity holds information about convertions to dividends in invest proposal
-# @param id forms from tx hash + interactionCount
-# @param pool the address of pool
-# @param proposalId the internal id of proposal
-# @param amount the new invested amount
-# @param token the address of base token
-# @param transaction the transaction entity id
-type InvestProposalConvertToDividends @entity(immutable: true) {
-  id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
-  proposalId: BigInt!
-
-  amount: BigInt!
-  token: Bytes!
-
-  transaction: Transaction!
-}
-
-# @notice The entity holds information about stake/unstake in insurance
-# @param id forms from tx hash + interactionCount
-# @param amount the amount of stake
-# @param transaction the transaction entity id
-type InsuranceStake @entity(immutable: true) {
-  id: Bytes! # tx hash + interactionCount
-  amount: BigInt!
-
-  transaction: Transaction!
-}
-
-# @notice The entity holds information about getting performance fee
-# @param id forms from tx hash + interactionCount
-# @param baseAmount the amount in base token
-# @param lpAmount the amount in lp token
-# @param transaction the transaction entity id
-type GetPerformanceFee @entity(immutable: true) {
-  id: Bytes! # tx hash + interactionCount
-  baseAmount: BigInt!
-  lpAmount: BigInt!
-
-  transaction: Transaction!
-}
-
-# @notice The entity holds information about pool address of transaction
-# @param id forms from tx hash + interactionCount
-# @param pool the pool address
-# @param transaction the transaction entity id
-type OnlyPool @entity(immutable: true) {
-  id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
-
-  transaction: Transaction!
-}
-
 #################################### DAO interactions ####################################
+# @notice The entity holds information about dao pool
+# @param id forms from pool address
+type Pool @entity(immutable: true) {
+  id: Bytes! # pool address
+}
 
 # @notice The entity holds information about creation of dao pool
 # @param id forms from tx hash + interactionCount
@@ -300,7 +48,7 @@ type OnlyPool @entity(immutable: true) {
 # @param transaction the transaction entity id
 type DaoPoolCreate @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
+  pool: Pool!
   name: String!
 
   transaction: Transaction!
@@ -313,7 +61,7 @@ type DaoPoolCreate @entity(immutable: true) {
 # @param transaction the transaction entity id
 type DaoPoolDelegate @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
+  pool: Pool!
 
   amount: BigInt!
 
@@ -328,7 +76,7 @@ type DaoPoolDelegate @entity(immutable: true) {
 # @param transaction the transaction entity id
 type DaoPoolVote @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
+  pool: Pool!
 
   voteType: BigInt!
   isVoteFor: Boolean!
@@ -344,7 +92,7 @@ type DaoPoolVote @entity(immutable: true) {
 # @param transaction the transaction entity id
 type DaoProposalCreate @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
+  pool: Pool!
 
   proposalId: BigInt!
 
@@ -358,7 +106,7 @@ type DaoProposalCreate @entity(immutable: true) {
 # @param transaction the transaction entity id
 type DaoPoolExecute @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
+  pool: Pool!
 
   proposalId: BigInt!
 
@@ -372,7 +120,7 @@ type DaoPoolExecute @entity(immutable: true) {
 # @param transaction the transaction entity id
 type DaoPoolRewardClaim @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
-  pool: Bytes!
+  pool: Pool!
 
   proposalId: BigInt!
 
@@ -387,7 +135,7 @@ type DaoPoolRewardClaim @entity(immutable: true) {
 # @param transaction the transaction entity id
 type DaoPoolVest @entity(immutable: true) {
   id: Bytes!
-  pool: Bytes!
+  pool: Pool!
 
   nfts: [BigInt!]!
   amount: BigInt!
@@ -402,7 +150,7 @@ type DaoPoolVest @entity(immutable: true) {
 # @param transaction the transaction entity id
 type DaoPoolMovedToValidators @entity(immutable: true) {
   id: Bytes!
-  pool: Bytes!
+  pool: Pool!
 
   proposalId: BigInt!
 
@@ -415,7 +163,7 @@ type DaoPoolMovedToValidators @entity(immutable: true) {
 # @param transaction the transaction entity id
 type DaoPoolOffchainResultsSaved @entity(immutable: true) {
   id: Bytes!
-  pool: Bytes!
+  pool: Pool!
 
   transaction: Transaction!
 }
@@ -427,7 +175,7 @@ type DaoPoolOffchainResultsSaved @entity(immutable: true) {
 # @param transaction the transaction entity id
 type DaoValidatorProposalCreate @entity(immutable: true) {
   id: Bytes!
-  pool: Bytes!
+  pool: Pool!
   proposalId: BigInt!
 
   transaction: Transaction!
@@ -442,7 +190,7 @@ type DaoValidatorProposalCreate @entity(immutable: true) {
 # @param transaction the transaction entity id
 type DaoValidatorProposalVote @entity(immutable: true) {
   id: Bytes!
-  pool: Bytes!
+  pool: Pool!
   proposalId: BigInt!
 
   isVoteFor: Boolean!
@@ -458,7 +206,7 @@ type DaoValidatorProposalVote @entity(immutable: true) {
 # @param transaction the transaction entity id
 type DaoValidatorProposalExecute @entity(immutable: true) {
   id: Bytes!
-  pool: Bytes!
+  pool: Pool!
   proposalId: BigInt!
 
   transaction: Transaction!
