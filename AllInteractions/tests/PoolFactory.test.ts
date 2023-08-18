@@ -15,6 +15,8 @@ function createDaoPoolDeployed(
   govUserKeeper: Address,
   expertNft: Address,
   nftMultiplier: Address,
+  tokenSale: Address,
+  token: Address,
   sender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
@@ -22,14 +24,19 @@ function createDaoPoolDeployed(
   let event = changetype<DaoPoolDeployed>(newMockEvent());
   event.parameters = new Array();
 
+  let govPoolDeps = new ethereum.Tuple(5);
+  govPoolDeps[0] = ethereum.Value.fromAddress(settings);
+  govPoolDeps[1] = ethereum.Value.fromAddress(govUserKeeper);
+  govPoolDeps[2] = ethereum.Value.fromAddress(validators);
+  govPoolDeps[3] = ethereum.Value.fromAddress(expertNft);
+  govPoolDeps[4] = ethereum.Value.fromAddress(nftMultiplier);
+
   event.parameters.push(new ethereum.EventParam("name", ethereum.Value.fromString(name)));
   event.parameters.push(new ethereum.EventParam("govPool", ethereum.Value.fromAddress(govPool)));
-  event.parameters.push(new ethereum.EventParam("dp", ethereum.Value.fromAddress(dp)));
-  event.parameters.push(new ethereum.EventParam("validators", ethereum.Value.fromAddress(validators)));
-  event.parameters.push(new ethereum.EventParam("settings", ethereum.Value.fromAddress(settings)));
-  event.parameters.push(new ethereum.EventParam("govUserKeeper", ethereum.Value.fromAddress(govUserKeeper)));
-  event.parameters.push(new ethereum.EventParam("localExpertNft", ethereum.Value.fromAddress(expertNft)));
-  event.parameters.push(new ethereum.EventParam("nftMultiplier", ethereum.Value.fromAddress(nftMultiplier)));
+  event.parameters.push(new ethereum.EventParam("govPoolDeps", ethereum.Value.fromTuple(govPoolDeps)));
+  event.parameters.push(new ethereum.EventParam("distributionProposal", ethereum.Value.fromAddress(dp)));
+  event.parameters.push(new ethereum.EventParam("tokenSale", ethereum.Value.fromAddress(tokenSale)));
+  event.parameters.push(new ethereum.EventParam("token", ethereum.Value.fromAddress(token)));
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
   event.block = block;
@@ -55,6 +62,8 @@ describe("PoolFactory", () => {
     let govUserKeeper = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181659");
     let expertNft = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181659");
     let nftMultiplier = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181659");
+    let tokenSale = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181674");
+    let token = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181674");
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181669");
 
     let event = createDaoPoolDeployed(
@@ -66,6 +75,8 @@ describe("PoolFactory", () => {
       govUserKeeper,
       expertNft,
       nftMultiplier,
+      tokenSale,
+      token,
       sender,
       block,
       tx

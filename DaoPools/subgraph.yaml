@@ -20,10 +20,8 @@ dataSources:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
       eventHandlers:
-        - event: DaoPoolDeployed(string,address,address,address,address,address,address,address,address)
+        - event: DaoPoolDeployed(string,address,(address,address,address,address,address),address,address,address,address)
           handler: onDeployed
-        - event: DaoTokenSaleDeployed(address,address,address)
-          handler: onTokenSaleDeployed
   - kind: ethereum/contract
     name: ERC721Expert
     network: chapel
@@ -68,7 +66,7 @@ templates:
         - name: PriceFeed
           file: ./abis/PriceFeed.json
       eventHandlers:
-        - event: ProposalCreated(uint256,string,string,uint256,uint256,address,address) # id, description, misc, quorum, proposalSettings, rewardToken, msg.sender
+        - event: ProposalCreated(uint256,string,(address,uint256,bytes)[],(address,uint256,bytes)[],uint256,uint256,address,address) # id, description, misc, quorum, proposalSettings, rewardToken, msg.sender
           handler: onProposalCreated
         - event: Delegated(address,address,uint256,uint256[],bool) # from, to, amount, nfts, isDelegate
           handler: onDelegated
@@ -76,8 +74,6 @@ templates:
           handler: onDelegatedTreasury
         - event: Voted(uint256,address,uint8,uint256,bool) # id, msg.sender, personalVote, delegatedVote
           handler: onVoted
-        - event: DPCreated(uint256,address,address,uint256) # id, msg.sender, token, amount
-          handler: onDPCreated
         - event: ProposalExecuted(uint256,bool,address) # id, isFor, msg.sender
           handler: onProposalExecuted
         - event: RewardClaimed(uint256,address,address,uint256) # id, msg.sender, token, amount
@@ -109,7 +105,7 @@ templates:
         - name: PriceFeed
           file: ./abis/PriceFeed.json
       eventHandlers:
-        - event: DistributionProposalClaimed(uint256,address,uint256) # id, msg.sender, amount
+        - event: DistributionProposalClaimed(uint256,address,address,uint256) # id, msg.sender, amount
           handler: onDistributionProposalClaimed
   - kind: ethereum/contract
     name: DaoSettings

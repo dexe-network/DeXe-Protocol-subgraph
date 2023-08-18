@@ -7,8 +7,7 @@ export function getProposal(
   creator: Address = Address.zero(),
   quorum: BigInt = BigInt.zero(),
   description: string = "",
-  rewardToken: Address = Address.zero(),
-  misc: string = ""
+  rewardToken: Address = Address.zero()
 ): Proposal {
   let id = pool.id.concatI32(proposalId.toI32());
   let proposal = Proposal.load(id);
@@ -25,13 +24,11 @@ export function getProposal(
     proposal.currentVotesAgainst = BigInt.zero();
     proposal.quorum = quorum;
     proposal.votersVoted = BigInt.zero();
-    proposal.isDP = false;
     proposal.settings = Bytes.empty();
     proposal.voters = new Array<Bytes>();
     proposal.description = description;
     proposal.votesCount = BigInt.zero();
     proposal.rewardToken = rewardToken;
-    proposal.misc = misc;
 
     proposal.pool = pool.id;
   }

@@ -4,7 +4,6 @@ import {
   Delegated,
   DelegatedTreasury,
   Deposited,
-  DPCreated,
   OffchainResultsSaved,
   ProposalCreated,
   ProposalExecuted,
@@ -17,24 +16,20 @@ import {
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPool } from "../entities/DaoPool";
 import { getDelegationHistory } from "../entities/DelegationHistory";
-import { getDistributionProposal } from "../entities/DistributionProposal";
 import { getProposal } from "../entities/Proposal";
 import { getProposalVote } from "../entities/ProposalVote";
 import { getVoter } from "../entities/Voters/Voter";
 import { getVoterInPool } from "../entities/Voters/VoterInPool";
 import { getVoterInProposal } from "../entities/Voters/VoterInProposal";
-import { PriceFeed } from "../../generated/templates/DaoPool/PriceFeed";
 import {
   PERCENTAGE_NUMERATOR,
-  PRICE_FEED_ADDRESS,
-  REWARD_TYPE_CREATE,
   REWARD_TYPE_VOTE_FOR,
   REWARD_TYPE_VOTE_AGAINST,
   REWARD_TYPE_VOTE_FOR_DELEGATED,
   REWARD_TYPE_VOTE_AGAINST_DELEGATED,
   YEAR,
 } from "../entities/global/globals";
-import { Proposal, VoterInPool, VoterInProposal } from "../../generated/schema";
+import { VoterInPool } from "../../generated/schema";
 import { getProposalSettings } from "../entities/Settings/ProposalSettings";
 import { getVoterInPoolPair } from "../entities/Voters/VoterInPoolPair";
 import { getUSDValue } from "../helpers/PriceFeedInteractions";
@@ -52,8 +47,7 @@ export function onProposalCreated(event: ProposalCreated): void {
     event.params.sender,
     event.params.quorum,
     event.params.proposalDescription,
-    event.params.rewardToken,
-    event.params.misc
+    event.params.rewardToken
   );
   let settings = getProposalSettings(pool, event.params.proposalSettings);
 
@@ -327,18 +321,6 @@ export function onVoted(event: Voted): void {
   proposal.save();
   pool.save();
   voter.save();
-}
-
-export function onDPCreated(event: DPCreated): void {
-  let pool = getDaoPool(event.address);
-  let proposal = getProposal(pool, event.params.proposalId);
-  let dp = getDistributionProposal(proposal, event.params.token, event.params.amount);
-
-  proposal.isDP = true;
-
-  dp.save();
-  proposal.save();
-  pool.save();
 }
 
 export function onProposalExecuted(event: ProposalExecuted): void {

@@ -1,14 +1,12 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address } from "@graphprotocol/graph-ts";
 import { pushUnique } from "@solarity/graph-lib";
-import { PriceFeed } from "../../generated/templates/DistributionProposal/PriceFeed";
 import { DistributionProposalClaimed } from "../../generated/templates/DistributionProposal/DistributionProposal";
 import { getDaoPool } from "../entities/DaoPool";
 import { getDPContract } from "../entities/DPContract";
 import { getProposal } from "../entities/Proposal";
 import { getVoter } from "../entities/Voters/Voter";
 import { getVoterInPool } from "../entities/Voters/VoterInPool";
-import { BNB_ADDRESS, PRICE_FEED_ADDRESS, WBNB_ADDRESS } from "../entities/global/globals";
-import { getDistributionProposal } from "../entities/DistributionProposal";
+import { BNB_ADDRESS, WBNB_ADDRESS } from "../entities/global/globals";
 import { getVoterInProposal } from "../entities/Voters/VoterInProposal";
 import { getUSDValue } from "../helpers/PriceFeedInteractions";
 
@@ -18,13 +16,12 @@ export function onDistributionProposalClaimed(event: DistributionProposalClaimed
   let pool = getDaoPool(Address.fromBytes(dpToPool.daoPool));
   let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
   let proposal = getProposal(pool, event.params.proposalId);
-  let dp = getDistributionProposal(proposal);
   let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
   let usdAmount = getUSDValue(
-    Address.fromBytes(dp.token).equals(Address.fromString(BNB_ADDRESS))
+    Address.fromBytes(event.params.token).equals(Address.fromString(BNB_ADDRESS))
       ? Address.fromString(WBNB_ADDRESS)
-      : Address.fromBytes(dp.token),
+      : Address.fromBytes(event.params.token),
     event.params.amount
   );
 

@@ -139,6 +139,7 @@ function createChangedValidatorsBalances(
 
   return event;
 }
+
 function createDaoPoolDeployed(
   name: string,
   govPool: Address,
@@ -150,9 +151,13 @@ function createDaoPoolDeployed(
   let event = changetype<DaoPoolDeployed>(newMockEvent());
   event.parameters = new Array();
 
+  let govPoolDeps = new ethereum.Tuple(5);
+  govPoolDeps[2] = ethereum.Value.fromAddress(validators);
+
   event.parameters.push(new ethereum.EventParam("name", ethereum.Value.fromString(name)));
   event.parameters.push(new ethereum.EventParam("govPool", ethereum.Value.fromAddress(govPool)));
-  event.parameters.push(new ethereum.EventParam("dp", ethereum.Value.fromAddress(dp)));
+  event.parameters.push(new ethereum.EventParam("govPoolDeps", ethereum.Value.fromTuple(govPoolDeps)));
+  event.parameters.push(new ethereum.EventParam("distributionProposal", ethereum.Value.fromAddress(dp)));
   event.parameters.push(new ethereum.EventParam("validators", ethereum.Value.fromAddress(validators)));
 
   event.block = block;
