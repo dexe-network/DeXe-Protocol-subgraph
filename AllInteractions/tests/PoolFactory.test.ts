@@ -1,10 +1,9 @@
-import { DaoPoolDeployed, TraderPoolDeployed } from "../generated/PoolFactory/PoolFactory";
+import { DaoPoolDeployed } from "../generated/PoolFactory/PoolFactory";
 import { afterEach, assert, clearStore, describe, newMockEvent, test } from "matchstick-as/assembly/index";
 import { assertTransaction, getBlock, getTransaction } from "./utils";
 import { Address, ethereum, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { onDaoPoolDeployed } from "../src/mappings/PoolFactory";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
-import { DaoPool } from "../generated/templates";
 
 function createDaoPoolDeployed(
   name: string,
@@ -84,6 +83,8 @@ describe("PoolFactory", () => {
 
     onDaoPoolDeployed(event);
 
+    assert.fieldEquals("Pool", govPool.toHexString(), "id", govPool.toHexString());
+    assert.fieldEquals("Pool", validators.toHexString(), "id", validators.toHexString());
     assert.fieldEquals("DaoPoolCreate", tx.hash.concatI32(0).toHexString(), "pool", govPool.toHexString());
     assert.fieldEquals("DaoPoolCreate", tx.hash.concatI32(0).toHexString(), "name", name);
 

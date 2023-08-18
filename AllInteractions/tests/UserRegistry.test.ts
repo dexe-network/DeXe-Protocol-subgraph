@@ -1,5 +1,5 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
-import { assert, describe, newMockEvent, test } from "matchstick-as";
+import { describe, newMockEvent, test } from "matchstick-as";
 import { Agreed, UpdatedProfile } from "../generated/UserRegistry/UserRegistry";
 import { assertTransaction, getBlock, getNextTx, getTransaction } from "./utils";
 import { onAgreed, onUpdatedProfile } from "../src/mappings/UserRegistry";

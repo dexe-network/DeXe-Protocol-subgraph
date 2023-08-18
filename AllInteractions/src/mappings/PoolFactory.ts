@@ -5,6 +5,7 @@ import { getDaoPoolCreate } from "../entities/dao-pool/DaoPoolCreate";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getTransaction } from "../entities/transaction/Transaction";
 import { push } from "../helpers/ArrayHelper";
+import { getPool } from "../entities/dao-pool/Pool";
 
 export function onDaoPoolDeployed(event: DaoPoolDeployed): void {
   DaoPool.create(event.params.govPool);
