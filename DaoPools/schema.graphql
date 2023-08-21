@@ -113,7 +113,6 @@ type Voter @entity {
 type Proposal @entity {
   id: Bytes! # pool address + porposalId
   proposalId: BigInt!
-  isDP: Boolean!
   rewardToken: Bytes!
 
   creator: Voter!
@@ -126,12 +125,9 @@ type Proposal @entity {
   currentVotesAgainst: BigInt!
   quorum: BigInt!
   description: String!
-  misc: String!
 
   votersVoted: BigInt!
   pool: DaoPool!
-
-  distributionProposal: [DistributionProposal!]! @derivedFrom(field: "proposal")
 
   settings: ProposalSettings!
 
@@ -195,7 +191,7 @@ type VoterInPool @entity {
   proposalsCount: BigInt!
 
   proposals: [VoterInProposal!]!
-  claimedDPs: [DistributionProposal!]!
+  claimedDPs: [Bytes!]!
 
   treasuryDelegationHistory: [TreasuryDelegationHistory!]! @derivedFrom(field: "to")
 }
@@ -261,19 +257,6 @@ type VoterInProposal @entity {
   claimedDpRewardUSD: BigInt!
 
   votes: [ProposalVote!]! @derivedFrom(field: "voter")
-}
-
-# @notice The entity holds information about dp
-# @param id forms from proposal entity id
-# @param token the token address
-# @param amount the amount of reward
-# @param proposal the proposal entiy id
-type DistributionProposal @entity {
-  id: Bytes! # proposal entity id
-  token: Bytes!
-  amount: BigInt!
-
-  proposal: Proposal!
 }
 
 # @notice The entity holds historical information about delegations

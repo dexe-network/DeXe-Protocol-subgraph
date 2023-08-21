@@ -5,6 +5,6 @@ import { getValidatorContract } from "../entities/ValidatorContract";
 
 export function onDeployed(event: DaoPoolDeployed): void {
   getDaoPool(event.params.govPool).save();
-  getValidatorContract(event.params.validators, event.params.govPool).save();
-  DaoValidators.create(event.params.validators);
+  getValidatorContract(event.params.govPoolDeps.validatorsAddress, event.params.govPool).save();
+  DaoValidators.create(event.params.govPoolDeps.validatorsAddress);
 }

@@ -9,10 +9,10 @@ import { getPool } from "../entities/dao-pool/Pool";
 
 export function onDaoPoolDeployed(event: DaoPoolDeployed): void {
   DaoPool.create(event.params.govPool);
-  DaoValidators.create(event.params.validators);
+  DaoValidators.create(event.params.govPoolDeps.validatorsAddress);
 
   getPool(event.params.govPool).save();
-  getPool(event.params.validators).save();
+  getPool(event.params.govPoolDeps.validatorsAddress).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,

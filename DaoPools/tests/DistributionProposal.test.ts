@@ -4,11 +4,12 @@ import { DistributionProposalClaimed } from "../generated/templates/Distribution
 import { getBlock, getTransaction } from "./utils";
 import { onDistributionProposalClaimed } from "../src/mappings/DistributionProposal";
 import { PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
-import { DistributionProposal, DPContract } from "../generated/schema";
+import { DPContract } from "../generated/schema";
 
 function createDistributionProposalClaimed(
   proposalId: BigInt,
   sender: Address,
+  token: Address,
   amount: BigInt,
   contractSender: Address,
   block: ethereum.Block,
@@ -18,8 +19,9 @@ function createDistributionProposalClaimed(
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
-  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
+  event.parameters.push(new ethereum.EventParam("token", ethereum.Value.fromAddress(token)));
   event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
   event.block = block;
   event.transaction = tx;
@@ -53,20 +55,16 @@ describe("DistributionProposal", () => {
     let dPContract = new DPContract(contractSender);
     dPContract.daoPool = pool;
     dPContract.save();
-
-    let dp = new DistributionProposal(pool.concatI32(proposalId.toI32()));
-    dp.amount = BigInt.fromI32(10).pow(18);
-    dp.token = Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181672");
-    dp.proposal = pool.concatI32(proposalId.toI32());
-    dp.save();
   });
 
   test("should handle DistributionProposalClaimed", () => {
     let sender = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let token = Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181672");
 
     let event = createDistributionProposalClaimed(
       proposalId,
       sender,
+      token,
       BigInt.fromI32(10).pow(17),
       contractSender,
       block,

@@ -14,7 +14,6 @@ import {
   Delegated,
   Deposited,
   Withdrawn,
-  DPCreated,
   ProposalCreated,
   ProposalExecuted,
   RewardClaimed,
@@ -27,7 +26,6 @@ import {
 } from "../generated/templates/DaoPool/DaoPool";
 import {
   onDelegated,
-  onDPCreated,
   onProposalCreated,
   onProposalExecuted,
   onVoted,
@@ -64,7 +62,6 @@ function createProposalCreated(
   settingsId: BigInt,
   rewardToken: Address,
   description: string,
-  misc: string,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
@@ -74,7 +71,8 @@ function createProposalCreated(
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
   event.parameters.push(new ethereum.EventParam("proposalDescription", ethereum.Value.fromString(description)));
-  event.parameters.push(new ethereum.EventParam("misc", ethereum.Value.fromString(misc)));
+  event.parameters.push(new ethereum.EventParam("actionsOnFor", ethereum.Value.fromTupleArray([])));
+  event.parameters.push(new ethereum.EventParam("actionsOnAgainst", ethereum.Value.fromTupleArray([])));
   event.parameters.push(new ethereum.EventParam("quorum", ethereum.Value.fromUnsignedBigInt(quorum)));
   event.parameters.push(new ethereum.EventParam("proposalSettings", ethereum.Value.fromUnsignedBigInt(settingsId)));
   event.parameters.push(new ethereum.EventParam("rewardToken", ethereum.Value.fromAddress(rewardToken)));
@@ -471,7 +469,6 @@ describe("DaoPool", () => {
       settingsId,
       rewardToken,
       "description",
-      "misc",
       contractSender,
       block,
       tx
@@ -534,7 +531,6 @@ describe("DaoPool", () => {
       "rewardToken",
       rewardToken.toHexString()
     );
-    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "misc", "misc");
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "proposalCount", "1");
   });
 
@@ -1225,64 +1221,6 @@ describe("DaoPool", () => {
       "totalTreasuryVoteAgainstAmount",
       "0"
     );
-  });
-
-  test("should handle DPCreated", () => {
-    let proposalId = BigInt.fromI32(1);
-    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
-    let token = Address.fromString("0x16e08f7d84603AEb97cd1c89A80A9e914f181671");
-    let amount = BigInt.fromI32(100).pow(18);
-
-    let event = createDPCreated(proposalId, sender, token, amount, contractSender, block, tx);
-
-    onDPCreated(event);
-
-    assert.fieldEquals(
-      "DistributionProposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "token",
-      token.toHexString()
-    );
-    assert.fieldEquals(
-      "DistributionProposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "amount",
-      amount.toString()
-    );
-    assert.fieldEquals(
-      "DistributionProposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "proposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString()
-    );
-    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "isDP", "true");
-
-    proposalId = BigInt.fromI32(2);
-    token = Address.fromString("0xfF42F3B569cdB6dF9dC260473Ec2ef63Ca971d63");
-
-    event = createDPCreated(proposalId, sender, token, amount, contractSender, block, tx);
-
-    onDPCreated(event);
-
-    assert.fieldEquals(
-      "DistributionProposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "token",
-      token.toHexString()
-    );
-    assert.fieldEquals(
-      "DistributionProposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "amount",
-      amount.toString()
-    );
-    assert.fieldEquals(
-      "DistributionProposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "proposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString()
-    );
-    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "isDP", "true");
   });
 
   test("should handle ProposalExecuted", () => {
