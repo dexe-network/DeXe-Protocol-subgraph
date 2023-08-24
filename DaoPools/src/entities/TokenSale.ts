@@ -1,18 +1,13 @@
 import { Address, Bytes } from "@graphprotocol/graph-ts";
-import { TokenSale } from "../../generated/schema";
+import { TokenSaleContract } from "../../generated/schema";
 
-export function getTokenSale(
-  tokenSaleAddress: Address,
-  poolId: Bytes = Bytes.empty(),
-  tokenAddress: Address = Address.zero()
-): TokenSale {
-  let tokenSale = TokenSale.load(tokenSaleAddress);
+export function getTokenSale(tokenSaleAddress: Address, poolId: Bytes = Bytes.empty()): TokenSaleContract {
+  let tokenSale = TokenSaleContract.load(tokenSaleAddress);
 
   if (tokenSale == null) {
-    tokenSale = new TokenSale(tokenSaleAddress);
+    tokenSale = new TokenSaleContract(tokenSaleAddress);
 
-    tokenSale.token = tokenAddress;
-    tokenSale.pool = poolId;
+    tokenSale.daoPool = poolId;
   }
 
   return tokenSale;

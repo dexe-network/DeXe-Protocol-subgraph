@@ -25,9 +25,8 @@ export function onDistributionProposalClaimed(event: DistributionProposalClaimed
     event.params.amount
   );
 
-  voterInPool.claimedDPs = pushUnique(voterInPool.claimedDPs, [proposal.id]);
-  voterInPool.totalDPClaimed = voterInPool.totalDPClaimed.plus(usdAmount);
-  voterInProposal.claimedDpRewardUSD = usdAmount;
+  voterInPool.totalClaimedUSD = voterInPool.totalClaimedUSD.plus(usdAmount);
+  voterInProposal.claimedRewardUSD = voterInProposal.claimedRewardUSD.plus(usdAmount);
 
   voter.totalClaimedUSD = voter.totalClaimedUSD.plus(usdAmount);
 

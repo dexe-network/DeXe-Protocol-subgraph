@@ -10,10 +10,9 @@ export function getVoterInPool(pool: DaoPool, voter: Voter, timestamp: BigInt): 
 
     voterInPool.joinedTimestamp = timestamp;
 
+    voterInPool.expertNft = Bytes.empty();
+
     voterInPool.receivedDelegation = BigInt.zero();
-    voterInPool.totalDPClaimed = BigInt.zero();
-    voterInPool.totalClaimedUSD = BigInt.zero();
-    voterInPool.claimedDPs = new Array<Bytes>();
     voterInPool.receivedNFTDelegation = new Array<BigInt>();
     voterInPool.receivedNFTDelegationCount = BigInt.zero();
 
@@ -21,27 +20,20 @@ export function getVoterInPool(pool: DaoPool, voter: Voter, timestamp: BigInt): 
     voterInPool.receivedTreasuryNFTDelegation = new Array<BigInt>();
     voterInPool.receivedTreasuryNFTDelegationCount = BigInt.zero();
 
-    voterInPool.requestedTokensAmount = BigInt.zero();
-    voterInPool.requestedNft = new Array<BigInt>();
-    voterInPool.requestedNftCount = BigInt.zero();
+    voterInPool.totalLockedUSD = BigInt.zero();
+    voterInPool.totalClaimedUSD = BigInt.zero();
+    voterInPool.rewardedUSD = BigInt.zero();
 
-    voterInPool.totalDelegationRewardUSDFor = BigInt.zero();
-    voterInPool.totalDelegationRewardUSDAgainst = BigInt.zero();
-
+    voterInPool.engagedProposalsCount = BigInt.zero();
     voterInPool.currentDelegatorsCount = BigInt.zero();
+
+    voterInPool.APR = BigInt.zero();
+    voterInPool._cusum = BigInt.zero();
+    voterInPool._lastUpdate = BigInt.zero();
 
     voterInPool.pool = pool.id;
     voterInPool.voter = voter.id;
 
-    voterInPool.APR = BigInt.zero();
-    voterInPool.cusum = BigInt.zero();
-    voterInPool.lastUpdate = BigInt.zero();
-
-    voterInPool.totalLockedFundsUSD = BigInt.zero();
-
-    voterInPool.totalStakingReward = BigInt.zero();
-
-    voterInPool.proposalsCount = BigInt.zero();
     voterInPool.proposals = new Array<Bytes>();
 
     pool.votersCount = pool.votersCount.plus(BigInt.fromI32(1));

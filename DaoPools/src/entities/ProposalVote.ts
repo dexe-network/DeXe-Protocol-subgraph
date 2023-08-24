@@ -1,5 +1,5 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { ProposalVote, VoterInProposal } from "../../generated/schema";
+import { ProposalInteraction, VoterInProposal } from "../../generated/schema";
 import { increaseCounter } from "../helpers/IncreaseCounter";
 import { getInteractionCount } from "./global/InteractionCount";
 
@@ -7,23 +7,24 @@ export function getProposalVote(
   hash: Bytes,
   voterInProposal: VoterInProposal,
   timestamp: BigInt,
-  voteType: BigInt,
-  amount: BigInt,
-  isVoteFor: boolean
-): ProposalVote {
+  interactionType: BigInt,
+  personalVote: BigInt,
+  micropoolVote: BigInt,
+  treasuryVote: BigInt
+): ProposalInteraction {
   let counter = getInteractionCount(hash);
   let id = hash.concatI32(counter.count.toI32());
-  let proposalVote = ProposalVote.load(id);
+  let proposalVote = ProposalInteraction.load(id);
 
   if (proposalVote == null) {
-    proposalVote = new ProposalVote(id);
+    proposalVote = new ProposalInteraction(id);
     proposalVote.hash = hash;
     proposalVote.timestamp = timestamp;
 
-    proposalVote.voteType = voteType;
-    proposalVote.amount = amount;
-
-    proposalVote.isVoteFor = isVoteFor;
+    proposalVote.interactionType = interactionType;
+    proposalVote.personalVote = personalVote;
+    proposalVote.micropoolVote = micropoolVote;
+    proposalVote.treasuryVote = treasuryVote;
 
     proposalVote.proposal = voterInProposal.proposal;
     proposalVote.voter = voterInProposal.id;
