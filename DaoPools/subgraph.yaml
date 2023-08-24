@@ -20,7 +20,7 @@ dataSources:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
       eventHandlers:
-        - event: DaoPoolDeployed(string,address,(address,address,address,address,address),address,address,address,address)
+        - event: DaoPoolDeployed(string,address,(address,address,address,address,address,address),address,address,address,address)
           handler: onDeployed
   - kind: ethereum/contract
     name: ERC721Expert
@@ -72,7 +72,7 @@ templates:
           handler: onDelegated
         - event: DelegatedTreasury(address,uint256,uint256[],bool)
           handler: onDelegatedTreasury
-        - event: Voted(uint256,address,uint8,uint256,bool) # id, msg.sender, personalVote, delegatedVote
+        - event: VoteChanged(uint256,address,bool,(uint256,uint256,uint256)) # id, msg.sender, personalVote, delegatedVote
           handler: onVoted
         - event: ProposalExecuted(uint256,bool,address) # id, isFor, msg.sender
           handler: onProposalExecuted
@@ -80,12 +80,12 @@ templates:
           handler: onRewardClaimed
         - event: RewardCredited(uint256,uint8,address,uint256,address) # id, type, token, amount, to
           handler: onRewardCredited
-        - event: StakingRewardClaimed(address,address,uint256)
-          handler: onStakingRewardClaimed
+        - event: RewardCanceled(uint256,address,uint256,address)
+          handler: onRewardCanceled
+        - event: MicropoolRewardClaimed(uint256,address,address,uint256)
+          handler: onMicropoolRewardClaimed
         - event: OffchainResultsSaved(string,address)
           handler: onOffchainResultsSaved
-        - event: Requested(address,address,uint256,uint256[])
-          handler: onRequested
 
   - kind: ethereum/contract
     name: DistributionProposal

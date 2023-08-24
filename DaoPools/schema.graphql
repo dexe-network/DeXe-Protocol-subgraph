@@ -1,11 +1,3 @@
-# @notice The entity holds information about DP contract
-# @param id forms from DP contract address
-# @param daoPool the daoPool address
-type DPContract @entity(immutable: true) {
-  id: Bytes! # DP contract address
-  daoPool: Bytes!
-}
-
 # @notice The entity holds information about settings contract
 # @param id forms from settings contract address
 # @param daoPool the daoPool address
@@ -20,6 +12,51 @@ type SettingsContract @entity(immutable: true) {
 type UserKeeperContract @entity(immutable: true) {
   id: Bytes! # user keeper contract
   daoPool: Bytes!
+}
+
+type ExpertNftContract @entity(immutable: true) {
+  id: Bytes! # contract address
+  daoPool: DaoPool!
+}
+
+# @notice The entity holds information about DP contract
+# @param id forms from DP contract address
+# @param daoPool the daoPool address
+type DPContract @entity(immutable: true) {
+  id: Bytes! # DP contract address
+  daoPool: Bytes!
+}
+
+# @notice The entity holds information about token sale
+# @param id forms from TokenSale address
+# @param token the token address
+# @param pool the dao pool entity id
+type TokenSaleContract @entity {
+  id: Bytes!
+  daoPool: Bytes!
+
+  tiers: [TokenSaleTier!]! @derivedFrom(field: "tokenSale")
+}
+
+# @notice The entity holds historical information proposal settings
+# @param id forms from pool address + settingsId
+# @param settingsId the settings id
+# @param executorDescription the url of description
+# @param pool the dao pool entity id
+type ProposalSettings @entity {
+  id: Bytes! # pool address + settingsId
+  settingsId: BigInt!
+
+  executorDescription: String!
+
+  executors: [Executor!]! @derivedFrom(field: "settings")
+  pool: DaoPool!
+}
+
+type ExpertNft @entity {
+  id: Bytes! # ExpertNft address + token id
+  tokenId: BigInt!
+  tags: [String!]!
 }
 
 # @notice The entity holds information about dao pool
@@ -62,29 +99,31 @@ type DaoPool @entity {
   proposals: [Proposal!]! @derivedFrom(field: "pool")
   settings: [ProposalSettings!]! @derivedFrom(field: "pool")
   executors: [Executor!]! @derivedFrom(field: "pool")
-  experts: [ExpertInPool!]! @derivedFrom(field: "pool")
-  tokenSales: [TokenSale!]! @derivedFrom(field: "pool")
 }
 
-# @notice The entity holds information about voter offchain results
-# @param id forms from voter address and pool address
-# @param rewardUSD the rewards in USD
-type VoterOffchain @entity {
-  id: Bytes! # voter address + pool address
-  voter: Voter!
-  pool: DaoPool!
+# @notice The entity holds information about executor
+# @param id forms from pool address + executor address
+# @param executorAddress the address of executor
+# @param settings the ProposalSettings entity id
+# @param pool the pool entity id
+type Executor @entity {
+  id: Bytes! # dao pool address + executor address
+  executorAddress: Bytes!
 
-  rewardUSD: BigInt!
-  claimedRewardUSD: BigInt!
+  settings: ProposalSettings!
+
+  pool: DaoPool!
 }
 
 # @notice The entity holds information about voter
 # @param id forms from user address
 type Voter @entity {
   id: Bytes! # voter address
+  expertNft: ExpertNft!
+
   totalProposalsCreated: BigInt!
   totalClaimedUSD: BigInt!
-  totalUnclaimedUSD: BigInt!
+  totalRewardedUSD: BigInt!
   totalDelegatedUSD: BigInt!
   totalLockedFundsUSD: BigInt!
   totalVotedProposals: BigInt!
@@ -113,7 +152,6 @@ type Voter @entity {
 type Proposal @entity {
   id: Bytes! # pool address + porposalId
   proposalId: BigInt!
-  rewardToken: Bytes!
 
   creator: Voter!
 
@@ -121,20 +159,21 @@ type Proposal @entity {
   executor: Bytes!
   executionTimestamp: BigInt!
 
+  rewardToken: Bytes!
+
   currentVotesFor: BigInt!
   currentVotesAgainst: BigInt!
   quorum: BigInt!
+
   description: String!
 
   votersVoted: BigInt!
-  pool: DaoPool!
-
-  settings: ProposalSettings!
-
   voters: [Voter!]!
 
-  votesCount: BigInt!
-  votes: [ProposalVote!]! @derivedFrom(field: "proposal")
+  pool: DaoPool!
+  settings: ProposalSettings!
+
+  interactions: [ProposalInteraction!]! @derivedFrom(field: "proposal")
 }
 
 # @notice The entity holds information about voter's actions in pool
@@ -158,6 +197,8 @@ type VoterInPool @entity {
   id: Bytes! # voter address + pool address
   joinedTimestamp: BigInt!
 
+  expertNft: ExpertNft!
+
   receivedDelegation: BigInt!
   receivedNFTDelegation: [BigInt!]!
   receivedNFTDelegationCount: BigInt!
@@ -166,58 +207,23 @@ type VoterInPool @entity {
   receivedTreasuryNFTDelegation: [BigInt!]!
   receivedTreasuryNFTDelegationCount: BigInt!
 
-  requestedTokensAmount: BigInt!
-  requestedNft: [BigInt!]!
-  requestedNftCount: BigInt!
-
-  totalDPClaimed: BigInt!
+  totalLockedUSD: BigInt!
   totalClaimedUSD: BigInt!
+  rewardedUSD: BigInt!
 
-  totalDelegationRewardUSDFor: BigInt!
-  totalDelegationRewardUSDAgainst: BigInt!
-
+  engagedProposalsCount: BigInt!
   currentDelegatorsCount: BigInt!
 
   APR: BigInt!
-  cusum: BigInt!
-  lastUpdate: BigInt!
-  totalLockedFundsUSD: BigInt!
-
-  totalStakingReward: BigInt!
+  _cusum: BigInt!
+  _lastUpdate: BigInt!
 
   pool: DaoPool!
   voter: Voter!
 
-  proposalsCount: BigInt!
-
   proposals: [VoterInProposal!]!
-  claimedDPs: [Bytes!]!
 
-  treasuryDelegationHistory: [TreasuryDelegationHistory!]! @derivedFrom(field: "to")
-}
-
-# @notice The entity holds information about vote
-# @param id forms from tx hash + counter
-# @param hash the tx hash
-# @param timestamp the timestamp of tx
-# @param isVoteFor bool flag, if true - vote for, if false - vote against
-# @param personalAmount the personal amount of vote
-# @param delegatedAmount the delegated amount of vote
-# @param voter the VoterInProposal entity id
-# @param proposal the Proposal entity id
-type ProposalVote @entity(immutable: true) {
-  id: Bytes! # tx hash + counter
-  hash: Bytes!
-  timestamp: BigInt!
-
-  isVoteFor: Boolean!
-
-  voteType: BigInt!
-
-  amount: BigInt!
-
-  voter: VoterInProposal!
-  proposal: Proposal!
+  treasuryDelegationHistory: [TreasuryDelegationHistory!]! @derivedFrom(field: "delegatee")
 }
 
 # @notice The entity holds information about voter's actions in proposal
@@ -235,28 +241,47 @@ type ProposalVote @entity(immutable: true) {
 # @param claimedDpRewardUSD the amount of dp rewards in usd
 type VoterInProposal @entity {
   id: Bytes! # voter address + proposal entity id
+  isVoteFor: Boolean!
+
+  personalVote: BigInt!
+  micropoolVote: BigInt!
+  treasuryVote: BigInt!
+
+  staticRewardUSD: BigInt!
+  personalRewardUSD: BigInt!
+  micropoolRewardUSD: BigInt!
+  treasuryRewardUSD: BigInt!
+
+  claimedRewardUSD: BigInt!
+
   pool: DaoPool!
   proposal: Proposal!
   voter: VoterInPool!
 
-  totalVoteForAmount: BigInt!
-  totalVoteAgainstAmount: BigInt!
+  interactions: [ProposalInteraction!]! @derivedFrom(field: "voter")
+}
 
-  totalDelegatedVoteForAmount: BigInt!
-  totalDelegatedVoteAgainstAmount: BigInt!
+# @notice The entity holds information about vote
+# @param id forms from tx hash + counter
+# @param hash the tx hash
+# @param timestamp the timestamp of tx
+# @param isVoteFor bool flag, if true - vote for, if false - vote against
+# @param personalAmount the personal amount of vote
+# @param delegatedAmount the delegated amount of vote
+# @param voter the VoterInProposal entity id
+# @param proposal the Proposal entity id
+type ProposalInteraction @entity(immutable: true) {
+  id: Bytes! # tx hash + counter
+  hash: Bytes!
+  timestamp: BigInt!
 
-  totalTreasuryVoteForAmount: BigInt!
-  totalTreasuryVoteAgainstAmount: BigInt!
+  interactionType: BigInt! # 0 -> vote for, 1 -> vote against, 2 -> cancel
+  personalVote: BigInt!
+  micropoolVote: BigInt!
+  treasuryVote: BigInt!
 
-  unclaimedRewardUSDFor: BigInt!
-  unclaimedRewardUSDAgainst: BigInt!
-  unclaimedRewardFromDelegationsUSDFor: BigInt!
-  unclaimedRewardFromDelegationsUSDAgainst: BigInt!
-
-  claimedRewardUSD: BigInt!
-  claimedDpRewardUSD: BigInt!
-
-  votes: [ProposalVote!]! @derivedFrom(field: "voter")
+  voter: VoterInProposal!
+  proposal: Proposal!
 }
 
 # @notice The entity holds historical information about delegations
@@ -271,56 +296,28 @@ type VoterInProposal @entity {
 # @param pair the VoterInPoolPair entity id
 type DelegationHistory @entity(immutable: true) {
   id: Bytes! # tx hash + counter
-  pool: DaoPool!
   timestamp: BigInt!
 
-  from: Voter!
-  to: Voter!
+  delegator: Voter!
+  delegatee: Voter!
   type: BigInt!
 
   amount: BigInt!
   nfts: [BigInt!]!
 
+  pool: DaoPool!
   pair: VoterInPoolPair!
 }
 
 type TreasuryDelegationHistory @entity(immutable: true) {
   id: Bytes! # tx hash + counter
-  pool: DaoPool!
   timestamp: BigInt!
 
-  to: VoterInPool!
+  delegatee: VoterInPool!
   type: BigInt!
 
   amount: BigInt!
   nfts: [BigInt!]!
-}
-
-# @notice The entity holds historical information proposal settings
-# @param id forms from pool address + settingsId
-# @param settingsId the settings id
-# @param executorDescription the url of description
-# @param pool the dao pool entity id
-type ProposalSettings @entity {
-  id: Bytes! # pool address + settingsId
-  settingsId: BigInt!
-
-  executorDescription: String!
-
-  executors: [Executor!]! @derivedFrom(field: "settings")
-  pool: DaoPool!
-}
-
-# @notice The entity holds information about executor
-# @param id forms from pool address + executor address
-# @param executorAddress the address of executor
-# @param settings the ProposalSettings entity id
-# @param pool the pool entity id
-type Executor @entity {
-  id: Bytes! # dao pool address + executor address
-  executorAddress: Bytes!
-
-  settings: ProposalSettings!
 
   pool: DaoPool!
 }
@@ -333,28 +330,13 @@ type Executor @entity {
 # @param delegateNfts the current delegated nfts
 type VoterInPoolPair @entity {
   id: Bytes! # pool address + from address + to address
-  from: VoterInPool!
-  to: VoterInPool!
+  delegator: VoterInPool!
+  delegatee: VoterInPool!
 
-  delegateAmount: BigInt!
-  delegateNfts: [BigInt!]!
-  requestAmount: BigInt!
-  requestNfts: [BigInt!]!
+  delegatedAmount: BigInt!
+  delegatedNfts: [BigInt!]!
 
   history: [DelegationHistory!]! @derivedFrom(field: "pair")
-}
-
-# @notice The entity holds information about token sale
-# @param id forms from TokenSale address
-# @param token the token address
-# @param pool the dao pool entity id
-type TokenSale @entity {
-  id: Bytes!
-  token: Bytes!
-
-  pool: DaoPool!
-
-  tiers: [TokenSaleTier!]! @derivedFrom(field: "tokenSale")
 }
 
 # @notice The entity holds information about token sale tier
@@ -365,14 +347,14 @@ type TokenSale @entity {
 # @param voters the array of VoterInPool ids
 type TokenSaleTier @entity {
   id: Bytes!
-  tokenSale: TokenSale!
 
-  tierToken: Bytes!
+  saleToken: Bytes!
+  whitelistType: BigInt!
 
-  userWhitelist: [Bytes!]!
+  totalBuyersCount: BigInt!
+  buyers: [VoterInPool!]!
 
-  totalUserCount: BigInt!
-  voters: [VoterInPool!]!
+  tokenSale: TokenSaleContract!
 }
 
 # @notice The entity counts interactions in single tx
@@ -381,37 +363,4 @@ type TokenSaleTier @entity {
 type InteractionCount @entity {
   id: Bytes!
   count: BigInt!
-}
-
-type ExpertNftContract @entity(immutable: true) {
-  id: Bytes! # contract address
-  daoPool: DaoPool!
-}
-
-type GlobalExpert @entity {
-  id: Bytes! # voter address
-  nft: ExpertNft!
-}
-
-type Expert @entity {
-  id: Bytes! # voter address
-  pools: [Bytes!]!
-
-  nfts: [ExpertNft!]! @derivedFrom(field: "expert")
-}
-
-type ExpertInPool @entity {
-  id: Bytes! # voter address + pool address
-  tokenId: BigInt!
-
-  pool: DaoPool!
-  expert: Voter!
-}
-
-type ExpertNft @entity {
-  id: Bytes! # ExpertNft address + token id
-  expert: Expert!
-
-  tokenId: BigInt!
-  tags: [String!]!
 }
