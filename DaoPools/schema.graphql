@@ -223,7 +223,7 @@ type VoterInPool @entity {
 
   proposals: [VoterInProposal!]!
 
-  treasuryDelegationHistory: [TreasuryDelegationHistory!]! @derivedFrom(field: "to")
+  treasuryDelegationHistory: [TreasuryDelegationHistory!]! @derivedFrom(field: "delegatee")
 }
 
 # @notice The entity holds information about voter's actions in proposal
@@ -354,7 +354,7 @@ type TokenSaleTier @entity {
   totalBuyersCount: BigInt!
   buyers: [VoterInPool!]!
 
-  tokenSale: TokenSale!
+  tokenSale: TokenSaleContract!
 }
 
 # @notice The entity counts interactions in single tx

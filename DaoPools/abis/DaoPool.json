@@ -4,30 +4,47 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "proposalId",
         "type": "uint256"
       },
       {
         "indexed": false,
-        "internalType": "uint256[]",
-        "name": "nfts",
-        "type": "uint256[]"
+        "internalType": "address",
+        "name": "voter",
+        "type": "address"
       },
       {
         "indexed": false,
         "internalType": "bool",
-        "name": "isDelegate",
+        "name": "isVoteFor",
         "type": "bool"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "personal",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "micropool",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "treasury",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct IGovPool.Votes",
+        "name": "votes",
+        "type": "tuple"
       }
     ],
-    "name": "DelegatedTreasury",
+    "name": "VoteChanged",
     "type": "event"
   },
   {
@@ -35,14 +52,14 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "token",
+        "name": "rewardToken",
         "type": "address"
       },
       {
@@ -50,19 +67,6 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
-      }
-    ],
-    "name": "StakingRewardClaimed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "resultsHash",
-        "type": "string"
       },
       {
         "indexed": false,
@@ -71,27 +75,8 @@
         "type": "address"
       }
     ],
-    "name": "OffchainResultsSaved",
+    "name": "RewardCanceled",
     "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "resultsHash",
-        "type": "string"
-      }
-    ],
-    "name": "getSignHash",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "anonymous": false,
@@ -166,6 +151,44 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "resultsHash",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "OffchainResultsSaved",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "resultsHash",
+        "type": "string"
+      }
+    ],
+    "name": "getSignHash",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "proposalId",
         "type": "uint256"
@@ -173,29 +196,23 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "sender",
+        "name": "user",
         "type": "address"
       },
       {
         "indexed": false,
-        "internalType": "enum IGovPool.VoteType",
-        "name": "voteType",
-        "type": "uint8"
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "isVoteFor",
-        "type": "bool"
       }
     ],
-    "name": "Voted",
+    "name": "MicropoolRewardClaimed",
     "type": "event"
   },
   {
@@ -373,6 +390,37 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "nfts",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isDelegate",
+        "type": "bool"
+      }
+    ],
+    "name": "DelegatedTreasury",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
@@ -411,37 +459,6 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "nfts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "Requested",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
@@ -463,19 +480,6 @@
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "PERCENTAGE_MICROPOOL_REWARDS",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "components": [
@@ -490,12 +494,7 @@
             "type": "address"
           },
           {
-            "internalType": "address",
-            "name": "distributionAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
+            "internalType": "address payable",
             "name": "validatorsAddress",
             "type": "address"
           },
@@ -503,26 +502,21 @@
             "internalType": "address",
             "name": "expertNftAddress",
             "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "nftMultiplierAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "votePowerAddress",
+            "type": "address"
           }
         ],
         "internalType": "struct IGovPool.Dependencies",
         "name": "govPoolDeps",
         "type": "tuple"
-      },
-      {
-        "internalType": "address",
-        "name": "nftMultiplierAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "regularVoteModifier",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "expertVoteModifier",
-        "type": "uint256"
       },
       {
         "internalType": "address",
@@ -556,16 +550,16 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "babt",
-    "outputs": [
+    "inputs": [
       {
-        "internalType": "contract ISBT721",
-        "name": "",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
       }
     ],
-    "stateMutability": "view",
+    "name": "cancelVote",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -597,17 +591,17 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "regularModifier",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "proposalIds",
+        "type": "uint256[]"
       },
       {
-        "internalType": "uint256",
-        "name": "expertModifier",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
       }
     ],
-    "name": "changeVoteModifiers",
+    "name": "claimMicropoolRewards",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -643,11 +637,6 @@
       {
         "internalType": "string",
         "name": "_descriptionURL",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "misc",
         "type": "string"
       },
       {
@@ -724,6 +713,29 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "nftIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "delegateTreasury",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "deployerBABTid",
     "outputs": [
@@ -773,19 +785,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "dexeExpertNft",
-    "outputs": [
-      {
-        "internalType": "contract IERC721Expert",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "string",
@@ -813,12 +812,29 @@
   },
   {
     "inputs": [],
-    "name": "expertNft",
+    "name": "getCreditInfo",
     "outputs": [
       {
-        "internalType": "contract IERC721Expert",
+        "components": [
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "monthLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "currentWithdrawLimit",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IGovPool.CreditInfoView[]",
         "name": "",
-        "type": "address"
+        "type": "tuple[]"
       }
     ],
     "stateMutability": "view",
@@ -827,39 +843,49 @@
   {
     "inputs": [
       {
+        "internalType": "uint256[]",
+        "name": "proposalIds",
+        "type": "uint256[]"
+      },
+      {
         "internalType": "address",
         "name": "delegator",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
       }
     ],
-    "name": "getDelegatorStakingRewards",
+    "name": "getDelegatorRewards",
     "outputs": [
       {
         "components": [
-          {
-            "internalType": "address",
-            "name": "micropool",
-            "type": "address"
-          },
           {
             "internalType": "address[]",
             "name": "rewardTokens",
             "type": "address[]"
           },
           {
-            "internalType": "uint256[]",
-            "name": "expectedRewards",
-            "type": "uint256[]"
+            "internalType": "bool[]",
+            "name": "isVoteFor",
+            "type": "bool[]"
+          },
+          {
+            "internalType": "bool[]",
+            "name": "isClaimed",
+            "type": "bool[]"
           },
           {
             "internalType": "uint256[]",
-            "name": "realRewards",
+            "name": "expectedRewards",
             "type": "uint256[]"
           }
         ],
-        "internalType": "struct IGovPool.UserStakeRewardsView[]",
+        "internalType": "struct IGovPool.DelegatorRewards",
         "name": "",
-        "type": "tuple[]"
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -905,7 +931,12 @@
       },
       {
         "internalType": "address",
-        "name": "distributionProposal",
+        "name": "poolRegistry",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "votePower",
         "type": "address"
       }
     ],
@@ -918,7 +949,7 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "_injector",
+        "name": "injector_",
         "type": "address"
       }
     ],
@@ -927,8 +958,41 @@
   },
   {
     "inputs": [],
-    "name": "getOffchainResultsHash",
+    "name": "getNftContracts",
     "outputs": [
+      {
+        "internalType": "address",
+        "name": "nftMultiplier",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "expertNft",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "dexeExpertNft",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "babt",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getOffchainInfo",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "validator",
+        "type": "address"
+      },
       {
         "internalType": "string",
         "name": "resultsHash",
@@ -1152,11 +1216,6 @@
                     "type": "tuple"
                   },
                   {
-                    "internalType": "bool",
-                    "name": "executed",
-                    "type": "bool"
-                  },
-                  {
                     "internalType": "uint64",
                     "name": "voteEnd",
                     "type": "uint64"
@@ -1164,6 +1223,11 @@
                   {
                     "internalType": "uint64",
                     "name": "executeAfter",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "executionTime",
                     "type": "uint64"
                   },
                   {
@@ -1179,6 +1243,11 @@
                   {
                     "internalType": "uint256",
                     "name": "nftPowerSnapshotId",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "givenRewards",
                     "type": "uint256"
                   }
                 ],
@@ -1303,11 +1372,6 @@
             "internalType": "uint256",
             "name": "requiredValidatorsQuorum",
             "type": "uint256"
-          },
-          {
-            "internalType": "uint64",
-            "name": "executeAfter",
-            "type": "uint64"
           }
         ],
         "internalType": "struct IGovPool.ProposalView[]",
@@ -1331,9 +1395,9 @@
         "type": "address"
       },
       {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
+        "internalType": "enum IGovPool.VoteType",
+        "name": "voteType",
+        "type": "uint8"
       }
     ],
     "name": "getTotalVotes",
@@ -1353,6 +1417,25 @@
         "name": "",
         "type": "uint256"
       },
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getUserActiveProposalsCount",
+    "outputs": [
       {
         "internalType": "uint256",
         "name": "",
@@ -1375,9 +1458,9 @@
         "type": "address"
       },
       {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
+        "internalType": "enum IGovPool.VoteType",
+        "name": "voteType",
+        "type": "uint8"
       }
     ],
     "name": "getUserVotes",
@@ -1385,33 +1468,28 @@
       {
         "components": [
           {
+            "internalType": "bool",
+            "name": "isVoteFor",
+            "type": "bool"
+          },
+          {
             "internalType": "uint256",
-            "name": "totalVotedFor",
+            "name": "totalVoted",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "totalVotedAgainst",
+            "name": "tokensVoted",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "tokensVotedFor",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokensVotedAgainst",
+            "name": "powerVoted",
             "type": "uint256"
           },
           {
             "internalType": "uint256[]",
-            "name": "nftsVotedFor",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "nftsVotedAgainst",
+            "name": "nftsVoted",
             "type": "uint256[]"
           }
         ],
@@ -1424,65 +1502,10 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getVerifier",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "getVoteModifierForUser",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getVoteModifiers",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
         "name": "delegator",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "delegatee",
         "type": "address"
       }
     ],
@@ -1555,19 +1578,6 @@
         "internalType": "string",
         "name": "",
         "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "nftMultiplier",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -1701,29 +1711,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "delegatee",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "nftIds",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "request",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "string",
         "name": "resultsHash",
         "type": "string"
@@ -1742,9 +1729,32 @@
   {
     "inputs": [
       {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "setCreditInfo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "contractsRegistry",
         "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
       }
     ],
     "name": "setDependencies",
@@ -1756,7 +1766,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_injector",
+        "name": "injector_",
         "type": "address"
       }
     ],
@@ -1800,6 +1810,29 @@
   {
     "inputs": [
       {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address",
+        "name": "destination",
+        "type": "address"
+      }
+    ],
+    "name": "transferCreditAmount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "delegatee",
         "type": "address"
@@ -1824,13 +1857,31 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "user",
+        "name": "delegatee",
         "type": "address"
       },
       {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "nftIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "undelegateTreasury",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
       }
     ],
     "name": "unlock",
@@ -1841,32 +1892,14 @@
   {
     "inputs": [
       {
-        "internalType": "uint256[]",
-        "name": "proposalIds",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
-      }
-    ],
-    "name": "unlockInProposals",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "proposalId",
         "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isVoteFor",
+        "type": "bool"
       },
       {
         "internalType": "uint256",
@@ -1877,42 +1910,9 @@
         "internalType": "uint256[]",
         "name": "voteNftIds",
         "type": "uint256[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "isVoteFor",
-        "type": "bool"
       }
     ],
     "name": "vote",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "proposalId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "voteAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "voteNftIds",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "isVoteFor",
-        "type": "bool"
-      }
-    ],
-    "name": "voteDelegated",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
