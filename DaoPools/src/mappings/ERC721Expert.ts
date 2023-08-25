@@ -1,41 +1,31 @@
 import { pushUnique, remove } from "@solarity/graph-lib";
 import { Transfer, TagsAdded } from "../../generated/templates/ERC721Expert/ERC721Expert";
-import { getExpertNft } from "../entities/ExpertNft/ExpertNft";
+import { getExpertNft } from "../entities/ExpertNft";
 import { Address, Bytes, store } from "@graphprotocol/graph-ts";
-import { getExpert } from "../entities/ExpertNft/Expert";
-import { getExpertInPool } from "../entities/ExpertNft/ExpertInPool";
 import { getExpertNftContract } from "../entities/ExpertNftContract";
+import { getVoter } from "../entities/Voters/Voter";
+import { getVoterInPool } from "../entities/Voters/VoterInPool";
+import { getDaoPool } from "../entities/DaoPool";
 
 export function onTransfer(event: Transfer): void {
-  let expertNftContract = getExpertNftContract(event.address);
+  const expertNftContract = getExpertNftContract(event.address);
+  const pool = getDaoPool(Address.fromBytes(expertNftContract.daoPool));
+  const voter = getVoter(event.params.to);
+  const voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
+  const expertNft = getExpertNft(event.address, event.params.tokenId);
 
   if (event.params.from.equals(Address.zero())) {
-    const expert = getExpert(event.params.to);
-    const expertInPool = getExpertInPool(expert, expertNftContract.daoPool, event.params.tokenId);
-    getExpertNft(event.address, event.params.tokenId, event.params.to).save();
+    voterInPool.expertNft = expertNft.id;
 
-    expert.pools = pushUnique<Bytes>(expert.pools, [expertNftContract.daoPool]);
-
-    expertInPool.save();
-    expert.save();
+    expertNft.save();
   } else {
-    const expert = getExpert(event.params.from);
+    voterInPool.expertNft = Bytes.empty();
 
-    expert.pools = remove<Bytes>(expert.pools, [expertNftContract.daoPool]);
-
-    store.remove("ExpertInPool", event.params.from.concat(expertNftContract.daoPool).toHexString());
-    store.remove(
-      "ExpertNft",
-      event.address.concat(Bytes.fromByteArray(Bytes.fromBigInt(event.params.tokenId))).toHexString()
-    );
-
-    if (expert.pools.length == 0) {
-      store.remove("Expert", expert.id.toHexString());
-    } else {
-      expert.save();
-    }
+    store.remove("ExpertNft", expertNft.id.toHexString());
   }
 
+  voter.save();
+  voterInPool.save();
   expertNftContract.save();
 }
 
