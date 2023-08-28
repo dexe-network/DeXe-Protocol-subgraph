@@ -16,7 +16,7 @@ import {
 import { getDaoPool } from "../entities/DaoPool";
 import { getDelegationHistory } from "../entities/DelegationHistory";
 import { getProposal } from "../entities/Proposal";
-import { getProposalVote } from "../entities/ProposalVote";
+import { getProposalInteraction } from "../entities/ProposalInteraction";
 import { getVoter } from "../entities/Voters/Voter";
 import { getVoterInPool } from "../entities/Voters/VoterInPool";
 import { getVoterInProposal } from "../entities/Voters/VoterInProposal";
@@ -26,10 +26,10 @@ import { getProposalSettings } from "../entities/Settings/ProposalSettings";
 import { getVoterInPoolPair } from "../entities/Voters/VoterInPoolPair";
 import { getUSDValue } from "../helpers/PriceFeedInteractions";
 import { DelegationType } from "../entities/global/DelegationTypeEnum";
-import { VoteType, getEnumBigInt } from "../entities/global/VoteTypeEnum";
 import { TreasuryDelegationType } from "../entities/global/TreasuryDelegationTypeEnum";
 import { getTreasuryDelegationHistory } from "../entities/TreasuryDelegationHistory";
 import { RewardType } from "../entities/global/RewardTypeEnum";
+import { ProposalInteractionType, getEnumBigInt } from "../entities/global/ProposalInteractionTypeEnum";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let pool = getDaoPool(event.address);
@@ -216,73 +216,78 @@ export function onDelegatedTreasury(event: DelegatedTreasury): void {
   to.save();
 }
 
-export function onVoted(event: VoteChanged): void {
-  // let voter = getVoter(event.params.voter);
-  // let pool = getDaoPool(event.address);
-  // let proposal = getProposal(pool, event.params.proposalId);
-  // let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
-  // let voterInProposal = getVoterInProposal(proposal, voterInPool);
-  // let proposalVote = getProposalVote(
-  //   event.transaction.hash,
-  //   voterInProposal,
-  //   event.block.timestamp,
-  //   getEnumBigInt(event.params.voteType),
-  //   event.params.amount,
-  //   event.params.isVoteFor
-  // );
-  // if (proposalVote.isVoteFor) {
-  //   switch (event.params.voteType) {
-  //     case VoteType.DELEGATED:
-  //     case VoteType.MICROPOOL:
-  //       voterInProposal.totalDelegatedVoteForAmount = voterInProposal.totalDelegatedVoteForAmount.plus(
-  //         event.params.amount
-  //       );
-  //       break;
-  //     case VoteType.PERSONAL:
-  //       voterInProposal.totalVoteForAmount = voterInProposal.totalVoteForAmount.plus(event.params.amount);
-  //       break;
-  //     case VoteType.TREASURY:
-  //       voterInProposal.totalTreasuryVoteForAmount = voterInProposal.totalTreasuryVoteForAmount.plus(
-  //         event.params.amount
-  //       );
-  //       break;
-  //   }
-  //   proposal.currentVotesFor = proposal.currentVotesFor.plus(event.params.amount);
-  // } else {
-  //   switch (event.params.voteType) {
-  //     case VoteType.MICROPOOL:
-  //     case VoteType.DELEGATED:
-  //       voterInProposal.totalDelegatedVoteAgainstAmount = voterInProposal.totalDelegatedVoteAgainstAmount.plus(
-  //         event.params.amount
-  //       );
-  //       break;
-  //     case VoteType.PERSONAL:
-  //       voterInProposal.totalVoteAgainstAmount = voterInProposal.totalVoteAgainstAmount.plus(event.params.amount);
-  //       break;
-  //     case VoteType.TREASURY:
-  //       voterInProposal.totalTreasuryVoteAgainstAmount = voterInProposal.totalTreasuryVoteAgainstAmount.plus(
-  //         event.params.amount
-  //       );
-  //       break;
-  //   }
-  //   proposal.currentVotesAgainst = proposal.currentVotesAgainst.plus(event.params.amount);
-  // }
-  // let newVoters = pushUnique<Bytes>(proposal.voters, [voter.id]);
-  // if (proposal.voters.length < newVoters.length) {
-  //   proposal.voters = newVoters;
-  //   proposal.votersVoted = proposal.votersVoted.plus(BigInt.fromI32(1));
-  //   voter.totalVotedProposals = voter.totalVotedProposals.plus(BigInt.fromI32(1));
-  // }
-  // proposal.votesCount = proposal.votesCount.plus(BigInt.fromI32(1));
-  // voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
-  // voterInPool.proposalsCount = BigInt.fromI32(voterInPool.proposals.length);
-  // voter.totalVotes = voter.totalVotes.plus(event.params.amount);
-  // proposalVote.save();
-  // voterInProposal.save();
-  // voterInPool.save();
-  // proposal.save();
-  // pool.save();
-  // voter.save();
+export function onVoteChanged(event: VoteChanged): void {
+  let voter = getVoter(event.params.voter);
+  let pool = getDaoPool(event.address);
+  let proposal = getProposal(pool, event.params.proposalId);
+  let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
+  let voterInProposal = getVoterInProposal(proposal, voterInPool);
+
+  let interactionType = event.params.isVoteFor
+    ? ProposalInteractionType.VOTE_FOR
+    : ProposalInteractionType.VOTE_AGAINST;
+
+  if (
+    isZero(event.params.votes.personal) &&
+    isZero(event.params.votes.micropool) &&
+    isZero(event.params.votes.treasury)
+  ) {
+    interactionType = ProposalInteractionType.VOTE_CANCEL;
+  }
+
+  getProposalInteraction(
+    event.transaction.hash,
+    voterInProposal,
+    event.block.timestamp,
+    getEnumBigInt(interactionType),
+    event.params.votes.personal,
+    event.params.votes.micropool,
+    event.params.votes.treasury
+  ).save();
+
+  const totalVotes = event.params.votes.personal.plus(event.params.votes.micropool).plus(event.params.votes.treasury);
+
+  voterInProposal.personalVote = event.params.votes.personal;
+  voterInProposal.micropoolVote = event.params.votes.micropool;
+  voterInProposal.treasuryVote = event.params.votes.treasury;
+
+  if (interactionType == ProposalInteractionType.VOTE_CANCEL) {
+    proposal.voters = remove<Bytes>(proposal.voters, [voter.id]);
+    proposal.votersVoted = proposal.votersVoted.minus(BigInt.fromI32(1));
+
+    voter.totalVotedProposals = voter.totalVotedProposals.minus(BigInt.fromI32(1));
+
+    voterInPool.proposals = remove(voterInPool.proposals, [voterInProposal.id]);
+    voterInPool.engagedProposalsCount = BigInt.fromI32(voterInPool.proposals.length);
+
+    voter.totalVotes = voter.totalVotes.minus(totalVotes);
+  } else {
+    if (interactionType == ProposalInteractionType.VOTE_FOR) {
+      proposal.currentVotesFor = proposal.currentVotesFor.plus(totalVotes);
+    } else {
+      proposal.currentVotesAgainst = proposal.currentVotesAgainst.plus(totalVotes);
+    }
+
+    let newVoters = pushUnique<Bytes>(proposal.voters, [voter.id]);
+
+    if (proposal.voters.length < newVoters.length) {
+      proposal.voters = newVoters;
+      proposal.votersVoted = proposal.votersVoted.plus(BigInt.fromI32(1));
+
+      voter.totalVotedProposals = voter.totalVotedProposals.plus(BigInt.fromI32(1));
+    }
+
+    voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
+    voterInPool.engagedProposalsCount = BigInt.fromI32(voterInPool.proposals.length);
+
+    voter.totalVotes = voter.totalVotes.plus(totalVotes);
+  }
+
+  voterInProposal.save();
+  voterInPool.save();
+  proposal.save();
+  pool.save();
+  voter.save();
 }
 
 export function onProposalExecuted(event: ProposalExecuted): void {
@@ -453,4 +458,8 @@ function recalculateAPR(voterInPool: VoterInPool, rewardCredited: BigInt, curren
     voterInPool._cusum = P;
     voterInPool._lastUpdate = currentTimestamp;
   }
+}
+
+function isZero(val: BigInt): boolean {
+  return val.equals(BigInt.zero());
 }

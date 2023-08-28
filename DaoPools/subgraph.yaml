@@ -73,7 +73,7 @@ templates:
         - event: DelegatedTreasury(address,uint256,uint256[],bool)
           handler: onDelegatedTreasury
         - event: VoteChanged(uint256,address,bool,(uint256,uint256,uint256)) # id, msg.sender, personalVote, delegatedVote
-          handler: onVoted
+          handler: onVoteChanged
         - event: ProposalExecuted(uint256,bool,address) # id, isFor, msg.sender
           handler: onProposalExecuted
         - event: RewardClaimed(uint256,address,address,uint256) # id, msg.sender, token, amount

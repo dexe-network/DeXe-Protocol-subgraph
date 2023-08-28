@@ -3,7 +3,7 @@ import { ProposalInteraction, VoterInProposal } from "../../generated/schema";
 import { increaseCounter } from "../helpers/IncreaseCounter";
 import { getInteractionCount } from "./global/InteractionCount";
 
-export function getProposalVote(
+export function getProposalInteraction(
   hash: Bytes,
   voterInProposal: VoterInProposal,
   timestamp: BigInt,
