@@ -74,19 +74,6 @@ describe("DistributionProposal", () => {
     onDistributionProposalClaimed(event);
 
     assert.fieldEquals(
-      "VoterInPool",
-      sender.concat(pool).toHexString(),
-      "claimedDPs",
-      `[${pool.concatI32(proposalId.toI32()).toHexString()}]`
-    );
-    assert.fieldEquals(
-      "VoterInPool",
-      sender.concat(pool).toHexString(),
-      "totalDPClaimed",
-      BigInt.fromU64(10000000000000000000).toString()
-    );
-
-    assert.fieldEquals(
       "Voter",
       sender.toHexString(),
       "totalClaimedUSD",

@@ -17,6 +17,8 @@ export function getTokenSaleTier(
     tier.totalBuyersCount = BigInt.zero();
     tier.buyers = new Array();
 
+    tier.whitelistType = BigInt.zero();
+
     tier.tokenSale = tokenSale.id;
   }
 

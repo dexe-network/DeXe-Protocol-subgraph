@@ -197,7 +197,7 @@ type VoterInPool @entity {
   id: Bytes! # voter address + pool address
   joinedTimestamp: BigInt!
 
-  expertNft: ExpertNft!
+  expertNft: Bytes!
 
   receivedDelegation: BigInt!
   receivedNFTDelegation: [BigInt!]!
