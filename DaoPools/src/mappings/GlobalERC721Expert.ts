@@ -4,17 +4,21 @@ import { Address, Bytes, store } from "@graphprotocol/graph-ts";
 import { getExpertNftContract } from "../entities/ExpertNftContract";
 import { getVoter } from "../entities/Voters/Voter";
 import { getExpertNft } from "../entities/ExpertNft";
+import { Voter } from "../../generated/schema";
 
 export function onTransfer(event: Transfer): void {
   const expertNftContract = getExpertNftContract(event.address);
-  const voter = getVoter(event.params.to);
+  let voter: Voter;
   const expertNft = getExpertNft(event.address, event.params.tokenId);
 
   if (event.params.from.equals(Address.zero())) {
+    voter = getVoter(event.params.to);
     voter.expertNft = expertNft.id;
 
     expertNft.save();
   } else {
+    voter = getVoter(event.params.from);
+
     voter.expertNft = Bytes.empty();
 
     store.remove("ExpertNft", expertNft.id.toHexString());

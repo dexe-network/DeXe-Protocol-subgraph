@@ -142,8 +142,6 @@ describe("ERC721Expert", () => {
 
     onTransfer(event);
 
-    // logStore();
-
     assert.fieldEquals(
       "VoterInPool",
       from.concat(daoPools[0]).toHexString(),
@@ -151,29 +149,34 @@ describe("ERC721Expert", () => {
       from.concat(daoPools[0]).toHexString()
     );
     assert.fieldEquals("VoterInPool", from.concat(daoPools[0]).toHexString(), "expertNft", Bytes.empty().toHexString());
+    assert.notInStore("ExpertNft", nfts[0].concat(bytesFromBigInt(tokenId)).toHexString());
 
-    // assert.notInStore("ExpertNft", nfts[0].concat(bytesFromBigInt(tokenId)).toHexString());
-
-    // assert.fieldEquals(
-    //   "ExpertNft",
-    //   nfts[1].concat(bytesFromBigInt(tokenId)).toHexString(),
-    //   "id",
-    //   nfts[1].concat(bytesFromBigInt(tokenId)).toHexString()
-    // );
-    // assert.fieldEquals(
-    //   "ExpertNft",
-    //   nfts[1].concat(bytesFromBigInt(tokenId)).toHexString(),
-    //   "tokenId",
-    //   tokenId.toString()
-    // );
-    // assert.fieldEquals("ExpertNft", nfts[1].concat(bytesFromBigInt(tokenId)).toHexString(), "tags", "[]");
+    assert.fieldEquals(
+      "ExpertNft",
+      nfts[1].concat(bytesFromBigInt(tokenId)).toHexString(),
+      "id",
+      nfts[1].concat(bytesFromBigInt(tokenId)).toHexString()
+    );
+    assert.fieldEquals(
+      "ExpertNft",
+      nfts[1].concat(bytesFromBigInt(tokenId)).toHexString(),
+      "tokenId",
+      tokenId.toString()
+    );
+    assert.fieldEquals("ExpertNft", nfts[1].concat(bytesFromBigInt(tokenId)).toHexString(), "tags", "[]");
 
     event = createTransfer(from, to, tokenId, nfts[1], block, tx);
 
     onTransfer(event);
 
+    assert.fieldEquals(
+      "VoterInPool",
+      from.concat(daoPools[1]).toHexString(),
+      "id",
+      from.concat(daoPools[1]).toHexString()
+    );
     assert.fieldEquals("VoterInPool", from.concat(daoPools[1]).toHexString(), "expertNft", Bytes.empty().toHexString());
-    // assert.notInStore("ExpertNft", nfts[1].concat(bytesFromBigInt(tokenId)).toHexString());
+    assert.notInStore("ExpertNft", nfts[1].concat(bytesFromBigInt(tokenId)).toHexString());
   });
 
   test("should handle TagsAdded", () => {

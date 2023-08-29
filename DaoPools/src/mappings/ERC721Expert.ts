@@ -7,32 +7,34 @@ import { getVoter } from "../entities/Voters/Voter";
 import { getVoterInPool } from "../entities/Voters/VoterInPool";
 import { getDaoPool } from "../entities/DaoPool";
 import { log } from "matchstick-as";
+import { Voter, VoterInPool } from "../../generated/schema";
 
 export function onTransfer(event: Transfer): void {
   const expertNftContract = getExpertNftContract(event.address);
   const pool = getDaoPool(Address.fromBytes(expertNftContract.daoPool));
-  const voter = getVoter(event.params.to);
-  const voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
   const expertNft = getExpertNft(event.address, event.params.tokenId);
-
-  log.info("handle", []);
-  log.info("expert nft: {}", [voterInPool.expertNft.toHexString()]);
+  let voter: Voter;
+  let voterInPool: VoterInPool;
 
   if (event.params.from.equals(Address.zero())) {
+    voter = getVoter(event.params.to);
+    voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
+
     voterInPool.expertNft = expertNft.id;
-    log.info("1", []);
+
     expertNft.save();
   } else {
+    voter = getVoter(event.params.from);
+    voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
+
     voterInPool.expertNft = Bytes.empty();
-    log.info("2", []);
+
     store.remove("ExpertNft", expertNft.id.toHexString());
   }
 
-  log.info("expert nft: {}", [voterInPool.expertNft.toHexString()]);
-
-  voter.save();
-  voterInPool.save();
   expertNftContract.save();
+  voterInPool.save();
+  voter.save();
 }
 
 export function onTagsAdded(event: TagsAdded): void {

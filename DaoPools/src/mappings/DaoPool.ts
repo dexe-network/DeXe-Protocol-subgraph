@@ -247,11 +247,17 @@ export function onVoteChanged(event: VoteChanged): void {
 
   const totalVotes = event.params.votes.personal.plus(event.params.votes.micropool).plus(event.params.votes.treasury);
 
-  voterInProposal.personalVote = event.params.votes.personal;
-  voterInProposal.micropoolVote = event.params.votes.micropool;
-  voterInProposal.treasuryVote = event.params.votes.treasury;
-
   if (interactionType == ProposalInteractionType.VOTE_CANCEL) {
+    const prevVotes = voterInProposal.personalVote
+      .plus(voterInProposal.micropoolVote)
+      .plus(voterInProposal.treasuryVote);
+
+    if (voterInProposal.isVoteFor) {
+      proposal.currentVotesFor = proposal.currentVotesFor.minus(prevVotes);
+    } else {
+      proposal.currentVotesAgainst = proposal.currentVotesAgainst.minus(prevVotes);
+    }
+
     proposal.voters = remove<Bytes>(proposal.voters, [voter.id]);
     proposal.votersVoted = proposal.votersVoted.minus(BigInt.fromI32(1));
 
@@ -260,7 +266,7 @@ export function onVoteChanged(event: VoteChanged): void {
     voterInPool.proposals = remove(voterInPool.proposals, [voterInProposal.id]);
     voterInPool.engagedProposalsCount = BigInt.fromI32(voterInPool.proposals.length);
 
-    voter.totalVotes = voter.totalVotes.minus(totalVotes);
+    voter.totalVotes = voter.totalVotes.minus(prevVotes);
   } else {
     if (interactionType == ProposalInteractionType.VOTE_FOR) {
       proposal.currentVotesFor = proposal.currentVotesFor.plus(totalVotes);
@@ -282,6 +288,11 @@ export function onVoteChanged(event: VoteChanged): void {
 
     voter.totalVotes = voter.totalVotes.plus(totalVotes);
   }
+
+  voterInProposal.isVoteFor = event.params.isVoteFor;
+  voterInProposal.personalVote = event.params.votes.personal;
+  voterInProposal.micropoolVote = event.params.votes.micropool;
+  voterInProposal.treasuryVote = event.params.votes.treasury;
 
   voterInProposal.save();
   voterInPool.save();
