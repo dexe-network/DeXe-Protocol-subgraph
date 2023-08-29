@@ -14,6 +14,6 @@
   },
   "dependencies": {
     "husky": "^7.0.2",
-    "prettier": "^2.4.0"
+    "prettier": "^2.8.0"
   }
 }
