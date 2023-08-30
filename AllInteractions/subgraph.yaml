@@ -20,7 +20,7 @@ dataSources:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
       eventHandlers:
-        - event: DaoPoolDeployed(string,address,(address,address,address,address,address),address,address,address,address)
+        - event: DaoPoolDeployed(string,address,(address,address,address,address,address,address),address,address,address,address)
           handler: onDaoPoolDeployed
 
   - kind: ethereum/contract
@@ -67,12 +67,14 @@ templates:
           handler: onProposalCreated
         - event: Delegated(address,address,uint256,uint256[],bool)
           handler: onDelegated
-        - event: Voted(uint256,address,uint8,uint256,bool)
-          handler: onVoted
+        - event: VoteChanged(uint256,address,bool,(uint256,uint256,uint256))
+          handler: onVoteChanged
         - event: ProposalExecuted(uint256,bool,address)
           handler: onProposalExecuted
         - event: RewardClaimed(uint256,address,address,uint256)
           handler: onRewardClaimed
+        - event: RewardCanceled(uint256,address,uint256,address)
+          handler: onRewardCanceled
         - event: Deposited(uint256,uint256[],address)
           handler: onDeposited
         - event: Withdrawn(uint256,uint256[],address)
@@ -81,8 +83,6 @@ templates:
           handler: onMovedToValidators
         - event: OffchainResultsSaved(string,address)
           handler: onOffchainResultsSaved
-        - event: Requested(address,address,uint256,uint256[])
-          handler: onRequested
   - kind: ethereum/contract
     name: DaoValidators
     network: chapel
