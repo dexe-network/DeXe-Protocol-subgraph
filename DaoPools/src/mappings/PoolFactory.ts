@@ -27,7 +27,7 @@ export function onDeployed(event: DaoPoolDeployed): void {
   getSettingsContract(event.params.govPoolDeps.settingsAddress, event.params.govPool).save();
   getUserKeeperContract(event.params.govPoolDeps.userKeeperAddress, event.params.govPool).save();
   getExpertNftContract(event.params.govPoolDeps.expertNftAddress, event.params.govPool).save();
-  getTokenSale(event.params.tokenSale, event.params.govPool, event.params.token).save();
+  getTokenSale(event.params.tokenSale, event.params.govPool).save();
 
   DaoPool.create(event.params.govPool);
   DistributionProposal.create(event.params.distributionProposal);

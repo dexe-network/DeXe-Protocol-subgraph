@@ -18,27 +18,17 @@ export function onTierCreated(event: TierCreated): void {
 export function onBought(event: Bought): void {
   let tokenSale = getTokenSale(event.address);
   let tier = getTokenSaleTier(tokenSale, event.params.tierId);
-  let pool = getDaoPool(Address.fromBytes(tokenSale.pool));
+  let pool = getDaoPool(Address.fromBytes(tokenSale.daoPool));
 
-  tier.voters = pushUnique<Bytes>(tier.voters, [
+  tier.buyers = pushUnique<Bytes>(tier.buyers, [
     getVoterInPool(pool, getVoter(event.params.buyer), event.block.timestamp).id,
   ]);
 
-  if (tier.voters.length > tier.totalUserCount.toI32()) {
-    tier.totalUserCount = tier.totalUserCount.plus(BigInt.fromI32(tier.voters.length).minus(tier.totalUserCount));
+  if (tier.buyers.length > tier.totalBuyersCount.toI32()) {
+    tier.totalBuyersCount = tier.totalBuyersCount.plus(BigInt.fromI32(tier.buyers.length).minus(tier.totalBuyersCount));
   }
 
   tokenSale.save();
   tier.save();
   pool.save();
-}
-
-export function onWhitelisted(event: Whitelisted): void {
-  let tokenSale = getTokenSale(event.address);
-  let tier = getTokenSaleTier(tokenSale, event.params.tierId);
-
-  tier.userWhitelist = pushUnique(tier.userWhitelist, [event.params.user]);
-
-  tier.save();
-  tokenSale.save();
 }

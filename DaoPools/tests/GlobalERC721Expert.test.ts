@@ -62,11 +62,11 @@ describe("GlobalERC721Expert", () => {
 
     onTransfer(event);
 
-    assert.fieldEquals("GlobalExpert", to.toHexString(), "id", to.toHexString());
+    assert.fieldEquals("Voter", to.toHexString(), "id", to.toHexString());
     assert.fieldEquals(
-      "GlobalExpert",
+      "Voter",
       to.toHexString(),
-      "nft",
+      "expertNft",
       event.address.concat(bytesFromBigInt(tokenId)).toHexString()
     );
 
@@ -78,7 +78,6 @@ describe("GlobalERC721Expert", () => {
     );
     assert.fieldEquals("ExpertNft", nft.concat(bytesFromBigInt(tokenId)).toHexString(), "tokenId", tokenId.toString());
     assert.fieldEquals("ExpertNft", nft.concat(bytesFromBigInt(tokenId)).toHexString(), "tags", "[]");
-    assert.fieldEquals("ExpertNft", nft.concat(bytesFromBigInt(tokenId)).toHexString(), "expert", to.toHexString());
   });
 
   test("should handle Transfer (burn)", () => {
@@ -92,7 +91,7 @@ describe("GlobalERC721Expert", () => {
     onTransfer(event);
 
     assert.notInStore("ExpertNft", nft.concat(bytesFromBigInt(tokenId)).toHexString());
-    assert.notInStore("GlobalExpert", from.toHexString());
+    assert.fieldEquals("Voter", from.toHexString(), "expertNft", Bytes.empty().toHexString());
   });
 
   test("should handle TagsAdded", () => {

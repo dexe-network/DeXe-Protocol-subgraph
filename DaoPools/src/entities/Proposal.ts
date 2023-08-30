@@ -16,21 +16,26 @@ export function getProposal(
     proposal = new Proposal(id);
 
     proposal.proposalId = proposalId;
+
     proposal.creator = creator;
+
     proposal.isFor = false;
     proposal.executor = Bytes.empty();
     proposal.executionTimestamp = BigInt.zero();
+
+    proposal.rewardToken = rewardToken;
+
     proposal.currentVotesFor = BigInt.zero();
     proposal.currentVotesAgainst = BigInt.zero();
     proposal.quorum = quorum;
-    proposal.votersVoted = BigInt.zero();
-    proposal.settings = Bytes.empty();
-    proposal.voters = new Array<Bytes>();
+
     proposal.description = description;
-    proposal.votesCount = BigInt.zero();
-    proposal.rewardToken = rewardToken;
+
+    proposal.votersVoted = BigInt.zero();
+    proposal.voters = new Array<Bytes>();
 
     proposal.pool = pool.id;
+    proposal.settings = Bytes.empty();
   }
 
   return proposal;

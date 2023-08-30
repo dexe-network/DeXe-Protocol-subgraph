@@ -21,8 +21,8 @@ export function getDelegationHistory(
   if (history == null) {
     history = new DelegationHistory(id);
     history.amount = amount;
-    history.from = from.id;
-    history.to = to.id;
+    history.delegator = from.id;
+    history.delegatee = to.id;
     history.type = getEnumBigInt(type);
     history.timestamp = timestamp;
     history.nfts = nfts;
