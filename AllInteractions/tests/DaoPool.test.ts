@@ -9,16 +9,15 @@ import {
   ProposalCreated,
   ProposalExecuted,
   RewardClaimed,
-  Voted,
+  RewardCanceled,
+  VoteChanged,
   Withdrawn,
-  Requested,
 } from "../generated/templates/DaoPool/DaoPool";
 import {
   onDelegated,
-  onRequested,
   onProposalCreated,
   onProposalExecuted,
-  onVoted,
+  onVoteChanged,
   onRewardClaimed,
   onDeposited,
   onWithdrawn,
@@ -26,7 +25,7 @@ import {
   onOffchainResultsSaved,
 } from "../src/mappings/DaoPool";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
-import { VoteType, getEnumBigInt } from "../src/entities/global/VoteTypeEnum";
+import { ProposalInteractionType } from "../src/entities/global/ProposalInteractionTypeEnum";
 
 function createProposalCreated(
   proposalId: BigInt,
@@ -85,48 +84,30 @@ function createDelegated(
   return event;
 }
 
-function createRequested(
-  from: Address,
-  to: Address,
-  amount: BigInt,
-  nfts: Array<BigInt>,
-  contractSender: Address,
-  block: ethereum.Block,
-  tx: ethereum.Transaction
-): Requested {
-  let event = changetype<Requested>(newMockEvent());
-  event.parameters = new Array();
-
-  event.parameters.push(new ethereum.EventParam("from", ethereum.Value.fromAddress(from)));
-  event.parameters.push(new ethereum.EventParam("to", ethereum.Value.fromAddress(to)));
-  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
-  event.parameters.push(new ethereum.EventParam("nfts", ethereum.Value.fromUnsignedBigIntArray(nfts)));
-
-  event.block = block;
-  event.transaction = tx;
-  event.address = contractSender;
-
-  return event;
-}
-
-function createVoted(
+function createVoteChanged(
   proposalId: BigInt,
   sender: Address,
-  voteType: BigInt,
-  amount: BigInt,
+  personal: BigInt,
+  micropool: BigInt,
+  treasury: BigInt,
   isVoteFor: boolean,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
-): Voted {
-  let event = changetype<Voted>(newMockEvent());
+): VoteChanged {
+  let event = changetype<VoteChanged>(newMockEvent());
   event.parameters = new Array();
 
+  const votes = new ethereum.Tuple(3);
+
+  votes[0] = ethereum.Value.fromUnsignedBigInt(personal);
+  votes[1] = ethereum.Value.fromUnsignedBigInt(micropool);
+  votes[2] = ethereum.Value.fromUnsignedBigInt(treasury);
+
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
-  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
-  event.parameters.push(new ethereum.EventParam("voteType", ethereum.Value.fromUnsignedBigInt(voteType)));
-  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("voter", ethereum.Value.fromAddress(sender)));
   event.parameters.push(new ethereum.EventParam("isVoteFor", ethereum.Value.fromBoolean(isVoteFor)));
+  event.parameters.push(new ethereum.EventParam("votes", ethereum.Value.fromTuple(votes)));
 
   event.block = block;
   event.transaction = tx;
@@ -348,68 +329,129 @@ describe("DaoPool", () => {
     );
   });
 
-  test("should handle Requested", () => {
-    let from = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
-    let to = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
-    let amount = BigInt.fromI32(100).pow(18);
-    let nfts = [BigInt.fromI32(1), BigInt.fromI32(2)];
+  test("should handle VoteChanged", () => {
+    let proposalId = BigInt.fromI32(1);
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let personal = BigInt.fromI32(1000);
+    let micropool = BigInt.fromI32(1000);
+    let treasury = BigInt.fromI32(1000);
+    let isVoteFor = true;
 
-    let event0 = createRequested(from, to, amount, nfts, contractSender, block, tx);
-
-    onRequested(event0);
-
-    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
-    assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
-    assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
-
-    assertTransaction(
-      tx.hash,
-      event0.params.from,
+    let event = createVoteChanged(
+      proposalId,
+      sender,
+      personal,
+      micropool,
+      treasury,
+      isVoteFor,
+      contractSender,
       block,
-      `[${TransactionType.DAO_POOL_REQUESTED}]`,
-      BigInt.fromI32(1),
-      contractSender
+      tx
     );
 
-    let event1 = createRequested(from, to, amount, nfts, contractSender, block, tx);
+    onVoteChanged(event);
 
-    onRequested(event1);
-
-    assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
-    assert.fieldEquals("DaoPoolDelegate", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
+    assert.fieldEquals(
+      "DaoPoolProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals(
+      "DaoPoolProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "personalVote",
+      personal.toString()
+    );
+    assert.fieldEquals(
+      "DaoPoolProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "micropoolVote",
+      micropool.toString()
+    );
+    assert.fieldEquals(
+      "DaoPoolProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "treasuryVote",
+      treasury.toString()
+    );
+    assert.fieldEquals(
+      "DaoPoolProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "interactionType",
+      ProposalInteractionType.VOTE_FOR.toString()
+    );
 
     assertTransaction(
       tx.hash,
-      event1.params.from,
+      event.params.voter,
       block,
-      `[${TransactionType.DAO_POOL_REQUESTED}, ${TransactionType.DAO_POOL_REQUESTED}]`,
-      BigInt.fromI32(2),
+      `[${TransactionType.DAO_POOL_PROPOSAL_VOTED}]`,
+      BigInt.fromI32(1),
       contractSender
     );
   });
 
-  test("should handle Voted", () => {
+  test("should handle VoteChanged (cancel)", () => {
     let proposalId = BigInt.fromI32(1);
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
-    let voteType = getEnumBigInt(VoteType.PERSONAL);
-    let amount = BigInt.fromI32(1000);
+    let personal = BigInt.fromI32(0);
+    let micropool = BigInt.fromI32(0);
+    let treasury = BigInt.fromI32(0);
     let isVoteFor = true;
 
-    let event = createVoted(proposalId, sender, voteType, amount, isVoteFor, contractSender, block, tx);
+    let event = createVoteChanged(
+      proposalId,
+      sender,
+      personal,
+      micropool,
+      treasury,
+      isVoteFor,
+      contractSender,
+      block,
+      tx
+    );
 
-    onVoted(event);
+    onVoteChanged(event);
 
     assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
-    assert.fieldEquals("DaoPoolVote", tx.hash.concatI32(0).toHexString(), "pool", contractSender.toHexString());
-    assert.fieldEquals("DaoPoolVote", tx.hash.concatI32(0).toHexString(), "voteType", voteType.toString());
-    assert.fieldEquals("DaoPoolVote", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
-    assert.fieldEquals("DaoPoolVote", tx.hash.concatI32(0).toHexString(), "isVoteFor", isVoteFor.toString());
+    assert.fieldEquals(
+      "DaoPoolProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals(
+      "DaoPoolProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "personalVote",
+      personal.toString()
+    );
+    assert.fieldEquals(
+      "DaoPoolProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "micropoolVote",
+      micropool.toString()
+    );
+    assert.fieldEquals(
+      "DaoPoolProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "treasuryVote",
+      treasury.toString()
+    );
+    assert.fieldEquals(
+      "DaoPoolProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "interactionType",
+      ProposalInteractionType.VOTE_CANCEL.toString()
+    );
 
     assertTransaction(
       tx.hash,
-      event.params.sender,
+      event.params.voter,
       block,
-      `[${TransactionType.DAO_POOL_PROPOSAL_VOTED}]`,
+      `[${TransactionType.DAO_POOL_PROPOSAL_VOTE_CANCELED}]`,
       BigInt.fromI32(1),
       contractSender
     );

@@ -21,7 +21,7 @@ type Transaction @entity {
 
   daoPoolCreate: [DaoPoolCreate!]! @derivedFrom(field: "transaction")
   daoPoolDelegate: [DaoPoolDelegate!]! @derivedFrom(field: "transaction")
-  daoPoolVote: [DaoPoolVote!]! @derivedFrom(field: "transaction")
+  daoPoolProposalInteraction: [DaoPoolProposalInteraction!]! @derivedFrom(field: "transaction")
   daoProposalCreate: [DaoProposalCreate!]! @derivedFrom(field: "transaction")
   daoPoolExecute: [DaoPoolExecute!]! @derivedFrom(field: "transaction")
   daoPoolRewardClaim: [DaoPoolRewardClaim!]! @derivedFrom(field: "transaction")
@@ -74,13 +74,15 @@ type DaoPoolDelegate @entity(immutable: true) {
 # @param isVoteFor bool flag, if true - vote for, if false - vote against
 # @param amount the vote amount
 # @param transaction the transaction entity id
-type DaoPoolVote @entity(immutable: true) {
+type DaoPoolProposalInteraction @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
   pool: Pool!
 
-  voteType: BigInt!
-  isVoteFor: Boolean!
-  amount: BigInt!
+  personalVote: BigInt!
+  micropoolVote: BigInt!
+  treasuryVote: BigInt!
+
+  interactionType: BigInt!
 
   transaction: Transaction!
 }
