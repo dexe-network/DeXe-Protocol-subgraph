@@ -5,14 +5,16 @@ import {
   ExternalProposalCreated,
   InternalProposalCreated,
   InternalProposalExecuted,
+  VoteCanceled,
   Voted,
 } from "../../generated/templates/DaoValidators/DaoValidators";
 import { getDaoPool } from "../entities/DaoPool";
 import { getProposal } from "../entities/Proposal";
-import { getProposalVote } from "../entities/ProposalVote";
+import { getProposalInteraction } from "../entities/ProposalInteraction";
 import { getValidatorContract } from "../entities/ValidatorContract";
 import { getValidatorInPool } from "../entities/ValidatorInPool";
 import { getValidatorInProposal } from "../entities/ValidatorInProposal";
+import { ProposalInteractionType, getEnumBigInt } from "../entities/global/ProposalInteractionTypeEnum";
 
 export function onExternalProposalCreated(event: ExternalProposalCreated): void {
   let pool = getDaoPool(Address.fromBytes(getValidatorContract(event.address).pool));
@@ -49,22 +51,52 @@ export function onVoted(event: Voted): void {
   let validatorInPool = getValidatorInPool(pool, event.params.sender);
   let proposal = getProposal(pool, event.params.proposalId, event.params.isInternal);
   let validatorInProposal = getValidatorInProposal(validatorInPool, proposal);
-  let vote = getProposalVote(
+  let interactionType = event.params.isVoteFor
+    ? ProposalInteractionType.VOTE_FOR
+    : ProposalInteractionType.VOTE_AGAINST;
+  let vote = getProposalInteraction(
     event.transaction.hash,
     event.block.timestamp,
     proposal,
     event.params.vote,
     validatorInProposal,
-    event.params.isVoteFor
+    getEnumBigInt(interactionType)
   );
 
-  if (vote.isVoteFor) {
+  if (event.params.isVoteFor) {
     validatorInProposal.totalVoteFor = validatorInProposal.totalVoteFor.plus(event.params.vote);
     proposal.totalVoteFor = proposal.totalVoteFor.plus(event.params.vote);
   } else {
     validatorInProposal.totalVoteAgainst = validatorInProposal.totalVoteAgainst.plus(event.params.vote);
     proposal.totalVoteAgainst = proposal.totalVoteAgainst.plus(event.params.vote);
   }
+
+  vote.save();
+  validatorInProposal.save();
+  validatorInPool.save();
+  proposal.save();
+  pool.save();
+}
+
+export function onVoteCanceled(event: VoteCanceled): void {
+  let pool = getDaoPool(Address.fromBytes(getValidatorContract(event.address).pool));
+  let validatorInPool = getValidatorInPool(pool, event.params.sender);
+  let proposal = getProposal(pool, event.params.proposalId, event.params.isInternal);
+  let validatorInProposal = getValidatorInProposal(validatorInPool, proposal);
+  let vote = getProposalInteraction(
+    event.transaction.hash,
+    event.block.timestamp,
+    proposal,
+    BigInt.zero(),
+    validatorInProposal,
+    getEnumBigInt(ProposalInteractionType.VOTE_CANCEL)
+  );
+
+  proposal.totalVoteFor = proposal.totalVoteFor.minus(validatorInProposal.totalVoteFor);
+  validatorInProposal.totalVoteFor = BigInt.zero();
+
+  proposal.totalVoteAgainst = proposal.totalVoteAgainst.minus(validatorInProposal.totalVoteAgainst);
+  validatorInProposal.totalVoteAgainst = BigInt.zero();
 
   vote.save();
   validatorInProposal.save();

@@ -61,13 +61,13 @@ type ValidatorInPool @entity {
 # @param isVoteFor bool flag, if true - vote for, if false - vote against
 # @param amount the amount of vote
 # @param voter the ValidatorInProposal entity id
-type ProposalVote @entity(immutable: true) {
+type ProposalInteraction @entity(immutable: true) {
   id: Bytes! # tx hash + counter
   hash: Bytes!
   timestamp: BigInt!
   proposal: Proposal!
 
-  isVoteFor: Boolean!
+  interactionType: BigInt!
   amount: BigInt!
 
   voter: ValidatorInProposal!
@@ -88,7 +88,7 @@ type ValidatorInProposal @entity {
   totalVoteFor: BigInt!
   totalVoteAgainst: BigInt!
 
-  votes: [ProposalVote!]! @derivedFrom(field: "voter")
+  interactions: [ProposalInteraction!]! @derivedFrom(field: "voter")
 }
 
 # @notice The entity counts interactions in single tx
