@@ -8,14 +8,11 @@ export function getVoterInPoolPair(from: VoterInPool, to: VoterInPool): VoterInP
   if (pair == null) {
     pair = new VoterInPoolPair(id);
 
-    pair.from = from.id;
-    pair.to = to.id;
+    pair.delegator = from.id;
+    pair.delegatee = to.id;
 
-    pair.delegateAmount = BigInt.zero();
-    pair.delegateNfts = new Array<BigInt>();
-
-    pair.requestAmount = BigInt.zero();
-    pair.requestNfts = new Array<BigInt>();
+    pair.delegatedAmount = BigInt.zero();
+    pair.delegatedNfts = new Array<BigInt>();
   }
 
   return pair;

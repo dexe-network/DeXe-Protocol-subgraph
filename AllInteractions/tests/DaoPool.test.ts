@@ -25,7 +25,6 @@ import {
   onOffchainResultsSaved,
 } from "../src/mappings/DaoPool";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
-import { VoteType, getEnumBigInt } from "../../DaoPools/src/entities/global/VoteTypeEnum";
 import { ProposalInteractionType } from "../src/entities/global/ProposalInteractionTypeEnum";
 
 function createProposalCreated(
