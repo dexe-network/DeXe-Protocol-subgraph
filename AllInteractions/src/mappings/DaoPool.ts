@@ -7,22 +7,25 @@ import {
   ProposalCreated,
   ProposalExecuted,
   RewardClaimed,
-  Voted,
+  VoteChanged,
   Withdrawn,
-  Requested,
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPoolDelegate } from "../entities/dao-pool/DaoPoolDelegate";
 import { getDaoPoolVest } from "../entities/dao-pool/DaoPoolVest";
 import { getDaoPoolMovedToValidators } from "../entities/dao-pool/DaoPoolMovedToValidators";
 import { getDaoPoolExecute } from "../entities/dao-pool/DaoPoolProposalExecute";
 import { getDaoPoolRewardClaim } from "../entities/dao-pool/DaoPoolRewardClaim";
-import { getDaoPoolVote } from "../entities/dao-pool/DaoPoolVote";
+import { getDaoPoolProposalInteraction } from "../entities/dao-pool/DaoPoolProposalInteraction";
 import { getDaoProposalCreate } from "../entities/dao-pool/DaoProposalCreate";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getTransaction } from "../entities/transaction/Transaction";
 import { getDaoPoolOffchainResult } from "../entities/dao-pool/DaoOffchainResults";
 import { push } from "../helpers/ArrayHelper";
 import { getPool } from "../entities/dao-pool/Pool";
+import {
+  getEnumBigInt as getProposalInteractionBigInt,
+  ProposalInteractionType,
+} from "../entities/global/ProposalInteractionTypeEnum";
 
 export function onProposalCreated(event: ProposalCreated): void {
   getPool(event.address).save();
@@ -73,52 +76,46 @@ export function onDelegated(event: Delegated): void {
   delegated.save();
 }
 
-export function onRequested(event: Requested): void {
+export function onVoteChanged(event: VoteChanged): void {
   getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.from,
+    event.params.voter,
     event.address
   );
-  let delegated = getDaoPoolDelegate(
+
+  let txType = TransactionType.DAO_POOL_PROPOSAL_VOTED;
+  let interactionType = event.params.isVoteFor
+    ? ProposalInteractionType.VOTE_FOR
+    : ProposalInteractionType.VOTE_AGAINST;
+
+  if (
+    isZero(event.params.votes.personal) &&
+    isZero(event.params.votes.micropool) &&
+    isZero(event.params.votes.treasury)
+  ) {
+    txType = TransactionType.DAO_POOL_PROPOSAL_VOTE_CANCELED;
+    interactionType = ProposalInteractionType.VOTE_CANCEL;
+  }
+
+  let interaction = getDaoPoolProposalInteraction(
     event.transaction.hash,
     event.address,
-    event.params.amount,
+    getProposalInteractionBigInt(interactionType),
+    event.params.votes.personal,
+    event.params.votes.micropool,
+    event.params.votes.treasury,
     transaction.interactionsCount
   );
+
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_POOL_REQUESTED));
-  delegated.transaction = transaction.id;
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(txType));
+  interaction.transaction = transaction.id;
 
   transaction.save();
-  delegated.save();
-}
-
-export function onVoted(event: Voted): void {
-  getPool(event.address).save();
-  let transaction = getTransaction(
-    event.transaction.hash,
-    event.block.number,
-    event.block.timestamp,
-    event.params.sender,
-    event.address
-  );
-  let voted = getDaoPoolVote(
-    event.transaction.hash,
-    event.address,
-    getEnumBigInt(event.params.voteType),
-    event.params.amount,
-    transaction.interactionsCount,
-    event.params.isVoteFor
-  );
-  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_POOL_PROPOSAL_VOTED));
-  voted.transaction = transaction.id;
-
-  transaction.save();
-  voted.save();
+  interaction.save();
 }
 
 export function onProposalExecuted(event: ProposalExecuted): void {
@@ -266,4 +263,8 @@ export function onOffchainResultsSaved(event: OffchainResultsSaved): void {
 
   transaction.save();
   offchainResultsSaved.save();
+}
+
+function isZero(val: BigInt): boolean {
+  return val.equals(BigInt.zero());
 }

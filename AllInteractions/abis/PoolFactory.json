@@ -1,5 +1,24 @@
 [
   {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "salt",
+        "type": "bytes32"
+      }
+    ],
+    "name": "predictTokenAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {
@@ -39,6 +58,11 @@
           {
             "internalType": "address",
             "name": "nftMultiplierAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "votePowerAddress",
             "type": "address"
           }
         ],
@@ -436,7 +460,7 @@
                     "type": "uint256[]"
                   }
                 ],
-                "internalType": "struct IERC20Sale.ConstructorParams",
+                "internalType": "struct IERC20Gov.ConstructorParams",
                 "name": "tokenParams",
                 "type": "tuple"
               }
@@ -446,14 +470,26 @@
             "type": "tuple"
           },
           {
-            "internalType": "uint256",
-            "name": "regularVoteModifier",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "expertVoteModifier",
-            "type": "uint256"
+            "components": [
+              {
+                "internalType": "enum IPoolFactory.VotePowerType",
+                "name": "voteType",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bytes",
+                "name": "initData",
+                "type": "bytes"
+              },
+              {
+                "internalType": "address",
+                "name": "presetAddress",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct IPoolFactory.VotePowerDeployParams",
+            "name": "votePowerParams",
+            "type": "tuple"
           },
           {
             "internalType": "address",
