@@ -20,7 +20,7 @@ export function getTreasuryDelegationHistory(
   if (history == null) {
     history = new TreasuryDelegationHistory(id);
     history.amount = amount;
-    history.to = to.id;
+    history.delegatee = to.id;
     history.type = getEnumBigInt(type);
     history.timestamp = timestamp;
     history.nfts = nfts;
