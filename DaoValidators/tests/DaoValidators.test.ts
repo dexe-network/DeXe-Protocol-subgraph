@@ -5,6 +5,7 @@ import {
   onExternalProposalCreated,
   onInternalProposalCreated,
   onInternalProposalExecuted,
+  onVoteCanceled,
   onVoted,
 } from "../src/mappings/DaoValidators";
 import {
@@ -13,11 +14,13 @@ import {
   ExternalProposalCreated,
   InternalProposalCreated,
   InternalProposalExecuted,
+  VoteCanceled,
 } from "../generated/templates/DaoValidators/DaoValidators";
 
-import { getBlock, getTransaction } from "./utils";
+import { getBlock, getNextTx, getTransaction } from "./utils";
 import { DaoPoolDeployed } from "../generated/PoolFactory/PoolFactory";
 import { onDeployed } from "../src/mappings/PoolFactory";
+import { ProposalInteractionType } from "../src/entities/global/ProposalInteractionTypeEnum";
 
 function createExternalProposalCreated(
   proposalId: BigInt,
@@ -101,6 +104,28 @@ function createVoted(
   event.parameters.push(new ethereum.EventParam("vote", ethereum.Value.fromUnsignedBigInt(vote)));
   event.parameters.push(new ethereum.EventParam("isInternal", ethereum.Value.fromBoolean(isInternal)));
   event.parameters.push(new ethereum.EventParam("isVoteFor", ethereum.Value.fromBoolean(isVoteFor)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createVoteCanceled(
+  proposalId: BigInt,
+  sender: Address,
+  isInternal: boolean,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): VoteCanceled {
+  let event = changetype<VoteCanceled>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
+  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
+  event.parameters.push(new ethereum.EventParam("isInternal", ethereum.Value.fromBoolean(isInternal)));
 
   event.block = block;
   event.transaction = tx;
@@ -385,18 +410,28 @@ describe("DaoValidators", () => {
       "totalVoteFor",
       vote.toString()
     );
-    assert.fieldEquals("ProposalVote", tx.hash.concatI32(0).toHexString(), "hash", tx.hash.toHexString());
-    assert.fieldEquals("ProposalVote", tx.hash.concatI32(0).toHexString(), "timestamp", block.timestamp.toString());
+    assert.fieldEquals("ProposalInteraction", tx.hash.concatI32(0).toHexString(), "hash", tx.hash.toHexString());
     assert.fieldEquals(
-      "ProposalVote",
+      "ProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "timestamp",
+      block.timestamp.toString()
+    );
+    assert.fieldEquals(
+      "ProposalInteraction",
       tx.hash.concatI32(0).toHexString(),
       "proposal",
       poolAddress.toHexString() + proposalId.toString() + "_" + "1"
     );
-    assert.fieldEquals("ProposalVote", tx.hash.concatI32(0).toHexString(), "isVoteFor", isVoteFor.toString());
-    assert.fieldEquals("ProposalVote", tx.hash.concatI32(0).toHexString(), "amount", vote.toString());
     assert.fieldEquals(
-      "ProposalVote",
+      "ProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "interactionType",
+      ProposalInteractionType.VOTE_FOR.toString()
+    );
+    assert.fieldEquals("ProposalInteraction", tx.hash.concatI32(0).toHexString(), "amount", vote.toString());
+    assert.fieldEquals(
+      "ProposalInteraction",
       tx.hash.concatI32(0).toHexString(),
       "voter",
       sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString()
@@ -421,18 +456,133 @@ describe("DaoValidators", () => {
       "totalVoteFor",
       vote.toString()
     );
-    assert.fieldEquals("ProposalVote", nextTx.hash.concatI32(0).toHexString(), "hash", nextTx.hash.toHexString());
-    assert.fieldEquals("ProposalVote", nextTx.hash.concatI32(0).toHexString(), "timestamp", block.timestamp.toString());
     assert.fieldEquals(
-      "ProposalVote",
+      "ProposalInteraction",
+      nextTx.hash.concatI32(0).toHexString(),
+      "hash",
+      nextTx.hash.toHexString()
+    );
+    assert.fieldEquals(
+      "ProposalInteraction",
+      nextTx.hash.concatI32(0).toHexString(),
+      "timestamp",
+      block.timestamp.toString()
+    );
+    assert.fieldEquals(
+      "ProposalInteraction",
       nextTx.hash.concatI32(0).toHexString(),
       "proposal",
       poolAddress.toHexString() + proposalId.toString() + "_" + "1"
     );
-    assert.fieldEquals("ProposalVote", nextTx.hash.concatI32(0).toHexString(), "isVoteFor", isVoteFor.toString());
-    assert.fieldEquals("ProposalVote", nextTx.hash.concatI32(0).toHexString(), "amount", vote.toString());
     assert.fieldEquals(
-      "ProposalVote",
+      "ProposalInteraction",
+      nextTx.hash.concatI32(0).toHexString(),
+      "interactionType",
+      ProposalInteractionType.VOTE_AGAINST.toString()
+    );
+    assert.fieldEquals("ProposalInteraction", nextTx.hash.concatI32(0).toHexString(), "amount", vote.toString());
+    assert.fieldEquals(
+      "ProposalInteraction",
+      nextTx.hash.concatI32(0).toHexString(),
+      "voter",
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString()
+    );
+  });
+
+  test("should handle VoteCanceled", () => {
+    let proposalId = BigInt.fromI32(1);
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181670");
+    let vote = BigInt.fromI32(100);
+    let isInternal = true;
+    let isVoteFor = true;
+
+    let votedEvent = createVoted(proposalId, sender, vote, isInternal, isVoteFor, contractSender, block, tx);
+
+    onVoted(votedEvent);
+
+    assert.fieldEquals(
+      "ValidatorInProposal",
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
+      "totalVoteAgainst",
+      "0"
+    );
+    assert.fieldEquals(
+      "ValidatorInProposal",
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
+      "totalVoteFor",
+      vote.toString()
+    );
+    assert.fieldEquals("ProposalInteraction", tx.hash.concatI32(0).toHexString(), "hash", tx.hash.toHexString());
+    assert.fieldEquals(
+      "ProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "timestamp",
+      block.timestamp.toString()
+    );
+    assert.fieldEquals(
+      "ProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "proposal",
+      poolAddress.toHexString() + proposalId.toString() + "_" + "1"
+    );
+    assert.fieldEquals(
+      "ProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "interactionType",
+      ProposalInteractionType.VOTE_FOR.toString()
+    );
+    assert.fieldEquals("ProposalInteraction", tx.hash.concatI32(0).toHexString(), "amount", vote.toString());
+    assert.fieldEquals(
+      "ProposalInteraction",
+      tx.hash.concatI32(0).toHexString(),
+      "voter",
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString()
+    );
+
+    const nextTx = getNextTx(tx);
+    let event = createVoteCanceled(proposalId, sender, isInternal, contractSender, block, nextTx);
+
+    onVoteCanceled(event);
+
+    assert.fieldEquals(
+      "ValidatorInProposal",
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
+      "totalVoteAgainst",
+      "0"
+    );
+    assert.fieldEquals(
+      "ValidatorInProposal",
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
+      "totalVoteFor",
+      "0"
+    );
+    assert.fieldEquals(
+      "ProposalInteraction",
+      nextTx.hash.concatI32(0).toHexString(),
+      "hash",
+      nextTx.hash.toHexString()
+    );
+    assert.fieldEquals(
+      "ProposalInteraction",
+      nextTx.hash.concatI32(0).toHexString(),
+      "timestamp",
+      block.timestamp.toString()
+    );
+    assert.fieldEquals(
+      "ProposalInteraction",
+      nextTx.hash.concatI32(0).toHexString(),
+      "proposal",
+      poolAddress.toHexString() + proposalId.toString() + "_" + "1"
+    );
+    assert.fieldEquals(
+      "ProposalInteraction",
+      nextTx.hash.concatI32(0).toHexString(),
+      "interactionType",
+      ProposalInteractionType.VOTE_CANCEL.toString()
+    );
+    assert.fieldEquals("ProposalInteraction", nextTx.hash.concatI32(0).toHexString(), "amount", "0");
+    assert.fieldEquals(
+      "ProposalInteraction",
       nextTx.hash.concatI32(0).toHexString(),
       "voter",
       sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString()
