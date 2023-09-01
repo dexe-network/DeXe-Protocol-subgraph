@@ -3,13 +3,13 @@ import { pushUnique, remove } from "@solarity/graph-lib";
 import {
   Delegated,
   DelegatedTreasury,
+  DelegatorRewardsClaimed,
   Deposited,
   OffchainResultsSaved,
   ProposalCreated,
   ProposalExecuted,
   RewardClaimed,
   RewardCredited,
-  MicropoolRewardClaimed,
   VoteChanged,
   Withdrawn,
 } from "../../generated/templates/DaoPool/DaoPool";
@@ -227,11 +227,7 @@ export function onVoteChanged(event: VoteChanged): void {
     ? ProposalInteractionType.VOTE_FOR
     : ProposalInteractionType.VOTE_AGAINST;
 
-  if (
-    isZero(event.params.votes.personal) &&
-    isZero(event.params.votes.micropool) &&
-    isZero(event.params.votes.treasury)
-  ) {
+  if (event.params.totalVoted.equals(BigInt.zero())) {
     interactionType = ProposalInteractionType.VOTE_CANCEL;
   }
 
@@ -240,17 +236,11 @@ export function onVoteChanged(event: VoteChanged): void {
     voterInProposal,
     event.block.timestamp,
     getEnumBigInt(interactionType),
-    event.params.votes.personal,
-    event.params.votes.micropool,
-    event.params.votes.treasury
+    event.params.totalVoted
   ).save();
 
-  const totalVotes = event.params.votes.personal.plus(event.params.votes.micropool).plus(event.params.votes.treasury);
-
   if (interactionType == ProposalInteractionType.VOTE_CANCEL) {
-    const prevVotes = voterInProposal.personalVote
-      .plus(voterInProposal.micropoolVote)
-      .plus(voterInProposal.treasuryVote);
+    const prevVotes = voterInProposal.totalVote;
 
     if (voterInProposal.isVoteFor) {
       proposal.currentVotesFor = proposal.currentVotesFor.minus(prevVotes);
@@ -269,9 +259,9 @@ export function onVoteChanged(event: VoteChanged): void {
     voter.totalVotes = voter.totalVotes.minus(prevVotes);
   } else {
     if (interactionType == ProposalInteractionType.VOTE_FOR) {
-      proposal.currentVotesFor = proposal.currentVotesFor.plus(totalVotes);
+      proposal.currentVotesFor = proposal.currentVotesFor.plus(event.params.totalVoted);
     } else {
-      proposal.currentVotesAgainst = proposal.currentVotesAgainst.plus(totalVotes);
+      proposal.currentVotesAgainst = proposal.currentVotesAgainst.plus(event.params.totalVoted);
     }
 
     let newVoters = pushUnique<Bytes>(proposal.voters, [voter.id]);
@@ -286,13 +276,11 @@ export function onVoteChanged(event: VoteChanged): void {
     voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
     voterInPool.engagedProposalsCount = BigInt.fromI32(voterInPool.proposals.length);
 
-    voter.totalVotes = voter.totalVotes.plus(totalVotes);
+    voter.totalVotes = voter.totalVotes.plus(event.params.totalVoted);
   }
 
   voterInProposal.isVoteFor = event.params.isVoteFor;
-  voterInProposal.personalVote = event.params.votes.personal;
-  voterInProposal.micropoolVote = event.params.votes.micropool;
-  voterInProposal.treasuryVote = event.params.votes.treasury;
+  voterInProposal.totalVote = event.params.totalVoted;
 
   voterInProposal.save();
   voterInPool.save();
@@ -321,16 +309,12 @@ export function onRewardClaimed(event: RewardClaimed): void {
 
   let usdAmount = getUSDValue(event.params.token, event.params.amount);
 
-  if (event.params.proposalId.notEqual(BigInt.zero())) {
+  if (!event.params.proposalId.equals(BigInt.zero())) {
     let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
     voterInProposal.claimedRewardUSD = usdAmount;
 
     voterInProposal.save();
-  } else {
-    // let voterOffchain = getVoterOffchain(voter, pool);
-    // voterOffchain.claimedRewardUSD = voterOffchain.claimedRewardUSD.plus(usdAmount);
-    // voterOffchain.save();
   }
 
   voterInPool.totalClaimedUSD = voterInPool.totalClaimedUSD.plus(usdAmount);
@@ -341,32 +325,40 @@ export function onRewardClaimed(event: RewardClaimed): void {
   pool.save();
 }
 
+export function onDelegatorRewardsClaimed(event: DelegatorRewardsClaimed): void {
+  let pool = getDaoPool(event.address);
+  let delegator = getVoter(event.params.delegator);
+  let voterInPool = getVoterInPool(pool, delegator, event.block.timestamp);
+  let proposal = getProposal(pool, event.params.proposalId);
+  let voterInProposal = getVoterInProposal(proposal, voterInPool);
+
+  let usdAmount = getUSDValue(event.params.token, event.params.amount);
+
+  voterInProposal.micropoolRewardUSD = voterInProposal.micropoolRewardUSD.plus(usdAmount);
+  voterInProposal.claimedRewardUSD = voterInProposal.claimedRewardUSD.plus(usdAmount);
+
+  voterInProposal.save();
+  voterInPool.save();
+  delegator.save();
+  pool.save();
+}
+
 export function onRewardCredited(event: RewardCredited): void {
   let pool = getDaoPool(event.address);
   let voter = getVoter(event.params.sender);
   let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
-  let proposal = getProposal(pool, event.params.proposalId);
 
   let usdAmount = getUSDValue(event.params.rewardToken, event.params.amount);
 
-  if (event.params.proposalId.notEqual(BigInt.zero())) {
+  if (!event.params.proposalId.equals(BigInt.zero())) {
+    let proposal = getProposal(pool, event.params.proposalId);
+
     let voterInProposal = getVoterInProposal(proposal, voterInPool);
     const rewardType = event.params.rewardType;
 
     switch (rewardType) {
-      case RewardType.VOTE_FOR:
-      case RewardType.VOTE_AGAINST: {
-        voterInProposal.personalRewardUSD = voterInProposal.personalRewardUSD.plus(usdAmount);
-        break;
-      }
-      case RewardType.VOTE_FOR_DELEGATED:
-      case RewardType.VOTE_AGAINST_DELEGATED: {
-        voterInProposal.micropoolRewardUSD = voterInProposal.micropoolRewardUSD.plus(usdAmount);
-        break;
-      }
-      case RewardType.VOTE_FOR_TREASURY:
-      case RewardType.VOTE_AGAINST_TREASURY: {
-        voterInProposal.treasuryRewardUSD = voterInProposal.treasuryRewardUSD.plus(usdAmount);
+      case RewardType.VOTE: {
+        voterInProposal.votingRewardUSD = voterInProposal.votingRewardUSD.plus(usdAmount);
         break;
       }
       default: {
@@ -374,17 +366,13 @@ export function onRewardCredited(event: RewardCredited): void {
       }
     }
 
-    voterInPool.rewardedUSD = voterInPool.rewardedUSD.plus(usdAmount);
-
     voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
     voterInPool.engagedProposalsCount = BigInt.fromI32(voterInPool.proposals.length);
 
     voterInProposal.save();
-  } else {
-    // let voterOffchain = getVoterOffchain(voter, pool);
-    // voterOffchain.rewardUSD = voterOffchain.rewardUSD.plus(usdAmount);
-    // voterOffchain.save();
   }
+
+  voterInPool.rewardedUSD = voterInPool.rewardedUSD.plus(usdAmount);
 
   voter.totalRewardedUSD = voter.totalRewardedUSD.plus(usdAmount);
 
@@ -433,21 +421,6 @@ export function onWithdrawn(event: Withdrawn): void {
   pool.save();
 }
 
-export function onMicropoolRewardClaimed(event: MicropoolRewardClaimed): void {
-  let pool = getDaoPool(event.address);
-  let voter = getVoter(event.params.user);
-  let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
-
-  const usdAmount = getUSDValue(event.params.token, event.params.amount);
-  voter.totalClaimedUSD = voter.totalClaimedUSD.plus(usdAmount);
-
-  // voterInPool.totalStakingReward = voterInPool.totalStakingReward.plus(usdAmount);
-
-  voterInPool.save();
-  voter.save();
-  pool.save();
-}
-
 export function onOffchainResultsSaved(event: OffchainResultsSaved): void {
   let pool = getDaoPool(event.address);
 
@@ -469,8 +442,4 @@ function recalculateAPR(voterInPool: VoterInPool, rewardCredited: BigInt, curren
     voterInPool._cusum = P;
     voterInPool._lastUpdate = currentTimestamp;
   }
-}
-
-function isZero(val: BigInt): boolean {
-  return val.equals(BigInt.zero());
 }

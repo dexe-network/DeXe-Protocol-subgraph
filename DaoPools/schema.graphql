@@ -243,15 +243,12 @@ type VoterInProposal @entity {
   id: Bytes! # voter address + proposal entity id
   isVoteFor: Boolean!
 
-  personalVote: BigInt!
-  micropoolVote: BigInt!
-  treasuryVote: BigInt!
+  totalVote: BigInt!
 
   staticRewardUSD: BigInt!
-  personalRewardUSD: BigInt!
-  micropoolRewardUSD: BigInt!
-  treasuryRewardUSD: BigInt!
+  votingRewardUSD: BigInt!
 
+  micropoolRewardUSD: BigInt!
   claimedRewardUSD: BigInt!
 
   pool: DaoPool!
@@ -276,9 +273,7 @@ type ProposalInteraction @entity(immutable: true) {
   timestamp: BigInt!
 
   interactionType: BigInt! # 0 -> vote for, 1 -> vote against, 2 -> cancel
-  personalVote: BigInt!
-  micropoolVote: BigInt!
-  treasuryVote: BigInt!
+  totalVote: BigInt!
 
   voter: VoterInProposal!
   proposal: Proposal!

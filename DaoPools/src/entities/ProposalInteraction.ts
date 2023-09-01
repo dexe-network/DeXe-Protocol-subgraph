@@ -8,9 +8,7 @@ export function getProposalInteraction(
   voterInProposal: VoterInProposal,
   timestamp: BigInt,
   interactionType: BigInt,
-  personalVote: BigInt,
-  micropoolVote: BigInt,
-  treasuryVote: BigInt
+  totalVote: BigInt
 ): ProposalInteraction {
   let counter = getInteractionCount(hash);
   let id = hash.concatI32(counter.count.toI32());
@@ -22,9 +20,7 @@ export function getProposalInteraction(
     proposalVote.timestamp = timestamp;
 
     proposalVote.interactionType = interactionType;
-    proposalVote.personalVote = personalVote;
-    proposalVote.micropoolVote = micropoolVote;
-    proposalVote.treasuryVote = treasuryVote;
+    proposalVote.totalVote = totalVote;
 
     proposalVote.proposal = voterInProposal.proposal;
     proposalVote.voter = voterInProposal.id;

@@ -10,14 +10,12 @@ export function getVoterInProposal(proposal: Proposal, voterInPool: VoterInPool)
 
     voterInProposal.isVoteFor = false;
 
-    voterInProposal.personalVote = BigInt.zero();
-    voterInProposal.micropoolVote = BigInt.zero();
-    voterInProposal.treasuryVote = BigInt.zero();
+    voterInProposal.totalVote = BigInt.zero();
 
     voterInProposal.staticRewardUSD = BigInt.zero();
-    voterInProposal.personalRewardUSD = BigInt.zero();
+    voterInProposal.votingRewardUSD = BigInt.zero();
+
     voterInProposal.micropoolRewardUSD = BigInt.zero();
-    voterInProposal.treasuryRewardUSD = BigInt.zero();
 
     voterInProposal.claimedRewardUSD = BigInt.zero();
 
