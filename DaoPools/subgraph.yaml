@@ -36,7 +36,6 @@ dataSources:
       file: ./src/mappings/GlobalERC721Expert.ts
       entities:
         - ExpertNFTContract
-        - GlobalExpert
         - ExpertNft
       abis:
         - name: ERC721Expert
@@ -72,8 +71,6 @@ templates:
           handler: onDelegated
         - event: DelegatedTreasury(address,uint256,uint256[],bool)
           handler: onDelegatedTreasury
-        - event: DelegatorRewardsSet(uint256,uint256,address)
-          handler: onDelegatorRewardsSet
         - event: DelegatorRewardsClaimed(uint256,address,address,address,uint256)
           handler: onDelegatorRewardsClaimed
         - event: VoteChanged(uint256,address,bool,uint256) # id, msg.sender, personalVote, delegatedVote
@@ -182,8 +179,6 @@ templates:
       file: ./src/mappings/ERC721Expert.ts
       entities:
         - ExpertNFTContract
-        - Expert
-        - ExpertInPool
         - ExpertNft
       abis:
         - name: ERC721Expert
