@@ -1,24 +1,5 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "salt",
-        "type": "bytes32"
-      }
-    ],
-    "name": "predictTokenAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "anonymous": false,
     "inputs": [
       {
@@ -176,12 +157,7 @@
                       },
                       {
                         "internalType": "uint256",
-                        "name": "voteForRewardsCoefficient",
-                        "type": "uint256"
-                      },
-                      {
-                        "internalType": "uint256",
-                        "name": "voteAgainstRewardsCoefficient",
+                        "name": "voteRewardsCoefficient",
                         "type": "uint256"
                       }
                     ],

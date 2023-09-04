@@ -67,14 +67,12 @@ templates:
           handler: onProposalCreated
         - event: Delegated(address,address,uint256,uint256[],bool)
           handler: onDelegated
-        - event: VoteChanged(uint256,address,bool,(uint256,uint256,uint256))
+        - event: VoteChanged(uint256,address,bool,uint256)
           handler: onVoteChanged
         - event: ProposalExecuted(uint256,bool,address)
           handler: onProposalExecuted
         - event: RewardClaimed(uint256,address,address,uint256)
           handler: onRewardClaimed
-        - event: RewardCanceled(uint256,address,uint256,address)
-          handler: onRewardCanceled
         - event: Deposited(uint256,uint256[],address)
           handler: onDeposited
         - event: Withdrawn(uint256,uint256[],address)

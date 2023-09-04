@@ -5,9 +5,7 @@ export function getDaoPoolProposalInteraction(
   hash: Bytes,
   pool: Address,
   interactionType: BigInt,
-  personal: BigInt,
-  micropool: BigInt,
-  treasury: BigInt,
+  totalVote: BigInt,
   count: BigInt
 ): DaoPoolProposalInteraction {
   let id = hash.concatI32(count.toI32());
@@ -18,9 +16,7 @@ export function getDaoPoolProposalInteraction(
     interaction.pool = pool;
     interaction.interactionType = interactionType;
 
-    interaction.personalVote = personal;
-    interaction.micropoolVote = micropool;
-    interaction.treasuryVote = treasury;
+    interaction.totalVote = totalVote;
 
     interaction.transaction = Bytes.empty();
   }

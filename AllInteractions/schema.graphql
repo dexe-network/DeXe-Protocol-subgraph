@@ -78,9 +78,7 @@ type DaoPoolProposalInteraction @entity(immutable: true) {
   id: Bytes! # tx hash + interactionCount
   pool: Pool!
 
-  personalVote: BigInt!
-  micropoolVote: BigInt!
-  treasuryVote: BigInt!
+  totalVote: BigInt!
 
   interactionType: BigInt!
 

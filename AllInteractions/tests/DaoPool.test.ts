@@ -9,7 +9,6 @@ import {
   ProposalCreated,
   ProposalExecuted,
   RewardClaimed,
-  RewardCanceled,
   VoteChanged,
   Withdrawn,
 } from "../generated/templates/DaoPool/DaoPool";
@@ -87,9 +86,7 @@ function createDelegated(
 function createVoteChanged(
   proposalId: BigInt,
   sender: Address,
-  personal: BigInt,
-  micropool: BigInt,
-  treasury: BigInt,
+  totalVoted: BigInt,
   isVoteFor: boolean,
   contractSender: Address,
   block: ethereum.Block,
@@ -98,16 +95,10 @@ function createVoteChanged(
   let event = changetype<VoteChanged>(newMockEvent());
   event.parameters = new Array();
 
-  const votes = new ethereum.Tuple(3);
-
-  votes[0] = ethereum.Value.fromUnsignedBigInt(personal);
-  votes[1] = ethereum.Value.fromUnsignedBigInt(micropool);
-  votes[2] = ethereum.Value.fromUnsignedBigInt(treasury);
-
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
   event.parameters.push(new ethereum.EventParam("voter", ethereum.Value.fromAddress(sender)));
   event.parameters.push(new ethereum.EventParam("isVoteFor", ethereum.Value.fromBoolean(isVoteFor)));
-  event.parameters.push(new ethereum.EventParam("votes", ethereum.Value.fromTuple(votes)));
+  event.parameters.push(new ethereum.EventParam("totalVoted", ethereum.Value.fromUnsignedBigInt(totalVoted)));
 
   event.block = block;
   event.transaction = tx;
@@ -332,22 +323,10 @@ describe("DaoPool", () => {
   test("should handle VoteChanged", () => {
     let proposalId = BigInt.fromI32(1);
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
-    let personal = BigInt.fromI32(1000);
-    let micropool = BigInt.fromI32(1000);
-    let treasury = BigInt.fromI32(1000);
+    let totalVote = BigInt.fromI32(1000);
     let isVoteFor = true;
 
-    let event = createVoteChanged(
-      proposalId,
-      sender,
-      personal,
-      micropool,
-      treasury,
-      isVoteFor,
-      contractSender,
-      block,
-      tx
-    );
+    let event = createVoteChanged(proposalId, sender, totalVote, isVoteFor, contractSender, block, tx);
 
     onVoteChanged(event);
 
@@ -361,20 +340,8 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "DaoPoolProposalInteraction",
       tx.hash.concatI32(0).toHexString(),
-      "personalVote",
-      personal.toString()
-    );
-    assert.fieldEquals(
-      "DaoPoolProposalInteraction",
-      tx.hash.concatI32(0).toHexString(),
-      "micropoolVote",
-      micropool.toString()
-    );
-    assert.fieldEquals(
-      "DaoPoolProposalInteraction",
-      tx.hash.concatI32(0).toHexString(),
-      "treasuryVote",
-      treasury.toString()
+      "totalVote",
+      totalVote.toString()
     );
     assert.fieldEquals(
       "DaoPoolProposalInteraction",
@@ -396,22 +363,10 @@ describe("DaoPool", () => {
   test("should handle VoteChanged (cancel)", () => {
     let proposalId = BigInt.fromI32(1);
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
-    let personal = BigInt.fromI32(0);
-    let micropool = BigInt.fromI32(0);
-    let treasury = BigInt.fromI32(0);
+    let totalVote = BigInt.fromI32(0);
     let isVoteFor = true;
 
-    let event = createVoteChanged(
-      proposalId,
-      sender,
-      personal,
-      micropool,
-      treasury,
-      isVoteFor,
-      contractSender,
-      block,
-      tx
-    );
+    let event = createVoteChanged(proposalId, sender, totalVote, isVoteFor, contractSender, block, tx);
 
     onVoteChanged(event);
 
@@ -425,20 +380,8 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "DaoPoolProposalInteraction",
       tx.hash.concatI32(0).toHexString(),
-      "personalVote",
-      personal.toString()
-    );
-    assert.fieldEquals(
-      "DaoPoolProposalInteraction",
-      tx.hash.concatI32(0).toHexString(),
-      "micropoolVote",
-      micropool.toString()
-    );
-    assert.fieldEquals(
-      "DaoPoolProposalInteraction",
-      tx.hash.concatI32(0).toHexString(),
-      "treasuryVote",
-      treasury.toString()
+      "totalVote",
+      totalVote.toString()
     );
     assert.fieldEquals(
       "DaoPoolProposalInteraction",
