@@ -29,6 +29,7 @@ function createBought(
 function createTierCreated(
   tierId: BigInt,
   saleToken: Address,
+  participationType: BigInt,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
@@ -38,6 +39,9 @@ function createTierCreated(
 
   event.parameters.push(new ethereum.EventParam("tierId", ethereum.Value.fromUnsignedBigInt(tierId)));
   event.parameters.push(new ethereum.EventParam("saleToken", ethereum.Value.fromAddress(saleToken)));
+  event.parameters.push(
+    new ethereum.EventParam("participationType", ethereum.Value.fromUnsignedBigInt(participationType))
+  );
 
   event.block = block;
   event.transaction = tx;
@@ -65,7 +69,8 @@ describe("TokenSale", () => {
   test("should handle tierCreated", () => {
     let tierId = BigInt.fromI32(5);
     let token = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181674");
-    let event = createTierCreated(tierId, token, contractSender, block, tx);
+    let participationType = BigInt.fromI32(1);
+    let event = createTierCreated(tierId, token, participationType, contractSender, block, tx);
 
     onTierCreated(event);
 
@@ -82,11 +87,18 @@ describe("TokenSale", () => {
       contractSender.concatI32(tierId.toI32()).toHexString(),
       "saleToken",
       token.toHexString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTier",
+      contractSender.concatI32(tierId.toI32()).toHexString(),
+      "whitelistType",
+      participationType.toString()
     );
 
     tierId = BigInt.fromI32(6);
     token = Address.fromString("0xfF42F3B569cdB6dF9dC260473Ec2ef63Ca971d63");
-    event = createTierCreated(tierId, token, contractSender, block, tx);
+    participationType = BigInt.fromI32(2);
+    event = createTierCreated(tierId, token, participationType, contractSender, block, tx);
 
     onTierCreated(event);
 
@@ -103,6 +115,12 @@ describe("TokenSale", () => {
       contractSender.concatI32(tierId.toI32()).toHexString(),
       "saleToken",
       token.toHexString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTier",
+      contractSender.concatI32(tierId.toI32()).toHexString(),
+      "whitelistType",
+      participationType.toString()
     );
   });
 

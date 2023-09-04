@@ -161,12 +161,10 @@ templates:
         - name: TokenSaleProposal
           file: ./abis/TokenSale.json
       eventHandlers:
-        - event: TierCreated(uint256,address)
+        - event: TierCreated(uint256,address,uint8)
           handler: onTierCreated
         - event: Bought(uint256,address)
           handler: onBought
-        - event: Whitelisted(uint256,address)
-          handler: onWhitelisted
   - kind: ethereum/contract
     name: ERC721Expert
     network: chapel
