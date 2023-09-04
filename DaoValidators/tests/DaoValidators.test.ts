@@ -387,7 +387,7 @@ describe("DaoValidators", () => {
     );
   });
 
-  test("should handle Voted", () => {
+  test("should handle Vote", () => {
     let proposalId = BigInt.fromI32(1);
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181670");
     let vote = BigInt.fromI32(100);

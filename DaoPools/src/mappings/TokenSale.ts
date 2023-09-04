@@ -9,7 +9,12 @@ import { getVoterInPool } from "../entities/Voters/VoterInPool";
 
 export function onTierCreated(event: TierCreated): void {
   let tokenSale = getTokenSale(event.address);
-  let tier = getTokenSaleTier(tokenSale, event.params.tierId, event.params.saleToken);
+  let tier = getTokenSaleTier(
+    tokenSale,
+    event.params.tierId,
+    event.params.saleToken,
+    BigInt.fromI32(event.params.participationType)
+  );
 
   tier.save();
   tokenSale.save();

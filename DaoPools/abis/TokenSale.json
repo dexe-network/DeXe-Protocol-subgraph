@@ -70,6 +70,12 @@
         "internalType": "address",
         "name": "saleToken",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum ITokenSaleProposal.ParticipationType",
+        "name": "participationType",
+        "type": "uint8"
       }
     ],
     "name": "TierCreated",
@@ -192,11 +198,6 @@
       {
         "internalType": "address",
         "name": "_govAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "contract ISBT721",
-        "name": "_babt",
         "type": "address"
       }
     ],
@@ -333,6 +334,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "coreProperties",
+    "outputs": [
+      {
+        "internalType": "contract CoreProperties",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "components": [
@@ -454,6 +468,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "dexeGovAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -491,6 +518,19 @@
         "internalType": "uint256[]",
         "name": "claimAmounts",
         "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getInjector",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "injector_",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -1134,6 +1174,37 @@
       }
     ],
     "name": "setApprovalForAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "contractsRegistry",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "setDependencies",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "injector_",
+        "type": "address"
+      }
+    ],
+    "name": "setInjector",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -36,7 +36,6 @@ dataSources:
       file: ./src/mappings/GlobalERC721Expert.ts
       entities:
         - ExpertNFTContract
-        - GlobalExpert
         - ExpertNft
       abis:
         - name: ERC721Expert
@@ -72,7 +71,9 @@ templates:
           handler: onDelegated
         - event: DelegatedTreasury(address,uint256,uint256[],bool)
           handler: onDelegatedTreasury
-        - event: VoteChanged(uint256,address,bool,(uint256,uint256,uint256)) # id, msg.sender, personalVote, delegatedVote
+        - event: DelegatorRewardsClaimed(uint256,address,address,address,uint256)
+          handler: onDelegatorRewardsClaimed
+        - event: VoteChanged(uint256,address,bool,uint256) # id, msg.sender, personalVote, delegatedVote
           handler: onVoteChanged
         - event: ProposalExecuted(uint256,bool,address) # id, isFor, msg.sender
           handler: onProposalExecuted
@@ -80,10 +81,6 @@ templates:
           handler: onRewardClaimed
         - event: RewardCredited(uint256,uint8,address,uint256,address) # id, type, token, amount, to
           handler: onRewardCredited
-        - event: RewardCanceled(uint256,address,uint256,address)
-          handler: onRewardCanceled
-        - event: MicropoolRewardClaimed(uint256,address,address,uint256)
-          handler: onMicropoolRewardClaimed
         - event: OffchainResultsSaved(string,address)
           handler: onOffchainResultsSaved
 
@@ -164,12 +161,10 @@ templates:
         - name: TokenSaleProposal
           file: ./abis/TokenSale.json
       eventHandlers:
-        - event: TierCreated(uint256,address)
+        - event: TierCreated(uint256,address,uint8)
           handler: onTierCreated
         - event: Bought(uint256,address)
           handler: onBought
-        - event: Whitelisted(uint256,address)
-          handler: onWhitelisted
   - kind: ethereum/contract
     name: ERC721Expert
     network: chapel
@@ -182,8 +177,6 @@ templates:
       file: ./src/mappings/ERC721Expert.ts
       entities:
         - ExpertNFTContract
-        - Expert
-        - ExpertInPool
         - ExpertNft
       abis:
         - name: ERC721Expert
