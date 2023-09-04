@@ -78,11 +78,6 @@
       },
       {
         "internalType": "address",
-        "name": "distributionProposalAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "validatorsAddress",
         "type": "address"
       },
@@ -162,12 +157,7 @@
               },
               {
                 "internalType": "uint256",
-                "name": "voteForRewardsCoefficient",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "voteAgainstRewardsCoefficient",
+                "name": "voteRewardsCoefficient",
                 "type": "uint256"
               }
             ],
@@ -269,12 +259,7 @@
               },
               {
                 "internalType": "uint256",
-                "name": "voteForRewardsCoefficient",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "voteAgainstRewardsCoefficient",
+                "name": "voteRewardsCoefficient",
                 "type": "uint256"
               }
             ],
@@ -394,12 +379,7 @@
               },
               {
                 "internalType": "uint256",
-                "name": "voteForRewardsCoefficient",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "voteAgainstRewardsCoefficient",
+                "name": "voteRewardsCoefficient",
                 "type": "uint256"
               }
             ],
@@ -517,12 +497,7 @@
               },
               {
                 "internalType": "uint256",
-                "name": "voteForRewardsCoefficient",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "voteAgainstRewardsCoefficient",
+                "name": "voteRewardsCoefficient",
                 "type": "uint256"
               }
             ],
@@ -625,12 +600,7 @@
               },
               {
                 "internalType": "uint256",
-                "name": "voteForRewardsCoefficient",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "voteAgainstRewardsCoefficient",
+                "name": "voteRewardsCoefficient",
                 "type": "uint256"
               }
             ],
@@ -727,12 +697,7 @@
               },
               {
                 "internalType": "uint256",
-                "name": "voteForRewardsCoefficient",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "voteAgainstRewardsCoefficient",
+                "name": "voteRewardsCoefficient",
                 "type": "uint256"
               }
             ],
@@ -866,12 +831,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "voteForRewardsCoefficient",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "voteAgainstRewardsCoefficient",
+            "name": "voteRewardsCoefficient",
             "type": "uint256"
           }
         ],

@@ -91,11 +91,7 @@ export function onVoteChanged(event: VoteChanged): void {
     ? ProposalInteractionType.VOTE_FOR
     : ProposalInteractionType.VOTE_AGAINST;
 
-  if (
-    isZero(event.params.votes.personal) &&
-    isZero(event.params.votes.micropool) &&
-    isZero(event.params.votes.treasury)
-  ) {
+  if (event.params.totalVoted.equals(BigInt.zero())) {
     txType = TransactionType.DAO_POOL_PROPOSAL_VOTE_CANCELED;
     interactionType = ProposalInteractionType.VOTE_CANCEL;
   }
@@ -104,9 +100,7 @@ export function onVoteChanged(event: VoteChanged): void {
     event.transaction.hash,
     event.address,
     getProposalInteractionBigInt(interactionType),
-    event.params.votes.personal,
-    event.params.votes.micropool,
-    event.params.votes.treasury,
+    event.params.totalVoted,
     transaction.interactionsCount
   );
 
@@ -263,8 +257,4 @@ export function onOffchainResultsSaved(event: OffchainResultsSaved): void {
 
   transaction.save();
   offchainResultsSaved.save();
-}
-
-function isZero(val: BigInt): boolean {
-  return val.equals(BigInt.zero());
 }
