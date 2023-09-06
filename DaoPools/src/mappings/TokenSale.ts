@@ -37,3 +37,13 @@ export function onBought(event: Bought): void {
   tier.save();
   pool.save();
 }
+
+export function onWhitelisted(event: Whitelisted): void {
+  let tokenSale = getTokenSale(event.address);
+  let tier = getTokenSaleTier(tokenSale, event.params.tierId);
+
+  tier.whitelist = pushUnique(tier.whitelist, [event.params.user]);
+
+  tier.save();
+  tokenSale.save();
+}

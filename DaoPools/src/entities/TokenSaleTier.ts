@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { TokenSaleContract, TokenSaleTier } from "../../generated/schema";
 
 export function getTokenSaleTier(
@@ -19,6 +19,7 @@ export function getTokenSaleTier(
     tier.buyers = new Array();
 
     tier.whitelistType = whitelistType;
+    tier.whitelist = new Array();
 
     tier.tokenSale = tokenSale.id;
   }

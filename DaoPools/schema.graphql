@@ -344,7 +344,9 @@ type TokenSaleTier @entity {
   id: Bytes!
 
   saleToken: Bytes!
+
   whitelistType: BigInt!
+  whitelist: [Bytes!]!
 
   totalBuyersCount: BigInt!
   buyers: [VoterInPool!]!

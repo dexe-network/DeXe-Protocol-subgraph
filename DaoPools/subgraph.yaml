@@ -6,9 +6,9 @@ dataSources:
     name: PoolFactory
     network: chapel
     source:
-      address: "0x11d12802D7b5281addE998E81e7a3db97B133d07"
+      address: "0x892cc1e2c0C93A74711707eA0057aae25ad07700"
       abi: PoolFactory
-      startBlock: 32093342
+      startBlock: 32954665
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -26,9 +26,9 @@ dataSources:
     name: ERC721Expert
     network: chapel
     source:
-      address: "0xe8ac0EB409c15d1429e490F538a5513B789f4A0F"
+      address: "0xBd5fd8866588FA0da3331Ab1587D39bBC0e89a8a"
       abi: ERC721Expert
-      startBlock: 32093342
+      startBlock: 32954665
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -165,6 +165,8 @@ templates:
           handler: onTierCreated
         - event: Bought(uint256,address)
           handler: onBought
+        - event: Whitelisted(uint256,address)
+          handler: onWhitelisted
   - kind: ethereum/contract
     name: ERC721Expert
     network: chapel

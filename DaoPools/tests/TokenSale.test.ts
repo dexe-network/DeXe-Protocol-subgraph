@@ -4,7 +4,7 @@ import { afterEach, assert, beforeAll, describe, newMockEvent, test } from "matc
 import { getBlock, getNextBlock, getNextTx, getTransaction } from "./utils";
 import { getDaoPool } from "../src/entities/DaoPool";
 import { getTokenSale } from "../src/entities/TokenSale";
-import { onBought, onTierCreated } from "../src/mappings/TokenSale";
+import { onBought, onTierCreated, onWhitelisted } from "../src/mappings/TokenSale";
 
 function createBought(
   tierId: BigInt,
@@ -42,6 +42,26 @@ function createTierCreated(
   event.parameters.push(
     new ethereum.EventParam("participationType", ethereum.Value.fromUnsignedBigInt(participationType))
   );
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createWhitelisted(
+  tierId: BigInt,
+  user: Address,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): Whitelisted {
+  let event = changetype<Whitelisted>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("tierId", ethereum.Value.fromUnsignedBigInt(tierId)));
+  event.parameters.push(new ethereum.EventParam("user", ethereum.Value.fromAddress(user)));
 
   event.block = block;
   event.transaction = tx;
@@ -172,6 +192,31 @@ describe("TokenSale", () => {
       contractSender.concatI32(tierId.toI32()).toHexString(),
       "buyers",
       `[${user1.concat(poolAddress).toHexString()}, ${user2.concat(poolAddress).toHexString()}]`
+    );
+  });
+
+  test("should add user to whitelist", () => {
+    let tierId = BigInt.fromI32(5);
+    let user1 = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181672");
+    let user2 = Address.fromString("0x16e08f7d84603AEb97cd1c89A80A9e914f181672");
+    let event1 = createWhitelisted(tierId, user1, contractSender, block, tx);
+    let event2 = createWhitelisted(tierId, user2, contractSender, block, tx);
+
+    onWhitelisted(event1);
+    onWhitelisted(event2);
+
+    assert.fieldEquals(
+      "TokenSaleTier",
+      contractSender.concatI32(tierId.toI32()).toHexString(),
+      "tokenSale",
+      contractSender.toHexString()
+    );
+
+    assert.fieldEquals(
+      "TokenSaleTier",
+      contractSender.concatI32(tierId.toI32()).toHexString(),
+      "whitelist",
+      `[${user1.toHexString()}, ${user2.toHexString()}]`
     );
   });
 });
