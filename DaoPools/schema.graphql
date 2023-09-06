@@ -119,7 +119,7 @@ type Executor @entity {
 # @param id forms from user address
 type Voter @entity {
   id: Bytes! # voter address
-  expertNft: ExpertNft!
+  expertNft: ExpertNft
 
   totalProposalsCreated: BigInt!
   totalClaimedUSD: BigInt!
@@ -197,7 +197,7 @@ type VoterInPool @entity {
   id: Bytes! # voter address + pool address
   joinedTimestamp: BigInt!
 
-  expertNft: ExpertNft!
+  expertNft: ExpertNft
 
   receivedDelegation: BigInt!
   receivedNFTDelegation: [BigInt!]!
