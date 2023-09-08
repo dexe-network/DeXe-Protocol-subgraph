@@ -117,6 +117,7 @@ export function onDelegated(event: Delegated): void {
 
     pair.delegatedAmount = pair.delegatedAmount.minus(event.params.amount);
     pair.delegatedNfts = remove<BigInt>(pair.delegatedNfts, event.params.nfts);
+    
     if (usdAmount.gt(pair.delegatedUSD)) {
       pair.delegatedUSD = BigInt.zero();
     } else {
