@@ -12,6 +12,7 @@ export function getVoterInPoolPair(from: VoterInPool, to: VoterInPool): VoterInP
     pair.delegatee = to.id;
 
     pair.delegatedAmount = BigInt.zero();
+    pair.delegatedUSD = BigInt.zero();
     pair.delegatedNfts = new Array<BigInt>();
   }
 

@@ -329,6 +329,7 @@ type VoterInPoolPair @entity {
   delegatee: VoterInPool!
 
   delegatedAmount: BigInt!
+  delegatedUSD: BigInt!
   delegatedNfts: [BigInt!]!
 
   history: [DelegationHistory!]! @derivedFrom(field: "pair")
