@@ -325,6 +325,8 @@ type TreasuryDelegationHistory @entity(immutable: true) {
 # @param delegateNfts the current delegated nfts
 type VoterInPoolPair @entity {
   id: Bytes! # pool address + from address + to address
+  creationTimestamp: BigInt!
+
   delegator: VoterInPool!
   delegatee: VoterInPool!
 

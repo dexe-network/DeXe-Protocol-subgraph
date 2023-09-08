@@ -545,6 +545,12 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "VoterInPoolPair",
       contractSender.concat(from).concat(to).toHexString(),
+      "creationTimestamp",
+      block.timestamp.toString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
       "delegator",
       from.concat(contractSender).toHexString()
     );
@@ -632,6 +638,12 @@ describe("DaoPool", () => {
       DelegationType.UNDELEGATE.toString()
     );
 
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "creationTimestamp",
+      block.timestamp.toString()
+    );
     assert.fieldEquals(
       "VoterInPoolPair",
       contractSender.concat(from).concat(to).toHexString(),

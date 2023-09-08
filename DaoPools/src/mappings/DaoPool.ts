@@ -80,7 +80,7 @@ export function onDelegated(event: Delegated): void {
   let toVoterInPool = getVoterInPool(pool, to, event.block.timestamp);
   let fromVoterInPool = getVoterInPool(pool, from, event.block.timestamp);
 
-  let pair = getVoterInPoolPair(fromVoterInPool, toVoterInPool);
+  let pair = getVoterInPoolPair(fromVoterInPool, toVoterInPool, event.block.timestamp);
 
   const usdAmount = getUSDValue(pool.erc20Token, event.params.amount);
 
