@@ -10,12 +10,16 @@ export function getVoter(voterAddress: Address): Voter {
     voter.expertNft = Bytes.empty();
 
     voter.totalProposalsCreated = BigInt.zero();
+    voter.totalMicropoolRewardUSD = BigInt.zero();
     voter.totalClaimedUSD = BigInt.zero();
     voter.totalRewardedUSD = BigInt.zero();
     voter.totalDelegatedUSD = BigInt.zero();
     voter.totalLockedFundsUSD = BigInt.zero();
     voter.totalVotedProposals = BigInt.zero();
     voter.totalVotes = BigInt.zero();
+    voter.currentVotesDelegated = BigInt.zero();
+    voter.currentVotesReceived = BigInt.zero();
+    voter.delegateesCount = BigInt.zero();
     voter.delegatorsCount = BigInt.zero();
   }
 
