@@ -20,7 +20,8 @@ export function onDeployed(event: DaoPoolDeployed): void {
     event.params.name,
     event.block.timestamp,
     event.block.number,
-    event.params.govPoolDeps.nftMultiplierAddress
+    event.params.govPoolDeps.nftMultiplierAddress,
+    event.params.govPoolDeps.userKeeperAddress
   ).save();
 
   getDPContract(event.params.distributionProposal, event.params.govPool).save();

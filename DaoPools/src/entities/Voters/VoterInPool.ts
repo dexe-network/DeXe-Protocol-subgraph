@@ -25,6 +25,7 @@ export function getVoterInPool(pool: DaoPool, voter: Voter, timestamp: BigInt): 
     voterInPool.rewardedUSD = BigInt.zero();
 
     voterInPool.engagedProposalsCount = BigInt.zero();
+    voterInPool.currentDelegateesCount = BigInt.zero();
     voterInPool.currentDelegatorsCount = BigInt.zero();
 
     voterInPool.APR = BigInt.zero();

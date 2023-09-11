@@ -318,6 +318,8 @@ const tx = getTransaction(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromI32(1)
 const contractSender = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181670");
 const settingsId = BigInt.fromI32(2);
 
+const USER_KEEPER_ADDRESS = "0x96e08f7d84603AEb97cd1c89A80A9e914f181670";
+
 describe("DaoPool", () => {
   beforeAll(() => {
     createMockedFunction(
@@ -389,6 +391,25 @@ describe("DaoPool", () => {
         ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(1500)),
         ethereum.Value.fromAddressArray([contractSender, contractSender]),
       ]);
+
+    createMockedFunction(
+      Address.fromString(USER_KEEPER_ADDRESS),
+      "nftVotingPower",
+      "nftVotingPower(uint256[],bool):(uint256,uint256[])"
+    )
+      .withArgs([ethereum.Value.fromUnsignedBigIntArray([BigInt.fromI32(1)]), ethereum.Value.fromBoolean(false)])
+      .returns([ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(1500)), ethereum.Value.fromUnsignedBigIntArray([])]);
+
+    createMockedFunction(
+      Address.fromString(USER_KEEPER_ADDRESS),
+      "nftVotingPower",
+      "nftVotingPower(uint256[],bool):(uint256,uint256[])"
+    )
+      .withArgs([
+        ethereum.Value.fromUnsignedBigIntArray([BigInt.fromI32(1), BigInt.fromI32(2)]),
+        ethereum.Value.fromBoolean(false),
+      ])
+      .returns([ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(3000)), ethereum.Value.fromUnsignedBigIntArray([])]);
 
     let settings = new ProposalSettings(contractSender.concatI32(settingsId.toI32()));
     settings.settingsId = settingsId;
@@ -482,6 +503,7 @@ describe("DaoPool", () => {
   test("should handle Delegated", () => {
     let pool = getDaoPool(contractSender);
     pool.erc20Token = Bytes.fromHexString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676");
+    pool.userKeeper = Bytes.fromHexString(USER_KEEPER_ADDRESS);
     pool.save();
 
     let from = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
@@ -495,8 +517,15 @@ describe("DaoPool", () => {
 
     assert.fieldEquals("Voter", from.toHexString(), "id", from.toHexString());
     assert.fieldEquals("Voter", from.toHexString(), "totalDelegatedUSD", "200");
+    assert.fieldEquals("Voter", from.toHexString(), "currentVotesDelegated", "4000");
+    assert.fieldEquals("Voter", from.toHexString(), "currentVotesReceived", "0");
+    assert.fieldEquals("Voter", from.toHexString(), "delegateesCount", "1");
+    assert.fieldEquals("Voter", from.toHexString(), "delegatorsCount", "0");
     assert.fieldEquals("Voter", to.toHexString(), "id", to.toHexString());
+    assert.fieldEquals("Voter", to.toHexString(), "delegateesCount", "0");
     assert.fieldEquals("Voter", to.toHexString(), "delegatorsCount", "1");
+    assert.fieldEquals("Voter", to.toHexString(), "currentVotesDelegated", "0");
+    assert.fieldEquals("Voter", to.toHexString(), "currentVotesReceived", "4000");
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "votersCount", "2");
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentTokenDelegated", amount.toString());
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentNFTDelegated", `[${nfts[0]}, ${nfts[1]}]`);
@@ -509,6 +538,7 @@ describe("DaoPool", () => {
       "receivedNFTDelegation",
       `[${nfts[0]}, ${nfts[1]}]`
     );
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "currentDelegateesCount", "0");
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "currentDelegatorsCount", "1");
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedNFTDelegationCount", "2");
     assert.fieldEquals(
@@ -517,6 +547,8 @@ describe("DaoPool", () => {
       "joinedTimestamp",
       block.timestamp.toString()
     );
+    assert.fieldEquals("VoterInPool", from.concat(contractSender).toHexString(), "currentDelegateesCount", "1");
+    assert.fieldEquals("VoterInPool", from.concat(contractSender).toHexString(), "currentDelegatorsCount", "0");
     assert.fieldEquals(
       "VoterInPool",
       from.concat(contractSender).toHexString(),
@@ -563,6 +595,12 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "VoterInPoolPair",
       contractSender.concat(from).concat(to).toHexString(),
+      "delegatedVotes",
+      "4000"
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
       "delegatedAmount",
       amount.toString()
     );
@@ -578,6 +616,7 @@ describe("DaoPool", () => {
   test("should handle Undelegated", () => {
     let pool = getDaoPool(contractSender);
     pool.erc20Token = Bytes.fromHexString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676");
+    pool.userKeeper = Bytes.fromHexString(USER_KEEPER_ADDRESS);
     pool.save();
 
     let from = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
@@ -591,12 +630,31 @@ describe("DaoPool", () => {
     let event2 = createDelegated(from, to, amount2, nfts2, false, contractSender, block, tx);
 
     onDelegated(event1);
+
+    assert.fieldEquals("Voter", from.toHexString(), "currentVotesDelegated", "4000");
+    assert.fieldEquals("Voter", from.toHexString(), "currentVotesReceived", "0");
+    assert.fieldEquals("Voter", to.toHexString(), "currentVotesDelegated", "0");
+    assert.fieldEquals("Voter", to.toHexString(), "currentVotesReceived", "4000");
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "delegatedVotes",
+      "4000"
+    );
+
     onDelegated(event2);
 
     assert.fieldEquals("Voter", from.toHexString(), "id", from.toHexString());
     assert.fieldEquals("Voter", from.toHexString(), "totalDelegatedUSD", "100");
+    assert.fieldEquals("Voter", from.toHexString(), "delegateesCount", "1");
+    assert.fieldEquals("Voter", from.toHexString(), "delegatorsCount", "0");
+    assert.fieldEquals("Voter", from.toHexString(), "currentVotesDelegated", "2000");
+    assert.fieldEquals("Voter", from.toHexString(), "currentVotesReceived", "0");
     assert.fieldEquals("Voter", to.toHexString(), "id", to.toHexString());
+    assert.fieldEquals("Voter", to.toHexString(), "delegateesCount", "0");
     assert.fieldEquals("Voter", to.toHexString(), "delegatorsCount", "1");
+    assert.fieldEquals("Voter", to.toHexString(), "currentVotesDelegated", "0");
+    assert.fieldEquals("Voter", to.toHexString(), "currentVotesReceived", "2000");
     assert.fieldEquals(
       "DaoPool",
       contractSender.toHexString(),
@@ -618,6 +676,9 @@ describe("DaoPool", () => {
       "receivedNFTDelegation",
       `[${nfts1[1]}]`
     );
+    assert.fieldEquals("VoterInPool", from.concat(contractSender).toHexString(), "currentDelegateesCount", "1");
+    assert.fieldEquals("VoterInPool", from.concat(contractSender).toHexString(), "currentDelegatorsCount", "0");
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "currentDelegateesCount", "0");
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "currentDelegatorsCount", "1");
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedNFTDelegationCount", "1");
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "pool", contractSender.toHexString());
@@ -655,6 +716,12 @@ describe("DaoPool", () => {
       contractSender.concat(from).concat(to).toHexString(),
       "delegatee",
       to.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "delegatedVotes",
+      "2000"
     );
     assert.fieldEquals(
       "VoterInPoolPair",
@@ -1073,6 +1140,10 @@ describe("DaoPool", () => {
     );
 
     onDelegatorRewardsClaimed(event);
+
+    assert.fieldEquals("Voter", delegator.toHexString(), "totalMicropoolRewardUSD", "200");
+    assert.fieldEquals("Voter", delegator.toHexString(), "totalClaimedUSD", "200");
+    assert.fieldEquals("Voter", delegator.toHexString(), "totalRewardedUSD", "200");
 
     assert.fieldEquals(
       "VoterInProposal",

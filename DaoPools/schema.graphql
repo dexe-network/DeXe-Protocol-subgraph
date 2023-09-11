@@ -74,6 +74,8 @@ type DaoPool @entity {
   id: Bytes! # pool address
   name: String!
 
+  userKeeper: Bytes!
+
   erc20Token: Bytes!
   erc721Token: Bytes!
   nftMultiplier: Bytes!
@@ -122,6 +124,7 @@ type Voter @entity {
   expertNft: ExpertNft
 
   totalProposalsCreated: BigInt!
+  totalMicropoolRewardUSD: BigInt!
   totalClaimedUSD: BigInt!
   totalRewardedUSD: BigInt!
   totalDelegatedUSD: BigInt!
@@ -129,6 +132,9 @@ type Voter @entity {
   totalVotedProposals: BigInt!
   totalVotes: BigInt!
 
+  currentVotesDelegated: BigInt!
+  currentVotesReceived: BigInt!
+  delegateesCount: BigInt!
   delegatorsCount: BigInt!
 
   pools: [VoterInPool!]! @derivedFrom(field: "voter")
@@ -212,6 +218,7 @@ type VoterInPool @entity {
   rewardedUSD: BigInt!
 
   engagedProposalsCount: BigInt!
+  currentDelegateesCount: BigInt!
   currentDelegatorsCount: BigInt!
 
   APR: BigInt!
@@ -330,6 +337,7 @@ type VoterInPoolPair @entity {
   delegator: VoterInPool!
   delegatee: VoterInPool!
 
+  delegatedVotes: BigInt!
   delegatedAmount: BigInt!
   delegatedUSD: BigInt!
   delegatedNfts: [BigInt!]!

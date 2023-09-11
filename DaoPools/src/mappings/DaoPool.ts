@@ -30,6 +30,7 @@ import { TreasuryDelegationType } from "../entities/global/TreasuryDelegationTyp
 import { getTreasuryDelegationHistory } from "../entities/TreasuryDelegationHistory";
 import { RewardType } from "../entities/global/RewardTypeEnum";
 import { ProposalInteractionType, getEnumBigInt } from "../entities/global/ProposalInteractionTypeEnum";
+import { getNftsVotePower } from "../helpers/UserKeeperInteractions";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let pool = getDaoPool(event.address);
@@ -83,21 +84,29 @@ export function onDelegated(event: Delegated): void {
   let pair = getVoterInPoolPair(fromVoterInPool, toVoterInPool, event.block.timestamp);
 
   const usdAmount = getUSDValue(pool.erc20Token, event.params.amount);
+  const votePower = getNftsVotePower(Address.fromBytes(pool.userKeeper), event.params.nfts).plus(event.params.amount);
 
   delegateHistory.pair = pair.id;
 
   if (event.params.isDelegate) {
     from.totalDelegatedUSD = from.totalDelegatedUSD.plus(usdAmount);
+    from.currentVotesDelegated = from.currentVotesDelegated.plus(votePower);
+
+    to.currentVotesReceived = to.currentVotesReceived.plus(votePower);
 
     toVoterInPool.receivedDelegation = toVoterInPool.receivedDelegation.plus(event.params.amount);
     toVoterInPool.receivedNFTDelegation = pushUnique<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
     toVoterInPool.receivedNFTDelegationCount = BigInt.fromI32(toVoterInPool.receivedNFTDelegation.length);
 
     if (pair.delegatedAmount.equals(BigInt.zero()) && pair.delegatedNfts.length == 0) {
+      fromVoterInPool.currentDelegateesCount = fromVoterInPool.currentDelegateesCount.plus(BigInt.fromI32(1));
+      from.delegateesCount = from.delegateesCount.plus(BigInt.fromI32(1));
+
       toVoterInPool.currentDelegatorsCount = toVoterInPool.currentDelegatorsCount.plus(BigInt.fromI32(1));
       to.delegatorsCount = to.delegatorsCount.plus(BigInt.fromI32(1));
     }
 
+    pair.delegatedVotes = pair.delegatedVotes.plus(votePower);
     pair.delegatedAmount = pair.delegatedAmount.plus(event.params.amount);
     pair.delegatedNfts = pushUnique<BigInt>(pair.delegatedNfts, event.params.nfts);
     pair.delegatedUSD = pair.delegatedUSD.plus(usdAmount);
@@ -111,20 +120,41 @@ export function onDelegated(event: Delegated): void {
       from.totalDelegatedUSD = from.totalDelegatedUSD.minus(usdAmount);
     }
 
+    if (votePower.gt(from.currentVotesDelegated)) {
+      from.currentVotesDelegated = BigInt.zero();
+    } else {
+      from.currentVotesDelegated = from.currentVotesDelegated.minus(votePower);
+    }
+
+    if (votePower.gt(to.currentVotesReceived)) {
+      to.currentVotesReceived = BigInt.zero();
+    } else {
+      to.currentVotesReceived = to.currentVotesReceived.minus(votePower);
+    }
+
     toVoterInPool.receivedDelegation = toVoterInPool.receivedDelegation.minus(event.params.amount);
     toVoterInPool.receivedNFTDelegation = remove<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
     toVoterInPool.receivedNFTDelegationCount = BigInt.fromI32(toVoterInPool.receivedNFTDelegation.length);
 
     pair.delegatedAmount = pair.delegatedAmount.minus(event.params.amount);
     pair.delegatedNfts = remove<BigInt>(pair.delegatedNfts, event.params.nfts);
-    
+
     if (usdAmount.gt(pair.delegatedUSD)) {
       pair.delegatedUSD = BigInt.zero();
     } else {
       pair.delegatedUSD = pair.delegatedUSD.minus(usdAmount);
     }
 
+    if (votePower.gt(pair.delegatedVotes)) {
+      pair.delegatedVotes = BigInt.zero();
+    } else {
+      pair.delegatedVotes = pair.delegatedVotes.minus(votePower);
+    }
+
     if (pair.delegatedAmount.equals(BigInt.zero()) && pair.delegatedNfts.length == 0) {
+      fromVoterInPool.currentDelegateesCount = fromVoterInPool.currentDelegateesCount.minus(BigInt.fromI32(1));
+      from.delegateesCount = from.delegateesCount.minus(BigInt.fromI32(1));
+
       toVoterInPool.currentDelegatorsCount = toVoterInPool.currentDelegatorsCount.minus(BigInt.fromI32(1));
       to.delegatorsCount = to.delegatorsCount.minus(BigInt.fromI32(1));
     }
@@ -340,6 +370,10 @@ export function onDelegatorRewardsClaimed(event: DelegatorRewardsClaimed): void 
   let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
   let usdAmount = getUSDValue(event.params.token, event.params.amount);
+
+  delegator.totalMicropoolRewardUSD = delegator.totalMicropoolRewardUSD.plus(usdAmount);
+  delegator.totalClaimedUSD = delegator.totalClaimedUSD.plus(usdAmount);
+  delegator.totalRewardedUSD = delegator.totalRewardedUSD.plus(usdAmount);
 
   voterInProposal.micropoolRewardUSD = voterInProposal.micropoolRewardUSD.plus(usdAmount);
   voterInProposal.claimedRewardUSD = voterInProposal.claimedRewardUSD.plus(usdAmount);
