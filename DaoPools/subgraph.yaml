@@ -62,6 +62,8 @@ templates:
       abis:
         - name: DaoPool
           file: ./abis/DaoPool.json
+        - name: UserKeeper
+          file: ./abis/UserKeeper.json
         - name: PriceFeed
           file: ./abis/PriceFeed.json
       eventHandlers:
