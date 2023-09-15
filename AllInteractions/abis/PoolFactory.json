@@ -1,5 +1,24 @@
 [
   {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "salt",
+        "type": "bytes32"
+      }
+    ],
+    "name": "predictTokenAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {
@@ -367,9 +386,9 @@
                         "type": "bytes"
                       }
                     ],
-                    "internalType": "struct ITokenSaleProposal.ParticipationDetails",
+                    "internalType": "struct ITokenSaleProposal.ParticipationDetails[]",
                     "name": "participationDetails",
-                    "type": "tuple"
+                    "type": "tuple[]"
                   }
                 ],
                 "internalType": "struct ITokenSaleProposal.TierInitParams[]",
@@ -535,12 +554,12 @@
           },
           {
             "internalType": "address",
-            "name": "govToken",
+            "name": "govTokenSale",
             "type": "address"
           },
           {
             "internalType": "address",
-            "name": "govTokenSale",
+            "name": "govToken",
             "type": "address"
           },
           {

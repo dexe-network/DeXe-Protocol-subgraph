@@ -1053,9 +1053,36 @@
       {
         "components": [
           {
+            "internalType": "address[]",
+            "name": "onchainTokens",
+            "type": "address[]"
+          },
+          {
             "internalType": "uint256[]",
-            "name": "onchainRewards",
+            "name": "staticRewards",
             "type": "uint256[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "personal",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "micropool",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "treasury",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IGovPool.VotingRewards[]",
+            "name": "votingRewards",
+            "type": "tuple[]"
           },
           {
             "internalType": "uint256[]",
