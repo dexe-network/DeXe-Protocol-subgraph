@@ -126,7 +126,6 @@ type Voter @entity {
   totalProposalsCreated: BigInt!
   totalMicropoolRewardUSD: BigInt!
   totalClaimedUSD: BigInt!
-  totalRewardedUSD: BigInt!
   totalDelegatedUSD: BigInt!
   totalLockedFundsUSD: BigInt!
   totalVotedProposals: BigInt!
@@ -164,6 +163,7 @@ type Proposal @entity {
   isFor: Boolean!
   executor: Bytes!
   executionTimestamp: BigInt!
+  quorumReachedTimestamp: BigInt!
 
   rewardToken: Bytes!
 
@@ -215,7 +215,10 @@ type VoterInPool @entity {
 
   totalLockedUSD: BigInt!
   totalClaimedUSD: BigInt!
-  rewardedUSD: BigInt!
+
+  totalPersonalVotingRewardUSD: BigInt!
+  totalMicropoolVotingRewardUSD: BigInt!
+  totalTreasuryVotingRewardUSD: BigInt!
 
   engagedProposalsCount: BigInt!
   currentDelegateesCount: BigInt!
@@ -253,7 +256,10 @@ type VoterInProposal @entity {
   totalVote: BigInt!
 
   staticRewardUSD: BigInt!
-  votingRewardUSD: BigInt!
+
+  personalVotingRewardUSD: BigInt!
+  micropoolVotingRewardUSD: BigInt!
+  treasuryVotingRewardUSD: BigInt!
 
   micropoolRewardUSD: BigInt!
   claimedRewardUSD: BigInt!
@@ -356,7 +362,8 @@ type TokenSaleTier @entity {
 
   saleToken: Bytes!
 
-  whitelistType: BigInt!
+  whitelistTypes: [BigInt!]!
+  data: [Bytes!]!
   whitelist: [Bytes!]!
 
   totalBuyersCount: BigInt!

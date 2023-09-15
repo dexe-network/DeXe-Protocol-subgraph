@@ -12,7 +12,6 @@ export function getVoter(voterAddress: Address): Voter {
     voter.totalProposalsCreated = BigInt.zero();
     voter.totalMicropoolRewardUSD = BigInt.zero();
     voter.totalClaimedUSD = BigInt.zero();
-    voter.totalRewardedUSD = BigInt.zero();
     voter.totalDelegatedUSD = BigInt.zero();
     voter.totalLockedFundsUSD = BigInt.zero();
     voter.totalVotedProposals = BigInt.zero();

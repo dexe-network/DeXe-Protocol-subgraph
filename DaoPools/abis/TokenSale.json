@@ -72,10 +72,22 @@
         "type": "address"
       },
       {
+        "components": [
+          {
+            "internalType": "enum ITokenSaleProposal.ParticipationType",
+            "name": "participationType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          }
+        ],
         "indexed": false,
-        "internalType": "enum ITokenSaleProposal.ParticipationType",
-        "name": "participationType",
-        "type": "uint8"
+        "internalType": "struct ITokenSaleProposal.ParticipationDetails[]",
+        "name": "participationDetails",
+        "type": "tuple[]"
       }
     ],
     "name": "TierCreated",
@@ -452,9 +464,9 @@
                 "type": "bytes"
               }
             ],
-            "internalType": "struct ITokenSaleProposal.ParticipationDetails",
+            "internalType": "struct ITokenSaleProposal.ParticipationDetails[]",
             "name": "participationDetails",
-            "type": "tuple"
+            "type": "tuple[]"
           }
         ],
         "internalType": "struct ITokenSaleProposal.TierInitParams[]",
@@ -710,9 +722,9 @@
                     "type": "bytes"
                   }
                 ],
-                "internalType": "struct ITokenSaleProposal.ParticipationDetails",
+                "internalType": "struct ITokenSaleProposal.ParticipationDetails[]",
                 "name": "participationDetails",
-                "type": "tuple"
+                "type": "tuple[]"
               }
             ],
             "internalType": "struct ITokenSaleProposal.TierInitParams",
@@ -817,14 +829,24 @@
                 "type": "uint256"
               },
               {
-                "internalType": "uint256",
-                "name": "lockedAmount",
-                "type": "uint256"
+                "internalType": "address[]",
+                "name": "lockedTokenAddresses",
+                "type": "address[]"
               },
               {
-                "internalType": "uint256",
-                "name": "lockedId",
-                "type": "uint256"
+                "internalType": "uint256[]",
+                "name": "lockedTokenAmounts",
+                "type": "uint256[]"
+              },
+              {
+                "internalType": "address[]",
+                "name": "lockedNftAddresses",
+                "type": "address[]"
+              },
+              {
+                "internalType": "uint256[][]",
+                "name": "lockedNftIds",
+                "type": "uint256[][]"
               },
               {
                 "internalType": "address[]",
@@ -974,9 +996,14 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "nftToLock",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "nftIdsToLock",
+        "type": "uint256[]"
       }
     ],
     "name": "lockParticipationNft",
@@ -989,6 +1016,16 @@
       {
         "internalType": "uint256",
         "name": "tierId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "tokenToLock",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountToLock",
         "type": "uint256"
       }
     ],
@@ -1253,6 +1290,16 @@
         "internalType": "uint256",
         "name": "tierId",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "nftToUnlock",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "nftIdsToUnlock",
+        "type": "uint256[]"
       }
     ],
     "name": "unlockParticipationNft",
@@ -1265,6 +1312,16 @@
       {
         "internalType": "uint256",
         "name": "tierId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "tokenToUnlock",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountToUnlock",
         "type": "uint256"
       }
     ],

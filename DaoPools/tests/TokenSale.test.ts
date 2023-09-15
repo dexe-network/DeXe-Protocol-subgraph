@@ -29,7 +29,8 @@ function createBought(
 function createTierCreated(
   tierId: BigInt,
   saleToken: Address,
-  participationType: BigInt,
+  participationTypes: BigInt[],
+  data: Bytes[],
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
@@ -37,10 +38,21 @@ function createTierCreated(
   let event = changetype<TierCreated>(newMockEvent());
   event.parameters = new Array();
 
+  let participationTypesArray = new Array<ethereum.Tuple>(participationTypes.length);
+
+  for (let i = 0; i < participationTypes.length; i++) {
+    let tuple = new ethereum.Tuple(2);
+
+    tuple[0] = ethereum.Value.fromUnsignedBigInt(participationTypes[i]);
+    tuple[1] = ethereum.Value.fromBytes(data[i]);
+
+    participationTypesArray[i] = tuple;
+  }
+
   event.parameters.push(new ethereum.EventParam("tierId", ethereum.Value.fromUnsignedBigInt(tierId)));
   event.parameters.push(new ethereum.EventParam("saleToken", ethereum.Value.fromAddress(saleToken)));
   event.parameters.push(
-    new ethereum.EventParam("participationType", ethereum.Value.fromUnsignedBigInt(participationType))
+    new ethereum.EventParam("participationTypes", ethereum.Value.fromTupleArray(participationTypesArray))
   );
 
   event.block = block;
@@ -89,8 +101,9 @@ describe("TokenSale", () => {
   test("should handle tierCreated", () => {
     let tierId = BigInt.fromI32(5);
     let token = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181674");
-    let participationType = BigInt.fromI32(1);
-    let event = createTierCreated(tierId, token, participationType, contractSender, block, tx);
+    let participationTypes = [BigInt.fromI32(1), BigInt.fromI32(2)];
+    let data = [Bytes.fromI32(1), Bytes.fromI32(2)];
+    let event = createTierCreated(tierId, token, participationTypes, data, contractSender, block, tx);
 
     onTierCreated(event);
 
@@ -111,36 +124,14 @@ describe("TokenSale", () => {
     assert.fieldEquals(
       "TokenSaleTier",
       contractSender.concatI32(tierId.toI32()).toHexString(),
-      "whitelistType",
-      participationType.toString()
-    );
-
-    tierId = BigInt.fromI32(6);
-    token = Address.fromString("0xfF42F3B569cdB6dF9dC260473Ec2ef63Ca971d63");
-    participationType = BigInt.fromI32(2);
-    event = createTierCreated(tierId, token, participationType, contractSender, block, tx);
-
-    onTierCreated(event);
-
-    assert.fieldEquals("TokenSaleContract", contractSender.toHexString(), "daoPool", poolAddress.toHexString());
-
-    assert.fieldEquals(
-      "TokenSaleTier",
-      contractSender.concatI32(tierId.toI32()).toHexString(),
-      "tokenSale",
-      contractSender.toHexString()
+      "whitelistTypes",
+      `[${participationTypes[0].toString()}, ${participationTypes[1].toString()}]`
     );
     assert.fieldEquals(
       "TokenSaleTier",
       contractSender.concatI32(tierId.toI32()).toHexString(),
-      "saleToken",
-      token.toHexString()
-    );
-    assert.fieldEquals(
-      "TokenSaleTier",
-      contractSender.concatI32(tierId.toI32()).toHexString(),
-      "whitelistType",
-      participationType.toString()
+      "data",
+      `[${data[0].toHexString()}, ${data[1].toHexString()}]`
     );
   });
 
