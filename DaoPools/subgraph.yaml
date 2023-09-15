@@ -165,7 +165,7 @@ templates:
         - name: TokenSaleProposal
           file: ./abis/TokenSale.json
       eventHandlers:
-        - event: TierCreated(uint256,address,uint8)
+        - event: TierCreated(uint256,address,(uint8,bytes)[])
           handler: onTierCreated
         - event: Bought(uint256,address)
           handler: onBought

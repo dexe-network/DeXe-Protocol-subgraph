@@ -4,8 +4,7 @@ import { TokenSaleContract, TokenSaleTier } from "../../generated/schema";
 export function getTokenSaleTier(
   tokenSale: TokenSaleContract,
   tierId: BigInt,
-  saleToken: Address = Address.zero(),
-  whitelistType: BigInt = BigInt.zero()
+  saleToken: Address = Address.zero()
 ): TokenSaleTier {
   let id = tokenSale.id.concatI32(tierId.toI32());
   let tier = TokenSaleTier.load(id);
@@ -18,7 +17,8 @@ export function getTokenSaleTier(
     tier.totalBuyersCount = BigInt.zero();
     tier.buyers = new Array();
 
-    tier.whitelistType = whitelistType;
+    tier.whitelistTypes = new Array();
+    tier.data = new Array();
     tier.whitelist = new Array();
 
     tier.tokenSale = tokenSale.id;
