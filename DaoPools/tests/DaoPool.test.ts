@@ -23,6 +23,7 @@ import {
   DelegatorRewardsClaimed,
   QuorumReached,
   VotingRewardClaimed,
+  QuorumUnreached,
 } from "../generated/templates/DaoPool/DaoPool";
 import {
   onDelegated,
@@ -37,6 +38,7 @@ import {
   onDelegatorRewardsClaimed,
   onQuorumReached,
   onVotingRewardClaimed,
+  onQuorumUnreached,
 } from "../src/mappings/DaoPool";
 import { PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
 import { ProposalSettings } from "../generated/schema";
@@ -242,6 +244,24 @@ function createQuorumReached(
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
   event.parameters.push(new ethereum.EventParam("timestamp", ethereum.Value.fromUnsignedBigInt(timestamp)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createQuorumUnreached(
+  proposalId: BigInt,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): QuorumUnreached {
+  let event = changetype<QuorumUnreached>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
 
   event.block = block;
   event.transaction = tx;
@@ -1122,6 +1142,44 @@ describe("DaoPool", () => {
       contractSender.concatI32(proposalId.toI32()).toHexString(),
       "quorumReachedTimestamp",
       block.timestamp.toString()
+    );
+  });
+
+  test("should handle QuorumUnreached", () => {
+    let proposalId = BigInt.fromI32(1);
+
+    let reachedEvent = createQuorumReached(proposalId, block.timestamp, contractSender, block, tx);
+
+    onQuorumReached(reachedEvent);
+
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "id",
+      contractSender.concatI32(proposalId.toI32()).toHexString()
+    );
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "quorumReachedTimestamp",
+      block.timestamp.toString()
+    );
+
+    let unreachedEvent = createQuorumUnreached(proposalId, contractSender, block, tx);
+
+    onQuorumUnreached(unreachedEvent);
+
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "id",
+      contractSender.concatI32(proposalId.toI32()).toHexString()
+    );
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "quorumReachedTimestamp",
+      "0"
     );
   });
 

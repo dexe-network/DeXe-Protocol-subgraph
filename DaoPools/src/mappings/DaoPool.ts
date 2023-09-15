@@ -9,6 +9,7 @@ import {
   ProposalCreated,
   ProposalExecuted,
   QuorumReached,
+  QuorumUnreached,
   RewardClaimed,
   VoteChanged,
   VotingRewardClaimed,
@@ -484,6 +485,16 @@ export function onQuorumReached(event: QuorumReached): void {
   let proposal = getProposal(pool, event.params.proposalId);
 
   proposal.quorumReachedTimestamp = event.params.timestamp;
+
+  proposal.save();
+  pool.save();
+}
+
+export function onQuorumUnreached(event: QuorumUnreached): void {
+  let pool = getDaoPool(event.address);
+  let proposal = getProposal(pool, event.params.proposalId);
+
+  proposal.quorumReachedTimestamp = BigInt.zero();
 
   proposal.save();
   pool.save();
