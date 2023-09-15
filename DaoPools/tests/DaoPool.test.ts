@@ -1249,7 +1249,6 @@ describe("DaoPool", () => {
 
     assert.fieldEquals("Voter", delegator.toHexString(), "totalMicropoolRewardUSD", "200");
     assert.fieldEquals("Voter", delegator.toHexString(), "totalClaimedUSD", "200");
-    assert.fieldEquals("Voter", delegator.toHexString(), "totalRewardedUSD", "200");
 
     assert.fieldEquals(
       "VoterInProposal",

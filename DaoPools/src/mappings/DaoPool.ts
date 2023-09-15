@@ -362,9 +362,7 @@ export function onRewardClaimed(event: RewardClaimed): void {
     proposal.save();
   }
 
-  voterInPool.rewardedUSD = voterInPool.rewardedUSD.plus(usdAmount);
   voterInPool.totalClaimedUSD = voterInPool.totalClaimedUSD.plus(usdAmount);
-  voter.totalRewardedUSD = voter.totalRewardedUSD.plus(usdAmount);
   voter.totalClaimedUSD = voter.totalClaimedUSD.plus(usdAmount);
 
   recalculateAPR(voterInPool, usdAmount, event.block.timestamp);
@@ -396,9 +394,7 @@ export function onVotingRewardClaimed(event: VotingRewardClaimed): void {
   voterInPool.totalMicropoolVotingRewardUSD = voterInPool.totalMicropoolVotingRewardUSD.plus(micropoolUsdAmount);
   voterInPool.totalTreasuryVotingRewardUSD = voterInPool.totalTreasuryVotingRewardUSD.plus(treasuryUsdAmount);
 
-  voterInPool.rewardedUSD = voterInPool.rewardedUSD.plus(totalUsdAmount);
   voterInPool.totalClaimedUSD = voterInPool.totalClaimedUSD.plus(totalUsdAmount);
-  voter.totalRewardedUSD = voter.totalRewardedUSD.plus(totalUsdAmount);
   voter.totalClaimedUSD = voter.totalClaimedUSD.plus(totalUsdAmount);
 
   voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
@@ -423,7 +419,6 @@ export function onDelegatorRewardsClaimed(event: DelegatorRewardsClaimed): void 
 
   delegator.totalMicropoolRewardUSD = delegator.totalMicropoolRewardUSD.plus(usdAmount);
   delegator.totalClaimedUSD = delegator.totalClaimedUSD.plus(usdAmount);
-  delegator.totalRewardedUSD = delegator.totalRewardedUSD.plus(usdAmount);
 
   voterInProposal.micropoolRewardUSD = voterInProposal.micropoolRewardUSD.plus(usdAmount);
   voterInProposal.claimedRewardUSD = voterInProposal.claimedRewardUSD.plus(usdAmount);

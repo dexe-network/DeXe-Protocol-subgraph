@@ -22,7 +22,6 @@ export function getVoterInPool(pool: DaoPool, voter: Voter, timestamp: BigInt): 
 
     voterInPool.totalLockedUSD = BigInt.zero();
     voterInPool.totalClaimedUSD = BigInt.zero();
-    voterInPool.rewardedUSD = BigInt.zero();
 
     voterInPool.totalPersonalVotingRewardUSD = BigInt.zero();
     voterInPool.totalMicropoolVotingRewardUSD = BigInt.zero();

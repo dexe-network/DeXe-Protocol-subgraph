@@ -126,7 +126,6 @@ type Voter @entity {
   totalProposalsCreated: BigInt!
   totalMicropoolRewardUSD: BigInt!
   totalClaimedUSD: BigInt!
-  totalRewardedUSD: BigInt!
   totalDelegatedUSD: BigInt!
   totalLockedFundsUSD: BigInt!
   totalVotedProposals: BigInt!
@@ -216,7 +215,6 @@ type VoterInPool @entity {
 
   totalLockedUSD: BigInt!
   totalClaimedUSD: BigInt!
-  rewardedUSD: BigInt!
 
   totalPersonalVotingRewardUSD: BigInt!
   totalMicropoolVotingRewardUSD: BigInt!
