@@ -79,10 +79,12 @@ templates:
           handler: onVoteChanged
         - event: ProposalExecuted(uint256,bool,address) # id, isFor, msg.sender
           handler: onProposalExecuted
+        - event: QuorumReached(uint256,uint256)
+          handler: onQuorumReached
         - event: RewardClaimed(uint256,address,address,uint256) # id, msg.sender, token, amount
           handler: onRewardClaimed
-        - event: RewardCredited(uint256,uint8,address,uint256,address) # id, type, token, amount, to
-          handler: onRewardCredited
+        - event: VotingRewardClaimed(uint256,address,address,(uint256,uint256,uint256))
+          handler: onVotingRewardClaimed
         - event: OffchainResultsSaved(string,address)
           handler: onOffchainResultsSaved
 

@@ -164,6 +164,7 @@ type Proposal @entity {
   isFor: Boolean!
   executor: Bytes!
   executionTimestamp: BigInt!
+  quorumReachedTimestamp: BigInt!
 
   rewardToken: Bytes!
 
@@ -217,6 +218,10 @@ type VoterInPool @entity {
   totalClaimedUSD: BigInt!
   rewardedUSD: BigInt!
 
+  totalPersonalVotingRewardUSD: BigInt!
+  totalMicropoolVotingRewardUSD: BigInt!
+  totalTreasuryVotingRewardUSD: BigInt!
+
   engagedProposalsCount: BigInt!
   currentDelegateesCount: BigInt!
   currentDelegatorsCount: BigInt!
@@ -253,7 +258,10 @@ type VoterInProposal @entity {
   totalVote: BigInt!
 
   staticRewardUSD: BigInt!
-  votingRewardUSD: BigInt!
+
+  personalVotingRewardUSD: BigInt!
+  micropoolVotingRewardUSD: BigInt!
+  treasuryVotingRewardUSD: BigInt!
 
   micropoolRewardUSD: BigInt!
   claimedRewardUSD: BigInt!

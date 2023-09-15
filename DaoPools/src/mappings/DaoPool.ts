@@ -8,9 +8,10 @@ import {
   OffchainResultsSaved,
   ProposalCreated,
   ProposalExecuted,
+  QuorumReached,
   RewardClaimed,
-  RewardCredited,
   VoteChanged,
+  VotingRewardClaimed,
   Withdrawn,
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPool } from "../entities/DaoPool";
@@ -342,21 +343,69 @@ export function onRewardClaimed(event: RewardClaimed): void {
   let pool = getDaoPool(event.address);
   let voter = getVoter(event.params.sender);
   let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
-  let proposal = getProposal(pool, event.params.proposalId);
 
-  let usdAmount = getUSDValue(event.params.token, event.params.amount);
+  let usdAmount = getUSDValue(event.params.token, event.params.rewards);
 
   if (!event.params.proposalId.equals(BigInt.zero())) {
+    let proposal = getProposal(pool, event.params.proposalId);
     let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
-    voterInProposal.claimedRewardUSD = usdAmount;
+    voterInProposal.claimedRewardUSD = voterInProposal.claimedRewardUSD.plus(usdAmount);
+
+    voterInProposal.staticRewardUSD = voterInProposal.staticRewardUSD.plus(usdAmount);
+
+    voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
+    voterInPool.engagedProposalsCount = BigInt.fromI32(voterInPool.proposals.length);
 
     voterInProposal.save();
+    proposal.save();
   }
 
+  voterInPool.rewardedUSD = voterInPool.rewardedUSD.plus(usdAmount);
   voterInPool.totalClaimedUSD = voterInPool.totalClaimedUSD.plus(usdAmount);
+  voter.totalRewardedUSD = voter.totalRewardedUSD.plus(usdAmount);
   voter.totalClaimedUSD = voter.totalClaimedUSD.plus(usdAmount);
 
+  recalculateAPR(voterInPool, usdAmount, event.block.timestamp);
+
+  voterInPool.save();
+  voter.save();
+  pool.save();
+}
+
+export function onVotingRewardClaimed(event: VotingRewardClaimed): void {
+  let pool = getDaoPool(event.address);
+  let voter = getVoter(event.params.sender);
+  let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
+  let proposal = getProposal(pool, event.params.proposalId);
+  let voterInProposal = getVoterInProposal(proposal, voterInPool);
+
+  let personalUsdAmount = getUSDValue(event.params.token, event.params.rewards.personal);
+  let micropoolUsdAmount = getUSDValue(event.params.token, event.params.rewards.micropool);
+  let treasuryUsdAmount = getUSDValue(event.params.token, event.params.rewards.treasury);
+  let totalUsdAmount = personalUsdAmount.plus(micropoolUsdAmount).plus(treasuryUsdAmount);
+
+  voterInProposal.personalVotingRewardUSD = personalUsdAmount;
+  voterInProposal.micropoolVotingRewardUSD = micropoolUsdAmount;
+  voterInProposal.treasuryVotingRewardUSD = treasuryUsdAmount;
+
+  voterInProposal.claimedRewardUSD = voterInProposal.claimedRewardUSD.plus(totalUsdAmount);
+
+  voterInPool.totalPersonalVotingRewardUSD = voterInPool.totalPersonalVotingRewardUSD.plus(personalUsdAmount);
+  voterInPool.totalMicropoolVotingRewardUSD = voterInPool.totalMicropoolVotingRewardUSD.plus(micropoolUsdAmount);
+  voterInPool.totalTreasuryVotingRewardUSD = voterInPool.totalTreasuryVotingRewardUSD.plus(treasuryUsdAmount);
+
+  voterInPool.rewardedUSD = voterInPool.rewardedUSD.plus(totalUsdAmount);
+  voterInPool.totalClaimedUSD = voterInPool.totalClaimedUSD.plus(totalUsdAmount);
+  voter.totalRewardedUSD = voter.totalRewardedUSD.plus(totalUsdAmount);
+  voter.totalClaimedUSD = voter.totalClaimedUSD.plus(totalUsdAmount);
+
+  voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
+  voterInPool.engagedProposalsCount = BigInt.fromI32(voterInPool.proposals.length);
+
+  recalculateAPR(voterInPool, totalUsdAmount, event.block.timestamp);
+
+  voterInProposal.save();
   voterInPool.save();
   voter.save();
   pool.save();
@@ -381,46 +430,6 @@ export function onDelegatorRewardsClaimed(event: DelegatorRewardsClaimed): void 
   voterInProposal.save();
   voterInPool.save();
   delegator.save();
-  pool.save();
-}
-
-export function onRewardCredited(event: RewardCredited): void {
-  let pool = getDaoPool(event.address);
-  let voter = getVoter(event.params.sender);
-  let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
-
-  let usdAmount = getUSDValue(event.params.rewardToken, event.params.amount);
-
-  if (!event.params.proposalId.equals(BigInt.zero())) {
-    let proposal = getProposal(pool, event.params.proposalId);
-
-    let voterInProposal = getVoterInProposal(proposal, voterInPool);
-    const rewardType = event.params.rewardType;
-
-    switch (rewardType) {
-      case RewardType.VOTE: {
-        voterInProposal.votingRewardUSD = voterInProposal.votingRewardUSD.plus(usdAmount);
-        break;
-      }
-      default: {
-        voterInProposal.staticRewardUSD = voterInProposal.staticRewardUSD.plus(usdAmount);
-      }
-    }
-
-    voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
-    voterInPool.engagedProposalsCount = BigInt.fromI32(voterInPool.proposals.length);
-
-    voterInProposal.save();
-  }
-
-  voterInPool.rewardedUSD = voterInPool.rewardedUSD.plus(usdAmount);
-
-  voter.totalRewardedUSD = voter.totalRewardedUSD.plus(usdAmount);
-
-  recalculateAPR(voterInPool, usdAmount, event.block.timestamp);
-
-  voterInPool.save();
-  voter.save();
   pool.save();
 }
 
@@ -467,6 +476,16 @@ export function onOffchainResultsSaved(event: OffchainResultsSaved): void {
 
   pool.offchainResultsHash = event.params.resultsHash;
 
+  pool.save();
+}
+
+export function onQuorumReached(event: QuorumReached): void {
+  let pool = getDaoPool(event.address);
+  let proposal = getProposal(pool, event.params.proposalId);
+
+  proposal.quorumReachedTimestamp = event.params.timestamp;
+
+  proposal.save();
   pool.save();
 }
 
