@@ -85,6 +85,22 @@ type DaoPoolDelegate @entity(immutable: true) {
 }
 
 """
+The entity holds information about treasury delegation on dao pool
+"""
+type DaoPoolTreasuryDelegate @entity(immutable: true) {
+  "id forms from tx hash + interactionCount"
+  id: Bytes! # tx hash + interactionCount
+  "The pool address"
+  pool: Pool!
+
+  "The treasury delegation amount"
+  amount: BigInt!
+
+  "The transaction entity id"
+  transaction: Transaction!
+}
+
+"""
 The entity holds information about interaction with proposal in dao pool
 """
 type DaoPoolProposalInteraction @entity(immutable: true) {

@@ -67,6 +67,8 @@ templates:
           handler: onProposalCreated
         - event: Delegated(address,address,uint256,uint256[],bool)
           handler: onDelegated
+        - event: DelegatedTreasury(address,uint256,uint256[],bool)
+          handler: onDelegatedTreasury
         - event: VoteChanged(uint256,address,bool,uint256)
           handler: onVoteChanged
         - event: ProposalExecuted(uint256,bool,address)

@@ -3,6 +3,7 @@ import { afterEach, assert, clearStore, describe, newMockEvent, test } from "mat
 import { assertTransaction, getBlock, getNextTx, getTransaction } from "./utils";
 import {
   Delegated,
+  DelegatedTreasury,
   Deposited,
   MovedToValidators,
   OffchainResultsSaved,
@@ -22,6 +23,7 @@ import {
   onWithdrawn,
   onMovedToValidators,
   onOffchainResultsSaved,
+  onDelegatedTreasury,
 } from "../src/mappings/DaoPool";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
 import { ProposalInteractionType } from "../src/entities/global/ProposalInteractionTypeEnum";
@@ -71,6 +73,30 @@ function createDelegated(
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("from", ethereum.Value.fromAddress(from)));
+  event.parameters.push(new ethereum.EventParam("to", ethereum.Value.fromAddress(to)));
+  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("nfts", ethereum.Value.fromUnsignedBigIntArray(nfts)));
+  event.parameters.push(new ethereum.EventParam("isDelegate", ethereum.Value.fromBoolean(flag)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createDelegatedTreasury(
+  to: Address,
+  amount: BigInt,
+  nfts: Array<BigInt>,
+  flag: boolean,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): DelegatedTreasury {
+  let event = changetype<DelegatedTreasury>(newMockEvent());
+  event.parameters = new Array();
+
   event.parameters.push(new ethereum.EventParam("to", ethereum.Value.fromAddress(to)));
   event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
   event.parameters.push(new ethereum.EventParam("nfts", ethereum.Value.fromUnsignedBigIntArray(nfts)));
@@ -315,6 +341,56 @@ describe("DaoPool", () => {
       event1.params.from,
       block,
       `[${TransactionType.DAO_POOL_DELEGATED}, ${TransactionType.DAO_POOL_UNDELEGATED}]`,
+      BigInt.fromI32(2),
+      contractSender
+    );
+  });
+
+  test("should handle DelegatedTreasury", () => {
+    let to = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
+    let amount = BigInt.fromI32(100).pow(18);
+    let nfts = [BigInt.fromI32(1), BigInt.fromI32(2)];
+
+    let event0 = createDelegatedTreasury(to, amount, nfts, true, contractSender, block, tx);
+
+    onDelegatedTreasury(event0);
+
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
+    assert.fieldEquals(
+      "DaoPoolTreasuryDelegate",
+      tx.hash.concatI32(0).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals("DaoPoolTreasuryDelegate", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
+
+    assertTransaction(
+      tx.hash,
+      contractSender,
+      block,
+      `[${TransactionType.DAO_POOL_DELEGATED_TREASURY}]`,
+      BigInt.fromI32(1),
+      contractSender
+    );
+
+    let event1 = createDelegatedTreasury(to, amount, nfts, false, contractSender, block, tx);
+
+    onDelegatedTreasury(event1);
+
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
+    assert.fieldEquals(
+      "DaoPoolTreasuryDelegate",
+      tx.hash.concatI32(0).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals("DaoPoolTreasuryDelegate", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
+
+    assertTransaction(
+      tx.hash,
+      contractSender,
+      block,
+      `[${TransactionType.DAO_POOL_DELEGATED_TREASURY}, ${TransactionType.DAO_POOL_UNDELEGATED_TREASURY}]`,
       BigInt.fromI32(2),
       contractSender
     );
