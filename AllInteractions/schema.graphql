@@ -1,213 +1,249 @@
 #################################### Transaction History ####################################
 
-# @noitce The entity holds information about Transaction
-# @param id forms from tx hash
-# @param timestamp the timestamp of block
-# @param block the number of block
-# @param type the number associated with enum of interactions type
-# @param user the address of sender
-# @param interactionsCount the interactions count
+"""
+The entity holds information about Transaction
+"""
 type Transaction @entity {
+  "The tx hash"
   id: Bytes! # tx hash
+  "The timestamp of block"
   timestamp: BigInt!
+  "The number of block"
   block: BigInt!
+  "The number associated with enum of interactions type"
   type: [BigInt!]!
-
+  "The address of sender"
   user: Bytes!
-
+  "The pool with which the user interacted entity id"
   interactedWithPool: Pool!
-
+  "Count of interactions in tx"
   interactionsCount: BigInt!
 
+  "All interaction entity ids of DaoPool creation"
   daoPoolCreate: [DaoPoolCreate!]! @derivedFrom(field: "transaction")
+  "All delegation interaction entity ids in DaoPool"
   daoPoolDelegate: [DaoPoolDelegate!]! @derivedFrom(field: "transaction")
+  "All proposal interaction entity ids in DaoPool"
   daoPoolProposalInteraction: [DaoPoolProposalInteraction!]! @derivedFrom(field: "transaction")
+  "All proposal creation interaction entity ids in DaoPool"
   daoProposalCreate: [DaoProposalCreate!]! @derivedFrom(field: "transaction")
+  "All proposal execution interaction entity ids in DaoPool"
   daoPoolExecute: [DaoPoolExecute!]! @derivedFrom(field: "transaction")
+  "All proposal execution interaction entity ids in DaoPool"
   daoPoolRewardClaim: [DaoPoolRewardClaim!]! @derivedFrom(field: "transaction")
+  "All deposit/withdraw interaction entity ids in DaoPool"
   daoPoolVest: [DaoPoolVest!]! @derivedFrom(field: "transaction")
+  "All interaction entity ids of moving proposals to validators in DaoPool"
   daoPoolMovedToValidators: [DaoPoolMovedToValidators!]! @derivedFrom(field: "transaction")
+  "All interaction entity ids of saving offchain results in DaoPool"
   daoPoolOffchainResultsSaved: [DaoPoolOffchainResultsSaved!]! @derivedFrom(field: "transaction")
 
+  "All validator proposal creation interaction entity ids in DaoPool"
   daoValidatorProposalCreate: [DaoValidatorProposalCreate!]! @derivedFrom(field: "transaction")
+  "All voting interaction entity ids in validator proposals in DaoPool"
   daoValidatorProposalVote: [DaoValidatorProposalVote!]! @derivedFrom(field: "transaction")
+  "All validator proposal execution interaction entity ids in DaoPool"
   daoValidatorProposalExecute: [DaoValidatorProposalExecute!]! @derivedFrom(field: "transaction")
 }
 
 #################################### DAO interactions ####################################
-# @notice The entity holds information about dao pool
-# @param id forms from pool address
+"""
+The entity holds information about dao pool
+"""
 type Pool @entity(immutable: true) {
-  id: Bytes! # pool address
+  "The pool address"
+  id: Bytes!
 }
 
-# @notice The entity holds information about creation of dao pool
-# @param id forms from tx hash + interactionCount
-# @param pool the pool address
-# @param name the name of pool
-# @param transaction the transaction entity id
+"The entity holds information about creation of dao pool"
 type DaoPoolCreate @entity(immutable: true) {
+  "id forms from tx hash + interactionCount"
   id: Bytes! # tx hash + interactionCount
+  "The pool address"
   pool: Pool!
+  "The name of pool"
   name: String!
 
+  "The transaction entity id"
   transaction: Transaction!
 }
 
-# @notice The entity holds information about delegation on dao pool
-# @param id forms from tx hash + interactionCount
-# @param pool the pool address
-# @param amount the delegation amount
-# @param transaction the transaction entity id
+"""
+The entity holds information about delegation on dao pool
+"""
 type DaoPoolDelegate @entity(immutable: true) {
+  "id forms from tx hash + interactionCount"
   id: Bytes! # tx hash + interactionCount
+  "The pool address"
   pool: Pool!
 
+  "The delegation amount"
   amount: BigInt!
 
+  "The transaction entity id"
   transaction: Transaction!
 }
 
-# @notice The entity holds information about vote in dao pool
-# @param id forms from tx hash + interactionCount
-# @param pool the pool address
-# @param isVoteFor bool flag, if true - vote for, if false - vote against
-# @param amount the vote amount
-# @param transaction the transaction entity id
+"""
+The entity holds information about interaction with proposal in dao pool
+"""
 type DaoPoolProposalInteraction @entity(immutable: true) {
+  "id forms from tx hash + interactionCount"
   id: Bytes! # tx hash + interactionCount
+  "The pool address"
   pool: Pool!
 
+  "The vote amount"
   totalVote: BigInt!
 
+  "The number associated with enum of proposal interactions type"
   interactionType: BigInt!
 
+  "The transaction entity id"
   transaction: Transaction!
 }
 
-# @notice The entity holds information about dao pool creation
-# @param id forms from tx hash + interactionCount
-# @param pool the pool address
-# @param proposalId the id of proposal
-# @param transaction the transaction entity id
+"""
+The entity holds information about dao pool creation
+"""
 type DaoProposalCreate @entity(immutable: true) {
+  "id forms from tx hash + interactionCount"
   id: Bytes! # tx hash + interactionCount
+  "The pool address"
   pool: Pool!
 
+  "The id of proposal"
   proposalId: BigInt!
 
+  "The transaction entity id"
   transaction: Transaction!
 }
 
-# @notice The entity holds information about exchange in dao pool
-# @param id forms from tx hash + interactionCount
-# @param pool the pool address
-# @param proposalId the id of proposal
-# @param transaction the transaction entity id
+"""
+The entity holds information about exchange in dao pool
+"""
 type DaoPoolExecute @entity(immutable: true) {
+  "id forms from tx hash + interactionCount"
   id: Bytes! # tx hash + interactionCount
+  "The pool address"
   pool: Pool!
 
+  "The id of proposal"
   proposalId: BigInt!
 
+  "The transaction entity id"
   transaction: Transaction!
 }
 
-# @notice The entity holds information about claims in dao pool
-# @param id forms from tx hash + interactionCount
-# @param pool the pool address
-# @param proposalId the id of proposal
-# @param transaction the transaction entity id
+"""
+The entity holds information about claims in dao pool
+"""
 type DaoPoolRewardClaim @entity(immutable: true) {
+  "id forms from tx hash + interactionCount"
   id: Bytes! # tx hash + interactionCount
+  "The pool address"
   pool: Pool!
 
+  "The id of proposal"
   proposalId: BigInt!
 
+  "The transaction entity id"
   transaction: Transaction!
 }
 
-# @notice The entity holds information about deposit/withdraw
-# @param id forms from tx hash + interactionCount
-# @param pool the pool address
-# @param nfts the array of nft ids
-# @param amount the amount of deposit
-# @param transaction the transaction entity id
+"""
+The entity holds information about deposit/withdraw
+"""
 type DaoPoolVest @entity(immutable: true) {
+  "id forms from tx hash + interactionCount"
   id: Bytes!
+  "The pool address"
   pool: Pool!
 
+  "The array of NFT ids"
   nfts: [BigInt!]!
+  "The amount of deposit"
   amount: BigInt!
 
+  "The transaction entity id"
   transaction: Transaction!
 }
 
-# @notice The entity holds information about move proposal to validators
-# @param id forms from tx hash + interactionCount
-# @param pool the pool address
-# @param proposalId the id of proposal
-# @param transaction the transaction entity id
+"""
+The entity holds information about move proposal to validators
+"""
 type DaoPoolMovedToValidators @entity(immutable: true) {
+  "id forms from tx hash + interactionCount"
   id: Bytes!
+  "The pool address"
   pool: Pool!
 
+  "The id of proposal"
   proposalId: BigInt!
 
+  "The transaction entity id"
   transaction: Transaction!
 }
 
-# @notice The entity holds information about save offchain results
-# @param id forms from tx hash + interactionCount
-# @param pool the pool address
-# @param transaction the transaction entity id
+"""
+The entity holds information about save offchain results
+"""
 type DaoPoolOffchainResultsSaved @entity(immutable: true) {
+  "id forms from tx hash + interactionCount"
   id: Bytes!
+  "The pool address"
   pool: Pool!
 
+  "The transaction entity id"
   transaction: Transaction!
 }
 
-# @notice The entity holds information about vote in dao pool
-# @param id forms from tx hash + interactionCount
-# @param pool the pool address
-# @param proposalId the id of proposal
-# @param transaction the transaction entity id
+"""
+The entity holds information about vote in dao pool
+"""
 type DaoValidatorProposalCreate @entity(immutable: true) {
+  "id forms from tx hash + interactionCount"
   id: Bytes!
+  "The pool address"
   pool: Pool!
+  "The id of proposal"
   proposalId: BigInt!
 
+  "The transaction entity id"
   transaction: Transaction!
 }
 
-# @notice The entity holds information about validators vote in proposal
-# @param id forms from tx hash + interactionCount
-# @param pool the pool address
-# @param proposalId the id of proposal
-# @param isVoteFor bool flag, if true - vote for, if false - vote against
-# @param amount the vote amount
-# @param transaction the transaction entity id
+"""
+The entity holds information about validators vote in proposal
+"""
 type DaoValidatorProposalVote @entity(immutable: true) {
+  "id forms from tx hash + interactionCount"
   id: Bytes!
+  "The pool address"
   pool: Pool!
+  "The id of proposal"
   proposalId: BigInt!
 
+  "Boolean flag, if true - vote for, if false - vote against"
   isVoteFor: Boolean!
+  "The vote amount"
   amount: BigInt!
 
+  "The transaction entity id"
   transaction: Transaction!
 }
 
-# @notice The entity holds information about execution of proposal in dao pool
-# @param id forms from tx hash + interactionCount
-# @param pool the pool address
-# @param proposalId the id of proposal
-# @param transaction the transaction entity id
+"""
+The entity holds information about execution of proposal in dao pool
+"""
 type DaoValidatorProposalExecute @entity(immutable: true) {
+  "id forms from tx hash + interactionCount"
   id: Bytes!
+  "The pool address"
   pool: Pool!
+  "The id of proposal"
   proposalId: BigInt!
 
+  "The transaction entity id"
   transaction: Transaction!
 }
