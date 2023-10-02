@@ -11,6 +11,7 @@ import {
   ProposalExecuted,
   RewardClaimed,
   VoteChanged,
+  VotingRewardClaimed,
   Withdrawn,
 } from "../generated/templates/DaoPool/DaoPool";
 import {
@@ -24,6 +25,7 @@ import {
   onMovedToValidators,
   onOffchainResultsSaved,
   onDelegatedTreasury,
+  onVotingRewardClaimed,
 } from "../src/mappings/DaoPool";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
 import { ProposalInteractionType } from "../src/entities/global/ProposalInteractionTypeEnum";
@@ -170,6 +172,36 @@ function createRewardClaimed(
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
   event.parameters.push(new ethereum.EventParam("token", ethereum.Value.fromAddress(token)));
   event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createVotingRewardClaimed(
+  proposalId: BigInt,
+  sender: Address,
+  token: Address,
+  amount: BigInt,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): VotingRewardClaimed {
+  let event: VotingRewardClaimed = changetype<VotingRewardClaimed>(newMockEvent());
+  event.parameters = new Array();
+
+  let rewards = new ethereum.Tuple(3);
+
+  rewards[0] = ethereum.Value.fromUnsignedBigInt(BigInt.zero());
+  rewards[1] = ethereum.Value.fromUnsignedBigInt(BigInt.zero());
+  rewards[2] = ethereum.Value.fromUnsignedBigInt(BigInt.zero());
+
+  event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
+  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
+  event.parameters.push(new ethereum.EventParam("token", ethereum.Value.fromAddress(token)));
+  event.parameters.push(new ethereum.EventParam("rewards", ethereum.Value.fromTuple(rewards)));
 
   event.block = block;
   event.transaction = tx;
@@ -586,6 +618,83 @@ describe("DaoPool", () => {
       event.params.sender,
       block,
       `[${TransactionType.DAO_POOL_REWARD_CLAIMED}]`,
+      BigInt.fromI32(1),
+      contractSender
+    );
+  });
+
+  test("should handle VotingRewardClaimed", () => {
+    let proposalIds = [BigInt.fromI32(1), BigInt.fromI32(2)];
+    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let tokens = [
+      Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672"),
+      Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181673"),
+    ];
+    let amounts = [BigInt.fromI32(10).pow(18), BigInt.fromI32(10).pow(18).times(BigInt.fromI32(2))];
+
+    let event = createVotingRewardClaimed(proposalIds[0], sender, tokens[0], amounts[0], contractSender, block, tx);
+
+    onVotingRewardClaimed(event);
+
+    assert.fieldEquals("Pool", contractSender.toHexString(), "id", contractSender.toHexString());
+    assert.fieldEquals(
+      "DaoPoolVotingRewardClaim",
+      tx.hash.concatI32(0).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals(
+      "DaoPoolVotingRewardClaim",
+      tx.hash.concatI32(0).toHexString(),
+      "proposalId",
+      proposalIds[0].toString()
+    );
+    assert.fieldEquals(
+      "DaoPoolVotingRewardClaim",
+      tx.hash.concatI32(0).toHexString(),
+      "transaction",
+      tx.hash.toHexString()
+    );
+
+    assertTransaction(
+      tx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.DAO_POOL_VOTING_REWARD_CLAIMED}]`,
+      BigInt.fromI32(1),
+      contractSender
+    );
+
+    const nextTx = getNextTx(tx);
+
+    event = createVotingRewardClaimed(proposalIds[1], sender, tokens[1], amounts[1], contractSender, block, nextTx);
+
+    onVotingRewardClaimed(event);
+
+    assert.fieldEquals(
+      "DaoPoolVotingRewardClaim",
+      nextTx.hash.concatI32(0).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals(
+      "DaoPoolVotingRewardClaim",
+      nextTx.hash.concatI32(0).toHexString(),
+      "proposalId",
+      proposalIds[1].toString()
+    );
+    assert.fieldEquals(
+      "DaoPoolVotingRewardClaim",
+      nextTx.hash.concatI32(0).toHexString(),
+      "transaction",
+      nextTx.hash.toHexString()
+    );
+
+    assertTransaction(
+      nextTx.hash,
+      event.params.sender,
+      block,
+      `[${TransactionType.DAO_POOL_VOTING_REWARD_CLAIMED}]`,
       BigInt.fromI32(1),
       contractSender
     );

@@ -168,6 +168,22 @@ type DaoPoolRewardClaim @entity(immutable: true) {
 }
 
 """
+The entity holds information about voting reward claims in dao pool
+"""
+type DaoPoolVotingRewardClaim @entity(immutable: true) {
+  "id forms from tx hash + interactionCount"
+  id: Bytes! # tx hash + interactionCount
+  "The pool address"
+  pool: Pool!
+
+  "The id of proposal"
+  proposalId: BigInt!
+
+  "The transaction entity id"
+  transaction: Transaction!
+}
+
+"""
 The entity holds information about deposit/withdraw
 """
 type DaoPoolVest @entity(immutable: true) {

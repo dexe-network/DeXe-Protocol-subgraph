@@ -9,6 +9,7 @@ import {
   ProposalExecuted,
   RewardClaimed,
   VoteChanged,
+  VotingRewardClaimed,
   Withdrawn,
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPoolDelegate } from "../entities/dao-pool/DaoPoolDelegate";
@@ -28,6 +29,7 @@ import {
   ProposalInteractionType,
 } from "../entities/global/ProposalInteractionTypeEnum";
 import { getDaoPoolTreasuryDelegate } from "../entities/dao-pool/DaoPoolTreasuryDelegate";
+import { getDaoPoolVotingRewardClaim } from "../entities/dao-pool/DaoPoolVotingRewardClaim";
 
 export function onProposalCreated(event: ProposalCreated): void {
   getPool(event.address).save();
@@ -184,6 +186,29 @@ export function onRewardClaimed(event: RewardClaimed): void {
   );
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
   transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_POOL_REWARD_CLAIMED));
+  claimed.transaction = transaction.id;
+
+  transaction.save();
+  claimed.save();
+}
+
+export function onVotingRewardClaimed(event: VotingRewardClaimed): void {
+  getPool(event.address).save();
+  let transaction = getTransaction(
+    event.transaction.hash,
+    event.block.number,
+    event.block.timestamp,
+    event.params.sender,
+    event.address
+  );
+  let claimed = getDaoPoolVotingRewardClaim(
+    event.transaction.hash,
+    event.address,
+    event.params.proposalId,
+    transaction.interactionsCount
+  );
+  transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_POOL_VOTING_REWARD_CLAIMED));
   claimed.transaction = transaction.id;
 
   transaction.save();
