@@ -21,7 +21,7 @@ type Transaction @entity {
 
   "All interaction entity ids of DaoPool creation"
   daoPoolCreate: [DaoPoolCreate!]! @derivedFrom(field: "transaction")
-  "AAll delegation interaction entity ids in DaoPool"
+  "All delegation interaction entity ids in DaoPool"
   daoPoolDelegate: [DaoPoolDelegate!]! @derivedFrom(field: "transaction")
   "All proposal interaction entity ids in DaoPool"
   daoPoolProposalInteraction: [DaoPoolProposalInteraction!]! @derivedFrom(field: "transaction")
@@ -85,7 +85,7 @@ type DaoPoolDelegate @entity(immutable: true) {
 }
 
 """
-The entity holds information about vote in dao pool
+The entity holds information about interaction with proposal in dao pool
 """
 type DaoPoolProposalInteraction @entity(immutable: true) {
   "id forms from tx hash + interactionCount"

@@ -28,7 +28,7 @@ type Proposal @entity {
   proposalId: BigInt!
   "Boolean flag, if true - internal for validators"
   isInternal: Boolean!
-  "The percentage of total votes to confirm the proposal"
+  "The percentage of total votes required to decide whether to confirm the proposal or not"
   quorum: BigInt!
 
   "The current number of votes for the proposal"
@@ -36,7 +36,6 @@ type Proposal @entity {
   "The current number of votes against the proposal"
   totalVoteAgainst: BigInt!
 
-  # only internal values
   "The URL of description"
   description: String!
   "The address of creator"

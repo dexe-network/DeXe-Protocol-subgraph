@@ -219,7 +219,7 @@ type Proposal @entity {
   currentVotesFor: BigInt!
   "The current number of votes against proposal"
   currentVotesAgainst: BigInt!
-  "The percentage of total votes to confirm the proposal"
+  "The percentage of total votes required to decide whether to confirm the proposal or not"
   quorum: BigInt!
 
   "The URL of description"
@@ -398,7 +398,7 @@ type TreasuryDelegationHistory @entity(immutable: true) {
   "The timestamp of delegation"
   timestamp: BigInt!
 
-  "The delegatee Voter entity id"
+  "The delegatee VoterInPool entity id"
   delegatee: VoterInPool!
   "The number associated with enum of treasury delegation type"
   type: BigInt!
