@@ -351,6 +351,8 @@ export function onRewardClaimed(event: RewardClaimed): void {
     let proposal = getProposal(pool, event.params.proposalId);
     let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
+    voterInProposal.claimed = true;
+
     voterInProposal.claimedRewardUSD = voterInProposal.claimedRewardUSD.plus(usdAmount);
 
     voterInProposal.staticRewardUSD = voterInProposal.staticRewardUSD.plus(usdAmount);
@@ -383,6 +385,8 @@ export function onVotingRewardClaimed(event: VotingRewardClaimed): void {
   let micropoolUsdAmount = getUSDValue(event.params.token, event.params.rewards.micropool);
   let treasuryUsdAmount = getUSDValue(event.params.token, event.params.rewards.treasury);
   let totalUsdAmount = personalUsdAmount.plus(micropoolUsdAmount).plus(treasuryUsdAmount);
+
+  voterInProposal.claimed = true;
 
   voterInProposal.personalVotingRewardUSD = personalUsdAmount;
   voterInProposal.micropoolVotingRewardUSD = micropoolUsdAmount;
