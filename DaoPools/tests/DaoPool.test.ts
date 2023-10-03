@@ -1282,6 +1282,12 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
+      "claimed",
+      "true"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
       "staticRewardUSD",
       amounts[0].toString()
     );
@@ -1301,6 +1307,12 @@ describe("DaoPool", () => {
     onRewardClaimed(event1);
 
     assert.fieldEquals("Voter", sender.toHexString(), "totalClaimedUSD", amounts[0].plus(amounts[1]).toString());
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),
+      "claimed",
+      "true"
+    );
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),
@@ -1368,6 +1380,12 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
+      "claimed",
+      "true"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
       "staticRewardUSD",
       "0"
     );
@@ -1423,6 +1441,12 @@ describe("DaoPool", () => {
     onVotingRewardClaimed(event1);
 
     assert.fieldEquals("Voter", sender.toHexString(), "totalClaimedUSD", totalAmount.plus(totalAmount1).toString());
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),
+      "claimed",
+      "true"
+    );
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),

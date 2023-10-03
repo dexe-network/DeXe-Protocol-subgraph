@@ -309,7 +309,10 @@ The entity holds information about voter's actions in proposal
 type VoterInProposal @entity {
   "id forms from voter address + proposal entity id"
   id: Bytes! # voter address + proposal entity id
+  "Boolean flag, if true - voter voted for the proposal"
   isVoteFor: Boolean!
+  "Boolean flag, if true - rewards claimed"
+  claimed: Boolean!
 
   "The total amount of vote for the proposal"
   totalVote: BigInt!
