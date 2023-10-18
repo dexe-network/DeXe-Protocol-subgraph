@@ -11,6 +11,9 @@ import { push } from "../helpers/ArrayHelper";
 export function onTierCreated(event: TierCreated): void {
   let tokenSale = getTokenSale(event.address);
   let tier = getTokenSaleTier(tokenSale, event.params.tierId, event.params.saleToken);
+
+  tier.creationHash = event.transaction.hash;
+
   let participationDetails = event.params.participationDetails;
   for (let i = 0; i < participationDetails.length; i++) {
     tier.whitelistTypes = push(tier.whitelistTypes, BigInt.fromI32(participationDetails[i].participationType));

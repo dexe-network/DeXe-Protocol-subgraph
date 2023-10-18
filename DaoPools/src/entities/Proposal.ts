@@ -22,6 +22,7 @@ export function getProposal(
     proposal.isFor = false;
     proposal.executor = Bytes.empty();
     proposal.executionTimestamp = BigInt.zero();
+    proposal.executionHash = Bytes.empty();
     proposal.quorumReachedTimestamp = BigInt.zero();
 
     proposal.rewardToken = rewardToken;

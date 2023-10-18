@@ -118,6 +118,12 @@ describe("TokenSale", () => {
     assert.fieldEquals(
       "TokenSaleTier",
       contractSender.concatI32(tierId.toI32()).toHexString(),
+      "creationHash",
+      tx.hash.toHexString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTier",
+      contractSender.concatI32(tierId.toI32()).toHexString(),
       "saleToken",
       token.toHexString()
     );

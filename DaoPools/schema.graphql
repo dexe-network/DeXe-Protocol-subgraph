@@ -209,6 +209,8 @@ type Proposal @entity {
   executor: Bytes!
   "The timestamp of execution"
   executionTimestamp: BigInt!
+  "The hash of proposal execution tx"
+  executionHash: Bytes!
   "The timestamp of reaching quorum"
   quorumReachedTimestamp: BigInt!
 
@@ -448,6 +450,9 @@ The entity holds information about token sale tier
 type TokenSaleTier @entity {
   "id forms from token sale address + tier id"
   id: Bytes!
+
+  "The hash of tier creation tx"
+  creationHash: Bytes!
 
   "The sale token contract address"
   saleToken: Bytes!
