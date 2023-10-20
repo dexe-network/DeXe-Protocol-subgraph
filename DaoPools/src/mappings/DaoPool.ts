@@ -335,6 +335,7 @@ export function onProposalExecuted(event: ProposalExecuted): void {
   proposal.isFor = event.params.isFor;
   proposal.executor = event.params.sender;
   proposal.executionTimestamp = event.block.timestamp;
+  proposal.executionHash = event.transaction.hash;
 
   proposal.save();
   pool.save();

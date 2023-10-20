@@ -1205,6 +1205,12 @@ describe("DaoPool", () => {
       "executionTimestamp",
       block.timestamp.toString()
     );
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "executionHash",
+      tx.hash.toHexString()
+    );
 
     proposalId = BigInt.fromI32(2);
     isFor = false;

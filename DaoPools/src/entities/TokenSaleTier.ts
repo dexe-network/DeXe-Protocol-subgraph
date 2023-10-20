@@ -14,6 +14,8 @@ export function getTokenSaleTier(
 
     tier.saleToken = saleToken;
 
+    tier.creationHash = Bytes.empty();
+
     tier.totalBuyersCount = BigInt.zero();
     tier.buyers = new Array();
 
