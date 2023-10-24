@@ -7,6 +7,7 @@ import { getTokenSaleTier } from "../entities/TokenSaleTier";
 import { getVoter } from "../entities/Voters/Voter";
 import { getVoterInPool } from "../entities/Voters/VoterInPool";
 import { push } from "../helpers/ArrayHelper";
+import { getTokenSaleTierBuyHistory } from "../entities/TokenSaleTierBuyHistory";
 
 export function onTierCreated(event: TierCreated): void {
   let tokenSale = getTokenSale(event.address);
@@ -28,15 +29,17 @@ export function onBought(event: Bought): void {
   let tokenSale = getTokenSale(event.address);
   let tier = getTokenSaleTier(tokenSale, event.params.tierId);
   let pool = getDaoPool(Address.fromBytes(tokenSale.daoPool));
+  let buyer = getVoterInPool(pool, getVoter(event.params.buyer), event.block.timestamp);
 
-  tier.buyers = pushUnique<Bytes>(tier.buyers, [
-    getVoterInPool(pool, getVoter(event.params.buyer), event.block.timestamp).id,
-  ]);
+  tier.buyers = pushUnique<Bytes>(tier.buyers, [buyer.id]);
 
   if (tier.buyers.length > tier.totalBuyersCount.toI32()) {
     tier.totalBuyersCount = tier.totalBuyersCount.plus(BigInt.fromI32(tier.buyers.length).minus(tier.totalBuyersCount));
   }
 
+  getTokenSaleTierBuyHistory(event.transaction.hash, event.block.timestamp, tier, buyer).save();
+
+  buyer.save();
   tokenSale.save();
   tier.save();
   pool.save();

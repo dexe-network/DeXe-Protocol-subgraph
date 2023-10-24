@@ -474,6 +474,24 @@ type TokenSaleTier @entity {
 }
 
 """
+The entity holds information about token buying
+"""
+type TokenSaleTierBuyHistory @entity {
+  "id forms from tx hash + interactionCount"
+  id: Bytes!
+
+  "tx hash"
+  hash: Bytes!
+  "timestamp of token buying"
+  timestamp: BigInt!
+
+  "The buyer VoterInPool entity id"
+  buyer: VoterInPool!
+  "The TokenSaleTier id"
+  tier: TokenSaleTier!
+}
+
+"""
 The entity counts interactions in single tx
 """
 type InteractionCount @entity {
