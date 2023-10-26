@@ -115,6 +115,8 @@ export function onChangedValidatorsBalances(event: ChangedValidatorsBalances): v
 
     if (validatorInPool.balance.equals(BigInt.zero())) {
       validatorInPool.pool = Bytes.empty();
+    } else {
+      validatorInPool.pool = pool.id;
     }
 
     validatorInPool.save();
