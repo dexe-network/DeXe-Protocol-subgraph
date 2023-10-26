@@ -167,6 +167,31 @@ describe("TokenSale", () => {
       `[${user1.concat(poolAddress).toHexString()}]`
     );
 
+    assert.fieldEquals(
+      "TokenSaleTierBuyHistory",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "hash",
+      event.transaction.hash.toHexString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTierBuyHistory",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "timestamp",
+      event.block.timestamp.toString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTierBuyHistory",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "buyer",
+      user1.concat(poolAddress).toHexString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTierBuyHistory",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "tier",
+      contractSender.concatI32(tierId.toI32()).toHexString()
+    );
+
     let user2 = Address.fromString("0xfF42F3B569cdB6dF9dC260473Ec2ef63Ca971d63");
     event = createBought(tierId, user2, contractSender, block, tx);
 
@@ -189,6 +214,31 @@ describe("TokenSale", () => {
       contractSender.concatI32(tierId.toI32()).toHexString(),
       "buyers",
       `[${user1.concat(poolAddress).toHexString()}, ${user2.concat(poolAddress).toHexString()}]`
+    );
+
+    assert.fieldEquals(
+      "TokenSaleTierBuyHistory",
+      event.transaction.hash.concatI32(1).toHexString(),
+      "hash",
+      event.transaction.hash.toHexString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTierBuyHistory",
+      event.transaction.hash.concatI32(1).toHexString(),
+      "timestamp",
+      event.block.timestamp.toString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTierBuyHistory",
+      event.transaction.hash.concatI32(1).toHexString(),
+      "buyer",
+      user2.concat(poolAddress).toHexString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTierBuyHistory",
+      event.transaction.hash.concatI32(1).toHexString(),
+      "tier",
+      contractSender.concatI32(tierId.toI32()).toHexString()
     );
   });
 
