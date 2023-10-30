@@ -6,7 +6,6 @@ import { getDaoPool } from "../src/entities/DaoPool";
 import { getTokenSale } from "../src/entities/TokenSale";
 import { onBought, onTierCreated, onWhitelisted } from "../src/mappings/TokenSale";
 
-//Bought(uint256 tierId, address paidWith, uint256 received, uint256 given, address buyer);
 function createBought(
   tierId: BigInt,
   paidToken: Address,
