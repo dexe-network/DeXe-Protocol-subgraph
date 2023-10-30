@@ -6,8 +6,12 @@ import { getDaoPool } from "../src/entities/DaoPool";
 import { getTokenSale } from "../src/entities/TokenSale";
 import { onBought, onTierCreated, onWhitelisted } from "../src/mappings/TokenSale";
 
+//Bought(uint256 tierId, address paidWith, uint256 received, uint256 given, address buyer);
 function createBought(
   tierId: BigInt,
+  paidToken: Address,
+  received: BigInt,
+  given: BigInt,
   buyer: Address,
   contractSender: Address,
   block: ethereum.Block,
@@ -17,6 +21,9 @@ function createBought(
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("tierId", ethereum.Value.fromUnsignedBigInt(tierId)));
+  event.parameters.push(new ethereum.EventParam("paidWith", ethereum.Value.fromAddress(paidToken)));
+  event.parameters.push(new ethereum.EventParam("received", ethereum.Value.fromUnsignedBigInt(received)));
+  event.parameters.push(new ethereum.EventParam("given", ethereum.Value.fromUnsignedBigInt(given)));
   event.parameters.push(new ethereum.EventParam("buyer", ethereum.Value.fromAddress(buyer)));
 
   event.block = block;
@@ -143,8 +150,11 @@ describe("TokenSale", () => {
 
   test("should handle bought", () => {
     let tierId = BigInt.fromI32(5);
+    let paidToken = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let received = BigInt.fromI32(10);
+    let given = BigInt.fromI32(20);
     let user1 = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181672");
-    let event = createBought(tierId, user1, contractSender, block, tx);
+    let event = createBought(tierId, paidToken, received, given, user1, contractSender, block, tx);
 
     onBought(event);
 
@@ -182,6 +192,24 @@ describe("TokenSale", () => {
     assert.fieldEquals(
       "TokenSaleTierBuyHistory",
       event.transaction.hash.concatI32(0).toHexString(),
+      "paidToken",
+      paidToken.toHexString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTierBuyHistory",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "givenAmount",
+      given.toString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTierBuyHistory",
+      event.transaction.hash.concatI32(0).toHexString(),
+      "receivedAmount",
+      received.toString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTierBuyHistory",
+      event.transaction.hash.concatI32(0).toHexString(),
       "buyer",
       user1.concat(poolAddress).toHexString()
     );
@@ -193,7 +221,7 @@ describe("TokenSale", () => {
     );
 
     let user2 = Address.fromString("0xfF42F3B569cdB6dF9dC260473Ec2ef63Ca971d63");
-    event = createBought(tierId, user2, contractSender, block, tx);
+    event = createBought(tierId, paidToken, received, given, user2, contractSender, block, tx);
 
     onBought(event);
 
@@ -227,6 +255,24 @@ describe("TokenSale", () => {
       event.transaction.hash.concatI32(1).toHexString(),
       "timestamp",
       event.block.timestamp.toString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTierBuyHistory",
+      event.transaction.hash.concatI32(1).toHexString(),
+      "paidToken",
+      paidToken.toHexString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTierBuyHistory",
+      event.transaction.hash.concatI32(1).toHexString(),
+      "givenAmount",
+      given.toString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTierBuyHistory",
+      event.transaction.hash.concatI32(1).toHexString(),
+      "receivedAmount",
+      received.toString()
     );
     assert.fieldEquals(
       "TokenSaleTierBuyHistory",

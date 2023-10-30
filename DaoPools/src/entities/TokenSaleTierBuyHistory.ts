@@ -7,7 +7,10 @@ export function getTokenSaleTierBuyHistory(
   hash: Bytes,
   timestamp: BigInt,
   tokenSaleTier: TokenSaleTier,
-  buyer: VoterInPool
+  buyer: VoterInPool,
+  paidToken: Bytes = Bytes.empty(),
+  givenAmount: BigInt = BigInt.zero(),
+  receivedAmount: BigInt = BigInt.zero()
 ): TokenSaleTierBuyHistory {
   let counter = getInteractionCount(hash);
   let id = hash.concatI32(counter.count.toI32());
@@ -19,6 +22,10 @@ export function getTokenSaleTierBuyHistory(
 
     history.hash = hash;
     history.timestamp = timestamp;
+
+    history.paidToken = paidToken;
+    history.givenAmount = givenAmount;
+    history.receivedAmount = receivedAmount;
 
     history.buyer = buyer.id;
     history.tier = tokenSaleTier.id;
