@@ -485,6 +485,14 @@ type TokenSaleTierBuyHistory @entity {
   "timestamp of token buying"
   timestamp: BigInt!
 
+  "paid token address"
+  paidToken: Bytes!
+
+  "paid token amount"
+  givenAmount: BigInt!
+  "received sale token amount"
+  receivedAmount: BigInt!
+
   "The buyer VoterInPool entity id"
   buyer: VoterInPool!
   "The TokenSaleTier id"

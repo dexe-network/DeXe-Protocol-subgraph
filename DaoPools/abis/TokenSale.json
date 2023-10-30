@@ -36,6 +36,24 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "paidWith",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "received",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "given",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "buyer",
         "type": "address"
       }

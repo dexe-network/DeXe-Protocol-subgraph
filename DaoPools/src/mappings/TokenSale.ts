@@ -37,7 +37,15 @@ export function onBought(event: Bought): void {
     tier.totalBuyersCount = tier.totalBuyersCount.plus(BigInt.fromI32(tier.buyers.length).minus(tier.totalBuyersCount));
   }
 
-  getTokenSaleTierBuyHistory(event.transaction.hash, event.block.timestamp, tier, buyer).save();
+  getTokenSaleTierBuyHistory(
+    event.transaction.hash,
+    event.block.timestamp,
+    tier,
+    buyer,
+    event.params.paidWith,
+    event.params.given,
+    event.params.received
+  ).save();
 
   buyer.save();
   tokenSale.save();
