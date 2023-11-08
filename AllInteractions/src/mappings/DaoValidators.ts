@@ -4,43 +4,49 @@ import {
   InternalProposalCreated,
   InternalProposalExecuted,
 } from "../../generated/templates/DaoValidators/DaoValidators";
-import { getDaoVaildatorProposalVote } from "../entities/dao-pool/DaoValidatorProposalVote";
+import { getDaoValidatorProposalVote } from "../entities/dao-pool/DaoValidatorProposalVote";
 import { getDaoValidatorProposalCreate } from "../entities/dao-pool/DaoValidatorProposalCreate";
 import { getDaoValidatorProposalExecute } from "../entities/dao-pool/DaoValidatorProposalExecute";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getTransaction } from "../entities/transaction/Transaction";
-import { extendArray } from "../helpers/ArrayHelper";
+import { push } from "../helpers/ArrayHelper";
+import { getPool } from "../entities/dao-pool/Pool";
 
 export function onVoted(event: Voted): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
 
-  let voted = getDaoVaildatorProposalVote(
+  let vote = getDaoValidatorProposalVote(
     event.transaction.hash,
     event.address,
     event.params.proposalId,
     event.params.vote,
-    transaction.interactionsCount
+    transaction.interactionsCount,
+    event.params.isVoteFor
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.DAO_VALIDATORS_VOTED)]);
-  voted.transaction = transaction.id;
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_VALIDATORS_VOTED));
+  vote.transaction = transaction.id;
 
   transaction.save();
-  voted.save();
+  vote.save();
 }
 
 export function onInternalProposalCreated(event: InternalProposalCreated): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.sender
+    event.params.sender,
+    event.address
   );
 
   let created = getDaoValidatorProposalCreate(
@@ -51,9 +57,7 @@ export function onInternalProposalCreated(event: InternalProposalCreated): void 
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [
-    getEnumBigInt(TransactionType.DAO_VALIDATORS_PROPOSAL_CREATED),
-  ]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_VALIDATORS_PROPOSAL_CREATED));
   created.transaction = transaction.id;
 
   transaction.save();
@@ -61,11 +65,13 @@ export function onInternalProposalCreated(event: InternalProposalCreated): void 
 }
 
 export function onInternalProposalExecuted(event: InternalProposalExecuted): void {
+  getPool(event.address).save();
   let transaction = getTransaction(
     event.transaction.hash,
     event.block.number,
     event.block.timestamp,
-    event.params.executor
+    event.params.executor,
+    event.address
   );
 
   let executed = getDaoValidatorProposalExecute(
@@ -76,9 +82,7 @@ export function onInternalProposalExecuted(event: InternalProposalExecuted): voi
   );
 
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
-  transaction.type = extendArray<BigInt>(transaction.type, [
-    getEnumBigInt(TransactionType.DAO_VALIDATORS_PROPOSAL_EXECUTED),
-  ]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.DAO_VALIDATORS_PROPOSAL_EXECUTED));
   executed.transaction = transaction.id;
 
   transaction.save();

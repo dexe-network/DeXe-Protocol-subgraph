@@ -2,7 +2,7 @@ import { BigInt } from "@graphprotocol/graph-ts";
 import { Agreed, UpdatedProfile } from "../../generated/UserRegistry/UserRegistry";
 import { getEnumBigInt, TransactionType } from "../entities/global/TransactionTypeEnum";
 import { getTransaction } from "../entities/transaction/Transaction";
-import { extendArray } from "../helpers/ArrayHelper";
+import { push } from "../helpers/ArrayHelper";
 
 export function onAgreed(event: Agreed): void {
   let transaction = getTransaction(
@@ -12,9 +12,7 @@ export function onAgreed(event: Agreed): void {
     event.params.user
   );
 
-  transaction.type = extendArray<BigInt>(transaction.type, [
-    getEnumBigInt(TransactionType.USER_AGREED_TO_PRIVACY_POLICY),
-  ]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.USER_AGREED_TO_PRIVACY_POLICY));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   transaction.save();
@@ -28,7 +26,7 @@ export function onUpdatedProfile(event: UpdatedProfile): void {
     event.params.user
   );
 
-  transaction.type = extendArray<BigInt>(transaction.type, [getEnumBigInt(TransactionType.UPDATED_USER_CREDENTIALS)]);
+  transaction.type = push<BigInt>(transaction.type, getEnumBigInt(TransactionType.UPDATED_USER_CREDENTIALS));
   transaction.interactionsCount = transaction.interactionsCount.plus(BigInt.fromI32(1));
 
   transaction.save();

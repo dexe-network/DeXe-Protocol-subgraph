@@ -1,6 +1,0 @@
-node_modules
-generated/*
-build
-tests/.bin
-tests/.latest.json
-tests/.docker

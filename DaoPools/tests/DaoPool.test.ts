@@ -6,7 +6,6 @@ import {
   clearStore,
   createMockedFunction,
   describe,
-  logStore,
   newMockEvent,
   test,
 } from "matchstick-as/assembly/index";
@@ -15,32 +14,41 @@ import {
   Delegated,
   Deposited,
   Withdrawn,
-  DPCreated,
   ProposalCreated,
   ProposalExecuted,
   RewardClaimed,
-  RewardCredited,
-  Voted,
-  StakingRewardClaimed,
+  VoteChanged,
+  OffchainResultsSaved,
+  DelegatedTreasury,
+  DelegatorRewardsClaimed,
+  QuorumReached,
+  VotingRewardClaimed,
+  QuorumUnreached,
 } from "../generated/templates/DaoPool/DaoPool";
 import {
   onDelegated,
-  onDPCreated,
   onProposalCreated,
   onProposalExecuted,
-  onVoted,
+  onVoteChanged,
   onRewardClaimed,
-  onRewardCredited,
   onDeposited,
   onWithdrawn,
-  onStakingRewardClaimed,
+  onOffchainResultsSaved,
+  onDelegatedTreasury,
+  onDelegatorRewardsClaimed,
+  onQuorumReached,
+  onVotingRewardClaimed,
+  onQuorumUnreached,
 } from "../src/mappings/DaoPool";
-import { ProposalType } from "../src/entities/global/ProposalTypes";
-import { PRICE_FEED_ADDRESS, REWARD_TYPE_VOTE_DELEGATED } from "../src/entities/global/globals";
+import { PRICE_FEED_ADDRESS } from "../src/entities/global/globals";
 import { ProposalSettings } from "../generated/schema";
 import { createSetERC20 } from "./UserKeeper.test";
 import { getUserKeeperContract } from "../src/entities/UserKeeperContract";
 import { onSetERC20 } from "../src/mappings/UserKeeper";
+import { DelegationType } from "../src/entities/global/DelegationTypeEnum";
+import { getDaoPool } from "../src/entities/DaoPool";
+import { TreasuryDelegationType } from "../src/entities/global/TreasuryDelegationTypeEnum";
+import { RewardType } from "../src/entities/global/RewardTypeEnum";
 
 function createProposalCreated(
   proposalId: BigInt,
@@ -49,7 +57,6 @@ function createProposalCreated(
   settingsId: BigInt,
   rewardToken: Address,
   description: string,
-  misc: string,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
@@ -59,7 +66,8 @@ function createProposalCreated(
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
   event.parameters.push(new ethereum.EventParam("proposalDescription", ethereum.Value.fromString(description)));
-  event.parameters.push(new ethereum.EventParam("misc", ethereum.Value.fromString(misc)));
+  event.parameters.push(new ethereum.EventParam("actionsOnFor", ethereum.Value.fromTupleArray([])));
+  event.parameters.push(new ethereum.EventParam("actionsOnAgainst", ethereum.Value.fromTupleArray([])));
   event.parameters.push(new ethereum.EventParam("quorum", ethereum.Value.fromUnsignedBigInt(quorum)));
   event.parameters.push(new ethereum.EventParam("proposalSettings", ethereum.Value.fromUnsignedBigInt(settingsId)));
   event.parameters.push(new ethereum.EventParam("rewardToken", ethereum.Value.fromAddress(rewardToken)));
@@ -98,22 +106,22 @@ function createDelegated(
   return event;
 }
 
-function createVoted(
-  proposalId: BigInt,
-  sender: Address,
-  personalVote: BigInt,
-  delegatedVote: BigInt,
+function createDelegatedTreasury(
+  to: Address,
+  amount: BigInt,
+  nfts: Array<BigInt>,
+  flag: boolean,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
-): Voted {
-  let event = changetype<Voted>(newMockEvent());
+): DelegatedTreasury {
+  let event = changetype<DelegatedTreasury>(newMockEvent());
   event.parameters = new Array();
 
-  event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
-  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
-  event.parameters.push(new ethereum.EventParam("personalVote", ethereum.Value.fromUnsignedBigInt(personalVote)));
-  event.parameters.push(new ethereum.EventParam("delegatedVote", ethereum.Value.fromUnsignedBigInt(delegatedVote)));
+  event.parameters.push(new ethereum.EventParam("to", ethereum.Value.fromAddress(to)));
+  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("nfts", ethereum.Value.fromUnsignedBigIntArray(nfts)));
+  event.parameters.push(new ethereum.EventParam("isDelegate", ethereum.Value.fromBoolean(flag)));
 
   event.block = block;
   event.transaction = tx;
@@ -122,22 +130,22 @@ function createVoted(
   return event;
 }
 
-function createDPCreated(
+function createVoteChanged(
   proposalId: BigInt,
   sender: Address,
-  token: Address,
-  amount: BigInt,
+  totalVoted: BigInt,
+  isVoteFor: boolean,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
-): DPCreated {
-  let event = changetype<DPCreated>(newMockEvent());
+): VoteChanged {
+  let event = changetype<VoteChanged>(newMockEvent());
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
-  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
-  event.parameters.push(new ethereum.EventParam("token", ethereum.Value.fromAddress(token)));
-  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("voter", ethereum.Value.fromAddress(sender)));
+  event.parameters.push(new ethereum.EventParam("isVoteFor", ethereum.Value.fromBoolean(isVoteFor)));
+  event.parameters.push(new ethereum.EventParam("totalVoted", ethereum.Value.fromUnsignedBigInt(totalVoted)));
 
   event.block = block;
   event.transaction = tx;
@@ -148,6 +156,7 @@ function createDPCreated(
 
 function createProposalExecuted(
   proposalId: BigInt,
+  isFor: boolean,
   sender: Address,
   contractSender: Address,
   block: ethereum.Block,
@@ -157,6 +166,7 @@ function createProposalExecuted(
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
+  event.parameters.push(new ethereum.EventParam("isFor", ethereum.Value.fromBoolean(isFor)));
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
   event.block = block;
@@ -181,7 +191,7 @@ function createRewardClaimed(
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
   event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
   event.parameters.push(new ethereum.EventParam("token", ethereum.Value.fromAddress(token)));
-  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+  event.parameters.push(new ethereum.EventParam("rewards", ethereum.Value.fromUnsignedBigInt(amount)));
 
   event.block = block;
   event.transaction = tx;
@@ -190,25 +200,68 @@ function createRewardClaimed(
   return event;
 }
 
-function createRewardCredited(
+function createVotingRewardClaimed(
   proposalId: BigInt,
-  rewardType: BigInt,
-  rewardToken: Address,
-  amount: BigInt,
   sender: Address,
+  token: Address,
+  personalAmount: BigInt,
+  micropoolAmount: BigInt,
+  treasuryAmount: BigInt,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
-): RewardCredited {
-  rewardType;
-  let event = changetype<RewardCredited>(newMockEvent());
+): VotingRewardClaimed {
+  let event = changetype<VotingRewardClaimed>(newMockEvent());
+  event.parameters = new Array();
+
+  const rewards = new ethereum.Tuple(3);
+
+  rewards[0] = ethereum.Value.fromUnsignedBigInt(personalAmount);
+  rewards[1] = ethereum.Value.fromUnsignedBigInt(micropoolAmount);
+  rewards[2] = ethereum.Value.fromUnsignedBigInt(treasuryAmount);
+
+  event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
+  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
+  event.parameters.push(new ethereum.EventParam("token", ethereum.Value.fromAddress(token)));
+  event.parameters.push(new ethereum.EventParam("rewards", ethereum.Value.fromTuple(rewards)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createQuorumReached(
+  proposalId: BigInt,
+  timestamp: BigInt,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): QuorumReached {
+  let event = changetype<QuorumReached>(newMockEvent());
   event.parameters = new Array();
 
   event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
-  event.parameters.push(new ethereum.EventParam("rewardType", ethereum.Value.fromUnsignedBigInt(rewardType)));
-  event.parameters.push(new ethereum.EventParam("rewardToken", ethereum.Value.fromAddress(rewardToken)));
-  event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
-  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
+  event.parameters.push(new ethereum.EventParam("timestamp", ethereum.Value.fromUnsignedBigInt(timestamp)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createQuorumUnreached(
+  proposalId: BigInt,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): QuorumUnreached {
+  let event = changetype<QuorumUnreached>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
 
   event.block = block;
   event.transaction = tx;
@@ -261,20 +314,44 @@ function createWithdrawn(
   return event;
 }
 
-function createStakingRewardClaimed(
-  user: Address,
-  token: Address,
+function createDelegatorRewardsClaimed(
+  proposalId: BigInt,
+  delegator: Address,
+  delegatee: Address,
   amount: BigInt,
+  token: Address,
   contractSender: Address,
   block: ethereum.Block,
   tx: ethereum.Transaction
-): StakingRewardClaimed {
-  let event = changetype<StakingRewardClaimed>(newMockEvent());
+): DelegatorRewardsClaimed {
+  let event = changetype<DelegatorRewardsClaimed>(newMockEvent());
   event.parameters = new Array();
 
-  event.parameters.push(new ethereum.EventParam("user", ethereum.Value.fromAddress(user)));
+  event.parameters.push(new ethereum.EventParam("proposalId", ethereum.Value.fromUnsignedBigInt(proposalId)));
+  event.parameters.push(new ethereum.EventParam("delegator", ethereum.Value.fromAddress(delegator)));
+  event.parameters.push(new ethereum.EventParam("delegatee", ethereum.Value.fromAddress(delegatee)));
   event.parameters.push(new ethereum.EventParam("token", ethereum.Value.fromAddress(token)));
   event.parameters.push(new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount)));
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createOffchainResultsSaved(
+  sender: Address,
+  resultsHash: string,
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): OffchainResultsSaved {
+  let event = changetype<OffchainResultsSaved>(newMockEvent());
+  event.parameters = new Array();
+
+  event.parameters.push(new ethereum.EventParam("resultsHash", ethereum.Value.fromString(resultsHash)));
+  event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)));
 
   event.block = block;
   event.transaction = tx;
@@ -287,6 +364,8 @@ const block = getBlock(BigInt.fromI32(1), BigInt.fromI32(1));
 const tx = getTransaction(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromI32(1))));
 const contractSender = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181670");
 const settingsId = BigInt.fromI32(2);
+
+const USER_KEEPER_ADDRESS = "0x96e08f7d84603AEb97cd1c89A80A9e914f181670";
 
 describe("DaoPool", () => {
   beforeAll(() => {
@@ -360,6 +439,25 @@ describe("DaoPool", () => {
         ethereum.Value.fromAddressArray([contractSender, contractSender]),
       ]);
 
+    createMockedFunction(
+      Address.fromString(USER_KEEPER_ADDRESS),
+      "nftVotingPower",
+      "nftVotingPower(uint256[],bool):(uint256,uint256[])"
+    )
+      .withArgs([ethereum.Value.fromUnsignedBigIntArray([BigInt.fromI32(1)]), ethereum.Value.fromBoolean(false)])
+      .returns([ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(1500)), ethereum.Value.fromUnsignedBigIntArray([])]);
+
+    createMockedFunction(
+      Address.fromString(USER_KEEPER_ADDRESS),
+      "nftVotingPower",
+      "nftVotingPower(uint256[],bool):(uint256,uint256[])"
+    )
+      .withArgs([
+        ethereum.Value.fromUnsignedBigIntArray([BigInt.fromI32(1), BigInt.fromI32(2)]),
+        ethereum.Value.fromBoolean(false),
+      ])
+      .returns([ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(3000)), ethereum.Value.fromUnsignedBigIntArray([])]);
+
     let settings = new ProposalSettings(contractSender.concatI32(settingsId.toI32()));
     settings.settingsId = settingsId;
     settings.pool = contractSender;
@@ -384,7 +482,6 @@ describe("DaoPool", () => {
       settingsId,
       rewardToken,
       "description",
-      "misc",
       contractSender,
       block,
       tx
@@ -393,6 +490,9 @@ describe("DaoPool", () => {
     onProposalCreated(event);
 
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "votersCount", "0");
+
+    assert.fieldEquals("Voter", sender.toHexString(), "totalProposalsCreated", "1");
+
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
@@ -417,7 +517,13 @@ describe("DaoPool", () => {
       "executionTimestamp",
       "0"
     );
-    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "currentVotes", "0");
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "currentVotesFor", "0");
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "currentVotesAgainst",
+      "0"
+    );
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "quorum", "100");
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "votersVoted", "0");
     assert.fieldEquals(
@@ -438,14 +544,18 @@ describe("DaoPool", () => {
       "rewardToken",
       rewardToken.toHexString()
     );
-    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "misc", "misc");
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "proposalCount", "1");
   });
 
   test("should handle Delegated", () => {
+    let pool = getDaoPool(contractSender);
+    pool.erc20Token = Bytes.fromHexString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676");
+    pool.userKeeper = Bytes.fromHexString(USER_KEEPER_ADDRESS);
+    pool.save();
+
     let from = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
     let to = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
-    let amount = BigInt.fromI32(100).pow(18);
+    let amount = BigInt.fromI32(1000);
     let nfts = [BigInt.fromI32(1), BigInt.fromI32(2)];
 
     let event = createDelegated(from, to, amount, nfts, true, contractSender, block, tx);
@@ -453,7 +563,16 @@ describe("DaoPool", () => {
     onDelegated(event);
 
     assert.fieldEquals("Voter", from.toHexString(), "id", from.toHexString());
+    assert.fieldEquals("Voter", from.toHexString(), "totalDelegatedUSD", "200");
+    assert.fieldEquals("Voter", from.toHexString(), "currentVotesDelegated", "4000");
+    assert.fieldEquals("Voter", from.toHexString(), "currentVotesReceived", "0");
+    assert.fieldEquals("Voter", from.toHexString(), "delegateesCount", "1");
+    assert.fieldEquals("Voter", from.toHexString(), "delegatorsCount", "0");
     assert.fieldEquals("Voter", to.toHexString(), "id", to.toHexString());
+    assert.fieldEquals("Voter", to.toHexString(), "delegateesCount", "0");
+    assert.fieldEquals("Voter", to.toHexString(), "delegatorsCount", "1");
+    assert.fieldEquals("Voter", to.toHexString(), "currentVotesDelegated", "0");
+    assert.fieldEquals("Voter", to.toHexString(), "currentVotesReceived", "4000");
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "votersCount", "2");
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentTokenDelegated", amount.toString());
     assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentNFTDelegated", `[${nfts[0]}, ${nfts[1]}]`);
@@ -466,6 +585,7 @@ describe("DaoPool", () => {
       "receivedNFTDelegation",
       `[${nfts[0]}, ${nfts[1]}]`
     );
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "currentDelegateesCount", "0");
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "currentDelegatorsCount", "1");
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedNFTDelegationCount", "2");
     assert.fieldEquals(
@@ -474,6 +594,8 @@ describe("DaoPool", () => {
       "joinedTimestamp",
       block.timestamp.toString()
     );
+    assert.fieldEquals("VoterInPool", from.concat(contractSender).toHexString(), "currentDelegateesCount", "1");
+    assert.fieldEquals("VoterInPool", from.concat(contractSender).toHexString(), "currentDelegatorsCount", "0");
     assert.fieldEquals(
       "VoterInPool",
       from.concat(contractSender).toHexString(),
@@ -488,43 +610,66 @@ describe("DaoPool", () => {
       "timestamp",
       event.block.timestamp.toString()
     );
-    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "from", from.toHexString());
-    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "to", to.toHexString());
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "delegator", from.toHexString());
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "delegatee", to.toHexString());
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "nfts", `[${nfts[0]}, ${nfts[1]}]`);
-    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(0).toHexString(), "isDelegate", "true");
+    assert.fieldEquals(
+      "DelegationHistory",
+      tx.hash.concatI32(0).toHexString(),
+      "type",
+      DelegationType.DELEGATE.toString()
+    );
 
     assert.fieldEquals(
       "VoterInPoolPair",
       contractSender.concat(from).concat(to).toHexString(),
-      "from",
+      "creationTimestamp",
+      block.timestamp.toString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "delegator",
       from.concat(contractSender).toHexString()
     );
     assert.fieldEquals(
       "VoterInPoolPair",
       contractSender.concat(from).concat(to).toHexString(),
-      "to",
+      "delegatee",
       to.concat(contractSender).toHexString()
     );
     assert.fieldEquals(
       "VoterInPoolPair",
       contractSender.concat(from).concat(to).toHexString(),
-      "delegateAmount",
-      amount.toString()
+      "delegatedVotes",
+      "4000"
     );
     assert.fieldEquals(
       "VoterInPoolPair",
       contractSender.concat(from).concat(to).toHexString(),
-      "delegateNfts",
+      "delegatedAmount",
+      amount.toString()
+    );
+    assert.fieldEquals("VoterInPoolPair", contractSender.concat(from).concat(to).toHexString(), "delegatedUSD", "200");
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "delegatedNfts",
       `[${nfts[0]}, ${nfts[1]}]`
     );
   });
 
   test("should handle Undelegated", () => {
+    let pool = getDaoPool(contractSender);
+    pool.erc20Token = Bytes.fromHexString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676");
+    pool.userKeeper = Bytes.fromHexString(USER_KEEPER_ADDRESS);
+    pool.save();
+
     let from = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
     let to = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
-    let amount1 = BigInt.fromI32(100).pow(18);
-    let amount2 = BigInt.fromI32(50).pow(18);
+    let amount1 = BigInt.fromI32(1000);
+    let amount2 = BigInt.fromI32(500);
     let nfts1 = [BigInt.fromI32(1), BigInt.fromI32(2)];
     let nfts2 = [BigInt.fromI32(1)];
 
@@ -532,8 +677,31 @@ describe("DaoPool", () => {
     let event2 = createDelegated(from, to, amount2, nfts2, false, contractSender, block, tx);
 
     onDelegated(event1);
+
+    assert.fieldEquals("Voter", from.toHexString(), "currentVotesDelegated", "4000");
+    assert.fieldEquals("Voter", from.toHexString(), "currentVotesReceived", "0");
+    assert.fieldEquals("Voter", to.toHexString(), "currentVotesDelegated", "0");
+    assert.fieldEquals("Voter", to.toHexString(), "currentVotesReceived", "4000");
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "delegatedVotes",
+      "4000"
+    );
+
     onDelegated(event2);
 
+    assert.fieldEquals("Voter", from.toHexString(), "id", from.toHexString());
+    assert.fieldEquals("Voter", from.toHexString(), "totalDelegatedUSD", "100");
+    assert.fieldEquals("Voter", from.toHexString(), "delegateesCount", "1");
+    assert.fieldEquals("Voter", from.toHexString(), "delegatorsCount", "0");
+    assert.fieldEquals("Voter", from.toHexString(), "currentVotesDelegated", "2000");
+    assert.fieldEquals("Voter", from.toHexString(), "currentVotesReceived", "0");
+    assert.fieldEquals("Voter", to.toHexString(), "id", to.toHexString());
+    assert.fieldEquals("Voter", to.toHexString(), "delegateesCount", "0");
+    assert.fieldEquals("Voter", to.toHexString(), "delegatorsCount", "1");
+    assert.fieldEquals("Voter", to.toHexString(), "currentVotesDelegated", "0");
+    assert.fieldEquals("Voter", to.toHexString(), "currentVotesReceived", "2000");
     assert.fieldEquals(
       "DaoPool",
       contractSender.toHexString(),
@@ -555,6 +723,9 @@ describe("DaoPool", () => {
       "receivedNFTDelegation",
       `[${nfts1[1]}]`
     );
+    assert.fieldEquals("VoterInPool", from.concat(contractSender).toHexString(), "currentDelegateesCount", "1");
+    assert.fieldEquals("VoterInPool", from.concat(contractSender).toHexString(), "currentDelegatorsCount", "0");
+    assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "currentDelegateesCount", "0");
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "currentDelegatorsCount", "1");
     assert.fieldEquals("VoterInPool", to.concat(contractSender).toHexString(), "receivedNFTDelegationCount", "1");
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "pool", contractSender.toHexString());
@@ -564,55 +735,235 @@ describe("DaoPool", () => {
       "timestamp",
       event2.block.timestamp.toString()
     );
-    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "from", from.toHexString());
-    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "to", to.toHexString());
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "delegator", from.toHexString());
+    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "delegatee", to.toHexString());
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "amount", amount2.toString());
     assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "nfts", `[${nfts2[0]}]`);
-    assert.fieldEquals("DelegationHistory", tx.hash.concatI32(1).toHexString(), "isDelegate", "false");
+    assert.fieldEquals(
+      "DelegationHistory",
+      tx.hash.concatI32(1).toHexString(),
+      "type",
+      DelegationType.UNDELEGATE.toString()
+    );
 
     assert.fieldEquals(
       "VoterInPoolPair",
       contractSender.concat(from).concat(to).toHexString(),
-      "from",
+      "creationTimestamp",
+      block.timestamp.toString()
+    );
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "delegator",
       from.concat(contractSender).toHexString()
     );
     assert.fieldEquals(
       "VoterInPoolPair",
       contractSender.concat(from).concat(to).toHexString(),
-      "to",
+      "delegatee",
       to.concat(contractSender).toHexString()
     );
     assert.fieldEquals(
       "VoterInPoolPair",
       contractSender.concat(from).concat(to).toHexString(),
-      "delegateAmount",
-      amount1.minus(amount2).toString()
+      "delegatedVotes",
+      "2000"
     );
     assert.fieldEquals(
       "VoterInPoolPair",
       contractSender.concat(from).concat(to).toHexString(),
-      "delegateNfts",
+      "delegatedAmount",
+      amount1.minus(amount2).toString()
+    );
+    assert.fieldEquals("VoterInPoolPair", contractSender.concat(from).concat(to).toHexString(), "delegatedUSD", "100");
+    assert.fieldEquals(
+      "VoterInPoolPair",
+      contractSender.concat(from).concat(to).toHexString(),
+      "delegatedNfts",
       `[${nfts1[1]}]`
     );
   });
 
-  test("should handle voted", () => {
+  test("should handle DelegatedTreasury", () => {
+    let to = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
+    let amount = BigInt.fromI32(100).pow(18);
+    let nfts = [BigInt.fromI32(1), BigInt.fromI32(2)];
+
+    let event = createDelegatedTreasury(to, amount, nfts, true, contractSender, block, tx);
+
+    onDelegatedTreasury(event);
+
+    assert.fieldEquals("Voter", to.toHexString(), "id", to.toHexString());
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "votersCount", "1");
+    assert.fieldEquals(
+      "DaoPool",
+      contractSender.toHexString(),
+      "totalCurrentTokenDelegatedTreasury",
+      amount.toString()
+    );
+    assert.fieldEquals(
+      "DaoPool",
+      contractSender.toHexString(),
+      "totalCurrentNFTDelegatedTreasury",
+      `[${nfts[0]}, ${nfts[1]}]`
+    );
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentTokenDelegatees", "1");
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentNFTDelegatees", "1");
+    assert.fieldEquals(
+      "VoterInPool",
+      to.concat(contractSender).toHexString(),
+      "receivedTreasuryDelegation",
+      amount.toString()
+    );
+    assert.fieldEquals(
+      "VoterInPool",
+      to.concat(contractSender).toHexString(),
+      "receivedTreasuryNFTDelegation",
+      `[${nfts[0]}, ${nfts[1]}]`
+    );
+    assert.fieldEquals(
+      "VoterInPool",
+      to.concat(contractSender).toHexString(),
+      "receivedTreasuryNFTDelegationCount",
+      "2"
+    );
+    assert.fieldEquals(
+      "VoterInPool",
+      to.concat(contractSender).toHexString(),
+      "joinedTimestamp",
+      block.timestamp.toString()
+    );
+
+    assert.fieldEquals(
+      "TreasuryDelegationHistory",
+      tx.hash.concatI32(0).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals(
+      "TreasuryDelegationHistory",
+      tx.hash.concatI32(0).toHexString(),
+      "timestamp",
+      event.block.timestamp.toString()
+    );
+    assert.fieldEquals(
+      "TreasuryDelegationHistory",
+      tx.hash.concatI32(0).toHexString(),
+      "delegatee",
+      to.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals("TreasuryDelegationHistory", tx.hash.concatI32(0).toHexString(), "amount", amount.toString());
+    assert.fieldEquals(
+      "TreasuryDelegationHistory",
+      tx.hash.concatI32(0).toHexString(),
+      "nfts",
+      `[${nfts[0]}, ${nfts[1]}]`
+    );
+    assert.fieldEquals(
+      "TreasuryDelegationHistory",
+      tx.hash.concatI32(0).toHexString(),
+      "type",
+      TreasuryDelegationType.DELEGATE.toString()
+    );
+  });
+
+  test("should handle UndelegatedTreasury", () => {
+    let to = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
+    let amount1 = BigInt.fromI32(100).pow(18);
+    let amount2 = BigInt.fromI32(50).pow(18);
+    let nfts1 = [BigInt.fromI32(1), BigInt.fromI32(2)];
+    let nfts2 = [BigInt.fromI32(1)];
+
+    let event1 = createDelegatedTreasury(to, amount1, nfts1, true, contractSender, block, tx);
+    let event2 = createDelegatedTreasury(to, amount2, nfts2, false, contractSender, block, tx);
+
+    onDelegatedTreasury(event1);
+    onDelegatedTreasury(event2);
+
+    assert.fieldEquals(
+      "DaoPool",
+      contractSender.toHexString(),
+      "totalCurrentTokenDelegatedTreasury",
+      amount1.minus(amount2).toString()
+    );
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentNFTDelegatedTreasury", `[${nfts1[1]}]`);
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentTokenDelegatees", "1");
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "totalCurrentNFTDelegatees", "1");
+    assert.fieldEquals(
+      "VoterInPool",
+      to.concat(contractSender).toHexString(),
+      "receivedTreasuryDelegation",
+      amount1.minus(amount2).toString()
+    );
+    assert.fieldEquals(
+      "VoterInPool",
+      to.concat(contractSender).toHexString(),
+      "receivedTreasuryNFTDelegation",
+      `[${nfts1[1]}]`
+    );
+    assert.fieldEquals(
+      "VoterInPool",
+      to.concat(contractSender).toHexString(),
+      "receivedTreasuryNFTDelegationCount",
+      "1"
+    );
+    assert.fieldEquals(
+      "TreasuryDelegationHistory",
+      tx.hash.concatI32(1).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals(
+      "TreasuryDelegationHistory",
+      tx.hash.concatI32(1).toHexString(),
+      "timestamp",
+      event2.block.timestamp.toString()
+    );
+    assert.fieldEquals(
+      "TreasuryDelegationHistory",
+      tx.hash.concatI32(1).toHexString(),
+      "delegatee",
+      to.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals("TreasuryDelegationHistory", tx.hash.concatI32(1).toHexString(), "amount", amount2.toString());
+    assert.fieldEquals("TreasuryDelegationHistory", tx.hash.concatI32(1).toHexString(), "nfts", `[${nfts2[0]}]`);
+    assert.fieldEquals(
+      "TreasuryDelegationHistory",
+      tx.hash.concatI32(1).toHexString(),
+      "type",
+      TreasuryDelegationType.UNDELEGATE.toString()
+    );
+  });
+
+  test("should handle VoteChanged", () => {
     let proposalId = BigInt.fromI32(1);
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
-    let personalVote = BigInt.fromI32(1000);
-    let delegatedVote = BigInt.fromI32(100);
+    let votedFor = BigInt.fromI32(1000);
+    let isVoteFor = true;
 
-    let event = createVoted(proposalId, sender, personalVote, delegatedVote, contractSender, block, tx);
+    let event = createVoteChanged(proposalId, sender, votedFor, isVoteFor, contractSender, block, tx);
 
-    onVoted(event);
+    onVoteChanged(event);
 
+    assert.fieldEquals("Voter", sender.toHexString(), "totalVotedProposals", "1");
+    assert.fieldEquals("Voter", sender.toHexString(), "totalVotes", votedFor.toString());
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "currentVotes",
-      personalVote.plus(delegatedVote).toString()
+      "currentVotesFor",
+      votedFor.toString()
     );
     assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "votersVoted", "1");
+
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "proposals",
+      `[${sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString()}]`
+    );
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "engagedProposalsCount", "1");
+
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
@@ -634,62 +985,214 @@ describe("DaoPool", () => {
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "totalVoteAmount",
-      personalVote.toString()
+      "isVoteFor",
+      isVoteFor.toString()
     );
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "totalDelegatedVoteAmount",
-      delegatedVote.toString()
+      "totalVote",
+      votedFor.toString()
     );
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
       "claimedRewardUSD",
-      BigInt.zero().toString()
+      "0"
     );
-  });
 
-  test("should handle DPCreated", () => {
-    let proposalId = BigInt.fromI32(1);
-    let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
-    let token = Address.fromString("0x16e08f7d84603AEb97cd1c89A80A9e914f181671");
-    let amount = BigInt.fromI32(100).pow(18);
+    let votedAgainst = BigInt.fromI32(200);
 
-    let event = createDPCreated(proposalId, sender, token, amount, contractSender, block, tx);
+    isVoteFor = false;
+    sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
 
-    onDPCreated(event);
+    let nextTx = getTransaction(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromI32(1))));
+
+    event = createVoteChanged(proposalId, sender, votedAgainst, isVoteFor, contractSender, block, nextTx);
+
+    onVoteChanged(event);
+
+    assert.fieldEquals("Voter", sender.toHexString(), "totalVotedProposals", "1");
+    assert.fieldEquals("Voter", sender.toHexString(), "totalVotes", votedAgainst.toString());
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "currentVotesAgainst",
+      votedAgainst.toString()
+    );
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "votersVoted", "2");
 
     assert.fieldEquals(
-      "DistributionProposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "token",
-      token.toHexString()
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "proposals",
+      `[${sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString()}]`
+    );
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "engagedProposalsCount", "1");
+
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "pool",
+      contractSender.toHexString()
     );
     assert.fieldEquals(
-      "DistributionProposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString(),
-      "amount",
-      amount.toString()
-    );
-    assert.fieldEquals(
-      "DistributionProposal",
-      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
       "proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString()
     );
-    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "isDP", "true");
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "voter",
+      sender.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "isVoteFor",
+      isVoteFor.toString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "totalVote",
+      votedAgainst.toString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "claimedRewardUSD",
+      "0"
+    );
+
+    nextTx = getTransaction(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromI32(1))));
+
+    event = createVoteChanged(proposalId, sender, BigInt.zero(), isVoteFor, contractSender, block, nextTx);
+
+    onVoteChanged(event);
+
+    assert.fieldEquals("Voter", sender.toHexString(), "totalVotedProposals", "0");
+    assert.fieldEquals("Voter", sender.toHexString(), "totalVotes", "0");
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "currentVotesAgainst",
+      "0"
+    );
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "votersVoted", "1");
+
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "proposals", `[]`);
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "engagedProposalsCount", "0");
+
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "pool",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "voter",
+      sender.concat(contractSender).toHexString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "isVoteFor",
+      isVoteFor.toString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "totalVote",
+      "0"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "claimedRewardUSD",
+      "0"
+    );
+  });
+
+  test("should handle QuorumReached", () => {
+    let proposalId = BigInt.fromI32(1);
+
+    let event = createQuorumReached(proposalId, block.timestamp, contractSender, block, tx);
+
+    onQuorumReached(event);
+
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "id",
+      contractSender.concatI32(proposalId.toI32()).toHexString()
+    );
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "quorumReachedTimestamp",
+      block.timestamp.toString()
+    );
+  });
+
+  test("should handle QuorumUnreached", () => {
+    let proposalId = BigInt.fromI32(1);
+
+    let reachedEvent = createQuorumReached(proposalId, block.timestamp, contractSender, block, tx);
+
+    onQuorumReached(reachedEvent);
+
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "id",
+      contractSender.concatI32(proposalId.toI32()).toHexString()
+    );
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "quorumReachedTimestamp",
+      block.timestamp.toString()
+    );
+
+    let unreachedEvent = createQuorumUnreached(proposalId, contractSender, block, tx);
+
+    onQuorumUnreached(unreachedEvent);
+
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "id",
+      contractSender.concatI32(proposalId.toI32()).toHexString()
+    );
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "quorumReachedTimestamp",
+      "0"
+    );
   });
 
   test("should handle ProposalExecuted", () => {
     let proposalId = BigInt.fromI32(1);
+    let isFor = true;
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
 
-    let event = createProposalExecuted(proposalId, sender, contractSender, block, tx);
+    let event = createProposalExecuted(proposalId, isFor, sender, contractSender, block, tx);
 
     onProposalExecuted(event);
 
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "isFor", "true");
     assert.fieldEquals(
       "Proposal",
       contractSender.concatI32(proposalId.toI32()).toHexString(),
@@ -701,6 +1204,69 @@ describe("DaoPool", () => {
       contractSender.concatI32(proposalId.toI32()).toHexString(),
       "executionTimestamp",
       block.timestamp.toString()
+    );
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "executionHash",
+      tx.hash.toHexString()
+    );
+
+    proposalId = BigInt.fromI32(2);
+    isFor = false;
+    event = createProposalExecuted(proposalId, isFor, sender, contractSender, block, tx);
+
+    onProposalExecuted(event);
+
+    assert.fieldEquals("Proposal", contractSender.concatI32(proposalId.toI32()).toHexString(), "isFor", "false");
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "executor",
+      sender.toHexString()
+    );
+    assert.fieldEquals(
+      "Proposal",
+      contractSender.concatI32(proposalId.toI32()).toHexString(),
+      "executionTimestamp",
+      block.timestamp.toString()
+    );
+  });
+
+  test("should handle DelegatorRewardsClaimed", () => {
+    let proposalId = BigInt.fromI32(1);
+    let delegator = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let delegatee = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672");
+    let token = Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676");
+    let amount = BigInt.fromI32(1000);
+
+    let event = createDelegatorRewardsClaimed(
+      proposalId,
+      delegator,
+      delegatee,
+      amount,
+      token,
+      contractSender,
+      block,
+      tx
+    );
+
+    onDelegatorRewardsClaimed(event);
+
+    assert.fieldEquals("Voter", delegator.toHexString(), "totalMicropoolRewardUSD", "200");
+    assert.fieldEquals("Voter", delegator.toHexString(), "totalClaimedUSD", "200");
+
+    assert.fieldEquals(
+      "VoterInProposal",
+      delegator.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "micropoolRewardUSD",
+      "200"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      delegator.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
+      "claimedRewardUSD",
+      "200"
     );
   });
 
@@ -718,6 +1284,19 @@ describe("DaoPool", () => {
 
     onRewardClaimed(event0);
 
+    assert.fieldEquals("Voter", sender.toHexString(), "totalClaimedUSD", amounts[0].toString());
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
+      "claimed",
+      "true"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
+      "staticRewardUSD",
+      amounts[0].toString()
+    );
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
@@ -733,6 +1312,19 @@ describe("DaoPool", () => {
 
     onRewardClaimed(event1);
 
+    assert.fieldEquals("Voter", sender.toHexString(), "totalClaimedUSD", amounts[0].plus(amounts[1]).toString());
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),
+      "claimed",
+      "true"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),
+      "staticRewardUSD",
+      amounts[1].toString()
+    );
     assert.fieldEquals(
       "VoterInProposal",
       sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),
@@ -747,71 +1339,156 @@ describe("DaoPool", () => {
     );
   });
 
-  test("should handle RewardCredited", () => {
-    let proposalId = BigInt.fromI32(1);
+  test("should handle offchain RewardClaimed", () => {
+    let proposalId = BigInt.zero();
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
     let rewardToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181676");
     let amount = BigInt.fromI32(1000);
 
-    let event = createRewardCredited(
-      proposalId,
-      BigInt.fromI32(REWARD_TYPE_VOTE_DELEGATED - 1),
-      rewardToken,
-      amount,
-      sender,
-      contractSender,
-      block,
-      tx
-    );
+    let event = createRewardClaimed(proposalId, sender, rewardToken, amount, contractSender, block, tx);
 
-    onRewardCredited(event);
+    onRewardClaimed(event);
 
-    assert.fieldEquals(
-      "VoterInProposal",
-      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "unclaimedRewardUSD",
-      "200"
-    );
-    assert.fieldEquals(
-      "VoterInProposal",
-      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "unclaimedRewardFromDelegationsUSD",
-      "0"
-    );
+    assert.fieldEquals("Voter", sender.toHexString(), "totalClaimedUSD", "200");
+
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalClaimedUSD", "200");
   });
 
-  test("should handle RewardCredited when reward type", () => {
-    let proposalId = BigInt.fromI32(1);
+  test("should handle VotingRewardClaimed", () => {
+    let proposalIds = [BigInt.fromI32(1), BigInt.fromI32(2)];
     let sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
-    let rewardToken = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181676");
-    let amount = BigInt.fromI32(1000);
+    let tokens = [
+      Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181672"),
+      Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181673"),
+    ];
 
-    let event = createRewardCredited(
-      proposalId,
-      BigInt.fromI32(REWARD_TYPE_VOTE_DELEGATED),
-      rewardToken,
-      amount,
+    let personalAmount = BigInt.fromI32(10).pow(18);
+    let micropoolAmount = BigInt.fromI32(10).pow(18);
+    let treasuryAmount = BigInt.fromI32(10).pow(18);
+
+    let totalAmount = personalAmount.plus(micropoolAmount).plus(treasuryAmount);
+
+    let event0 = createVotingRewardClaimed(
+      proposalIds[0],
       sender,
+      tokens[0],
+      personalAmount,
+      micropoolAmount,
+      treasuryAmount,
       contractSender,
       block,
       tx
     );
 
-    onRewardCredited(event);
+    onVotingRewardClaimed(event0);
 
+    assert.fieldEquals("Voter", sender.toHexString(), "totalClaimedUSD", totalAmount.toString());
     assert.fieldEquals(
       "VoterInProposal",
-      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "unclaimedRewardFromDelegationsUSD",
-      "200"
+      sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
+      "claimed",
+      "true"
     );
     assert.fieldEquals(
       "VoterInProposal",
-      sender.concat(contractSender).concatI32(proposalId.toI32()).toHexString(),
-      "unclaimedRewardUSD",
-      "200"
+      sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
+      "staticRewardUSD",
+      "0"
     );
-    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalDelegationRewardUSD", "200");
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
+      "claimedRewardUSD",
+      totalAmount.toString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
+      "personalVotingRewardUSD",
+      personalAmount.toString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
+      "micropoolVotingRewardUSD",
+      micropoolAmount.toString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[0].toI32()).toHexString(),
+      "treasuryVotingRewardUSD",
+      treasuryAmount.toString()
+    );
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "totalClaimedUSD",
+      totalAmount.toString()
+    );
+
+    let personalAmount1 = BigInt.fromI32(10).pow(18).times(BigInt.fromI32(2));
+    let micropoolAmount1 = BigInt.fromI32(10).pow(18).times(BigInt.fromI32(2));
+    let treasuryAmount1 = BigInt.fromI32(10).pow(18).times(BigInt.fromI32(2));
+
+    let totalAmount1 = personalAmount1.plus(micropoolAmount1).plus(treasuryAmount1);
+
+    let event1 = createVotingRewardClaimed(
+      proposalIds[1],
+      sender,
+      tokens[1],
+      personalAmount1,
+      micropoolAmount1,
+      treasuryAmount1,
+      contractSender,
+      block,
+      tx
+    );
+
+    onVotingRewardClaimed(event1);
+
+    assert.fieldEquals("Voter", sender.toHexString(), "totalClaimedUSD", totalAmount.plus(totalAmount1).toString());
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),
+      "claimed",
+      "true"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),
+      "staticRewardUSD",
+      "0"
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),
+      "personalVotingRewardUSD",
+      personalAmount1.toString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),
+      "micropoolVotingRewardUSD",
+      micropoolAmount1.toString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),
+      "treasuryVotingRewardUSD",
+      treasuryAmount1.toString()
+    );
+    assert.fieldEquals(
+      "VoterInProposal",
+      sender.concat(contractSender).concatI32(proposalIds[1].toI32()).toHexString(),
+      "claimedRewardUSD",
+      totalAmount1.toString()
+    );
+    assert.fieldEquals(
+      "VoterInPool",
+      sender.concat(contractSender).toHexString(),
+      "totalClaimedUSD",
+      totalAmount.plus(totalAmount1).toString()
+    );
   });
 
   test("should deposit", () => {
@@ -830,8 +1507,9 @@ describe("DaoPool", () => {
 
     onDeposited(event);
 
-    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalLockedFundsUSD", "200");
+    assert.fieldEquals("Voter", sender.toHexString(), "totalLockedFundsUSD", "200");
 
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalLockedUSD", "200");
     assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "0");
   });
 
@@ -856,8 +1534,9 @@ describe("DaoPool", () => {
 
     onWithdrawn(event2);
 
-    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalLockedFundsUSD", "100");
+    assert.fieldEquals("Voter", sender.toHexString(), "totalLockedFundsUSD", "100");
 
+    assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "totalLockedUSD", "100");
     assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "0");
   });
 
@@ -881,31 +1560,46 @@ describe("DaoPool", () => {
 
     let block4000 = getBlock(BigInt.fromI32(4000), BigInt.fromI32(4000));
 
-    let event = createRewardCredited(
-      proposalId,
-      BigInt.fromI32(REWARD_TYPE_VOTE_DELEGATED - 1),
-      rewardToken,
-      amount2,
-      sender,
-      contractSender,
-      block4000,
-      tx
-    );
+    let event = createRewardClaimed(proposalId, sender, rewardToken, amount2, contractSender, block4000, tx);
 
-    onRewardCredited(event);
+    onRewardClaimed(event);
 
     assert.fieldEquals("VoterInPool", sender.concat(contractSender).toHexString(), "APR", "591447861");
   });
 
-  test("should handle StakingRewardClaimed event", () => {
+  test("should handle OffchainResultsSaved event", () => {
     let user = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
-    let token = Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676");
-    let amount = BigInt.fromI32(3000);
+    let resultsHash = "hash1";
 
-    let event = createStakingRewardClaimed(user, token, amount, contractSender, block, tx);
+    let event = createOffchainResultsSaved(user, resultsHash, contractSender, block, tx);
 
-    onStakingRewardClaimed(event);
+    onOffchainResultsSaved(event);
 
-    assert.fieldEquals("VoterInPool", user.concat(contractSender).toHexString(), "totalStakingReward", "1500");
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "offchainResultsHash", resultsHash);
+
+    resultsHash = "hash2";
+    event = createOffchainResultsSaved(user, resultsHash, contractSender, block, tx);
+
+    onOffchainResultsSaved(event);
+
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "offchainResultsHash", resultsHash);
+  });
+
+  test("should handle OffchainResultsSaved event", () => {
+    let user = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+    let resultsHash = "hash1";
+
+    let event = createOffchainResultsSaved(user, resultsHash, contractSender, block, tx);
+
+    onOffchainResultsSaved(event);
+
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "offchainResultsHash", resultsHash);
+
+    resultsHash = "hash2";
+    event = createOffchainResultsSaved(user, resultsHash, contractSender, block, tx);
+
+    onOffchainResultsSaved(event);
+
+    assert.fieldEquals("DaoPool", contractSender.toHexString(), "offchainResultsHash", resultsHash);
   });
 });

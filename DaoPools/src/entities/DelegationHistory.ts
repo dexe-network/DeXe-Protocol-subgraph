@@ -2,6 +2,7 @@ import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { DaoPool, DelegationHistory, Voter } from "../../generated/schema";
 import { getInteractionCount } from "./global/InteractionCount";
 import { increaseCounter } from "../helpers/IncreaseCounter";
+import { DelegationType, getEnumBigInt } from "./global/DelegationTypeEnum";
 
 export function getDelegationHistory(
   hash: Bytes,
@@ -11,7 +12,7 @@ export function getDelegationHistory(
   to: Voter,
   amount: BigInt,
   nfts: Array<BigInt>,
-  isDelegate: boolean
+  type: DelegationType
 ): DelegationHistory {
   let counter = getInteractionCount(hash);
   let id = hash.concatI32(counter.count.toI32());
@@ -20,9 +21,9 @@ export function getDelegationHistory(
   if (history == null) {
     history = new DelegationHistory(id);
     history.amount = amount;
-    history.from = from.id;
-    history.to = to.id;
-    history.isDelegate = isDelegate;
+    history.delegator = from.id;
+    history.delegatee = to.id;
+    history.type = getEnumBigInt(type);
     history.timestamp = timestamp;
     history.nfts = nfts;
 

@@ -18,7 +18,8 @@ export function getProposal(
     proposal.isInternal = isInternal;
     proposal.description = description;
     proposal.quorum = quorum;
-    proposal.totalVote = BigInt.zero();
+    proposal.totalVoteFor = BigInt.zero();
+    proposal.totalVoteAgainst = BigInt.zero();
     proposal.executor = Bytes.empty();
     proposal.creator = creator;
   }

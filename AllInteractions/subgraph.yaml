@@ -6,9 +6,9 @@ dataSources:
     name: PoolFactory
     network: chapel
     source:
-      address: "0x47eEcd37B2b684EaD7Aca8081Bd46a0AfC19269b"
+      address: "0xc5A750E8e3361D186236D7f708Cb1C92b944Ce48"
       abi: PoolFactory
-      startBlock: 27518585
+      startBlock: 34202816
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -20,18 +20,16 @@ dataSources:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
       eventHandlers:
-        - event: TraderPoolDeployed(string,string,string,address,address,address,address,uint256,string)
-          handler: onTraderPoolDeployed
-        - event: DaoPoolDeployed(string,address,address,address,address,address,address)
+        - event: DaoPoolDeployed(string,address,(address,address,address,address,address,address),address,address,address,address)
           handler: onDaoPoolDeployed
 
   - kind: ethereum/contract
     name: UserRegistry
     network: chapel
     source:
-      address: "0x79535A32ccB1ff2C74f77E27F47761931c78Bf94"
+      address: "0x7d090C1a5A5f8f1742F32C15BeB03980B3bfb1Dc"
       abi: UserRegistry
-      startBlock: 27518585
+      startBlock: 34202816
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -48,122 +46,7 @@ dataSources:
         - event: UpdatedProfile(address,string)
           handler: onUpdatedProfile
 
-  - kind: ethereum/contract
-    name: Insurance
-    network: chapel
-    source:
-      address: "0x311E4e40362579E237Cca7bDCf6427E8bE6c6AD6"
-      abi: Insurance
-      startBlock: 27518585
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/Insurance.ts
-      entities:
-        - Investor
-      abis:
-        - name: Insurance
-          file: ./abis/Insurance.json
-      eventHandlers:
-        - event: Deposited(uint256,address)
-          handler: onDeposit
-        - event: Withdrawn(uint256,address)
-          handler: onWithdraw
-
 templates:
-  - kind: ethereum/contract
-    name: TraderPool
-    network: chapel
-    source:
-      abi: TraderPool
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/TraderPool.ts
-      entities:
-        - TraderPool
-        - Position
-      abis:
-        - name: TraderPool
-          file: ./abis/TraderPool.json
-      eventHandlers:
-        - event: Exchanged(address,address,address,uint256,uint256)
-          handler: onExchange
-        - event: Invested(address,uint256,uint256)
-          handler: onInvest
-        - event: Divested(address,uint256,uint256)
-          handler: onDivest
-        - event: DescriptionURLChanged(address,string)
-          handler: onDescriptionURLChanged
-        - event: ProposalDivested(uint256,address,uint256,uint256,uint256)
-          handler: onProposalDivest
-        - event: ModifiedPrivateInvestors(address,address[],bool)
-          handler: onModifiedPrivateInvestors
-        - event: ModifiedAdmins(address,address[],bool)
-          handler: onModifiedAdmins
-        - event: CommissionClaimed(address,uint256,uint256)
-          handler: onCommissionClaimed
-
-  - kind: ethereum/contract
-    name: TraderPoolRiskyProposal
-    network: chapel
-    source:
-      abi: TraderPoolRiskyProposal
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/TraderPoolRiskyProposal.ts
-      entities:
-        - TraderPoolRiskyProposal
-      abis:
-        - name: TraderPoolRiskyProposal
-          file: ./abis/TraderPoolRiskyProposal.json
-      eventHandlers:
-        - event: ProposalCreated(uint256,address,(uint256,uint256,uint256))
-          handler: onProposalCreated
-        - event: ProposalExchanged(uint256,address,address,address,uint256,uint256)
-          handler: onProposalExchange
-        - event: ProposalInvested(uint256,address,uint256,uint256,uint256)
-          handler: onProposalInvest
-        - event: ProposalDivested(uint256,address,uint256,uint256,uint256)
-          handler: onProposalDivest
-        - event: ProposalRestrictionsChanged(uint256,address)
-          handler: onProposalRestrictionsChanged
-
-  - kind: ethereum/contract
-    name: TraderPoolInvestProposal
-    network: chapel
-    source:
-      abi: TraderPoolInvestProposal
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/TraderPoolInvestProposal.ts
-      entities:
-        - TraderPoolInvestProposal
-      abis:
-        - name: TraderPoolInvestProposal
-          file: ./abis/TraderPoolInvestProposal.json
-      eventHandlers:
-        - event: ProposalCreated(uint256,(uint256,uint256))
-          handler: onProposalCreated
-        - event: ProposalWithdrawn(uint256,address,uint256)
-          handler: onProposalWithdrawn
-        - event: ProposalSupplied(uint256,address,uint256[],address[])
-          handler: onProposalSupplied
-        - event: ProposalClaimed(uint256,address,uint256[],address[])
-          handler: onProposalClaimed
-        - event: ProposalRestrictionsChanged(uint256,address)
-          handler: onProposalRestrictionsChanged
-        - event: ProposalInvested(uint256,address,uint256,uint256,uint256)
-          handler: onProposalInvest
-        - event: ProposalConverted(uint256,address,uint256,address)
-          handler: onProposalConverted
-
   - kind: ethereum/contract
     name: DaoPool
     network: chapel
@@ -180,22 +63,28 @@ templates:
         - name: DaoPool
           file: ./abis/DaoPool.json
       eventHandlers:
-        - event: ProposalCreated(uint256,string,string,uint256,uint256,address,address)
+        - event: ProposalCreated(uint256,string,(address,uint256,bytes)[],(address,uint256,bytes)[],uint256,uint256,address,address)
           handler: onProposalCreated
         - event: Delegated(address,address,uint256,uint256[],bool)
           handler: onDelegated
-        - event: Voted(uint256,address,uint256,uint256)
-          handler: onVoted
-        - event: ProposalExecuted(uint256,address)
+        - event: DelegatedTreasury(address,uint256,uint256[],bool)
+          handler: onDelegatedTreasury
+        - event: VoteChanged(uint256,address,bool,uint256)
+          handler: onVoteChanged
+        - event: ProposalExecuted(uint256,bool,address)
           handler: onProposalExecuted
         - event: RewardClaimed(uint256,address,address,uint256)
           handler: onRewardClaimed
+        - event: VotingRewardClaimed(uint256,address,address,(uint256,uint256,uint256))
+          handler: onVotingRewardClaimed
         - event: Deposited(uint256,uint256[],address)
           handler: onDeposited
         - event: Withdrawn(uint256,uint256[],address)
           handler: onWithdrawn
         - event: MovedToValidators(uint256,address)
           handler: onMovedToValidators
+        - event: OffchainResultsSaved(string,address)
+          handler: onOffchainResultsSaved
   - kind: ethereum/contract
     name: DaoValidators
     network: chapel
@@ -212,7 +101,7 @@ templates:
         - name: DaoValidators
           file: ./abis/DaoValidators.json
       eventHandlers:
-        - event: Voted(uint256,address,uint256,bool) # id, msg.sender, vote
+        - event: Voted(uint256,address,uint256,bool,bool) # id, msg.sender, vote
           handler: onVoted
         - event: InternalProposalCreated(uint256,string,uint256,address)
           handler: onInternalProposalCreated

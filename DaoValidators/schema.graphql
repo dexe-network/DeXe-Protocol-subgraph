@@ -1,94 +1,117 @@
-# @notice The entity that holds informations about pool
-# @param id the pool address
+"""
+The entity that holds informations about pool
+"""
 type DaoPool @entity {
+  "The pool address"
   id: Bytes! # pool address
+  "Array of ValidatorInPool entity ids"
   validators: [ValidatorInPool!]! @derivedFrom(field: "pool")
 }
 
-# @notice The entity that holds informations about validators contract
-# @param id the validators contract address
-# @param pool the pool address
+"""
+The entity that holds informations about validators contract
+"""
 type ValidatorsContract @entity(immutable: true) {
+  "The validators contract address"
   id: Bytes! # validators contract address
+  "The pool address"
   pool: Bytes!
 }
 
-# @notice The entity that holds informations about validators proposal
-# @param id the pool address + proposalId + isInternal
-# @param proposalId the id of proposal
-# @param isInternal bool flag, if true - internal for validators
-# @param quorum the percentage of total votes to confirm the proposal
-# @param totalVote the current number of votes
-# @param description the url of description
-# @param creator the address of creator
-# @param executor the address of executor
+"""
+The entity that holds informations about validators proposal
+"""
 type Proposal @entity {
+  "id forms from pool address + proposalId + isInternal"
   id: ID! # pool address + proposalId + isInternal
+  "The id of proposal"
   proposalId: BigInt!
+  "Boolean flag, if true - internal for validators"
   isInternal: Boolean!
+  "The percentage of total votes required to decide whether to confirm the proposal or not"
   quorum: BigInt!
-  totalVote: BigInt!
 
-  # only internal values
+  "The current number of votes for the proposal"
+  totalVoteFor: BigInt!
+  "The current number of votes against the proposal"
+  totalVoteAgainst: BigInt!
+
+  "The URL of description"
   description: String!
+  "The address of creator"
   creator: Bytes!
+  "The address of executor"
   executor: Bytes!
 
+  "Array of ValidatorInProposal entity ids"
   voters: [ValidatorInProposal!]! @derivedFrom(field: "proposal")
 }
 
-# @notice The entity that holds informations about validator's actions in pool
-# @param id the validator address + pool address
-# @param validatorAddress the address of validator
-# @param balance the amount of validators token
-# @param pool the pool entity id
+"""
+The entity that holds informations about validator's actions in pool
+"""
 type ValidatorInPool @entity {
+  "id forms from the validator address + pool address"
   id: Bytes! # validator address + pool address
+  "The address of validator"
   validatorAddress: Bytes!
+  "The amount of validators token"
   balance: BigInt!
 
+  "The pool entity id"
   pool: DaoPool!
 }
 
-# @notice The entity that holds informations about vote
-# @param id the tx hash + counter
-# @param hash the tx hash
-# @param timestamp the timestamp of transaction
-# @param proposal the proposal entity id
-# @param amount the amount of vote
-# @param voter the ValidatorInProposal entity id
-type ProposalVote @entity(immutable: true) {
+"""
+The entity that holds informations about vote
+"""
+type ProposalInteraction @entity(immutable: true) {
+  "id forms from the tx hash + interactionCount"
   id: Bytes! # tx hash + counter
+  "The tx hash"
   hash: Bytes!
+  "The timestamp of transaction"
   timestamp: BigInt!
+  "The proposal entity id"
   proposal: Proposal!
 
+  "The number associated with enum of proposal interaction type"
+  interactionType: BigInt!
+  "The amount of vote"
   amount: BigInt!
 
+  "The ValidatorInProposal entity id"
   voter: ValidatorInProposal!
 }
 
-# @notice The entity that holds informations about vote
-# @param id the user address + pool address + proposal id
-# @param pool the pool entity id
-# @param proposal the proposal entity id
-# @param validator the ValidatorInPool entity id
-# @param totalVote the total amount of votes in this proposal
+"""
+The entity that holds informations about vote
+"""
 type ValidatorInProposal @entity {
+  "id forms from the validator address + pool address + proposal id"
   id: Bytes! # user address + pool address + proposal id
+  "The pool entity id"
   pool: DaoPool!
+  "The proposal entity id"
   proposal: Proposal!
+  "The ValidatorInPool entity id"
   validator: ValidatorInPool!
 
-  totalVote: BigInt!
+  "The total amount of votes for this proposal"
+  totalVoteFor: BigInt!
+  "The total amount of votes against this proposal"
+  totalVoteAgainst: BigInt!
 
-  votes: [ProposalVote!]! @derivedFrom(field: "voter")
+  "The array of ProposalInteraction entity ids"
+  interactions: [ProposalInteraction!]! @derivedFrom(field: "voter")
 }
 
-# @notice The entity counts interactions in single tx
-# @param id forms from tx hash
-# @param count the counter of interactions in single tx
+"""
+The entity counts interactions in single tx
+"""
 type InteractionCount @entity {
+  "The tx hash"
   id: Bytes!
+  "The counter of interactions in single tx"
   count: BigInt!
 }

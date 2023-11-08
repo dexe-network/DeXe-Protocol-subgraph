@@ -1,31 +1,38 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
+import { pushUnique, remove } from "@solarity/graph-lib";
 import {
   Delegated,
+  DelegatedTreasury,
+  DelegatorRewardsClaimed,
   Deposited,
-  DPCreated,
+  OffchainResultsSaved,
   ProposalCreated,
   ProposalExecuted,
+  QuorumReached,
+  QuorumUnreached,
   RewardClaimed,
-  RewardCredited,
-  StakingRewardClaimed,
-  Voted,
+  VoteChanged,
+  VotingRewardClaimed,
   Withdrawn,
 } from "../../generated/templates/DaoPool/DaoPool";
 import { getDaoPool } from "../entities/DaoPool";
 import { getDelegationHistory } from "../entities/DelegationHistory";
-import { getDistributionProposal } from "../entities/DistributionProposal";
 import { getProposal } from "../entities/Proposal";
-import { getProposalVote } from "../entities/ProposalVote";
+import { getProposalInteraction } from "../entities/ProposalInteraction";
 import { getVoter } from "../entities/Voters/Voter";
 import { getVoterInPool } from "../entities/Voters/VoterInPool";
 import { getVoterInProposal } from "../entities/Voters/VoterInProposal";
-import { PriceFeed } from "../../generated/templates/DaoPool/PriceFeed";
-import { PERCENTAGE_NUMERATOR, PRICE_FEED_ADDRESS, REWARD_TYPE_VOTE_DELEGATED, YEAR } from "../entities/global/globals";
-import { Proposal, VoterInPool, VoterInProposal } from "../../generated/schema";
-import { extendArray, reduceArray } from "../helpers/ArrayHelper";
+import { PERCENTAGE_NUMERATOR, YEAR } from "../entities/global/globals";
+import { VoterInPool } from "../../generated/schema";
 import { getProposalSettings } from "../entities/Settings/ProposalSettings";
 import { getVoterInPoolPair } from "../entities/Voters/VoterInPoolPair";
 import { getUSDValue } from "../helpers/PriceFeedInteractions";
+import { DelegationType } from "../entities/global/DelegationTypeEnum";
+import { TreasuryDelegationType } from "../entities/global/TreasuryDelegationTypeEnum";
+import { getTreasuryDelegationHistory } from "../entities/TreasuryDelegationHistory";
+import { RewardType } from "../entities/global/RewardTypeEnum";
+import { ProposalInteractionType, getEnumBigInt } from "../entities/global/ProposalInteractionTypeEnum";
+import { getNftsVotePower } from "../helpers/UserKeeperInteractions";
 
 export function onProposalCreated(event: ProposalCreated): void {
   let pool = getDaoPool(event.address);
@@ -35,8 +42,7 @@ export function onProposalCreated(event: ProposalCreated): void {
     event.params.sender,
     event.params.quorum,
     event.params.proposalDescription,
-    event.params.rewardToken,
-    event.params.misc
+    event.params.rewardToken
   );
   let settings = getProposalSettings(pool, event.params.proposalSettings);
 
@@ -50,6 +56,11 @@ export function onProposalCreated(event: ProposalCreated): void {
 
   pool.proposalCount = pool.proposalCount.plus(BigInt.fromI32(1));
 
+  let voter = getVoter(Address.fromBytes(proposal.creator));
+
+  voter.totalProposalsCreated = voter.totalProposalsCreated.plus(BigInt.fromI32(1));
+
+  voter.save();
   settings.save();
   pool.save();
   proposal.save();
@@ -67,43 +78,91 @@ export function onDelegated(event: Delegated): void {
     to,
     event.params.amount,
     event.params.nfts,
-    event.params.isDelegate
+    event.params.isDelegate ? DelegationType.DELEGATE : DelegationType.UNDELEGATE
   );
   let toVoterInPool = getVoterInPool(pool, to, event.block.timestamp);
   let fromVoterInPool = getVoterInPool(pool, from, event.block.timestamp);
 
-  let pair = getVoterInPoolPair(fromVoterInPool, toVoterInPool);
+  let pair = getVoterInPoolPair(fromVoterInPool, toVoterInPool, event.block.timestamp);
+
+  const usdAmount = getUSDValue(pool.erc20Token, event.params.amount);
+  const votePower = getNftsVotePower(Address.fromBytes(pool.userKeeper), event.params.nfts).plus(event.params.amount);
 
   delegateHistory.pair = pair.id;
 
   if (event.params.isDelegate) {
+    from.totalDelegatedUSD = from.totalDelegatedUSD.plus(usdAmount);
+    from.currentVotesDelegated = from.currentVotesDelegated.plus(votePower);
+
+    to.currentVotesReceived = to.currentVotesReceived.plus(votePower);
+
     toVoterInPool.receivedDelegation = toVoterInPool.receivedDelegation.plus(event.params.amount);
-    toVoterInPool.receivedNFTDelegation = extendArray<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
+    toVoterInPool.receivedNFTDelegation = pushUnique<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
     toVoterInPool.receivedNFTDelegationCount = BigInt.fromI32(toVoterInPool.receivedNFTDelegation.length);
 
-    if (pair.delegateAmount.equals(BigInt.zero()) && pair.delegateNfts.length == 0) {
+    if (pair.delegatedAmount.equals(BigInt.zero()) && pair.delegatedNfts.length == 0) {
+      fromVoterInPool.currentDelegateesCount = fromVoterInPool.currentDelegateesCount.plus(BigInt.fromI32(1));
+      from.delegateesCount = from.delegateesCount.plus(BigInt.fromI32(1));
+
       toVoterInPool.currentDelegatorsCount = toVoterInPool.currentDelegatorsCount.plus(BigInt.fromI32(1));
+      to.delegatorsCount = to.delegatorsCount.plus(BigInt.fromI32(1));
     }
 
-    pair.delegateAmount = pair.delegateAmount.plus(event.params.amount);
-    pair.delegateNfts = extendArray<BigInt>(pair.delegateNfts, event.params.nfts);
+    pair.delegatedVotes = pair.delegatedVotes.plus(votePower);
+    pair.delegatedAmount = pair.delegatedAmount.plus(event.params.amount);
+    pair.delegatedNfts = pushUnique<BigInt>(pair.delegatedNfts, event.params.nfts);
+    pair.delegatedUSD = pair.delegatedUSD.plus(usdAmount);
 
     pool.totalCurrentTokenDelegated = pool.totalCurrentTokenDelegated.plus(event.params.amount);
-    pool.totalCurrentNFTDelegated = extendArray<BigInt>(pool.totalCurrentNFTDelegated, event.params.nfts);
+    pool.totalCurrentNFTDelegated = pushUnique<BigInt>(pool.totalCurrentNFTDelegated, event.params.nfts);
   } else {
+    if (usdAmount.gt(from.totalDelegatedUSD)) {
+      from.totalDelegatedUSD = BigInt.zero();
+    } else {
+      from.totalDelegatedUSD = from.totalDelegatedUSD.minus(usdAmount);
+    }
+
+    if (votePower.gt(from.currentVotesDelegated)) {
+      from.currentVotesDelegated = BigInt.zero();
+    } else {
+      from.currentVotesDelegated = from.currentVotesDelegated.minus(votePower);
+    }
+
+    if (votePower.gt(to.currentVotesReceived)) {
+      to.currentVotesReceived = BigInt.zero();
+    } else {
+      to.currentVotesReceived = to.currentVotesReceived.minus(votePower);
+    }
+
     toVoterInPool.receivedDelegation = toVoterInPool.receivedDelegation.minus(event.params.amount);
-    toVoterInPool.receivedNFTDelegation = reduceArray<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
+    toVoterInPool.receivedNFTDelegation = remove<BigInt>(toVoterInPool.receivedNFTDelegation, event.params.nfts);
     toVoterInPool.receivedNFTDelegationCount = BigInt.fromI32(toVoterInPool.receivedNFTDelegation.length);
 
-    pair.delegateAmount = pair.delegateAmount.minus(event.params.amount);
-    pair.delegateNfts = reduceArray<BigInt>(pair.delegateNfts, event.params.nfts);
+    pair.delegatedAmount = pair.delegatedAmount.minus(event.params.amount);
+    pair.delegatedNfts = remove<BigInt>(pair.delegatedNfts, event.params.nfts);
 
-    if (pair.delegateAmount.equals(BigInt.zero()) && pair.delegateNfts.length == 0) {
+    if (usdAmount.gt(pair.delegatedUSD)) {
+      pair.delegatedUSD = BigInt.zero();
+    } else {
+      pair.delegatedUSD = pair.delegatedUSD.minus(usdAmount);
+    }
+
+    if (votePower.gt(pair.delegatedVotes)) {
+      pair.delegatedVotes = BigInt.zero();
+    } else {
+      pair.delegatedVotes = pair.delegatedVotes.minus(votePower);
+    }
+
+    if (pair.delegatedAmount.equals(BigInt.zero()) && pair.delegatedNfts.length == 0) {
+      fromVoterInPool.currentDelegateesCount = fromVoterInPool.currentDelegateesCount.minus(BigInt.fromI32(1));
+      from.delegateesCount = from.delegateesCount.minus(BigInt.fromI32(1));
+
       toVoterInPool.currentDelegatorsCount = toVoterInPool.currentDelegatorsCount.minus(BigInt.fromI32(1));
+      to.delegatorsCount = to.delegatorsCount.minus(BigInt.fromI32(1));
     }
 
     pool.totalCurrentTokenDelegated = pool.totalCurrentTokenDelegated.minus(event.params.amount);
-    pool.totalCurrentNFTDelegated = reduceArray<BigInt>(pool.totalCurrentNFTDelegated, event.params.nfts);
+    pool.totalCurrentNFTDelegated = remove<BigInt>(pool.totalCurrentNFTDelegated, event.params.nfts);
   }
 
   if (event.params.amount.gt(BigInt.zero())) {
@@ -131,34 +190,137 @@ export function onDelegated(event: Delegated): void {
   from.save();
 }
 
-export function onVoted(event: Voted): void {
-  let voter = getVoter(event.params.sender);
+export function onDelegatedTreasury(event: DelegatedTreasury): void {
+  let to = getVoter(event.params.to);
+  let pool = getDaoPool(event.address);
+  let toVoterInPool = getVoterInPool(pool, to, event.block.timestamp);
+  let delegateHistory = getTreasuryDelegationHistory(
+    event.transaction.hash,
+    pool,
+    event.block.timestamp,
+    toVoterInPool,
+    event.params.amount,
+    event.params.nfts,
+    event.params.isDelegate ? TreasuryDelegationType.DELEGATE : TreasuryDelegationType.UNDELEGATE
+  );
+
+  if (event.params.isDelegate) {
+    toVoterInPool.receivedTreasuryDelegation = toVoterInPool.receivedTreasuryDelegation.plus(event.params.amount);
+    toVoterInPool.receivedTreasuryNFTDelegation = pushUnique<BigInt>(
+      toVoterInPool.receivedTreasuryNFTDelegation,
+      event.params.nfts
+    );
+    toVoterInPool.receivedTreasuryNFTDelegationCount = BigInt.fromI32(
+      toVoterInPool.receivedTreasuryNFTDelegation.length
+    );
+
+    pool.totalCurrentTokenDelegatedTreasury = pool.totalCurrentTokenDelegatedTreasury.plus(event.params.amount);
+    pool.totalCurrentNFTDelegatedTreasury = pushUnique<BigInt>(
+      pool.totalCurrentNFTDelegatedTreasury,
+      event.params.nfts
+    );
+  } else {
+    toVoterInPool.receivedTreasuryDelegation = toVoterInPool.receivedTreasuryDelegation.minus(event.params.amount);
+    toVoterInPool.receivedTreasuryNFTDelegation = remove<BigInt>(
+      toVoterInPool.receivedTreasuryNFTDelegation,
+      event.params.nfts
+    );
+    toVoterInPool.receivedTreasuryNFTDelegationCount = BigInt.fromI32(
+      toVoterInPool.receivedTreasuryNFTDelegation.length
+    );
+
+    pool.totalCurrentTokenDelegatedTreasury = pool.totalCurrentTokenDelegatedTreasury.minus(event.params.amount);
+    pool.totalCurrentNFTDelegatedTreasury = remove<BigInt>(pool.totalCurrentNFTDelegatedTreasury, event.params.nfts);
+  }
+
+  if (event.params.amount.gt(BigInt.zero())) {
+    if (toVoterInPool.receivedTreasuryDelegation.equals(event.params.amount) && event.params.isDelegate) {
+      pool.totalCurrentTokenDelegatees = pool.totalCurrentTokenDelegatees.plus(BigInt.fromI32(1));
+    } else if (toVoterInPool.receivedTreasuryDelegation.equals(BigInt.zero()) && !event.params.isDelegate) {
+      pool.totalCurrentTokenDelegatees = pool.totalCurrentTokenDelegatees.minus(BigInt.fromI32(1));
+    }
+  }
+
+  if (event.params.nfts.length > 0) {
+    if (toVoterInPool.receivedTreasuryNFTDelegation.length == event.params.nfts.length && event.params.isDelegate) {
+      pool.totalCurrentNFTDelegatees = pool.totalCurrentNFTDelegatees.plus(BigInt.fromI32(1));
+    } else if (toVoterInPool.receivedTreasuryNFTDelegation.length == 0 && !event.params.isDelegate) {
+      pool.totalCurrentNFTDelegatees = pool.totalCurrentNFTDelegatees.minus(BigInt.fromI32(1));
+    }
+  }
+
+  toVoterInPool.save();
+  delegateHistory.save();
+  pool.save();
+  to.save();
+}
+
+export function onVoteChanged(event: VoteChanged): void {
+  let voter = getVoter(event.params.voter);
   let pool = getDaoPool(event.address);
   let proposal = getProposal(pool, event.params.proposalId);
   let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
   let voterInProposal = getVoterInProposal(proposal, voterInPool);
-  let proposalVote = getProposalVote(
+
+  let interactionType = event.params.isVoteFor
+    ? ProposalInteractionType.VOTE_FOR
+    : ProposalInteractionType.VOTE_AGAINST;
+
+  if (event.params.totalVoted.equals(BigInt.zero())) {
+    interactionType = ProposalInteractionType.VOTE_CANCEL;
+  }
+
+  getProposalInteraction(
     event.transaction.hash,
     voterInProposal,
     event.block.timestamp,
-    event.params.personalVote,
-    event.params.delegatedVote
-  );
+    getEnumBigInt(interactionType),
+    event.params.totalVoted
+  ).save();
 
-  voterInProposal.totalDelegatedVoteAmount = voterInProposal.totalDelegatedVoteAmount.plus(event.params.delegatedVote);
-  voterInProposal.totalVoteAmount = voterInProposal.totalVoteAmount.plus(event.params.personalVote);
+  if (interactionType == ProposalInteractionType.VOTE_CANCEL) {
+    const prevVotes = voterInProposal.totalVote;
 
-  proposal.currentVotes = proposal.currentVotes.plus(event.params.personalVote).plus(event.params.delegatedVote);
-  let newVoters = extendArray<Bytes>(proposal.voters, [voter.id]);
+    if (voterInProposal.isVoteFor) {
+      proposal.currentVotesFor = proposal.currentVotesFor.minus(prevVotes);
+    } else {
+      proposal.currentVotesAgainst = proposal.currentVotesAgainst.minus(prevVotes);
+    }
 
-  if (proposal.voters.length < newVoters.length) {
-    proposal.voters = newVoters;
-    proposal.votersVoted = proposal.votersVoted.plus(BigInt.fromI32(1));
+    proposal.voters = remove<Bytes>(proposal.voters, [voter.id]);
+    proposal.votersVoted = proposal.votersVoted.minus(BigInt.fromI32(1));
+
+    voter.totalVotedProposals = voter.totalVotedProposals.minus(BigInt.fromI32(1));
+
+    voterInPool.proposals = remove(voterInPool.proposals, [voterInProposal.id]);
+    voterInPool.engagedProposalsCount = BigInt.fromI32(voterInPool.proposals.length);
+
+    voter.totalVotes = voter.totalVotes.minus(prevVotes);
+  } else {
+    if (interactionType == ProposalInteractionType.VOTE_FOR) {
+      proposal.currentVotesFor = proposal.currentVotesFor.plus(event.params.totalVoted);
+    } else {
+      proposal.currentVotesAgainst = proposal.currentVotesAgainst.plus(event.params.totalVoted);
+    }
+
+    let newVoters = pushUnique<Bytes>(proposal.voters, [voter.id]);
+
+    if (proposal.voters.length < newVoters.length) {
+      proposal.voters = newVoters;
+      proposal.votersVoted = proposal.votersVoted.plus(BigInt.fromI32(1));
+
+      voter.totalVotedProposals = voter.totalVotedProposals.plus(BigInt.fromI32(1));
+    }
+
+    voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
+    voterInPool.engagedProposalsCount = BigInt.fromI32(voterInPool.proposals.length);
+
+    voter.totalVotes = voter.totalVotes.plus(event.params.totalVoted);
   }
 
-  proposal.votesCount = proposal.votesCount.plus(BigInt.fromI32(1));
+  voterInProposal.isVoteFor = event.params.isVoteFor;
+  voterInProposal.totalVote = event.params.totalVoted;
 
-  proposalVote.save();
   voterInProposal.save();
   voterInPool.save();
   proposal.save();
@@ -166,24 +328,14 @@ export function onVoted(event: Voted): void {
   voter.save();
 }
 
-export function onDPCreated(event: DPCreated): void {
-  let pool = getDaoPool(event.address);
-  let proposal = getProposal(pool, event.params.proposalId);
-  let dp = getDistributionProposal(proposal, event.params.token, event.params.amount);
-
-  proposal.isDP = true;
-
-  dp.save();
-  proposal.save();
-  pool.save();
-}
-
 export function onProposalExecuted(event: ProposalExecuted): void {
   let pool = getDaoPool(event.address);
   let proposal = getProposal(pool, event.params.proposalId);
 
+  proposal.isFor = event.params.isFor;
   proposal.executor = event.params.sender;
   proposal.executionTimestamp = event.block.timestamp;
+  proposal.executionHash = event.transaction.hash;
 
   proposal.save();
   pool.save();
@@ -193,44 +345,92 @@ export function onRewardClaimed(event: RewardClaimed): void {
   let pool = getDaoPool(event.address);
   let voter = getVoter(event.params.sender);
   let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
-  let proposal = getProposal(pool, event.params.proposalId);
-  let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
-  let usdAmount = getUSDValue(event.params.token, event.params.amount);
+  let usdAmount = getUSDValue(event.params.token, event.params.rewards);
 
-  voterInProposal.claimedRewardUSD = usdAmount;
+  if (!event.params.proposalId.equals(BigInt.zero())) {
+    let proposal = getProposal(pool, event.params.proposalId);
+    let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
-  voterInProposal.save();
+    voterInProposal.claimed = true;
+
+    voterInProposal.claimedRewardUSD = voterInProposal.claimedRewardUSD.plus(usdAmount);
+
+    voterInProposal.staticRewardUSD = voterInProposal.staticRewardUSD.plus(usdAmount);
+
+    voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
+    voterInPool.engagedProposalsCount = BigInt.fromI32(voterInPool.proposals.length);
+
+    voterInProposal.save();
+    proposal.save();
+  }
 
   voterInPool.totalClaimedUSD = voterInPool.totalClaimedUSD.plus(usdAmount);
+  voter.totalClaimedUSD = voter.totalClaimedUSD.plus(usdAmount);
+
+  recalculateAPR(voterInPool, usdAmount, event.block.timestamp);
 
   voterInPool.save();
   voter.save();
   pool.save();
 }
 
-export function onRewardCredited(event: RewardCredited): void {
+export function onVotingRewardClaimed(event: VotingRewardClaimed): void {
   let pool = getDaoPool(event.address);
   let voter = getVoter(event.params.sender);
   let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
   let proposal = getProposal(pool, event.params.proposalId);
   let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
-  let usdAmount = getUSDValue(event.params.rewardToken, event.params.amount);
+  let personalUsdAmount = getUSDValue(event.params.token, event.params.rewards.personal);
+  let micropoolUsdAmount = getUSDValue(event.params.token, event.params.rewards.micropool);
+  let treasuryUsdAmount = getUSDValue(event.params.token, event.params.rewards.treasury);
+  let totalUsdAmount = personalUsdAmount.plus(micropoolUsdAmount).plus(treasuryUsdAmount);
 
-  if (event.params.rewardType == REWARD_TYPE_VOTE_DELEGATED) {
-    voterInProposal.unclaimedRewardFromDelegationsUSD =
-      voterInProposal.unclaimedRewardFromDelegationsUSD.plus(usdAmount);
-    voterInPool.totalDelegationRewardUSD = voterInPool.totalDelegationRewardUSD.plus(usdAmount);
-  }
+  voterInProposal.claimed = true;
 
-  voterInProposal.unclaimedRewardUSD = voterInProposal.unclaimedRewardUSD.plus(usdAmount);
+  voterInProposal.personalVotingRewardUSD = personalUsdAmount;
+  voterInProposal.micropoolVotingRewardUSD = micropoolUsdAmount;
+  voterInProposal.treasuryVotingRewardUSD = treasuryUsdAmount;
 
-  recalculateAPR(voterInPool, usdAmount, event.block.timestamp);
+  voterInProposal.claimedRewardUSD = voterInProposal.claimedRewardUSD.plus(totalUsdAmount);
+
+  voterInPool.totalPersonalVotingRewardUSD = voterInPool.totalPersonalVotingRewardUSD.plus(personalUsdAmount);
+  voterInPool.totalMicropoolVotingRewardUSD = voterInPool.totalMicropoolVotingRewardUSD.plus(micropoolUsdAmount);
+  voterInPool.totalTreasuryVotingRewardUSD = voterInPool.totalTreasuryVotingRewardUSD.plus(treasuryUsdAmount);
+
+  voterInPool.totalClaimedUSD = voterInPool.totalClaimedUSD.plus(totalUsdAmount);
+  voter.totalClaimedUSD = voter.totalClaimedUSD.plus(totalUsdAmount);
+
+  voterInPool.proposals = pushUnique(voterInPool.proposals, [voterInProposal.id]);
+  voterInPool.engagedProposalsCount = BigInt.fromI32(voterInPool.proposals.length);
+
+  recalculateAPR(voterInPool, totalUsdAmount, event.block.timestamp);
 
   voterInProposal.save();
   voterInPool.save();
   voter.save();
+  pool.save();
+}
+
+export function onDelegatorRewardsClaimed(event: DelegatorRewardsClaimed): void {
+  let pool = getDaoPool(event.address);
+  let delegator = getVoter(event.params.delegator);
+  let voterInPool = getVoterInPool(pool, delegator, event.block.timestamp);
+  let proposal = getProposal(pool, event.params.proposalId);
+  let voterInProposal = getVoterInProposal(proposal, voterInPool);
+
+  let usdAmount = getUSDValue(event.params.token, event.params.amount);
+
+  delegator.totalMicropoolRewardUSD = delegator.totalMicropoolRewardUSD.plus(usdAmount);
+  delegator.totalClaimedUSD = delegator.totalClaimedUSD.plus(usdAmount);
+
+  voterInProposal.micropoolRewardUSD = voterInProposal.micropoolRewardUSD.plus(usdAmount);
+  voterInProposal.claimedRewardUSD = voterInProposal.claimedRewardUSD.plus(usdAmount);
+
+  voterInProposal.save();
+  voterInPool.save();
+  delegator.save();
   pool.save();
 }
 
@@ -238,10 +438,10 @@ export function onDeposited(event: Deposited): void {
   let pool = getDaoPool(event.address);
   let voter = getVoter(event.params.sender);
   let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
+  let usdAmount = getUSDValue(pool.erc20Token, event.params.amount);
 
-  voterInPool.totalLockedFundsUSD = voterInPool.totalLockedFundsUSD.plus(
-    getUSDValue(pool.erc20Token, event.params.amount)
-  );
+  voter.totalLockedFundsUSD = voter.totalLockedFundsUSD.plus(usdAmount);
+  voterInPool.totalLockedUSD = voterInPool.totalLockedUSD.plus(usdAmount);
 
   voterInPool.save();
   voter.save();
@@ -255,10 +455,16 @@ export function onWithdrawn(event: Withdrawn): void {
 
   let usdAmount = getUSDValue(pool.erc20Token, event.params.amount);
 
-  if (usdAmount.gt(voterInPool.totalLockedFundsUSD)) {
-    voterInPool.totalLockedFundsUSD = BigInt.zero();
+  if (usdAmount.gt(voter.totalLockedFundsUSD)) {
+    voter.totalLockedFundsUSD = BigInt.zero();
   } else {
-    voterInPool.totalLockedFundsUSD = voterInPool.totalLockedFundsUSD.minus(usdAmount);
+    voter.totalLockedFundsUSD = voter.totalLockedFundsUSD.minus(usdAmount);
+  }
+
+  if (usdAmount.gt(voterInPool.totalLockedUSD)) {
+    voterInPool.totalLockedUSD = BigInt.zero();
+  } else {
+    voterInPool.totalLockedUSD = voterInPool.totalLockedUSD.minus(usdAmount);
   }
 
   voterInPool.save();
@@ -266,34 +472,45 @@ export function onWithdrawn(event: Withdrawn): void {
   pool.save();
 }
 
-export function onStakingRewardClaimed(event: StakingRewardClaimed): void {
+export function onOffchainResultsSaved(event: OffchainResultsSaved): void {
   let pool = getDaoPool(event.address);
-  let voter = getVoter(event.params.user);
-  let voterInPool = getVoterInPool(pool, voter, event.block.timestamp);
 
-  voterInPool.totalStakingReward = voterInPool.totalStakingReward.plus(
-    getUSDValue(event.params.token, event.params.amount)
-  );
+  pool.offchainResultsHash = event.params.resultsHash;
 
-  voterInPool.save();
-  voter.save();
+  pool.save();
+}
+
+export function onQuorumReached(event: QuorumReached): void {
+  let pool = getDaoPool(event.address);
+  let proposal = getProposal(pool, event.params.proposalId);
+
+  proposal.quorumReachedTimestamp = event.params.timestamp;
+
+  proposal.save();
+  pool.save();
+}
+
+export function onQuorumUnreached(event: QuorumUnreached): void {
+  let pool = getDaoPool(event.address);
+  let proposal = getProposal(pool, event.params.proposalId);
+
+  proposal.quorumReachedTimestamp = BigInt.zero();
+
+  proposal.save();
   pool.save();
 }
 
 function recalculateAPR(voterInPool: VoterInPool, rewardCredited: BigInt, currentTimestamp: BigInt): void {
-  if (
-    voterInPool.totalLockedFundsUSD.notEqual(BigInt.zero()) &&
-    currentTimestamp.notEqual(voterInPool.joinedTimestamp)
-  ) {
-    let RLRatio = rewardCredited.times(BigInt.fromI32(PERCENTAGE_NUMERATOR)).div(voterInPool.totalLockedFundsUSD);
-    let numerator = voterInPool.cusum
-      .times(voterInPool.lastUpdate.minus(voterInPool.joinedTimestamp))
+  if (voterInPool.totalLockedUSD.notEqual(BigInt.zero()) && currentTimestamp.notEqual(voterInPool.joinedTimestamp)) {
+    let RLRatio = rewardCredited.times(BigInt.fromI32(PERCENTAGE_NUMERATOR)).div(voterInPool.totalLockedUSD);
+    let numerator = voterInPool._cusum
+      .times(voterInPool._lastUpdate.minus(voterInPool.joinedTimestamp))
       .plus(RLRatio.times(currentTimestamp.minus(voterInPool.joinedTimestamp)));
     let denominator = currentTimestamp.minus(voterInPool.joinedTimestamp);
     let P = numerator.div(denominator);
 
     voterInPool.APR = P.times(YEAR).div(currentTimestamp.minus(voterInPool.joinedTimestamp));
-    voterInPool.cusum = P;
-    voterInPool.lastUpdate = currentTimestamp;
+    voterInPool._cusum = P;
+    voterInPool._lastUpdate = currentTimestamp;
   }
 }

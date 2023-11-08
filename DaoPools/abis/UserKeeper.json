@@ -3,6 +3,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
@@ -80,14 +93,9 @@
         "type": "address"
       },
       {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "useDelegated",
-        "type": "bool"
+        "internalType": "enum IGovPool.VoteType",
+        "name": "voteType",
+        "type": "uint8"
       },
       {
         "internalType": "uint256",
@@ -100,7 +108,7 @@
         "type": "uint256"
       }
     ],
-    "name": "canParticipate",
+    "name": "canCreate",
     "outputs": [
       {
         "internalType": "bool",
@@ -151,6 +159,24 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "nftIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "delegateNftsTreasury",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "delegator",
         "type": "address"
       },
@@ -174,8 +200,31 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "delegateTokensTreasury",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "user",
         "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "perNftPowerArray",
+        "type": "bool"
       }
     ],
     "name": "delegations",
@@ -280,31 +329,17 @@
         "type": "address"
       }
     ],
-    "name": "getDelegatedStakeAmount",
+    "name": "getDelegatedAssets",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "tokenAmount",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
+      },
       {
-        "internalType": "address",
-        "name": "delegator",
-        "type": "address"
-      }
-    ],
-    "name": "getDelegatees",
-    "outputs": [
-      {
-        "internalType": "address[]",
-        "name": "",
-        "type": "address[]"
+        "internalType": "uint256[]",
+        "name": "nftIds",
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -381,88 +416,13 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "delegator",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "delegatee",
-        "type": "address"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "values",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "length",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ShrinkableArray.UintArray",
-        "name": "lockedProposals",
-        "type": "tuple"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "unlockedNfts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "getUndelegateableAssets",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "undelegateableTokens",
-        "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "values",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "length",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ShrinkableArray.UintArray",
-        "name": "undelegateableNfts",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "voter",
         "type": "address"
       },
       {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "values",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "length",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ShrinkableArray.UintArray",
+        "internalType": "uint256[]",
         "name": "lockedProposals",
-        "type": "tuple"
+        "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
@@ -478,21 +438,9 @@
         "type": "uint256"
       },
       {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "values",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "length",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct ShrinkableArray.UintArray",
+        "internalType": "uint256[]",
         "name": "withdrawableNfts",
-        "type": "tuple"
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -506,14 +454,9 @@
         "type": "address"
       },
       {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "useDelegated",
-        "type": "bool"
+        "internalType": "enum IGovPool.VoteType",
+        "name": "voteType",
+        "type": "uint8"
       },
       {
         "internalType": "uint256[]",
@@ -539,11 +482,6 @@
         "type": "address"
       },
       {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
-      },
-      {
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
@@ -560,11 +498,6 @@
         "internalType": "address",
         "name": "voter",
         "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
       }
     ],
     "name": "maxLockedAmount",
@@ -599,14 +532,9 @@
         "type": "address"
       },
       {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "useDelegated",
-        "type": "bool"
+        "internalType": "enum IGovPool.VoteType",
+        "name": "voteType",
+        "type": "uint8"
       }
     ],
     "name": "nftBalance",
@@ -633,14 +561,9 @@
         "type": "address"
       },
       {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "useDelegated",
-        "type": "bool"
+        "internalType": "enum IGovPool.VoteType",
+        "name": "voteType",
+        "type": "uint8"
       }
     ],
     "name": "nftExactBalance",
@@ -684,6 +607,11 @@
         "internalType": "uint256[]",
         "name": "nftIds",
         "type": "uint256[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "perNftPowerArray",
+        "type": "bool"
       }
     ],
     "name": "nftVotingPower",
@@ -813,14 +741,9 @@
         "type": "address"
       },
       {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "useDelegated",
-        "type": "bool"
+        "internalType": "enum IGovPool.VoteType",
+        "name": "voteType",
+        "type": "uint8"
       }
     ],
     "name": "tokenBalance",
@@ -879,6 +802,24 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "nftIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "undelegateNftsTreasury",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "delegator",
         "type": "address"
       },
@@ -894,6 +835,24 @@
       }
     ],
     "name": "undelegateTokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "undelegateTokensTreasury",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -924,19 +883,13 @@
         "type": "address"
       },
       {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
-      }
-    ],
-    "name": "unlockTokens",
-    "outputs": [
-      {
         "internalType": "uint256",
-        "name": "unlockedAmount",
+        "name": "amount",
         "type": "uint256"
       }
     ],
+    "name": "unlockTokens",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -951,11 +904,6 @@
         "internalType": "address",
         "name": "voter",
         "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "isMicropool",
-        "type": "bool"
       }
     ],
     "name": "updateMaxTokenLockedAmount",
@@ -984,14 +932,14 @@
         "type": "address[]"
       },
       {
-        "internalType": "bool[]",
-        "name": "isMicropools",
-        "type": "bool[]"
+        "internalType": "enum IGovPool.VoteType[]",
+        "name": "voteTypes",
+        "type": "uint8[]"
       },
       {
-        "internalType": "bool[]",
-        "name": "useDelegated",
-        "type": "bool[]"
+        "internalType": "bool",
+        "name": "perNftPowerArray",
+        "type": "bool"
       }
     ],
     "name": "votingPower",
@@ -1005,7 +953,17 @@
           },
           {
             "internalType": "uint256",
+            "name": "rawPower",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "nftPower",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rawNftPower",
             "type": "uint256"
           },
           {
@@ -1081,6 +1039,35 @@
     "name": "withdrawTokens",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "nftIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "perNftPowerArray",
+        "type": "bool"
+      }
+    ],
+    "name": "nftVotingPower",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "nftPower",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "perNftPower",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ]

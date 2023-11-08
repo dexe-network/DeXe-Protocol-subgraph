@@ -7,17 +7,26 @@ export function getVoterInProposal(proposal: Proposal, voterInPool: VoterInPool)
 
   if (voterInProposal == null) {
     voterInProposal = new VoterInProposal(id);
+
+    voterInProposal.isVoteFor = false;
+
+    voterInProposal.claimed = false;
+
+    voterInProposal.totalVote = BigInt.zero();
+
+    voterInProposal.staticRewardUSD = BigInt.zero();
+
+    voterInProposal.personalVotingRewardUSD = BigInt.zero();
+    voterInProposal.micropoolVotingRewardUSD = BigInt.zero();
+    voterInProposal.treasuryVotingRewardUSD = BigInt.zero();
+
+    voterInProposal.micropoolRewardUSD = BigInt.zero();
+
+    voterInProposal.claimedRewardUSD = BigInt.zero();
+
     voterInProposal.pool = voterInPool.pool;
     voterInProposal.proposal = proposal.id;
     voterInProposal.voter = voterInPool.id;
-
-    voterInProposal.totalVoteAmount = BigInt.zero();
-    voterInProposal.totalDelegatedVoteAmount = BigInt.zero();
-
-    voterInProposal.claimedRewardUSD = BigInt.zero();
-    voterInProposal.claimedDpRewardUSD = BigInt.zero();
-    voterInProposal.unclaimedRewardUSD = BigInt.zero();
-    voterInProposal.unclaimedRewardFromDelegationsUSD = BigInt.zero();
   }
 
   return voterInProposal;

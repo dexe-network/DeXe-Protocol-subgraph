@@ -42,6 +42,19 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "proposalId",
         "type": "uint256"
@@ -123,6 +136,31 @@
       },
       {
         "indexed": false,
+        "internalType": "bool",
+        "name": "isInternal",
+        "type": "bool"
+      }
+    ],
+    "name": "VoteCanceled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "vote",
         "type": "uint256"
@@ -131,6 +169,12 @@
         "indexed": false,
         "internalType": "bool",
         "name": "isInternal",
+        "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isVoteFor",
         "type": "bool"
       }
     ],
@@ -150,14 +194,26 @@
         "type": "string"
       },
       {
-        "internalType": "uint64",
-        "name": "duration",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint128",
-        "name": "quorum",
-        "type": "uint128"
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "duration",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "executionDelay",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint128",
+            "name": "quorum",
+            "type": "uint128"
+          }
+        ],
+        "internalType": "struct IGovValidators.ProposalSettings",
+        "name": "proposalSettings",
+        "type": "tuple"
       },
       {
         "internalType": "address[]",
@@ -191,6 +247,11 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "name": "addressVoted",
@@ -202,6 +263,32 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      }
+    ],
+    "name": "cancelVoteExternalProposal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      }
+    ],
+    "name": "cancelVoteInternalProposal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -225,19 +312,54 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "proposalId",
-        "type": "uint256"
+        "internalType": "uint64",
+        "name": "duration",
+        "type": "uint64"
       },
       {
         "internalType": "uint64",
-        "name": "duration",
+        "name": "executionDelay",
         "type": "uint64"
       },
       {
         "internalType": "uint128",
         "name": "quorum",
         "type": "uint128"
+      }
+    ],
+    "name": "changeSettings",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "duration",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "executionDelay",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint128",
+            "name": "quorum",
+            "type": "uint128"
+          }
+        ],
+        "internalType": "struct IGovValidators.ProposalSettings",
+        "name": "proposalSettings",
+        "type": "tuple"
       }
     ],
     "name": "createExternalProposal",
@@ -258,14 +380,9 @@
         "type": "string"
       },
       {
-        "internalType": "uint256[]",
-        "name": "newValues",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "users",
-        "type": "address[]"
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
       }
     ],
     "name": "createInternalProposal",
@@ -281,7 +398,20 @@
         "type": "uint256"
       }
     ],
-    "name": "execute",
+    "name": "executeExternalProposal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      }
+    ],
+    "name": "executeInternalProposal",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -306,13 +436,18 @@
                 "type": "bool"
               },
               {
-                "internalType": "uint32",
+                "internalType": "uint56",
                 "name": "snapshotId",
-                "type": "uint32"
+                "type": "uint56"
               },
               {
                 "internalType": "uint64",
                 "name": "voteEnd",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "executeAfter",
                 "type": "uint64"
               },
               {
@@ -323,6 +458,11 @@
               {
                 "internalType": "uint256",
                 "name": "votesFor",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "votesAgainst",
                 "type": "uint256"
               }
             ],
@@ -371,13 +511,18 @@
                     "type": "bool"
                   },
                   {
-                    "internalType": "uint32",
+                    "internalType": "uint56",
                     "name": "snapshotId",
-                    "type": "uint32"
+                    "type": "uint56"
                   },
                   {
                     "internalType": "uint64",
                     "name": "voteEnd",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "executeAfter",
                     "type": "uint64"
                   },
                   {
@@ -388,6 +533,11 @@
                   {
                     "internalType": "uint256",
                     "name": "votesFor",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "votesAgainst",
                     "type": "uint256"
                   }
                 ],
@@ -401,14 +551,9 @@
                 "type": "string"
               },
               {
-                "internalType": "uint256[]",
-                "name": "newValues",
-                "type": "uint256[]"
-              },
-              {
-                "internalType": "address[]",
-                "name": "userAddresses",
-                "type": "address[]"
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
               }
             ],
             "internalType": "struct IGovValidators.InternalProposal",
@@ -505,6 +650,11 @@
         "type": "uint64"
       },
       {
+        "internalType": "uint64",
+        "name": "executionDelay",
+        "type": "uint64"
+      },
+      {
         "internalType": "uint128",
         "name": "quorum",
         "type": "uint128"
@@ -543,6 +693,29 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address",
+        "name": "destination",
+        "type": "address"
+      }
+    ],
+    "name": "monthlyWithdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -605,13 +778,40 @@
       },
       {
         "internalType": "bool",
-        "name": "isInternal",
+        "name": "isVoteFor",
         "type": "bool"
       }
     ],
-    "name": "vote",
+    "name": "voteExternalProposal",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isVoteFor",
+        "type": "bool"
+      }
+    ],
+    "name": "voteInternalProposal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
   }
 ]

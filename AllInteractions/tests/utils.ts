@@ -1,6 +1,7 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { assert } from "matchstick-as";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
+import { getTransaction as getTxEntity } from "../src/entities/transaction/Transaction";
 
 export function getBlock(number: BigInt, timestamp: BigInt): ethereum.Block {
   return new ethereum.Block(
@@ -71,7 +72,7 @@ export function getNextTx(prevTx: ethereum.Transaction): ethereum.Transaction {
 }
 
 function nextHash(prevHash: Bytes): Bytes {
-  return <Bytes>Bytes.fromU64(prevHash.toU64() + 1);
+  return Bytes.fromByteArray(Bytes.fromU64(prevHash.toU64() + 1));
 }
 
 export function assertTransaction(
@@ -79,11 +80,13 @@ export function assertTransaction(
   sender: Address,
   block: ethereum.Block,
   transactionType: string,
-  interactionsCount: BigInt
+  interactionsCount: BigInt,
+  pool: Bytes
 ): void {
   assert.fieldEquals("Transaction", hash.toHexString(), "block", block.number.toString());
   assert.fieldEquals("Transaction", hash.toHexString(), "timestamp", block.timestamp.toString());
   assert.fieldEquals("Transaction", hash.toHexString(), "type", transactionType);
   assert.fieldEquals("Transaction", hash.toHexString(), "user", sender.toHexString());
   assert.fieldEquals("Transaction", hash.toHexString(), "interactionsCount", interactionsCount.toString());
+  assert.fieldEquals("Transaction", hash.toHexString(), "interactedWithPool", pool.toHexString());
 }

@@ -1,7 +1,7 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
-import { assert, describe, newMockEvent, test } from "matchstick-as";
+import { describe, newMockEvent, test } from "matchstick-as";
 import { Agreed, UpdatedProfile } from "../generated/UserRegistry/UserRegistry";
-import { assertTransaction, getBlock, getTransaction } from "./utils";
+import { assertTransaction, getBlock, getNextTx, getTransaction } from "./utils";
 import { onAgreed, onUpdatedProfile } from "../src/mappings/UserRegistry";
 import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
 
@@ -53,13 +53,30 @@ describe("UserRegistry", () => {
       event.params.user,
       block,
       `[${TransactionType.USER_AGREED_TO_PRIVACY_POLICY}]`,
-      BigInt.fromI32(1)
+      BigInt.fromI32(1),
+      Bytes.empty()
+    );
+
+    const nextTx = getNextTx(tx);
+    user = Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE");
+
+    event = createAgreedEvent(user, doc, block, nextTx);
+
+    onAgreed(event);
+
+    assertTransaction(
+      nextTx.hash,
+      event.params.user,
+      block,
+      `[${TransactionType.USER_AGREED_TO_PRIVACY_POLICY}]`,
+      BigInt.fromI32(1),
+      Bytes.empty()
     );
   });
 
   test("should handle UpdatedProfile event", () => {
     let user = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181679");
-    let url = "URL";
+    let url = "URL_1";
 
     let event = createUpdatedProfile(user, url, block, tx);
 
@@ -70,7 +87,25 @@ describe("UserRegistry", () => {
       event.params.user,
       block,
       `[${TransactionType.USER_AGREED_TO_PRIVACY_POLICY}, ${TransactionType.UPDATED_USER_CREDENTIALS}]`,
-      BigInt.fromI32(2)
+      BigInt.fromI32(2),
+      Bytes.empty()
+    );
+
+    const nextTx = getNextTx(tx);
+    user = Address.fromString("0x40007caAE6E086373ce52B3E123C5c3E7b6987fE");
+    url = "URL_2";
+
+    event = createUpdatedProfile(user, url, block, nextTx);
+
+    onUpdatedProfile(event);
+
+    assertTransaction(
+      nextTx.hash,
+      event.params.user,
+      block,
+      `[${TransactionType.USER_AGREED_TO_PRIVACY_POLICY}, ${TransactionType.UPDATED_USER_CREDENTIALS}]`,
+      BigInt.fromI32(2),
+      Bytes.empty()
     );
   });
 });
