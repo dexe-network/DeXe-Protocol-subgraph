@@ -22,26 +22,3 @@ export function getUSDValue(token: Bytes, amount: BigInt): BigInt {
     return resp.value.value0;
   }
 }
-
-export function getTokenValue(fromToken: Bytes, toToken: Bytes, amount: BigInt): BigInt {
-  let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
-
-  let resp = pfPrototype.try_getNormalizedPriceOut(Address.fromBytes(fromToken), Address.fromBytes(toToken), amount);
-  if (resp.reverted) {
-    log.warning("try_getNormalizedPriceOut reverted. FromToken: {}, ToToken: {}, Amount:{}", [
-      fromToken.toHexString(),
-      toToken.toHexString(),
-      amount.toString(),
-    ]);
-    return BigInt.zero();
-  } else {
-    if (resp.value.value1.length == 0) {
-      log.warning("try_getNormalizedPriceOut returned 0 length path. FromToken: {}, ToToken: {}, Amount:{}", [
-        fromToken.toHexString(),
-        toToken.toHexString(),
-        amount.toString(),
-      ]);
-    }
-    return resp.value.value0;
-  }
-}
