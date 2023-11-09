@@ -38,10 +38,14 @@ const proposalId = BigInt.fromI32(2);
 
 describe("DistributionProposal", () => {
   beforeEach(() => {
+    let swapPath = new ethereum.Tuple(2);
+    swapPath[0] = ethereum.Value.fromAddressArray([contractSender]);
+    swapPath[1] = ethereum.Value.fromI32Array([1]);
+
     createMockedFunction(
       Address.fromString(PRICE_FEED_ADDRESS),
       "getNormalizedPriceOutUSD",
-      "getNormalizedPriceOutUSD(address,uint256):(uint256,address[])"
+      "getNormalizedPriceOutUSD(address,uint256):(uint256,(address[],uint8[]))"
     )
       .withArgs([
         ethereum.Value.fromAddress(Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181672")),
@@ -49,7 +53,7 @@ describe("DistributionProposal", () => {
       ])
       .returns([
         ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(10000000000000000000)),
-        ethereum.Value.fromAddressArray([contractSender, contractSender]),
+        ethereum.Value.fromTuple(swapPath),
       ]);
 
     let dPContract = new DPContract(contractSender);
