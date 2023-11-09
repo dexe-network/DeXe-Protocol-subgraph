@@ -16,24 +16,67 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "newOwners",
+        "type": "address[]"
       }
     ],
-    "name": "OwnershipTransferred",
+    "name": "OwnersAdded",
     "type": "event"
   },
   {
-    "inputs": [],
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "removedOwners",
+        "type": "address[]"
+      }
+    ],
+    "name": "OwnersRemoved",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "enum IPriceFeed.PoolInterfaceType",
+            "name": "poolType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "router",
+            "type": "address"
+          },
+          {
+            "internalType": "uint24",
+            "name": "fee",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct IPriceFeed.PoolType[]",
+        "name": "poolTypes",
+        "type": "tuple[]"
+      }
+    ],
     "name": "__PriceFeed_init",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "newOwners_",
+        "type": "address[]"
+      }
+    ],
+    "name": "addOwners",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -65,91 +108,25 @@
       },
       {
         "internalType": "uint256",
-        "name": "amountIn",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address[]",
-        "name": "optionalPath",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "minAmountOut",
-        "type": "uint256"
-      }
-    ],
-    "name": "exchangeFromExact",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "inToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "outToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
         "name": "amountOut",
         "type": "uint256"
       },
       {
-        "internalType": "address[]",
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
         "name": "optionalPath",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "maxAmountIn",
-        "type": "uint256"
-      }
-    ],
-    "name": "exchangeToExact",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "inToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "outToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amountOut",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address[]",
-        "name": "optionalPath",
-        "type": "address[]"
+        "type": "tuple"
       }
     ],
     "name": "getExtendedPriceIn",
@@ -160,12 +137,24 @@
         "type": "uint256"
       },
       {
-        "internalType": "address[]",
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
         "name": "path",
-        "type": "address[]"
+        "type": "tuple"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -186,9 +175,21 @@
         "type": "uint256"
       },
       {
-        "internalType": "address[]",
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
         "name": "optionalPath",
-        "type": "address[]"
+        "type": "tuple"
       }
     ],
     "name": "getExtendedPriceOut",
@@ -199,12 +200,24 @@
         "type": "uint256"
       },
       {
-        "internalType": "address[]",
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
         "name": "path",
-        "type": "address[]"
+        "type": "tuple"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -213,7 +226,7 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "_injector",
+        "name": "injector_",
         "type": "address"
       }
     ],
@@ -238,9 +251,21 @@
         "type": "uint256"
       },
       {
-        "internalType": "address[]",
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
         "name": "optionalPath",
-        "type": "address[]"
+        "type": "tuple"
       }
     ],
     "name": "getNormalizedExtendedPriceIn",
@@ -251,12 +276,24 @@
         "type": "uint256"
       },
       {
-        "internalType": "address[]",
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
         "name": "path",
-        "type": "address[]"
+        "type": "tuple"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -277,9 +314,21 @@
         "type": "uint256"
       },
       {
-        "internalType": "address[]",
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
         "name": "optionalPath",
-        "type": "address[]"
+        "type": "tuple"
       }
     ],
     "name": "getNormalizedExtendedPriceOut",
@@ -290,12 +339,24 @@
         "type": "uint256"
       },
       {
-        "internalType": "address[]",
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
         "name": "path",
-        "type": "address[]"
+        "type": "tuple"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -324,12 +385,24 @@
         "type": "uint256"
       },
       {
-        "internalType": "address[]",
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
         "name": "path",
-        "type": "address[]"
+        "type": "tuple"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -353,12 +426,24 @@
         "type": "uint256"
       },
       {
-        "internalType": "address[]",
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
         "name": "path",
-        "type": "address[]"
+        "type": "tuple"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -382,12 +467,24 @@
         "type": "uint256"
       },
       {
-        "internalType": "address[]",
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
         "name": "path",
-        "type": "address[]"
+        "type": "tuple"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -416,12 +513,24 @@
         "type": "uint256"
       },
       {
-        "internalType": "address[]",
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
         "name": "path",
-        "type": "address[]"
+        "type": "tuple"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -445,12 +554,24 @@
         "type": "uint256"
       },
       {
-        "internalType": "address[]",
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
         "name": "path",
-        "type": "address[]"
+        "type": "tuple"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -474,8 +595,33 @@
         "type": "uint256"
       },
       {
-        "internalType": "address[]",
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
         "name": "path",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getOwners",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
         "type": "address[]"
       }
     ],
@@ -496,29 +642,154 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getPoolTypes",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "enum IPriceFeed.PoolInterfaceType",
+            "name": "poolType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "router",
+            "type": "address"
+          },
+          {
+            "internalType": "uint24",
+            "name": "fee",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct IPriceFeed.PoolType[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getPoolTypesLength",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "pool",
+        "name": "inToken",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "from",
+        "name": "outToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountOut",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPriceIn",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "amountIn",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
+        "name": "path",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "inToken",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "to",
+        "name": "outToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountIn",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPriceOut",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "amountOut",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "path",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "poolTypes",
+            "type": "uint8[]"
+          }
+        ],
+        "internalType": "struct IPriceFeed.SwapPath",
+        "name": "path",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "address_",
         "type": "address"
       }
     ],
-    "name": "getSavedPaths",
+    "name": "isOwner",
     "outputs": [
       {
-        "internalType": "address[]",
+        "internalType": "bool",
         "name": "",
-        "type": "address[]"
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -546,92 +817,14 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "inToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "outToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amountIn",
-        "type": "uint256"
-      },
-      {
         "internalType": "address[]",
-        "name": "optionalPath",
+        "name": "oldOwners_",
         "type": "address[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "minAmountOut",
-        "type": "uint256"
       }
     ],
-    "name": "normalizedExchangeFromExact",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "name": "removeOwners",
+    "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "inToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "outToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amountOut",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address[]",
-        "name": "optionalPath",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "maxAmountIn",
-        "type": "uint256"
-      }
-    ],
-    "name": "normalizedExchangeToExact",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -660,6 +853,11 @@
         "internalType": "address",
         "name": "contractsRegistry",
         "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
       }
     ],
     "name": "setDependencies",
@@ -671,11 +869,41 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_injector",
+        "name": "injector_",
         "type": "address"
       }
     ],
     "name": "setInjector",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "enum IPriceFeed.PoolInterfaceType",
+            "name": "poolType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "router",
+            "type": "address"
+          },
+          {
+            "internalType": "uint24",
+            "name": "fee",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct IPriceFeed.PoolType[]",
+        "name": "poolTypes",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "setPoolTypes",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -688,45 +916,6 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "uniswapFactory",
-    "outputs": [
-      {
-        "internalType": "contract IUniswapV2Factory",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "uniswapV2Router",
-    "outputs": [
-      {
-        "internalType": "contract IUniswapV2Router02",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",

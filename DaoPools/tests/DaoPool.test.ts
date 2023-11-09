@@ -369,10 +369,14 @@ const USER_KEEPER_ADDRESS = "0x96e08f7d84603AEb97cd1c89A80A9e914f181670";
 
 describe("DaoPool", () => {
   beforeAll(() => {
+    let swapPath = new ethereum.Tuple(2);
+    swapPath[0] = ethereum.Value.fromAddressArray([contractSender]);
+    swapPath[1] = ethereum.Value.fromI32Array([1]);
+
     createMockedFunction(
       Address.fromString(PRICE_FEED_ADDRESS),
       "getNormalizedPriceOutUSD",
-      "getNormalizedPriceOutUSD(address,uint256):(uint256,address[])"
+      "getNormalizedPriceOutUSD(address,uint256):(uint256,(address[],uint8[]))"
     )
       .withArgs([
         ethereum.Value.fromAddress(Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181672")),
@@ -380,13 +384,13 @@ describe("DaoPool", () => {
       ])
       .returns([
         ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(1000000000000000000)),
-        ethereum.Value.fromAddressArray([contractSender, contractSender]),
+        ethereum.Value.fromTuple(swapPath),
       ]);
 
     createMockedFunction(
       Address.fromString(PRICE_FEED_ADDRESS),
       "getNormalizedPriceOutUSD",
-      "getNormalizedPriceOutUSD(address,uint256):(uint256,address[])"
+      "getNormalizedPriceOutUSD(address,uint256):(uint256,(address[],uint8[]))"
     )
       .withArgs([
         ethereum.Value.fromAddress(Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181673")),
@@ -394,50 +398,41 @@ describe("DaoPool", () => {
       ])
       .returns([
         ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(2000000000000000000)),
-        ethereum.Value.fromAddressArray([contractSender, contractSender]),
+        ethereum.Value.fromTuple(swapPath),
       ]);
 
     createMockedFunction(
       Address.fromString(PRICE_FEED_ADDRESS),
       "getNormalizedPriceOutUSD",
-      "getNormalizedPriceOutUSD(address,uint256):(uint256,address[])"
+      "getNormalizedPriceOutUSD(address,uint256):(uint256,(address[],uint8[]))"
     )
       .withArgs([
         ethereum.Value.fromAddress(Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676")),
         ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(1000)),
       ])
-      .returns([
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(200)),
-        ethereum.Value.fromAddressArray([contractSender, contractSender]),
-      ]);
+      .returns([ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(200)), ethereum.Value.fromTuple(swapPath)]);
 
     createMockedFunction(
       Address.fromString(PRICE_FEED_ADDRESS),
       "getNormalizedPriceOutUSD",
-      "getNormalizedPriceOutUSD(address,uint256):(uint256,address[])"
+      "getNormalizedPriceOutUSD(address,uint256):(uint256,(address[],uint8[]))"
     )
       .withArgs([
         ethereum.Value.fromAddress(Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676")),
         ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(500)),
       ])
-      .returns([
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(100)),
-        ethereum.Value.fromAddressArray([contractSender, contractSender]),
-      ]);
+      .returns([ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(100)), ethereum.Value.fromTuple(swapPath)]);
 
     createMockedFunction(
       Address.fromString(PRICE_FEED_ADDRESS),
       "getNormalizedPriceOutUSD",
-      "getNormalizedPriceOutUSD(address,uint256):(uint256,address[])"
+      "getNormalizedPriceOutUSD(address,uint256):(uint256,(address[],uint8[]))"
     )
       .withArgs([
         ethereum.Value.fromAddress(Address.fromString("0x86e08f7d84603aeb97cd1c89a80a9e914f181676")),
         ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(3000)),
       ])
-      .returns([
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(1500)),
-        ethereum.Value.fromAddressArray([contractSender, contractSender]),
-      ]);
+      .returns([ethereum.Value.fromUnsignedBigInt(BigInt.fromU64(1500)), ethereum.Value.fromTuple(swapPath)]);
 
     createMockedFunction(
       Address.fromString(USER_KEEPER_ADDRESS),
