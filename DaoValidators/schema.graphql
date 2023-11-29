@@ -3,7 +3,7 @@ The entity that holds informations about pool
 """
 type DaoPool @entity {
   "The pool address"
-  id: Bytes! # pool address
+  id: Bytes!
   "Array of ValidatorInPool entity ids"
   validators: [ValidatorInPool!]! @derivedFrom(field: "pool")
 }
@@ -13,7 +13,7 @@ The entity that holds informations about validators contract
 """
 type ValidatorsContract @entity(immutable: true) {
   "The validators contract address"
-  id: Bytes! # validators contract address
+  id: Bytes!
   "The pool address"
   pool: Bytes!
 }
@@ -23,7 +23,7 @@ The entity that holds informations about validators proposal
 """
 type Proposal @entity {
   "id forms from pool address + proposalId + isInternal"
-  id: ID! # pool address + proposalId + isInternal
+  id: ID!
   "The id of proposal"
   proposalId: BigInt!
   "Boolean flag, if true - internal for validators"
@@ -52,7 +52,7 @@ The entity that holds informations about validator's actions in pool
 """
 type ValidatorInPool @entity {
   "id forms from the validator address + pool address"
-  id: Bytes! # validator address + pool address
+  id: Bytes!
   "The address of validator"
   validatorAddress: Bytes!
   "The amount of validators token"
@@ -67,7 +67,7 @@ The entity that holds informations about vote
 """
 type ProposalInteraction @entity(immutable: true) {
   "id forms from the tx hash + interactionCount"
-  id: Bytes! # tx hash + counter
+  id: Bytes!
   "The tx hash"
   hash: Bytes!
   "The timestamp of transaction"
@@ -88,8 +88,8 @@ type ProposalInteraction @entity(immutable: true) {
 The entity that holds informations about vote
 """
 type ValidatorInProposal @entity {
-  "id forms from the validator address + pool address + proposal id"
-  id: Bytes! # user address + pool address + proposal id
+  "id forms from the validator address + pool address + proposal id + isInternal"
+  id: Bytes!
   "The pool entity id"
   pool: DaoPool!
   "The proposal entity id"
