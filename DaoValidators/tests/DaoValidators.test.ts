@@ -400,13 +400,13 @@ describe("DaoValidators", () => {
 
     assert.fieldEquals(
       "ValidatorInProposal",
-      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString(),
       "totalVoteAgainst",
       "0"
     );
     assert.fieldEquals(
       "ValidatorInProposal",
-      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString(),
       "totalVoteFor",
       vote.toString()
     );
@@ -434,7 +434,7 @@ describe("DaoValidators", () => {
       "ProposalInteraction",
       tx.hash.concatI32(0).toHexString(),
       "voter",
-      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString()
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString()
     );
 
     isVoteFor = false;
@@ -446,13 +446,13 @@ describe("DaoValidators", () => {
 
     assert.fieldEquals(
       "ValidatorInProposal",
-      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString(),
       "totalVoteAgainst",
       vote.toString()
     );
     assert.fieldEquals(
       "ValidatorInProposal",
-      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString(),
       "totalVoteFor",
       vote.toString()
     );
@@ -485,7 +485,7 @@ describe("DaoValidators", () => {
       "ProposalInteraction",
       nextTx.hash.concatI32(0).toHexString(),
       "voter",
-      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString()
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString()
     );
   });
 
@@ -502,13 +502,13 @@ describe("DaoValidators", () => {
 
     assert.fieldEquals(
       "ValidatorInProposal",
-      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString(),
       "totalVoteAgainst",
       "0"
     );
     assert.fieldEquals(
       "ValidatorInProposal",
-      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString(),
       "totalVoteFor",
       vote.toString()
     );
@@ -536,7 +536,7 @@ describe("DaoValidators", () => {
       "ProposalInteraction",
       tx.hash.concatI32(0).toHexString(),
       "voter",
-      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString()
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString()
     );
 
     const nextTx = getNextTx(tx);
@@ -546,13 +546,13 @@ describe("DaoValidators", () => {
 
     assert.fieldEquals(
       "ValidatorInProposal",
-      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString(),
       "totalVoteAgainst",
       "0"
     );
     assert.fieldEquals(
       "ValidatorInProposal",
-      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString(),
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString(),
       "totalVoteFor",
       "0"
     );
@@ -585,7 +585,7 @@ describe("DaoValidators", () => {
       "ProposalInteraction",
       nextTx.hash.concatI32(0).toHexString(),
       "voter",
-      sender.concat(poolAddress).concatI32(proposalId.toI32()).toHexString()
+      sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString()
     );
   });
 
