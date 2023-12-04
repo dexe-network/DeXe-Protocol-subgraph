@@ -20,6 +20,7 @@ export function getProposal(
     proposal.quorum = quorum;
     proposal.totalVoteFor = BigInt.zero();
     proposal.totalVoteAgainst = BigInt.zero();
+    proposal.validatorsVoted = BigInt.zero();
     proposal.executor = Bytes.empty();
     proposal.creator = creator;
   }

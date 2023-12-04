@@ -13,6 +13,8 @@ export function getValidatorInProposal(validator: ValidatorInPool, proposal: Pro
     validatorInProposal.totalVoteAgainst = BigInt.zero();
 
     validatorInProposal.validator = validator.id;
+
+    proposal.validatorsVoted = proposal.validatorsVoted.plus(BigInt.fromI32(1));
   }
 
   return validatorInProposal;

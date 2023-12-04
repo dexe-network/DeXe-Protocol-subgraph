@@ -98,6 +98,8 @@ export function onVoteCanceled(event: VoteCanceled): void {
   proposal.totalVoteAgainst = proposal.totalVoteAgainst.minus(validatorInProposal.totalVoteAgainst);
   validatorInProposal.totalVoteAgainst = BigInt.zero();
 
+  proposal.validatorsVoted = proposal.validatorsVoted.minus(BigInt.fromI32(1));
+
   vote.save();
   validatorInProposal.save();
   validatorInPool.save();
