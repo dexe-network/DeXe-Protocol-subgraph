@@ -399,6 +399,13 @@ describe("DaoValidators", () => {
     onVoted(event);
 
     assert.fieldEquals(
+      "Proposal",
+      poolAddress.toHexString() + proposalId.toString() + '_' + (isInternal ? '1' : '0'),
+      "validatorsVoted",
+      "1"
+    );
+
+    assert.fieldEquals(
       "ValidatorInProposal",
       sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString(),
       "totalVoteAgainst",
@@ -445,6 +452,13 @@ describe("DaoValidators", () => {
     onVoted(event);
 
     assert.fieldEquals(
+      "Proposal",
+      poolAddress.toHexString() + proposalId.toString() + '_' + (isInternal ? '1' : '0'),
+      "validatorsVoted",
+      "1"
+    );
+
+    assert.fieldEquals(
       "ValidatorInProposal",
       sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString(),
       "totalVoteAgainst",
@@ -486,6 +500,19 @@ describe("DaoValidators", () => {
       nextTx.hash.concatI32(0).toHexString(),
       "voter",
       sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString()
+    );
+
+    sender = Address.fromString("0x86e08f7d84603AEb97cd1c89A80A9e914f181671");
+
+    event = createVoted(proposalId, sender, vote, isInternal, isVoteFor, contractSender, block, nextTx);
+
+    onVoted(event);
+
+    assert.fieldEquals(
+      "Proposal",
+      poolAddress.toHexString() + proposalId.toString() + '_' + (isInternal ? '1' : '0'),
+      "validatorsVoted",
+      "2"
     );
   });
 
@@ -539,6 +566,13 @@ describe("DaoValidators", () => {
       sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString()
     );
 
+    assert.fieldEquals(
+      "Proposal",
+      poolAddress.toHexString() + proposalId.toString() + '_' + (isInternal ? '1' : '0'),
+      "validatorsVoted",
+      "1"
+    );
+
     const nextTx = getNextTx(tx);
     let event = createVoteCanceled(proposalId, sender, isInternal, contractSender, block, nextTx);
 
@@ -586,6 +620,13 @@ describe("DaoValidators", () => {
       nextTx.hash.concatI32(0).toHexString(),
       "voter",
       sender.concat(poolAddress).concatI32(proposalId.toI32()).concatI32(isInternal).toHexString()
+    );
+
+    assert.fieldEquals(
+      "Proposal",
+      poolAddress.toHexString() + proposalId.toString() + '_' + (isInternal ? '1' : '0'),
+      "validatorsVoted",
+      "0"
     );
   });
 

@@ -31,6 +31,9 @@ type Proposal @entity {
   "The percentage of total votes required to decide whether to confirm the proposal or not"
   quorum: BigInt!
 
+  "The number of voted validators"
+  validatorsVoted: BigInt!
+
   "The current number of votes for the proposal"
   totalVoteFor: BigInt!
   "The current number of votes against the proposal"
