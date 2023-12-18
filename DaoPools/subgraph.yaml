@@ -6,9 +6,9 @@ dataSources:
     name: PoolFactory
     network: chapel
     source:
-      address: "0xc5A750E8e3361D186236D7f708Cb1C92b944Ce48"
+      address: "0x16A393C8D0cdF0E3D4be1A68610E90268b367283"
       abi: PoolFactory
-      startBlock: 34202816
+      startBlock: 34950529
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -26,9 +26,9 @@ dataSources:
     name: ERC721Expert
     network: chapel
     source:
-      address: "0x36841F49C19B08795f4d3CDd9AB722Be8A8843C9"
+      address: "0xc85a5D41217C6bf7500d2d115dAbA3B98d17cbe7"
       abi: ERC721Expert
-      startBlock: 34202816
+      startBlock: 34950529
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
