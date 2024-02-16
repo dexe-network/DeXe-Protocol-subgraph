@@ -1,7 +1,5 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { assert } from "matchstick-as";
-import { TransactionType } from "../src/entities/global/TransactionTypeEnum";
-import { getTransaction as getTxEntity } from "../src/entities/transaction/Transaction";
 
 export function getBlock(number: BigInt, timestamp: BigInt): ethereum.Block {
   return new ethereum.Block(

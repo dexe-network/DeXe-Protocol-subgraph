@@ -1,4 +1,4 @@
-import { pushUnique, remove } from "@solarity/graph-lib";
+import { pushUnique } from "@solarity/graph-lib";
 import { Transfer, TagsAdded } from "../../generated/templates/ERC721Expert/ERC721Expert";
 import { getExpertNft } from "../entities/ExpertNft";
 import { Address, Bytes, store } from "@graphprotocol/graph-ts";
@@ -6,7 +6,6 @@ import { getExpertNftContract } from "../entities/ExpertNftContract";
 import { getVoter } from "../entities/Voters/Voter";
 import { getVoterInPool } from "../entities/Voters/VoterInPool";
 import { getDaoPool } from "../entities/DaoPool";
-import { log } from "matchstick-as";
 import { Voter, VoterInPool } from "../../generated/schema";
 
 export function onTransfer(event: Transfer): void {

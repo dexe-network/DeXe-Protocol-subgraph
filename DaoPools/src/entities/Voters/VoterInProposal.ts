@@ -10,8 +10,6 @@ export function getVoterInProposal(proposal: Proposal, voterInPool: VoterInPool)
 
     voterInProposal.isVoteFor = false;
 
-    voterInProposal.claimed = false;
-
     voterInProposal.totalVote = BigInt.zero();
 
     voterInProposal.staticRewardUSD = BigInt.zero();

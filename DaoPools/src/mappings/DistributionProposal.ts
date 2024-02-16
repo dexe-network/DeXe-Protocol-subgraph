@@ -1,5 +1,4 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { pushUnique } from "@solarity/graph-lib";
 import { DistributionProposalClaimed } from "../../generated/templates/DistributionProposal/DistributionProposal";
 import { getDaoPool } from "../entities/DaoPool";
 import { getDPContract } from "../entities/DPContract";
