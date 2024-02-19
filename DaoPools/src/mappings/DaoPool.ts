@@ -30,7 +30,6 @@ import { getUSDValue } from "../helpers/PriceFeedInteractions";
 import { DelegationType } from "../entities/global/DelegationTypeEnum";
 import { TreasuryDelegationType } from "../entities/global/TreasuryDelegationTypeEnum";
 import { getTreasuryDelegationHistory } from "../entities/TreasuryDelegationHistory";
-import { RewardType } from "../entities/global/RewardTypeEnum";
 import { ProposalInteractionType, getEnumBigInt } from "../entities/global/ProposalInteractionTypeEnum";
 import { getNftsVotePower } from "../helpers/UserKeeperInteractions";
 
@@ -352,8 +351,6 @@ export function onRewardClaimed(event: RewardClaimed): void {
     let proposal = getProposal(pool, event.params.proposalId);
     let voterInProposal = getVoterInProposal(proposal, voterInPool);
 
-    voterInProposal.claimed = true;
-
     voterInProposal.claimedRewardUSD = voterInProposal.claimedRewardUSD.plus(usdAmount);
 
     voterInProposal.staticRewardUSD = voterInProposal.staticRewardUSD.plus(usdAmount);
@@ -387,11 +384,9 @@ export function onVotingRewardClaimed(event: VotingRewardClaimed): void {
   let treasuryUsdAmount = getUSDValue(event.params.token, event.params.rewards.treasury);
   let totalUsdAmount = personalUsdAmount.plus(micropoolUsdAmount).plus(treasuryUsdAmount);
 
-  voterInProposal.claimed = true;
-
-  voterInProposal.personalVotingRewardUSD = personalUsdAmount;
-  voterInProposal.micropoolVotingRewardUSD = micropoolUsdAmount;
-  voterInProposal.treasuryVotingRewardUSD = treasuryUsdAmount;
+  voterInProposal.personalVotingRewardUSD = voterInProposal.personalVotingRewardUSD.plus(personalUsdAmount);
+  voterInProposal.micropoolVotingRewardUSD = voterInProposal.micropoolVotingRewardUSD.plus(micropoolUsdAmount);
+  voterInProposal.treasuryVotingRewardUSD = voterInProposal.treasuryVotingRewardUSD.plus(treasuryUsdAmount);
 
   voterInProposal.claimedRewardUSD = voterInProposal.claimedRewardUSD.plus(totalUsdAmount);
 

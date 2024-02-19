@@ -313,8 +313,6 @@ type VoterInProposal @entity {
   id: Bytes! # voter address + proposal entity id
   "Boolean flag, if true - voter voted for the proposal"
   isVoteFor: Boolean!
-  "Boolean flag, if true - rewards claimed"
-  claimed: Boolean!
 
   "The total amount of vote for the proposal"
   totalVote: BigInt!
