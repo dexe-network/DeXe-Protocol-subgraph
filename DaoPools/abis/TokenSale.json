@@ -343,6 +343,11 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "proof",
+        "type": "bytes32[]"
       }
     ],
     "name": "buy",
@@ -606,6 +611,11 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "proof",
+        "type": "bytes32[]"
       }
     ],
     "name": "getSaleTokenAmount",
@@ -787,6 +797,23 @@
             "internalType": "struct ITokenSaleProposal.TierInfo",
             "name": "tierInfo",
             "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "merkleRoot",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "string",
+                "name": "merkleUri",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct ITokenSaleProposal.TierAdditionalInfo",
+            "name": "tierAdditionalInfo",
+            "type": "tuple"
           }
         ],
         "internalType": "struct ITokenSaleProposal.TierView[]",
@@ -808,6 +835,11 @@
         "internalType": "uint256[]",
         "name": "tierIds",
         "type": "uint256[]"
+      },
+      {
+        "internalType": "bytes32[][]",
+        "name": "proofs",
+        "type": "bytes32[][]"
       }
     ],
     "name": "getUserViews",
