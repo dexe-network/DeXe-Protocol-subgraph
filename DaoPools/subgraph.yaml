@@ -169,6 +169,8 @@ templates:
       eventHandlers:
         - event: TierCreated(uint256,address,(uint8,bytes)[])
           handler: onTierCreated
+        - event: TierModified(uint256,address,(uint8,bytes)[])
+          handler: onTierModified
         - event: Bought(uint256,address,uint256,uint256,address)
           handler: onBought
         - event: Whitelisted(uint256,address)
