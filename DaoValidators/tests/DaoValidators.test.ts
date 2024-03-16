@@ -400,7 +400,7 @@ describe("DaoValidators", () => {
 
     assert.fieldEquals(
       "Proposal",
-      poolAddress.toHexString() + proposalId.toString() + '_' + (isInternal ? '1' : '0'),
+      poolAddress.toHexString() + proposalId.toString() + "_" + (isInternal ? "1" : "0"),
       "validatorsVoted",
       "1"
     );
@@ -453,7 +453,7 @@ describe("DaoValidators", () => {
 
     assert.fieldEquals(
       "Proposal",
-      poolAddress.toHexString() + proposalId.toString() + '_' + (isInternal ? '1' : '0'),
+      poolAddress.toHexString() + proposalId.toString() + "_" + (isInternal ? "1" : "0"),
       "validatorsVoted",
       "1"
     );
@@ -510,7 +510,7 @@ describe("DaoValidators", () => {
 
     assert.fieldEquals(
       "Proposal",
-      poolAddress.toHexString() + proposalId.toString() + '_' + (isInternal ? '1' : '0'),
+      poolAddress.toHexString() + proposalId.toString() + "_" + (isInternal ? "1" : "0"),
       "validatorsVoted",
       "2"
     );
@@ -568,7 +568,7 @@ describe("DaoValidators", () => {
 
     assert.fieldEquals(
       "Proposal",
-      poolAddress.toHexString() + proposalId.toString() + '_' + (isInternal ? '1' : '0'),
+      poolAddress.toHexString() + proposalId.toString() + "_" + (isInternal ? "1" : "0"),
       "validatorsVoted",
       "1"
     );
@@ -624,7 +624,7 @@ describe("DaoValidators", () => {
 
     assert.fieldEquals(
       "Proposal",
-      poolAddress.toHexString() + proposalId.toString() + '_' + (isInternal ? '1' : '0'),
+      poolAddress.toHexString() + proposalId.toString() + "_" + (isInternal ? "1" : "0"),
       "validatorsVoted",
       "0"
     );

@@ -6,7 +6,7 @@ export function getUSDValue(token: Bytes, amount: BigInt): BigInt {
   if (token.equals(Bytes.empty())) {
     return BigInt.zero();
   }
-  
+
   let pfPrototype = PriceFeed.bind(Address.fromString(PRICE_FEED_ADDRESS));
 
   let resp = pfPrototype.try_getNormalizedPriceOutUSD(Address.fromBytes(token), amount);
