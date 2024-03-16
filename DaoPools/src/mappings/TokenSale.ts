@@ -1,6 +1,6 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { pushUnique } from "@solarity/graph-lib";
-import { Bought, TierCreated, Whitelisted } from "../../generated/templates/TokenSale/TokenSaleProposal";
+import { Bought, TierCreated, TierModified, Whitelisted } from "../../generated/templates/TokenSale/TokenSaleProposal";
 import { getDaoPool } from "../entities/DaoPool";
 import { getTokenSale } from "../entities/TokenSale";
 import { getTokenSaleTier } from "../entities/TokenSaleTier";
@@ -16,6 +16,24 @@ export function onTierCreated(event: TierCreated): void {
   tier.creationHash = event.transaction.hash;
 
   let participationDetails = event.params.participationDetails;
+  for (let i = 0; i < participationDetails.length; i++) {
+    tier.whitelistTypes = push(tier.whitelistTypes, BigInt.fromI32(participationDetails[i].participationType));
+    tier.data = push(tier.data, participationDetails[i].data);
+  }
+
+  tier.save();
+  tokenSale.save();
+}
+
+export function onTierModified(event: TierModified): void {
+  let tokenSale = getTokenSale(event.address);
+  let tier = getTokenSaleTier(tokenSale, event.params.tierId, event.params.saleToken);
+
+  let participationDetails = event.params.participationDetails;
+
+  tier.whitelistTypes = new Array();
+  tier.data = new Array();
+
   for (let i = 0; i < participationDetails.length; i++) {
     tier.whitelistTypes = push(tier.whitelistTypes, BigInt.fromI32(participationDetails[i].participationType));
     tier.data = push(tier.data, participationDetails[i].data);
