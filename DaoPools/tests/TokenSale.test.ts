@@ -196,10 +196,17 @@ describe("TokenSale", () => {
     let newTx = getNextTx(tx);
     let newParticipationTypes = [BigInt.fromI32(3), BigInt.fromI32(4)];
     let newData = [Bytes.fromI32(3), Bytes.fromI32(4)];
+    let modifyEvent = createTierModified(
+      tierId,
+      token,
+      newParticipationTypes,
+      newData,
+      contractSender,
+      newBlock,
+      newTx
+    );
 
-    let event1 = createTierModified(tierId, token, newParticipationTypes, newData, contractSender, newBlock, newTx);
-
-    onTierModified(event1);
+    onTierModified(modifyEvent);
 
     assert.fieldEquals("TokenSaleContract", contractSender.toHexString(), "daoPool", poolAddress.toHexString());
 
