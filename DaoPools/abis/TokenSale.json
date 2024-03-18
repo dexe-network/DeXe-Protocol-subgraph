@@ -115,6 +115,43 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tierId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "saleToken",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum ITokenSaleProposal.ParticipationType",
+            "name": "participationType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ITokenSaleProposal.ParticipationDetails[]",
+        "name": "participationDetails",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "TierModified",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "operator",
@@ -358,6 +395,36 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "tierId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum ITokenSaleProposal.ParticipationType",
+            "name": "participationType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct ITokenSaleProposal.ParticipationDetails[]",
+        "name": "newSettings",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "changeParticipationDetails",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256[]",
         "name": "tierIds",
         "type": "uint256[]"
@@ -566,6 +633,72 @@
         "internalType": "address",
         "name": "injector_",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tierId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getParticipationDetails",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "isWhitelisted",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isBABTed",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "requiredDaoVotes",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address[]",
+            "name": "requiredTokenAddresses",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "requiredTokenAmounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "address[]",
+            "name": "requiredNftAddresses",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "requiredNftAmounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "merkleRoot",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "merkleUri",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct ITokenSaleProposal.ParticipationInfoView",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -809,6 +942,11 @@
                 "internalType": "string",
                 "name": "merkleUri",
                 "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "lastModified",
+                "type": "uint256"
               }
             ],
             "internalType": "struct ITokenSaleProposal.TierAdditionalInfo",
@@ -1098,6 +1236,132 @@
       }
     ],
     "name": "mint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tierId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "description",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct ITokenSaleProposal.TierMetadata",
+            "name": "metadata",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalTokenProvided",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint64",
+            "name": "saleStartTime",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "saleEndTime",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "claimLockDuration",
+            "type": "uint64"
+          },
+          {
+            "internalType": "address",
+            "name": "saleTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address[]",
+            "name": "purchaseTokenAddresses",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "exchangeRates",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minAllocationPerUser",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxAllocationPerUser",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "vestingPercentage",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint64",
+                "name": "vestingDuration",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "cliffPeriod",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "unlockStep",
+                "type": "uint64"
+              }
+            ],
+            "internalType": "struct ITokenSaleProposal.VestingSettings",
+            "name": "vestingSettings",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum ITokenSaleProposal.ParticipationType",
+                "name": "participationType",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct ITokenSaleProposal.ParticipationDetails[]",
+            "name": "participationDetails",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct ITokenSaleProposal.TierInitParams",
+        "name": "newSettings",
+        "type": "tuple"
+      }
+    ],
+    "name": "modifyTier",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

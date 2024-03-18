@@ -6,6 +6,7 @@
     "install-all": "cd AllInteractions && npm install && cd ../DaoPools && npm install && cd ../DaoValidators && npm install",
     "codegen-all": "cd AllInteractions && npm run codegen && cd ../DaoPools && npm run codegen && cd ../DaoValidators && npm run codegen",
     "test-all": "cd AllInteractions && npm run test  && cd ../DaoPools && npm run test && cd ../DaoValidators && npm run test",
+    "test-all-docker": "cd AllInteractions && graph test -d  && cd ../DaoPools && graph test -d && cd ../DaoValidators && graph test -d",
     "lint-fix": "npm run lint-ts-fix && npm run lint-ql-fix && npm run lint-json-fix && npm run lint-yaml-fix",
     "lint-json-fix": "prettier --write \"./[a-zA-Z0-9.]+(?!-lock).json\"",
     "lint-yaml-fix": "prettier --write \"./**/*.yaml\"",

@@ -1,10 +1,10 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
-import { Bought, TierCreated, Whitelisted } from "../generated/templates/TokenSale/TokenSaleProposal";
+import { Bought, TierCreated, TierModified, Whitelisted } from "../generated/templates/TokenSale/TokenSaleProposal";
 import { afterEach, assert, beforeAll, describe, newMockEvent, test } from "matchstick-as";
 import { getBlock, getNextBlock, getNextTx, getTransaction } from "./utils";
 import { getDaoPool } from "../src/entities/DaoPool";
 import { getTokenSale } from "../src/entities/TokenSale";
-import { onBought, onTierCreated, onWhitelisted } from "../src/mappings/TokenSale";
+import { onBought, onTierCreated, onTierModified, onWhitelisted } from "../src/mappings/TokenSale";
 
 function createBought(
   tierId: BigInt,
@@ -42,6 +42,42 @@ function createTierCreated(
   tx: ethereum.Transaction
 ): TierCreated {
   let event = changetype<TierCreated>(newMockEvent());
+  event.parameters = new Array();
+
+  let participationTypesArray = new Array<ethereum.Tuple>(participationTypes.length);
+
+  for (let i = 0; i < participationTypes.length; i++) {
+    let tuple = new ethereum.Tuple(2);
+
+    tuple[0] = ethereum.Value.fromUnsignedBigInt(participationTypes[i]);
+    tuple[1] = ethereum.Value.fromBytes(data[i]);
+
+    participationTypesArray[i] = tuple;
+  }
+
+  event.parameters.push(new ethereum.EventParam("tierId", ethereum.Value.fromUnsignedBigInt(tierId)));
+  event.parameters.push(new ethereum.EventParam("saleToken", ethereum.Value.fromAddress(saleToken)));
+  event.parameters.push(
+    new ethereum.EventParam("participationTypes", ethereum.Value.fromTupleArray(participationTypesArray))
+  );
+
+  event.block = block;
+  event.transaction = tx;
+  event.address = contractSender;
+
+  return event;
+}
+
+function createTierModified(
+  tierId: BigInt,
+  saleToken: Address,
+  participationTypes: BigInt[],
+  data: Bytes[],
+  contractSender: Address,
+  block: ethereum.Block,
+  tx: ethereum.Transaction
+): TierModified {
+  let event = changetype<TierModified>(newMockEvent());
   event.parameters = new Array();
 
   let participationTypesArray = new Array<ethereum.Tuple>(participationTypes.length);
@@ -145,6 +181,68 @@ describe("TokenSale", () => {
       "data",
       `[${data[0].toHexString()}, ${data[1].toHexString()}]`
     );
+  });
+
+  test("should handle tierModifier", () => {
+    let tierId = BigInt.fromI32(5);
+    let token = Address.fromString("0x96e08f7d84603AEb97cd1c89A80A9e914f181674");
+    let participationTypes = [BigInt.fromI32(1), BigInt.fromI32(2)];
+    let data = [Bytes.fromI32(1), Bytes.fromI32(2)];
+    let event = createTierCreated(tierId, token, participationTypes, data, contractSender, block, tx);
+
+    onTierCreated(event);
+
+    let newBlock = getNextBlock(block);
+    let newTx = getNextTx(tx);
+    let newParticipationTypes = [BigInt.fromI32(3), BigInt.fromI32(4)];
+    let newData = [Bytes.fromI32(3), Bytes.fromI32(4)];
+    let modifyEvent = createTierModified(
+      tierId,
+      token,
+      newParticipationTypes,
+      newData,
+      contractSender,
+      newBlock,
+      newTx
+    );
+
+    onTierModified(modifyEvent);
+
+    assert.fieldEquals("TokenSaleContract", contractSender.toHexString(), "daoPool", poolAddress.toHexString());
+
+    assert.fieldEquals(
+      "TokenSaleTier",
+      contractSender.concatI32(tierId.toI32()).toHexString(),
+      "tokenSale",
+      contractSender.toHexString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTier",
+      contractSender.concatI32(tierId.toI32()).toHexString(),
+      "creationHash",
+      tx.hash.toHexString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTier",
+      contractSender.concatI32(tierId.toI32()).toHexString(),
+      "saleToken",
+      token.toHexString()
+    );
+    assert.fieldEquals(
+      "TokenSaleTier",
+      contractSender.concatI32(tierId.toI32()).toHexString(),
+      "whitelistTypes",
+      `[${newParticipationTypes[0].toString()}, ${newParticipationTypes[1].toString()}]`
+    );
+    assert.fieldEquals(
+      "TokenSaleTier",
+      contractSender.concatI32(tierId.toI32()).toHexString(),
+      "data",
+      `[${newData[0].toHexString()}, ${newData[1].toHexString()}]`
+    );
+
+    block = newBlock;
+    tx = newTx;
   });
 
   test("should handle bought", () => {
